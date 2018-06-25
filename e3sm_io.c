@@ -114,20 +114,21 @@ static int intcompare(const void *p1, const void *p2)
  *              int offsets(num_procs, max_nreqs) ;
  *
  *      // global attributes:
- *              :Y_len = 48602 ;
- *              :X_len = 72 ;
+ *              :var_ndims = 2 ;
+ *              :dim_len_0 = 48602 ;
+ *              :dim_len_1 = 72 ;
  *              :max_nreqs = 55296 ;
  *              :min_nreqs = 51840 ;
  *      }
  */
 static int
-read_io_pattern(int    verbose,
-                char  *infname,
-                int   *Y_len,        /* dimension Y size */
-                int   *X_len,        /* dimension X size */
-                int   *contig_nreqs, /* num of contiguous requests */
-                int  **disps,
-                int  **blocklens)
+read_io_pattern(int          verbose,
+                char        *infname,
+                int         *ndims,       /* number of dimensions of variable */
+                MPI_Offset **dims,        /* dimension lengths */
+                int         *contig_nreqs,/* num of contiguous requests */
+                int        **disps,
+                int        **blocklens)
 {
     int err, nerrs=0, rank, nprocs, ncid, varid, proc_start, proc_numb;
     int i, j, k, nreqs, dimids[2];
@@ -143,11 +144,14 @@ read_io_pattern(int    verbose,
     err = ncmpi_inq_dimid(ncid, "max_nreqs", &dimids[1]); ERR
     err = ncmpi_inq_dimlen(ncid, dimids[0], &num_procs); ERR
     err = ncmpi_inq_dimlen(ncid, dimids[1], &max_nreqs); ERR
-    err = ncmpi_get_att_int(ncid, NC_GLOBAL, "Y_len", Y_len); ERR
-    err = ncmpi_get_att_int(ncid, NC_GLOBAL, "X_len", X_len); ERR
-    if (verbose && rank==0)
-        printf("num_procs=%lld max_nreqs=%lld Y_len=%d X_len=%d\n",
-               num_procs, max_nreqs, *Y_len, *X_len);
+
+    err = ncmpi_get_att_int(ncid, NC_GLOBAL, "var_ndims", ndims); ERR
+    *dims = (MPI_Offset*) malloc(*ndims * sizeof(MPI_Offset));
+    for (i=0; i<*ndims; i++) {
+        char dim_name[32];
+        sprintf(dim_name, "dim_len_%d", i);
+        err = ncmpi_get_att_longlong(ncid, NC_GLOBAL, dim_name, (*dims)+i); ERR
+    }
 
     /* num_procs is the number of processes used to generate the input I/O
      * pattern file. nprocs is the number of processes running this benchmark.
@@ -205,8 +209,9 @@ read_io_pattern(int    verbose,
     *blocklens = (int*)malloc(nreqs*sizeof(int));
     (*blocklens)[0] = 1;
     for (j=0, i=1; i<nreqs; i++) {
-        if ((*disps)[i] == (*disps)[i-1]+1 && (*disps)[i]%(*X_len))
-            /* contiguous disp */
+        if ((*disps)[i] == (*disps)[i-1]+1 && (*disps)[i]%((*dims)[*ndims-1]))
+            /* contiguous disp && each blocklens[i] is no longer than the last
+             * dimension length */
             (*blocklens)[j]++;
         else {
             j++;
@@ -262,15 +267,15 @@ void print_info(MPI_Info *info_used)
 static
 int run_vard(char       *out_dir,   /* output folder name */
              MPI_Info    info,
-             MPI_Offset  Y_len,     /* Y dimension size */
-             MPI_Offset  X_len,     /* X dimension size */
+             int         ndims,     /* number of dimensions of variables */
+             MPI_Offset *dims,      /* dimension lengths */
              int         nvars,     /* number of variables */
              int         nreqs,     /* number of request per variable */
              int        *disps,     /* [nreqs] request's displacements */
              int        *blocklens) /* [nreqs] request's block lengths */
 {
     char outfname[512];
-    int i, err, nerrs=0, rank, cmode, ncid, *varids, dimids[2];
+    int i, err, nerrs=0, rank, cmode, ncid, *varids, *dimids;
     int *var_blocklens, max_nreqs;
     size_t buflen=0;
     itype *buffer;
@@ -293,17 +298,22 @@ int run_vard(char       *out_dir,   /* output folder name */
     err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions */
-    err = ncmpi_def_dim(ncid, "Y", Y_len, &dimids[0]); ERR
-    err = ncmpi_def_dim(ncid, "X", X_len, &dimids[1]); ERR
+    dimids = (int*) malloc(ndims * sizeof(int));
+    for (i=0; i<ndims; i++) {
+        char dim_name[32];
+        sprintf(dim_name, "dim_len_%d", i);
+        err = ncmpi_def_dim(ncid, dim_name, dims[i], &dimids[i]); ERR
+    }
 
     /* define variables */
     varids = (int*) malloc(nvars * sizeof(int));
     for (i=0; i<nvars; i++) {
         char varname[128];
         sprintf(varname, "var%04d",i);
-        err = ncmpi_def_var(ncid, varname, xtype, 2, dimids, &varids[i]);
+        err = ncmpi_def_var(ncid, varname, xtype, ndims, dimids, &varids[i]);
         ERR
     }
+    free(dimids);
     err = ncmpi_enddef(ncid); ERR
     err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing = MPI_Wtime() - open_timing;
@@ -425,15 +435,15 @@ fn_exit:
 static
 int run_varn(char       *out_dir,   /* output folder name */
              MPI_Info    info,
-             MPI_Offset  Y_len,     /* Y dimension size */
-             MPI_Offset  X_len,     /* X dimension size */
+             int         ndims,     /* number of dimensions of variables */
+             MPI_Offset *dims,      /* dimension lengths */
              int         nvars,     /* number of variables */
              int         nreqs,     /* number of request per variable */
              int        *disps,     /* [nreqs] request's displacements */
              int        *blocklens) /* [nreqs] request's block lengths */
 {
     char outfname[512];
-    int i, err, nerrs=0, rank, cmode, ncid, *varids, dimids[2];
+    int i, j, err, nerrs=0, rank, cmode, ncid, *varids, *dimids;
     int max_nreqs;
     size_t buflen=0;
     itype *buffer, *buf_ptr;
@@ -453,17 +463,22 @@ int run_varn(char       *out_dir,   /* output folder name */
     err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions */
-    err = ncmpi_def_dim(ncid, "Y", Y_len, &dimids[0]); ERR
-    err = ncmpi_def_dim(ncid, "X", X_len, &dimids[1]); ERR
+    dimids = (int*) malloc(ndims * sizeof(int));
+    for (i=0; i<ndims; i++) {
+        char dim_name[32];
+        sprintf(dim_name, "dim_len_%d", i);
+        err = ncmpi_def_dim(ncid, dim_name, dims[i], &dimids[i]); ERR
+    }
 
     /* define variables */
     varids = (int*) malloc(nvars * sizeof(int));
     for (i=0; i<nvars; i++) {
         char varname[128];
         sprintf(varname, "var%04d",i);
-        err = ncmpi_def_var(ncid, varname, xtype, 2, dimids, &varids[i]);
+        err = ncmpi_def_var(ncid, varname, xtype, ndims, dimids, &varids[i]);
         ERR
     }
+    free(dimids);
     err = ncmpi_enddef(ncid); ERR
     open_timing = MPI_Wtime() - open_timing;
 
@@ -471,20 +486,23 @@ int run_varn(char       *out_dir,   /* output folder name */
     pre_timing = MPI_Wtime();
 
     /* construct varn API arguments starts[][] and counts[][] */
-    starts = (MPI_Offset**) malloc(nreqs * 2 * sizeof(MPI_Offset*));
+    starts = (MPI_Offset**) malloc(2 * nreqs * sizeof(MPI_Offset*));
     counts = starts + nreqs;
-    starts[0] = (MPI_Offset*) malloc(nreqs * 4 * sizeof(MPI_Offset));
-    counts[0] = starts[0] + nreqs * 2;
+    starts[0] = (MPI_Offset*) malloc(2 * nreqs * ndims * sizeof(MPI_Offset));
+    counts[0] = starts[0] + nreqs * ndims;
     for (i=1; i<nreqs; i++) {
-        starts[i] = starts[i-1] + 2;
-        counts[i] = counts[i-1] + 2;
+        starts[i] = starts[i-1] + ndims;
+        counts[i] = counts[i-1] + ndims;
     }
 
     for (i=0; i<nreqs; i++) {
-        starts[i][0] = disps[i] / X_len;
-        starts[i][1] = disps[i] % X_len;
-        counts[i][0] = 1;
-        counts[i][1] = blocklens[i];
+        MPI_Offset disp=disps[i];
+        for (j=ndims-1; j>=0; j--) {
+            starts[i][j] = disp % dims[j];
+            disp /= dims[j];
+            counts[i][j] = 1;
+        }
+        counts[i][ndims-1] = blocklens[i]; /* each blocklens[i] is no bigger than dims[ndims-1] */
     }
 
     MPI_Comm_rank(comm, &rank);
@@ -584,15 +602,15 @@ fn_exit:
 static
 int run_vara(char       *out_dir,   /* output folder name */
              MPI_Info    info,
-             MPI_Offset  Y_len,     /* Y dimension size */
-             MPI_Offset  X_len,     /* X dimension size */
+             int         ndims,     /* number of dimensions of variables */
+             MPI_Offset *dims,      /* dimension lengths */
              int         nvars,     /* number of variables */
              int         nreqs,     /* number of request per variable */
              int        *disps,     /* [nreqs] request's displacements */
              int        *blocklens) /* [nreqs] request's block lengths */
 {
     char outfname[512];
-    int i, j, err, nerrs=0, rank, cmode, ncid, *varids, dimids[2];
+    int i, j, err, nerrs=0, rank, cmode, ncid, *varids, *dimids;
     int max_nreqs;
     size_t buflen=0;
     itype *buffer, *buf_ptr;
@@ -610,17 +628,23 @@ int run_vara(char       *out_dir,   /* output folder name */
     cmode = NC_CLOBBER|NC_64BIT_DATA;
     err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
 
-    err = ncmpi_def_dim(ncid, "Y", Y_len, &dimids[0]); ERR
-    err = ncmpi_def_dim(ncid, "X", X_len, &dimids[1]); ERR
+    /* define dimensions */
+    dimids = (int*) malloc(ndims * sizeof(int));
+    for (i=0; i<ndims; i++) {
+        char dim_name[32];
+        sprintf(dim_name, "dim_len_%d", i);
+        err = ncmpi_def_dim(ncid, dim_name, dims[i], &dimids[i]); ERR
+    }
 
     /* define variables */
     varids = (int*) malloc(nvars * sizeof(int));
     for (i=0; i<nvars; i++) {
         char varname[128];
         sprintf(varname, "var%04d",i);
-        err = ncmpi_def_var(ncid, varname, xtype, 2, dimids, &varids[i]);
+        err = ncmpi_def_var(ncid, varname, xtype, ndims, dimids, &varids[i]);
         ERR
     }
+    free(dimids);
     err = ncmpi_enddef(ncid); ERR
     open_timing = MPI_Wtime() - open_timing;
 
@@ -628,20 +652,23 @@ int run_vara(char       *out_dir,   /* output folder name */
     pre_timing = MPI_Wtime();
 
     /* construct starts[][] and counts[][] */
-    starts = (MPI_Offset**) malloc(nreqs * 2 * sizeof(MPI_Offset*));
+    starts = (MPI_Offset**) malloc(2 * nreqs * sizeof(MPI_Offset*));
     counts = starts + nreqs;
-    starts[0] = (MPI_Offset*) malloc(nreqs * 4 * sizeof(MPI_Offset));
-    counts[0] = starts[0] + nreqs * 2;
+    starts[0] = (MPI_Offset*) malloc(2 * nreqs * ndims * sizeof(MPI_Offset));
+    counts[0] = starts[0] + nreqs * ndims;
     for (i=1; i<nreqs; i++) {
-        starts[i] = starts[i-1] + 2;
-        counts[i] = counts[i-1] + 2;
+        starts[i] = starts[i-1] + ndims;
+        counts[i] = counts[i-1] + ndims;
     }
 
     for (i=0; i<nreqs; i++) {
-        starts[i][0] = disps[i] / X_len;
-        starts[i][1] = disps[i] % X_len;
-        counts[i][0] = 1;
-        counts[i][1] = blocklens[i];
+        MPI_Offset disp=disps[i];
+        for (j=ndims-1; j>=0; j--) {
+            starts[i][j] = disp % dims[j];
+            disp /= dims[j];
+            counts[i][j] = 1;
+        }
+        counts[i][ndims-1] = blocklens[i]; /* each blocklens[i] is no bigger than dims[ndims-1] */
     }
 
     MPI_Comm_rank(comm, &rank);
@@ -758,8 +785,9 @@ int main(int argc, char** argv)
 {
     extern int optind;
     char *infname, out_dir[1024];
-    int i, Y_len, X_len, rank, nprocs, err, nerrs=0, nvars=0;
+    int i, ndims, rank, nprocs, err, nerrs=0, nvars=0;
     int contig_nreqs, *disps=NULL, *blocklens=NULL;
+    MPI_Offset *dims;
     MPI_Info info=MPI_INFO_NULL;
 
     MPI_Init(&argc, &argv);
@@ -805,7 +833,7 @@ int main(int argc, char** argv)
     if (verbose && rank==0) printf("number variables = %d\n",nvars);
 
     /* read I/O pattern from input file */
-    err = read_io_pattern(verbose, infname, &Y_len, &X_len, &contig_nreqs,
+    err = read_io_pattern(verbose, infname, &ndims, &dims, &contig_nreqs,
                           &disps, &blocklens);
     if (err) goto fn_exit;
 
@@ -822,24 +850,25 @@ int main(int argc, char** argv)
     if (!rank) printf("\n---- benchmarking vard API -----------------------\n");
     fflush(stdout);
     MPI_Barrier(MPI_COMM_WORLD);
-    nerrs += run_vard(out_dir, info, Y_len, X_len, nvars, contig_nreqs,
+    nerrs += run_vard(out_dir, info, ndims, dims, nvars, contig_nreqs,
                       disps, blocklens);
 
     if (!rank) printf("\n---- benchmarking varn API -----------------------\n");
     fflush(stdout);
     MPI_Barrier(MPI_COMM_WORLD);
-    nerrs += run_varn(out_dir, info, Y_len, X_len, nvars, contig_nreqs,
+    nerrs += run_varn(out_dir, info, ndims, dims, nvars, contig_nreqs,
                       disps, blocklens);
 
     if (!rank) printf("\n---- benchmarking vara API -----------------------\n");
     fflush(stdout);
     MPI_Barrier(MPI_COMM_WORLD);
-    nerrs += run_vara(out_dir, info, Y_len, X_len, nvars, contig_nreqs,
+    nerrs += run_vara(out_dir, info, ndims, dims, nvars, contig_nreqs,
                       disps, blocklens);
 
 fn_exit:
     if (info != MPI_INFO_NULL) MPI_Info_free(&info);
 
+    if (dims != NULL) free(dims);
     if (disps != NULL) free(disps);
     if (blocklens != NULL) free(blocklens);
     MPI_Finalize();

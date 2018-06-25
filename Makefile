@@ -15,5 +15,8 @@ all:
 e3sm_io: e3sm_io.o
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
+dat2nc: dat2nc.o
+	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
+
 clean:
 	rm -f core.* *.o dat2nc e3sm_io
