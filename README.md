@@ -37,8 +37,8 @@ patterns from the [E3SM](https://github.com/E3SM-Project/E3SM).
      Max Time of I/O preparing          = 0.0354 sec
      Max Time of ncmpi_put_vard         = 0.4521 sec
      Max Time of close                  = 0.0037 sec
-     Time of TOTAL                      = 0.5385 sec
-     I/O bandwidth                      = 247.9046 MiB/sec
+     Max Time of TOTAL                  = 0.4916 sec
+     I/O bandwidth                      = 271.5230 MiB/sec
 
      ---- benchmarking varn API -----------------------
      -----------------------------------------------------------
@@ -67,6 +67,4 @@ patterns from the [E3SM](https://github.com/E3SM-Project/E3SM).
      Max Time of close                  = 0.0141 sec
      Max Time of TOTAL                  = 1.6247 sec
      I/O bandwidth                      = 82.1640 MiB/sec
-     Max Time of TOTAL                  = 0.4916 sec
-     I/O bandwidth                      = 271.5230 MiB/sec
 ```
