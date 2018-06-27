@@ -1,6 +1,21 @@
-This repository contains the benchmark program for evaluating the performance
-of [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF) library using the I/O
-patterns from the [E3SM](https://github.com/E3SM-Project/E3SM).
+## Parallel I/O kernel case study for E3SM
+
+This repository contains a case study of parallel I/O kernel from the
+[E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model. The
+benchmark program, e3sm_io.c, can be used to evaluate the performance of
+[PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF) library on the I/O
+patterns from E3SM. This study focuses on the most challenging I/O pattern from
+writing the cubed sphere variables, which presents a large list of short,
+noncontiguous write requests for each variable on every MPI process.
+
+The benchmark program evaluates three implementations using different PnetCDF
+APIs: blocking vard, nonblocking varn, and nonblocking vara. All these three
+APIs can aggregate multiple requests across more than one variable.
+
+The I/O patterns used in this case study were captured by the
+[PIO](https://github.com/NCAR/ParallelIO) library which can record the data
+access patterns at the array element level for all MPI processes. The patterns
+are stored in a text file, referred by PIO as the decomposition file.
 
 * Prepare the I/O decomposition file
   * PIO generates I/O decomposition data file in a text format. It needs to be
