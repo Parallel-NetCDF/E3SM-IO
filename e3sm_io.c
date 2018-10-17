@@ -66,7 +66,6 @@
 #include <mpi.h>
 #include <pnetcdf.h>
 
-#define USE_DOUBLE
 #ifdef USE_DOUBLE
 #define itype double
 #define xtype NC_DOUBLE
