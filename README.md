@@ -3,19 +3,20 @@
 This repository contains a case study of parallel I/O kernel from the
 [E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model. The
 benchmark program, e3sm_io.c, can be used to evaluate the performance of
-[PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF) library on the I/O
-patterns from E3SM. This study focuses on the most challenging I/O pattern from
-writing the cubed sphere variables, which presents a large list of short,
-noncontiguous write requests for each variable on every MPI process.
+[PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF) library for handling the
+I/O patterns used in E3SM. This study focuses on the most challenging I/O
+pattern in E3SM that writes the cubed sphere variables in a long list of
+short and noncontiguous requests on every MPI process.
 
-The benchmark program evaluates three implementations using different PnetCDF
+The benchmark program evaluates three implementations of different PnetCDF
 APIs: blocking vard, nonblocking varn, and nonblocking vara. All these three
 APIs can aggregate multiple requests across more than one variable.
 
-The I/O patterns used in this case study were captured by the
-[PIO](https://github.com/NCAR/ParallelIO) library which can record the data
-access patterns at the array element level for all MPI processes. The patterns
-are stored in a text file, referred by PIO as the decomposition file.
+The I/O patterns (data decompositions among MPI processes) used in this case
+study were captured by the [PIO](https://github.com/NCAR/ParallelIO) library.
+A data decomposition file records the data access patterns at the array element
+level for each of the MPI processes. The patterns are stored in a text file,
+referred by PIO as the `decomposition file`.
 
 * Prepare the I/O decomposition file
   * PIO generates I/O decomposition data file in a text format. It needs to be
@@ -30,15 +31,16 @@ are stored in a text file, referred by PIO as the decomposition file.
 
 * Run
   * example run command:
-    `mpiexec -n 8 ./e3sm_io -q datasets/48602x72_64p.nc -n 10`
+    `mpiexec -n 8 ./e3sm_io -q -n 10 datasets/48602x72_64p.nc`
   * Below shows the command-line options:
 ```
-     Usage: e3sm_io [-h] [-q] [-n nvars] [-o output_file] input_file
+     Usage: ./e3sm_io [-h] [-q] [-k] [-n nvars] [-o output_dir] input_file
             [-h] Print help
             [-q] Quiet mode
+            [-k] Keep the output files when program exits
             [-n nvars]: number of variables (default 1)
-            [-o output_file]: output file name (default ./testfile.nc)
-            input_file: intput netCDF file name
+            [-o output_dir]: output directory name (default ./)
+            input_file: name of input netCDF file describing the decomposition
 ```
 * Example outputs on screen
 ```

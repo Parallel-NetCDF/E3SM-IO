@@ -772,10 +772,10 @@ static void
 usage(char *argv0)
 {
     char *help =
-    "Usage: %s [-h] [-q] [-k] [-n nvars] [-o output_file] input_file\n"
+    "Usage: %s [-h] [-q] [-k] [-n nvars] [-o output_dir] input_file\n"
     "       [-h] Print help\n"
     "       [-q] Quiet mode\n"
-    "       [-k] Keep the output file when program exits\n"
+    "       [-k] Keep the output files when program exits\n"
     "       [-n nvars]: number of variables (default 1)\n"
     "       [-o output_dir]: output directory name (default ./)\n"
     "       input_file: name of input netCDF file describing the decomposition\n";
@@ -822,7 +822,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    /* input file conatins number of write requests and their file access
+    /* input file contains number of write requests and their file access
      * offsets (per array element) */
     infname = argv[optind];
     if (verbose && rank==0) printf("input file name =%s\n",infname);
