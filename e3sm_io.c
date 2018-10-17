@@ -90,6 +90,7 @@
 }
 
 static int verbose; /* verbose mode to print additional messages on screen */
+static int keep_out_files; /* whether to keep the output files when exits */
 
 /*----< intcompare() >------------------------------------------------------*/
 /* This subroutine is used in qsort() */
@@ -426,7 +427,7 @@ int run_vard(char       *out_dir,   /* output folder name */
     }
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
-    unlink(outfname);
+    if (!keep_out_files) unlink(outfname);
     MPI_Barrier(comm);
     return nerrs;
 }
@@ -593,7 +594,7 @@ int run_varn(char       *out_dir,   /* output folder name */
                (double)total_size/1048576.0/total_timing);
     }
 fn_exit:
-    unlink(outfname);
+    if (!keep_out_files) unlink(outfname);
     MPI_Barrier(comm);
     return nerrs;
 }
@@ -761,7 +762,7 @@ int run_vara(char       *out_dir,   /* output folder name */
                (double)total_size/1048576.0/total_timing);
     }
 fn_exit:
-    unlink(outfname);
+    if (!keep_out_files) unlink(outfname);
     MPI_Barrier(comm);
     return nerrs;
 }
@@ -771,12 +772,13 @@ static void
 usage(char *argv0)
 {
     char *help =
-    "Usage: %s [-h] [-q] [-n nvars] [-o output_file] input_file\n"
+    "Usage: %s [-h] [-q] [-k] [-n nvars] [-o output_file] input_file\n"
     "       [-h] Print help\n"
     "       [-q] Quiet mode\n"
+    "       [-k] Keep the output file when program exits\n"
     "       [-n nvars]: number of variables (default 1)\n"
-    "       [-o output_file]: output file name (default ./testfile.nc)\n"
-    "       input_file: intput netCDF file name\n";
+    "       [-o output_dir]: output directory name (default ./)\n"
+    "       input_file: name of input netCDF file describing the decomposition\n";
     fprintf(stderr, help, argv0);
 }
 
@@ -795,11 +797,14 @@ int main(int argc, char** argv)
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     out_dir[0] = '\0';
     verbose = 1;
+    keep_out_files = 0;
 
     /* command-line arguments */
-    while ((i = getopt(argc, argv, "hqn:o:")) != EOF)
+    while ((i = getopt(argc, argv, "hkqn:o:")) != EOF)
         switch(i) {
             case 'q': verbose = 0;
+                      break;
+            case 'k': keep_out_files = 1;
                       break;
             case 'n': nvars = atoi(optarg);
                       break;
