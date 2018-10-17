@@ -25,6 +25,31 @@ referred by PIO as the `decomposition file`.
   * Build the conversion utility program, dat2nc.c, by running command
     `make dat2nc`.
   * Then run command `./dat2nc inputfile.dat -o outputfile.nc`.
+  * Example of an output file is available in datasets/48602x72_64p.nc.gz. The
+    metadata of the file is shown below.
+```
+    % cd ./datasets
+    % gunzip ./48602x72_64p.nc.gz
+    % ncmpidump -h 48602x72_64p.nc
+    netcdf 48602x72_64p {
+    // file format: CDF-1
+    dimensions:
+            num_procs = 64 ;
+            max_nreqs = 55296 ;
+    variables:
+            int nreqs(num_procs) ;
+                nreqs:description = "Number of noncontiguous subarray requests by each MPI process" ;
+            int offsets(num_procs, max_nreqs) ;
+                offsets:description = "Flattened starting indices of noncontiguous requests. Each row corresponds to requests by an MPI process." ;
+
+    // global attributes:
+                :var_ndims = 2 ;
+                :dim_len_0 = 72 ;
+                :dim_len_1 = 48602 ;
+                :max_nreqs = 55296 ;
+                :min_nreqs = 51840 ;
+    }
+```
 
 * Compile
   * Run command `make e3sm_io` to generate the benchmark program e3sm_io.
