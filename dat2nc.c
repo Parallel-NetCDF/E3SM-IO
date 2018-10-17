@@ -36,7 +36,7 @@ usage(char *argv0)
 
 /*----< main() >------------------------------------------------------------*/
 int main(int argc, char **argv) {
-    char  buf[LINE_SIZE+1], *infname=NULL, outfname[1024], *map;
+    char  buf[LINE_SIZE+1], *infname=NULL, outfname[1024], *map, *str;
     FILE *fd;
     int   rank, nprocs, verbose=1, ndims;
     int   i, j, ncid, dimids[2], varid[2], *nreqs, err, nerrs=0, *off;
@@ -116,11 +116,14 @@ int main(int argc, char **argv) {
     ndims = atoi(strtok(NULL, " "));
     dims = (MPI_Offset*) malloc(3 * ndims * sizeof(MPI_Offset));
 
-    /* get dimension sizes */
+    /* get dimension sizes
+     * Note the dimensions are in Fortran order in the decomposition file
+     * generated from PIO library
+     */
     fgets(buf, LINE_SIZE, fd);
     if (verbose) printf("\t%s",buf);
-    dims[0] = atoll(strtok(buf, " "));
-    for (i=1; i<ndims; i++)
+    dims[ndims-1] = atoll(strtok(buf, " "));
+    for (i=ndims-2; i>=0; i--)
         dims[i] = atoll(strtok(NULL, " "));
 
     gsize=dims[0];
@@ -171,11 +174,23 @@ int main(int argc, char **argv) {
         printf("Warning: global array size = %lld but only %lld written\n",gsize,k);
     free(map);
 
-    err = ncmpi_create(MPI_COMM_WORLD, outfname, NC_CLOBBER, MPI_INFO_NULL, &ncid); ERR
+    err = ncmpi_create(MPI_COMM_WORLD, outfname, NC_NOCLOBBER, MPI_INFO_NULL, &ncid);
+    if (err != NC_NOERR) {
+        printf("Error at line %d in %s: %s\n", __LINE__,__FILE__,
+        ncmpi_strerrno(err));
+        nerrs++;
+        goto fn_exit;
+    }
     err = ncmpi_def_dim(ncid, "num_procs", nprocs, &dimids[0]); ERR
     err = ncmpi_def_dim(ncid, "max_nreqs", max_nreqs, &dimids[1]); ERR
     err = ncmpi_def_var(ncid, "nreqs",   NC_INT, 1, dimids, &varid[0]); ERR
+    str = "Number of noncontiguous subarray requests by each MPI process";
+    err = ncmpi_put_att_text(ncid, varid[0], "description", strlen(str), str); ERR
+
     err = ncmpi_def_var(ncid, "offsets", NC_INT, 2, dimids, &varid[1]); ERR
+    str = "Flattened starting indices of noncontiguous requests. Each row corresponds to requests by an MPI process.";
+    err = ncmpi_put_att_text(ncid, varid[1], "description", strlen(str), str); ERR
+
     err = ncmpi_put_att_int(ncid, NC_GLOBAL, "var_ndims", NC_INT, 1, &ndims); ERR
     for (i=0; i<ndims; i++) {
         char dim_name[32];
@@ -222,9 +237,10 @@ int main(int argc, char **argv) {
         count[1] = k;
         err = ncmpi_put_vara_int_all(ncid, varid[1], start, count, off); ERR
     }
-
-    err = ncmpi_close(ncid); ERR
     free(off);
+    err = ncmpi_close(ncid); ERR
+
+fn_exit:
     free(nreqs);
     fclose(fd);
 
