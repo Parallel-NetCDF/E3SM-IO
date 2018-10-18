@@ -18,7 +18,7 @@
 #include <mpi.h>
 #include <pnetcdf.h>
 
-#define LINE_SIZE 1048576
+#define LINE_SIZE 2097152
 
 #define ERR {if(err!=NC_NOERR){printf("Error at line %d in %s: %s\n", __LINE__,__FILE__, ncmpi_strerrno(err));nerrs++;}}
 
@@ -26,9 +26,10 @@ static void
 usage(char *argv0)
 {
     char *help =
-    "Usage: %s [-h] [-q] [-o out_file] input_file\n"
+    "Usage: %s [-h] [-q] [-l num] [-o out_file] input_file\n"
     "       [-h] Print help\n"
     "       [-q] Quiet mode (reports when fail)\n"
+    "       [-l num] max number of characters per line in input file\n"
     "       [-o out_file] output netCDF file name\n"
     "       in_file input decomposition file\n";
     fprintf(stderr, help, argv0);
@@ -36,9 +37,9 @@ usage(char *argv0)
 
 /*----< main() >------------------------------------------------------------*/
 int main(int argc, char **argv) {
-    char  buf[LINE_SIZE+1], *infname=NULL, outfname[1024], *map, *str;
+    char  *buf, *infname=NULL, outfname[1024], *map, *str;
     FILE *fd;
-    int   rank, nprocs, verbose=1, ndims;
+    int   rank, nprocs, verbose=1, ndims, line_sz;
     int   i, j, ncid, dimids[2], varid[2], *nreqs, err, nerrs=0, *off;
     int max_nreqs, min_nreqs;
     MPI_Offset k, gsize, *dims, start[2], count[2];
@@ -46,13 +47,16 @@ int main(int argc, char **argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     outfname[0] = '\0';
+    line_sz = LINE_SIZE;
 
     /* get command-line arguments */
-    while ((i = getopt(argc, argv, "hqo:")) != EOF)
+    while ((i = getopt(argc, argv, "hqo:l:")) != EOF)
         switch(i) {
             case 'q': verbose = 0;
                       break;
             case 'o': strcpy(outfname, optarg);
+                      break;
+            case 'l': line_sz = atoi(optarg);
                       break;
             case 'h':
             default:  if (rank==0) usage(argv[0]);
@@ -94,6 +98,8 @@ int main(int argc, char **argv) {
         MPI_Finalize();
 	exit(1);
     }
+
+    buf = (char*) malloc(line_sz);
 
     /* process header lines:
      * version 2001 npes 43200 ndims 2 
@@ -139,7 +145,11 @@ int main(int argc, char **argv) {
         nreqs[rank] = atoi(strtok(NULL, " "));
         off = (int*) malloc(nreqs[rank] * sizeof(int));
         fgets(buf, LINE_SIZE+1, fd);
-        assert(strlen(buf) < LINE_SIZE);
+        if (strlen(buf) >= LINE_SIZE) {
+            printf("Error: line size is larger than default %s\n",LINE_SIZE);
+            printf("       use command-line option -l to use a larger size\n");
+            goto fn_exit;
+        }
 
         /* read offset list */
         off[0] = atoi(strtok(buf, " "));
@@ -241,8 +251,9 @@ int main(int argc, char **argv) {
     err = ncmpi_close(ncid); ERR
 
 fn_exit:
-    free(nreqs);
     fclose(fd);
+    free(nreqs);
+    free(buf);
 
     MPI_Finalize();
     return 0;
