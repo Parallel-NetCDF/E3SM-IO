@@ -128,13 +128,13 @@ referred by PIO as the `decomposition file`.
     I/O bandwidth                      = 17.6687 MiB/sec
 ```
 * Example output files
-The above example command uses command-line option `-k` to keep the output
-files (otherwise the default is to delete them when program exits.) Each run
-produces two output netCDF files with names `testfile_vard.nc` and
-`testfile_varn.nc`. The contents of two files should be the same. Their file
-header (metadata) can be obtained by command `ncdump -h testfile_vard.nc`.
-Example header can be found in
-[datasets/outputfile_header.txt](datasets/outputfile_header.txt).
+  * The above example command uses command-line option `-k` to keep the output
+    files (otherwise the default is to delete them when program exits.) Each
+    run produces two output netCDF files with names `testfile_vard.nc` and
+    `testfile_varn.nc`. The contents of two files should be the same. Their
+    file header (metadata) can be obtained by command `ncdump -h
+    testfile_vard.nc`.  Example header can be found in
+    [datasets/outputfile_header.txt](datasets/outputfile_header.txt).
 
 ## Questions/Comments:
 email: wkliao@eecs.northwestern.edu
