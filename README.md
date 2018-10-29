@@ -1,8 +1,8 @@
-## Parallel I/O kernel case study for E3SM
+## Parallel I/O Kernel Case Study For E3SM
 
 This repository contains a case study of parallel I/O kernel from the
 [E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model. The
-benchmark program, e3sm_io.c, can be used to evaluate the performance of
+benchmark program, e3sm_io, can be used to evaluate the performance of
 [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF) library for handling the
 I/O patterns used in E3SM. This study focuses on the most challenging I/O
 pattern in E3SM that writes the cubed sphere variables in a long list of
@@ -16,7 +16,8 @@ The I/O patterns (data decompositions among MPI processes) used in this case
 study were captured by the [PIO](https://github.com/NCAR/ParallelIO) library.
 A data decomposition file records the data access patterns at the array element
 level for each of the MPI processes. The patterns are stored in a text file,
-referred by PIO as the `decomposition file`.
+referred by PIO as the `decomposition file`. Note E3SM uses three unique data
+decomposition patterns shared by its 381 variables.
 
 * Prepare the I/O decomposition file
   * PIO generates I/O decomposition data files in a text format. It needs to be
@@ -26,7 +27,7 @@ referred by PIO as the `decomposition file`.
     `make dat2nc`.
   * Then run command
 ```
-     ./dat2nc -q -o outputfile.nc -1 decomp_1D.dat -2 decomp_2D.dat -3 decomp_3D.dat`.
+     ./dat2nc -q -o outputfile.nc -1 decomp_1.dat -2 decomp_2.dat -3 decomp_3.dat`.
 ```
   * Command options of `./dat2nc`:
 ```
@@ -40,9 +41,9 @@ referred by PIO as the `decomposition file`.
             -3 input_file    name of     2D decomposition file
 ```
   * Three example input decomposition files are available in directory datasets.
-    * piodecomp16tasks16io01dims_ioid_514.dat
-    * piodecomp16tasks16io02dims_ioid_548.dat
-    * piodecomp16tasks16io01dims_ioid_516.dat
+    * piodecomp16tasks16io01dims_ioid_514.dat  (decomposition along the lowest dimensions)
+    * piodecomp16tasks16io01dims_ioid_516.dat  (decomposition along the lowest dimensions)
+    * piodecomp16tasks16io02dims_ioid_548.dat  (decomposition along the lowest two dimensions)
   * Example of an output file generated from the 3 input files is provided in
     datasets/866x72_16p.nc.gz. The metadata of the file is shown below.
 ```
