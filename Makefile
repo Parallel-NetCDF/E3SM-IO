@@ -12,7 +12,7 @@ LIBS		= -lpnetcdf
 
 all:
 
-e3sm_io: e3sm_io.o
+e3sm_io: e3sm_io.o def_header.o
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 dat2nc: dat2nc.o
@@ -20,3 +20,6 @@ dat2nc: dat2nc.o
 
 clean:
 	rm -f core.* *.o dat2nc e3sm_io
+
+.PHONY: clean
+
