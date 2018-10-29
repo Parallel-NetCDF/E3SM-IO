@@ -4307,13 +4307,12 @@ static void
 usage(char *argv0)
 {
     char *help =
-    "Usage: %s [-h] [-q] [-k] [-n nvars] [-o output_dir] input_file\n"
+    "Usage: %s [OPTION]... [FILE]...\n"
     "       [-h] Print help\n"
     "       [-q] Quiet mode\n"
     "       [-k] Keep the output files when program exits\n"
-    "       [-n nvars]: number of variables (default 1)\n"
     "       [-o output_dir]: output directory name (default ./)\n"
-    "       input_file: name of input netCDF file describing data decomposition\n";
+    "       input_file: name of input netCDF file describing data decompositions\n";
     fprintf(stderr, help, argv0);
 }
 
