@@ -51,6 +51,11 @@
 
 #include <e3sm_io.h>
 
+/* minimum PnetCDF version required is 1.10.0 */
+#if (PNETCDF_VERSION_MAJOR*1000000 + PNETCDF_VERSION_MINOR*1000 + PNETCDF_VERSION_SUB < 1010000)
+#error "PnetCDF 1.10.0 and later is required to build this program"
+#endif
+
 static int verbose; /* verbose mode to print additional messages on screen */
 static int keep_outfile; /* whether to keep the output files when exits */
 
