@@ -86,7 +86,9 @@ patterns shared by its 381 variables.
 ```
 
 * Compile command:
-  * Edit `Makefile` to customize the compiler, compile options etc.
+  * Edit `Makefile` to customize the compiler, compile options, location of
+    PnetCDF library, etc.
+  * The minimum required PnetCDF version is 1.10.0.
   * Run command `make e3sm_io` to generate the executable program named
     `e3sm_io`.
 
