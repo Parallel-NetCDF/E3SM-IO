@@ -27,7 +27,7 @@ decomposition patterns shared by its 381 variables.
     `make dat2nc`.
   * Then run command
 ```
-     ./dat2nc -q -o outputfile.nc -1 decomp_1.dat -2 decomp_2.dat -3 decomp_3.dat`.
+     ./dat2nc -q -o outputfile.nc -1 decomp_1.dat -2 decomp_2.dat -3 decomp_3.dat
 ```
   * Command options of `./dat2nc`:
 ```
