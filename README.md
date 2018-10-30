@@ -95,13 +95,15 @@ patterns shared by its 381 variables.
 * Run command:
   * Example run command using `mpiexec` and 8 MPI processes:
     `mpiexec -n 8 ./e3sm_io -q datasets/866x72_16p.nc`
-  * The number of MPI processes must be equal or less than the value set by the
+  * The number of MPI processes can be different from the value set in the
     variable `num_procs` in the decomposition NetCDF file. For example, in the
     case of file `866x72_16p.nc`, `num_procs` is 16, which is the number of MPI
     processes originally used to produce the decomposition dat files. When
     using less number of MPI processes to run this benchmark, the requests
     specified in the decomposition file will be divided approximately evenly
-    among all the processes.
+    among all the processes. When using more number of processes, those
+    processes with MPI ranks greater than or equal to 16 will have no data to
+    write but simply participate the collective I/O subroutines.
   * Command-line options:
 ```
     Usage: e3sm_io [OPTION]... [FILE]...

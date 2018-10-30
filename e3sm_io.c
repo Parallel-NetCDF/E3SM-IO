@@ -98,8 +98,8 @@ static int intcompare(const void *p1, const void *p2)
  *   }
  */
 static int
-read_io_decomp(char        *infname,
-               char        *label,       /* name label */
+read_io_decomp(const char  *infname,
+               const char  *label,       /* name label */
                int          ndims,       /* number of dimensions of decomposition */
                MPI_Offset  *dims,        /* [2] dimension lengths */
                int         *contig_nreqs,/* num of contiguous requests */
@@ -133,15 +133,15 @@ read_io_decomp(char        *infname,
         err = ncmpi_get_att_longlong(ncid, NC_GLOBAL, "dim_len_X", &dims[0]); ERR
     }
 
-    /* num_procs is the number of processes used to generate the input I/O
-     * pattern file. nprocs is the number of processes running this benchmark.
-     * This benchmark allows the two to be different. When nprocs is smaller
-     * than num_procs, some of nprocs processes will carry out the requests
-     * from more than one of num_procs processes. The requests responsible by
-     * this process starts from proc_start with the number proc_numb. When
-     * nprocs is bigger than num_procs, then those processes with rank
-     * ID >= num_procs will have no data to write and they will just
-     * participate the collective subroutines.
+    /* num_procs is the number of processes used to generate the E3SM data
+     * decomposition files. nprocs is the number of processes running this
+     * benchmark. This benchmark allows the two to be different. When nprocs is
+     * smaller than num_procs, some of nprocs processes will carry out the
+     * requests from more than one of num_procs processes. The requests
+     * responsible by this process starts from proc_start with the number
+     * proc_numb. When nprocs is bigger than num_procs, then those processes
+     * with rank ID >= num_procs will have no data to write and will simply
+     * participate the collective I/O subroutines.
      */
     proc_numb = num_procs / nprocs;
     proc_start = rank * proc_numb;
@@ -202,6 +202,9 @@ read_io_decomp(char        *infname,
         }
     }
     *contig_nreqs = j+1; /* the true number of contiguous requests */
+
+    /* no request for this process */
+    if (nreqs == 0) *contig_nreqs = 0;
 
     if (verbose) {
         int min_blocklen = (*blocklens)[0];
