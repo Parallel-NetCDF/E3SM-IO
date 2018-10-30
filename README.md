@@ -2,34 +2,37 @@
 
 This repository contains a case study of parallel I/O kernel from the
 [E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model. The
-benchmark program, e3sm_io, can be used to evaluate the performance of
-[PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF) library for handling the
-I/O patterns used in E3SM. This study focuses on the most challenging I/O
-pattern in E3SM that writes the cubed sphere variables in a long list of
-short and noncontiguous requests on every MPI process.
+benchmark program, e3sm_io.c, can be used to evaluate
+[PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF) library for its
+performance on the I/O patterns used by E3SM. One of the most challenging I/O
+patterns used in E3SM is the cubed sphere variables whose I/O pattern consists
+of a long list of small and noncontiguous requests on every MPI process.
 
-The benchmark program evaluates two implementations of different PnetCDF
-APIs: blocking vard and nonblocking varn. Both APIs can aggregate multiple
-requests across variables.
+The benchmark program evaluates two implementations of using PnetCDF blocking
+vard and nonblocking varn APIs separately. Both APIs can aggregate multiple
+requests across variables. In addition to timings and I/O bandwidths, the
+benchmark reports the PnetCDF internal memory footprint (high water mark).
 
 The I/O patterns (data decompositions among MPI processes) used in this case
 study were captured by the [PIO](https://github.com/NCAR/ParallelIO) library.
 A data decomposition file records the data access patterns at the array element
-level for each of the MPI processes. The patterns are stored in a text file,
-referred by PIO as the `decomposition file`. Note E3SM uses three unique data
-decomposition patterns shared by its 381 variables.
+level for each MPI process. The patterns are stored in a text file, referred by
+PIO as the `decomposition file`. Note E3SM uses three unique data decomposition
+patterns shared by its 381 variables.
 
-* Prepare the I/O decomposition file
-  * PIO generates I/O decomposition data files in a text format. It needs to be
-    converted to a NetCDF file first, as this benchmark program reads the
-    decomposition NetCDF file in parallel.
+* Prepare an combined data decomposition file
+  * PIO generates I/O decomposition data files in a text format with file
+    extension `.dat`. The three unique decomposition files need first be
+    combined and converted into a NetCDF file, as this benchmark program reads
+    the combined decomposition NetCDF file in parallel. Using NetCDF file makes
+    the read faster.
   * Build the conversion utility program, dat2nc.c, by running command
     `make dat2nc`.
-  * Then run command
+  * The command to combine and convert the three dat files to a NetCDF file:
 ```
      ./dat2nc -q -o outputfile.nc -1 decomp_1.dat -2 decomp_2.dat -3 decomp_3.dat
 ```
-  * Command options of `./dat2nc`:
+  * Command-line options of `./dat2nc`:
 ```
      Usage: ./dat2nc [OPTION]... [FILE]...
             -h               Print help
@@ -40,11 +43,11 @@ decomposition patterns shared by its 381 variables.
             -2 input_file    name of 2nd 1D decomposition file
             -3 input_file    name of     2D decomposition file
 ```
-  * Three example input decomposition files are available in directory datasets.
-    * piodecomp16tasks16io01dims_ioid_514.dat  (decomposition along the lowest dimensions)
-    * piodecomp16tasks16io01dims_ioid_516.dat  (decomposition along the lowest dimensions)
-    * piodecomp16tasks16io02dims_ioid_548.dat  (decomposition along the lowest two dimensions)
-  * Example of an output file generated from the 3 decomposition files is
+  * Three small input decomposition files are provide in directory `datasets/`.
+    * piodecomp16tasks16io01dims_ioid_514.dat  (decomposition along the fastest dimensions)
+    * piodecomp16tasks16io01dims_ioid_516.dat  (decomposition along the fastest dimensions)
+    * piodecomp16tasks16io02dims_ioid_548.dat  (decomposition along the fastest two dimensions)
+  * The combined NetCDF output file from these 3 decomposition files is
     provided in datasets/866x72_16p.nc. Its metadata is shown below.
 ```
     % cd ./datasets
@@ -82,19 +85,22 @@ decomposition patterns shared by its 381 variables.
     }
 ```
 
-* Compile
-  * Run command `make e3sm_io` to generate the benchmark program e3sm_io.
+* Compile command:
+  * Edit `Makefile` to customize the compiler, compile options etc.
+  * Run command `make e3sm_io` to generate the executable program named
+    `e3sm_io`.
 
-* Run
-  * example run command:
+* Run command:
+  * Example run command using `mpiexec` and 8 MPI processes:
     `mpiexec -n 8 ./e3sm_io -q datasets/866x72_16p.nc`
-  * The number of MPI processes to run must be equal or less than the value set
-    by the variable `num_procs` in the decomposition netCDF file. For example,
-    in the case of `866x72_16p.nc`, `num_procs` is 16, which is the number of
-    MPI processes originally used to produce the decomposition dat files. When
-    using less number of MPI processes, the requests specified in the
-    decomposition file will be divided approximately evenly among all processes.
-  * Below shows the command-line options:
+  * The number of MPI processes must be equal or less than the value set by the
+    variable `num_procs` in the decomposition NetCDF file. For example, in the
+    case of file `866x72_16p.nc`, `num_procs` is 16, which is the number of MPI
+    processes originally used to produce the decomposition dat files. When
+    using less number of MPI processes to run this benchmark, the requests
+    specified in the decomposition file will be divided approximately evenly
+    among all the processes.
+  * Command-line options:
 ```
     Usage: e3sm_io [OPTION]... [FILE]...
        [-h] Print help
@@ -105,7 +111,7 @@ decomposition patterns shared by its 381 variables.
 ```
 * Example outputs on screen
 ```
-    % mpiexec -n 8 e3sm_io -q -k datasets/866x72_16p.nc 
+    % mpiexec -n 8 ./e3sm_io -q -k datasets/866x72_16p.nc
 
     ---- benchmarking vard API -----------------------
     -----------------------------------------------------------
@@ -134,14 +140,14 @@ decomposition patterns shared by its 381 variables.
     Max Time of TOTAL                  = 0.9131 sec
     I/O bandwidth                      = 17.6687 MiB/sec
 ```
-* Example output files
+* Output files
   * The above example command uses command-line option `-k` to keep the output
     files (otherwise the default is to delete them when program exits.) Each
-    run produces two output netCDF files with names `testfile_vard.nc` and
-    `testfile_varn.nc`. The contents of two files should be the same. Their
-    file header (metadata) can be obtained by command `ncdump -h
-    testfile_vard.nc`.  Example header can be found in
-    [datasets/outputfile_header.txt](datasets/outputfile_header.txt).
+    run of `e3sm_io` produces two output netCDF files named `testfile_vard.nc`
+    and `testfile_varn.nc`. The contents of two files should be the same. Their
+    file header (metadata) obtainable by command `ncdump -h testfile_vard.nc`
+    from running the provided decomposition file `866x72_16p.nc` is available
+    in [datasets/outputfile_header.txt](datasets/outputfile_header.txt).
 
 ## Questions/Comments:
 email: wkliao@eecs.northwestern.edu
