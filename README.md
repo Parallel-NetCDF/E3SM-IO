@@ -44,8 +44,8 @@ decomposition patterns shared by its 381 variables.
     * piodecomp16tasks16io01dims_ioid_514.dat  (decomposition along the lowest dimensions)
     * piodecomp16tasks16io01dims_ioid_516.dat  (decomposition along the lowest dimensions)
     * piodecomp16tasks16io02dims_ioid_548.dat  (decomposition along the lowest two dimensions)
-  * Example of an output file generated from the 3 input files is provided in
-    datasets/866x72_16p.nc.gz. The metadata of the file is shown below.
+  * Example of an output file generated from the 3 decomposition files is
+    provided in datasets/866x72_16p.nc. Its metadata is shown below.
 ```
     % cd ./datasets
     % ncmpidump -h 866x72_16p.nc
@@ -88,6 +88,12 @@ decomposition patterns shared by its 381 variables.
 * Run
   * example run command:
     `mpiexec -n 8 ./e3sm_io -q datasets/866x72_16p.nc`
+  * The number of MPI processes to run must be equal or less than the value set
+    by the variable `num_procs` in the decomposition netCDF file. For example,
+    in the case of `866x72_16p.nc`, `num_procs` is 16, which is the number of
+    MPI processes originally used to produce the decomposition dat files. When
+    using less number of MPI processes, the requests specified in the
+    decomposition file will be divided approximately evenly among all processes.
   * Below shows the command-line options:
 ```
     Usage: e3sm_io [OPTION]... [FILE]...
