@@ -141,7 +141,7 @@ read_io_decomp(const char  *infname,
     /* num_procs is the number of processes used to generate the E3SM data
      * decomposition files. nprocs is the number of processes running this
      * benchmark. This benchmark allows the two to be different. When nprocs is
-     * smaller than num_procs, some of nprocs processes will carry out the
+     * less than num_procs, some of nprocs processes will carry out the
      * requests from more than one of num_procs processes. The requests
      * responsible by this process starts from proc_start with the number
      * proc_numb. When nprocs is bigger than num_procs, then those processes

@@ -99,11 +99,10 @@ patterns shared by its 381 variables.
     variable `num_procs` in the decomposition NetCDF file. For example, in the
     case of file `866x72_16p.nc`, `num_procs` is 16, which is the number of MPI
     processes originally used to produce the decomposition dat files. When
-    using less number of MPI processes to run this benchmark, the requests
-    specified in the decomposition file will be divided approximately evenly
-    among all the processes. When using more number of processes, those
-    processes with MPI ranks greater than or equal to 16 will have no data to
-    write but simply participate the collective I/O subroutines.
+    using less number of MPI processes to run this benchmark, the workload will
+    be divided among all the processes. When using more number of processes,
+    those processes with MPI ranks greater than or equal to 16 will have no
+    data to write but simply participate the collective I/O subroutines.
   * Command-line options:
 ```
     Usage: e3sm_io [OPTION]... [FILE]...
