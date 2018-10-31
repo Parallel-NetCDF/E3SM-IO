@@ -256,10 +256,18 @@ usage(char *argv0)
 /*----< main() >------------------------------------------------------------*/
 int main(int argc, char **argv) {
     char *infname_D1=NULL, *infname_D2=NULL, *infname_D3=NULL, outfname[1024];
+    char cmd_line[4096];
     int  i, rank, ncid, err, nerrs=0;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+
+    cmd_line[0] = '\0';
+    for (i=0; i<argc; i++) {
+        strcat(cmd_line, argv[i]);
+        strcat(cmd_line, " ");
+    }
+
     outfname[0] = '\0';
     line_sz = LINE_SIZE;
     verbose = 1;
@@ -325,6 +333,7 @@ int main(int argc, char **argv) {
         nerrs++;
         goto fn_exit;
     }
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "command_line", strlen(cmd_line), cmd_line); ERR
 
     nerrs += add_decomp(ncid, infname_D3, "D3");
     err = ncmpi_redef(ncid); ERR;
