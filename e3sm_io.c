@@ -941,7 +941,13 @@ int main(int argc, char** argv)
     MPI_Info_set(info, "nc_var_align_size", "1"); /* no gap between variables */
     MPI_Info_set(info, "nc_in_place_swap", "enable"); /* in-place byte swap */
 
-    if (!rank) printf("\n---- benchmarking vard API -----------------------\n");
+    if (!rank) {
+        printf("Total number of MPI processes      = %d\n",nprocs);
+        printf("Input decomposition file           = %s\n",infname);
+        printf("Output file directory              = %s\n",out_dir);
+        printf("Variable dimensions (C order)      = %lld x %lld\n",dims_D3[0],dims_D3[1]);
+        printf("\n---- benchmarking vard API -----------------------\n");
+    }
     fflush(stdout);
     MPI_Barrier(MPI_COMM_WORLD);
     nerrs += run_vard(out_dir, info, dims_D3,
