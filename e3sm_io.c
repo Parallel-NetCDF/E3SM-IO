@@ -694,6 +694,19 @@ int run_varn(char       *out_dir,      /* output folder name */
     dbl_buf_ptr += nelems_D1;
     nreqs += nreqs_D1;
 
+    post_timing = MPI_Wtime() - post_timing;
+
+    MPI_Barrier(comm); /*-----------------------------------------*/
+    wait_timing = MPI_Wtime();
+
+    /* flush fixed-size variables */
+    err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
+
+    wait_timing = MPI_Wtime() - wait_timing;
+
+    MPI_Barrier(comm); /*-----------------------------------------*/
+    timing = MPI_Wtime();
+
     /* skip next 27 variables that have no decomposition file */
     i += 27;
 
@@ -745,13 +758,13 @@ int run_varn(char       *out_dir,      /* output folder name */
     POST_VARN(3, 1)   /* hstobie_linoz */
     POST_VARN(2, 129) /* mlip ... soa_c3SFWET */
 
-    post_timing = MPI_Wtime() - post_timing;
+    post_timing += MPI_Wtime() - timing;
 
     MPI_Barrier(comm); /*-----------------------------------------*/
-    wait_timing = MPI_Wtime();
+    timing = MPI_Wtime();
 
     err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
-    wait_timing = MPI_Wtime() - wait_timing;
+    wait_timing += MPI_Wtime() - timing;
 
     MPI_Barrier(comm); /*-----------------------------------------*/
     close_timing = MPI_Wtime();
