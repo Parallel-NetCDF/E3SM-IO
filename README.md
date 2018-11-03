@@ -25,8 +25,8 @@ patterns shared by its 381 variables.
     extension `.dat`. The three unique decomposition files need first be
     combined and converted into a NetCDF file, as this benchmark program reads
     the combined decomposition NetCDF file in parallel. Using NetCDF file makes
-    the read faster.
-  * Build the conversion utility program, dat2nc.c, by running command
+    read faster.
+  * Build the conversion utility program, `dat2nc.c`, by running command
     `make dat2nc`.
   * The command to combine and convert the three dat files to a NetCDF file:
 ```
@@ -44,11 +44,11 @@ patterns shared by its 381 variables.
             -3 input_file    name of     2D decomposition file
 ```
   * Three small input decomposition files are provide in directory `datasets/`.
-    * piodecomp16tasks16io01dims_ioid_514.dat  (decomposition along the fastest dimensions)
-    * piodecomp16tasks16io01dims_ioid_516.dat  (decomposition along the fastest dimensions)
-    * piodecomp16tasks16io02dims_ioid_548.dat  (decomposition along the fastest two dimensions)
+    * `piodecomp16tasks16io01dims_ioid_514.dat`  (decomposition along the fastest dimensions)
+    * `piodecomp16tasks16io01dims_ioid_516.dat`  (decomposition along the fastest dimensions)
+    * `piodecomp16tasks16io02dims_ioid_548.dat`  (decomposition along the fastest two dimensions)
   * The combined NetCDF output file from these 3 decomposition files is
-    provided in datasets/866x72_16p.nc. Its metadata is shown below.
+    provided in `datasets/866x72_16p.nc`. Its metadata is shown below.
 ```
     % cd ./datasets
     % ncmpidump -h 866x72_16p.nc
@@ -115,6 +115,11 @@ patterns shared by its 381 variables.
 * Example outputs on screen
 ```
     % mpiexec -n 8 ./e3sm_io -q -k datasets/866x72_16p.nc
+
+    Total number of MPI processes      = 8
+    Input decomposition file           = datasets/866x72_16p.nc
+    Output file directory              = .
+    Variable dimensions (C order)      = 72 x 866
 
     ---- benchmarking vard API -----------------------
     -----------------------------------------------------------
