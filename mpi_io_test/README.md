@@ -21,6 +21,12 @@ one before posting asynchronous send requests.
     PnetCDF library, etc.
   * PnetCDF library is used only to read the decomposition file.
   * Run command `make` to generate the executable program named `noncontig_buf`.
+  * To compile for KNL nodes on Cori @NERSC, run command model swap below,
+    before running `make`. A PnetCDF library built for KNL nodes is available
+    in `/global/u2/w/wkliao/PnetCDF/1.10.0`.
+```
+    module swap craype-haswell craype-mic-knl
+```
 
 * Example data decomposition file:
   * Three median-scale decomposition files are included, which store the data
@@ -66,6 +72,8 @@ one before posting asynchronous send requests.
        [-o] output file name (default "./testfile")
        input_file: name of input netCDF file describing data decompositions
 ```
+  * An example batch script file is given in `./pbs.knl`.
+
 * Example outputs on screen
 ```
     % srun -n 512 -c 4 --cpu_bind=cores ./noncontig_buf -q -n 63 -o $SCRATCH/FS_1M_8/testfile $SCRATCH/FS_1M_8/48602x72_512p_D3.nc

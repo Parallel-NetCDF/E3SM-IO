@@ -1,0 +1,35 @@
+#!/bin/bash -l
+
+#SBATCH -p regular
+#SBATCH -N 8
+#SBATCH -t 00:05:00
+#SBATCH -L SCRATCH
+#SBATCH -C knl,quad,cache
+
+
+# specifiy the number of MPI process per compute node
+nprocs_per_node=64
+
+# calculate the number of logical cores to allocate per MPI process
+cpus_per_task=$((68 / $nprocs_per_node))
+cpus_per_task=$(($cpus_per_task * 4))
+
+# NP is the total number of MPI processes to run
+NP=$(($nprocs_per_node * $SLURM_JOB_NUM_NODES))
+
+# input file and output directory
+OUTDIR=$SCRATCH/FS_1M_64
+INFILE=48602x72_512p.nc
+
+echo "--------------------------------------------------"
+echo "---- Running on $NP MPI processes on Cori NKL ----"
+echo "---- SLURM_JOB_NUM_NODES = $SLURM_JOB_NUM_NODES"
+echo "---- Running $nprocs_per_node MPI processes per KNL node"
+echo "---- command: srun -n $NP -c $cpus_per_task --cpu_bind=cores"
+echo "--------------------------------------------------"
+echo ""
+
+# run command
+srun -n $NP -c $cpus_per_task --cpu_bind=cores ./noncontig_buf -q -o $OUTDIR/testfile $OUTDIR/$INFILE -n 63
+
+
