@@ -1,32 +1,35 @@
-## Performance Evaluation of MPI Collective Writes To A Noncontiguous Fileview
+## Performance Comparison of MPI Collective Writes Using Contiguous and Noncontiguous User Buffers
 
 This repository contains a program designed to evaluate the performance of MPI
-collective write given a fileview containing a long list of noncontiguous,
-small layout in the file. Under the same fileview, it compares two cases. One
-uses a contiguous allocated user buffer and the other a noncontiguous buffer.
+collective write given a fileview consisting of a long list of noncontiguous,
+small regions in the file. Under the same fileview, it compares two cases. One
+uses a contiguous user buffer and the other a noncontiguous buffer.
 
 The noncontiguous fileview is constructed based on the I/O patterns used by
 [E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model. When
 running this program on
 [Cori](http://www.nersc.gov/users/computational-systems/cori) KNL nodes, we
 found that the collective write performs significantly poorer when using a
-noncontiguous user buffer than a contiguous buffer. Inside ROMIO, subroutine
-`ADIOI_Lustre_Fill_send_buffer()` is called when user buffer is noncontiguous
-and it makes copy of user buffer to a contiguous one before posting
-asynchronous send requests.
+noncontiguous user buffer than a contiguous one. Preliminary time profiling
+shows a significant amount of time spent on subroutine
+`ADIOI_Lustre_Fill_send_buffer()` in ROMIO. This subroutine is called when
+user buffer is noncontiguous and it makes copy of user buffer to a contiguous
+one before posting asynchronous send requests.
 
 * Compile command:
   * Edit `Makefile` to customize the compiler, compile options, location of
     PnetCDF library, etc.
+  * PnetCDF library is used only to read the decomposition file.
   * Run command `make` to generate the executable program named `noncontig_buf`.
 
 * Example data decomposition file:
-  * Files `48602x72_512p_D1.nc`, `48602x72_512p_D2.nc` and
-    `48602x72_512p_D3.nc` are provided, which store the data access patterns
-    in form of offset-length pairs. The input file name `48602x72_512p_D3.nc`
-    explains the global array of size 48602x72 in Fortran order, decomposition
-    among 512 processes, and type 3. The file header can be shown using
-    command `ncdump -h`.
+  * Three median-scale decomposition files are included, which store the data
+    access patterns in form of offset-length pairs.
+    * `48602x72_512p_D1.nc`, `48602x72_512p_D2.nc` and `48602x72_512p_D3.nc`
+    * The input file name `48602x72_512p_D3.nc` explains the global array of
+      size 48602x72 (in Fortran dimension order), decomposition done among 512
+      processes, and pattern 3. The file header can be shown using command
+      `ncdump -h`.
 ```
     % ncdump -h 48602x72_512p_D3.nc
     netcdf \48602x72_512p_D3 {
@@ -48,12 +51,14 @@ asynchronous send requests.
 ```
 * Run command:
   * Example run command using `mpiexec` and 512 MPI processes:
-    `mpiexec -n 512 ./noncontig_buf -q 48602x72_512p_D3.nc -o output_file`
+```
+    mpiexec -n 512 ./noncontig_buf -q 48602x72_512p_D3.nc -o output_file
+```
   * It is recommended to use the same number of MPI processes as the value set
     in the dimension `num_procs` in the decomposition NetCDF file.
   * Command-line options:
 ```
-    % noncontig_buf -h
+    % ./noncontig_buf -h
     Usage: noncontig_buf [OPTION]... [FILE]...
        [-h] Print help
        [-q] Quiet mode
