@@ -1,0 +1,112 @@
+## Performance Evaluation of MPI Collective Writes To A Noncontiguous Fileview
+
+This repository contains a program designed to evaluate the performance of MPI
+collective write given a fileview containing a long list of noncontiguous,
+small layout in the file. Under the same fileview, it compares two cases. One
+uses a contiguous allocated user buffer and the other a noncontiguous buffer.
+
+The noncontiguous fileview is constructed based on the I/O patterns used by
+[E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model. When
+running this program on
+[Cori](http://www.nersc.gov/users/computational-systems/cori) KNL nodes, we
+found that the collective write performs significantly poorer when using a
+noncontiguous user buffer than a contiguous buffer. Inside ROMIO, subroutine
+`ADIOI_Lustre_Fill_send_buffer()` is called when user buffer is noncontiguous
+and it makes copy of user buffer to a contiguous one before posting
+asynchronous send requests.
+
+* Compile command:
+  * Edit `Makefile` to customize the compiler, compile options, location of
+    PnetCDF library, etc.
+  * Run command `make` to generate the executable program named `noncontig_buf`.
+
+* Example data decomposition file:
+  * Files `48602x72_512p_D1.nc`, `48602x72_512p_D2.nc` and
+    `48602x72_512p_D3.nc` are provided, which store the data access patterns
+    in form of offset-length pairs. The input file name `48602x72_512p_D3.nc`
+    explains the global array of size 48602x72 in Fortran order, decomposition
+    among 512 processes, and type 3. The file header can be shown using
+    command `ncdump -h`.
+```
+    % ncdump -h 48602x72_512p_D3.nc
+    netcdf \48602x72_512p_D3 {
+    dimensions:
+            num_procs = 512 ;
+            array_size = 3499344 ;
+            nreq_00000 = 1152 ;
+            nreq_00001 = 1152 ;
+            nreq_00002 = 1152 ;
+            ...
+    variables:
+            int off_00000(nreq_00000) ;
+            int len_00000(nreq_00000) ;
+            int off_00001(nreq_00001) ;
+            int len_00001(nreq_00001) ;
+            int off_00002(nreq_00002) ;
+            int len_00002(nreq_00002) ;
+            ...
+```
+* Run command:
+  * Example run command using `mpiexec` and 512 MPI processes:
+    `mpiexec -n 512 ./noncontig_buf -q 48602x72_512p_D3.nc -o output_file`
+  * It is recommended to use the same number of MPI processes as the value set
+    in the dimension `num_procs` in the decomposition NetCDF file.
+  * Command-line options:
+```
+    % noncontig_buf -h
+    Usage: noncontig_buf [OPTION]... [FILE]...
+       [-h] Print help
+       [-q] Quiet mode
+       [-n] number of variables
+       [-o] output file name (default "./testfile")
+       input_file: name of input netCDF file describing data decompositions
+```
+* Example outputs on screen
+```
+    % srun -n 512 -c 4 --cpu_bind=cores ./noncontig_buf -q -n 63 -o $SCRATCH/FS_1M_8/testfile $SCRATCH/FS_1M_8/48602x72_512p_D3.nc
+
+    input  file name = $SCRATCH/FS_1M_8/48602x72_512p_D3.nc
+    output file name = $SCRATCH/FS_1M_8/testfile
+    -----------------------------------------------------------
+    Total number of MPI processes        = 512
+    Total number of variables            = 63
+    Total write amount                   = 840.98 MiB = 0.82 GiB
+    Max no. noncontig requests per var   = 4608
+    Min no. noncontig requests per var   = 1080
+    Max length of contig request         = 24 bytes
+    Min length of contig request         = 4 bytes
+    Max write amount per variable        = 0.03 MiB
+    Min write amount per variable        = 0.02 MiB
+    Max write time when buf is contig    = 8.9165 sec
+    Max write time when buf is noncontig = 69.1925 sec
+    Max time of MPI_Pack()               = 0.0061 sec
+    -----------------------------------------------------------
+
+
+    % srun -n 512 -c 4 --cpu_bind=cores ./noncontig_buf -q -n 1000 -o $SCRATCH/FS_1M_8/testfile $SCRATCH/FS_1M_8/48602x72_512p_D2.nc
+
+    input  file name = $SCRATCH/FS_1M_8/48602x72_512p_D2.nc
+    output file name = $SCRATCH/FS_1M_8/testfile
+    -----------------------------------------------------------
+    Total number of MPI processes        = 512
+    Total number of variables            = 1000
+    Total write amount                   = 185.40 MiB = 0.18 GiB
+    Max no. noncontig requests per var   = 64
+    Min no. noncontig requests per var   = 15
+    Max length of contig request         = 24 bytes
+    Min length of contig request         = 4 bytes
+    Max write amount per variable        = 0.00 MiB
+    Min write amount per variable        = 0.00 MiB
+    Max write time when buf is contig    = 1.9888 sec
+    Max write time when buf is noncontig = 4.8056 sec
+    Max time of MPI_Pack()               = 0.0015 sec
+    -----------------------------------------------------------
+```
+
+## Questions/Comments:
+email: wkliao@eecs.northwestern.edu
+
+Copyright (C) 2018, Northwestern University.
+
+See [COPYRIGHT](COPYRIGHT) notice in top-level directory.
+
