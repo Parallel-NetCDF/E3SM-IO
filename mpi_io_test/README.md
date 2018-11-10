@@ -1,4 +1,4 @@
-## Performance Comparison of MPI Collective Writes Using Contiguous and Noncontiguous User Buffers
+## MPI Collective Writes Using Contiguous and Noncontiguous User Buffers
 
 This repository contains a program designed to evaluate the performance of MPI
 collective write given a fileview consisting of a long list of noncontiguous,
@@ -28,15 +28,15 @@ one before posting asynchronous send requests.
     ```
       % module swap craype-haswell craype-mic-knl
     ```
-  * A PnetCDF library built for KNL nodes is available in
-    `/global/u2/w/wkliao/PnetCDF/1.10.0`.
+  * A PnetCDF library built for KNL nodes is available on Cori in
+    `/global/u2/w/wkliao/PnetCDF/1.10.0.KNL`.
 
 * Example data decomposition file:
-  * Three median-scale decomposition files are included, which store the data
-    access patterns in form of offset-length pairs.
+  * Three decomposition files in NetCDF format are provided, which store the
+    data access patterns in form of offset-length pairs.
     * `48602x72_512p_D1.nc`, `48602x72_512p_D2.nc` and `48602x72_512p_D3.nc`
-    * The input file name `48602x72_512p_D3.nc` explains the global array of
-      size 48602x72 (in Fortran dimension order), decomposition done among 512
+    * The file name `48602x72_512p_D3.nc` explains the global array of size
+      48602x72 (in Fortran dimension order), decomposition done among 512
       processes, and pattern 3. The file header can be shown using command
       `ncdump -h`.
       ```

@@ -6,6 +6,7 @@
 #SBATCH -L SCRATCH
 #SBATCH -C knl,quad,cache
 
+cd $PWD
 
 # specifiy the number of MPI process per compute node
 nprocs_per_node=64
@@ -18,8 +19,8 @@ cpus_per_task=$(($cpus_per_task * 4))
 NP=$(($nprocs_per_node * $SLURM_JOB_NUM_NODES))
 
 # input file and output directory
-OUTDIR=$SCRATCH/FS_1M_64
-INFILE=48602x72_512p.nc
+OUTDIR=$SCRATCH/FS_1M_8
+INFILE=48602x72_512p_D3.nc
 
 echo "--------------------------------------------------"
 echo "---- Running on $NP MPI processes on Cori NKL ----"

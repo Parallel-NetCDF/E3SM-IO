@@ -1,5 +1,4 @@
-/*********************************************************************
- *
+/*
  * Copyright (C) 2018, Northwestern University
  * See COPYRIGHT notice in top-level directory.
  *
@@ -293,8 +292,6 @@ test_mpi_io(const char  *outfname,
         return 1;
     }
 
-    /* warm up ----------------------------------------------------------*/
-
     /* set fileview */
     err = MPI_File_set_view(fh, 0, MPI_BYTE, filetype, "native", info);
     if (err != MPI_SUCCESS) {
@@ -302,41 +299,29 @@ test_mpi_io(const char  *outfname,
         return 1;
     }
 
-    /* collective write to file using a contiguous buffer */
+    /* collective write to file using a contiguous buffer ----------*/
+    MPI_Barrier(comm); /*-------------------------------------------*/
+    t_contig = MPI_Wtime();
     err = MPI_File_write_all(fh, buf, nvars * nelems, MPI_FLOAT, &status);
     if (err != MPI_SUCCESS) {
         err_handler(err, "MPI_File_write_all()");
         return 1;
     }
+    t_contig = MPI_Wtime() - t_contig;
     MPI_Get_count(&status, MPI_FLOAT, &count);
     assert(count == nvars * nelems);
 
-    /* collective write to file using a noncontiguous buffer */
+    /* collective write to file using a noncontiguous buffer -------*/
+    MPI_Barrier(comm); /*-------------------------------------------*/
+    t_noncontig = MPI_Wtime();
     err = MPI_File_write_all(fh, buf, 1, buftype, &status);
     if (err != MPI_SUCCESS) {
         err_handler(err, "MPI_File_write_all()");
         return 1;
     }
+    t_noncontig = MPI_Wtime() - t_noncontig;
     MPI_Get_count(&status, MPI_FLOAT, &count);
     assert(count == nvars * nelems);
-
-    MPI_File_set_view(fh, 0, MPI_BYTE, filetype, "native", info);
-    MPI_File_write_all(fh, buf, nvars * nelems, MPI_FLOAT, &status);
-    MPI_File_write_all(fh, buf, 1, buftype, &status);
-
-    MPI_File_set_view(fh, 0, MPI_BYTE, filetype, "native", info);
-
-    MPI_Barrier(comm); /*-------------------------------------------*/
-    t_contig = MPI_Wtime();
-    /* collective write to file using a contiguous buffer */
-    MPI_File_write_all(fh, buf, nvars * nelems, MPI_FLOAT, &status);
-    t_contig = MPI_Wtime() - t_contig;
-
-    MPI_Barrier(comm); /*-------------------------------------------*/
-    t_noncontig = MPI_Wtime();
-    /* collective write to file using a noncontiguous buffer */
-    MPI_File_write_all(fh, buf, 1, buftype, &status);
-    t_noncontig = MPI_Wtime() - t_noncontig;
 
     /* close file */
     err = MPI_File_close(&fh);
@@ -349,6 +334,7 @@ test_mpi_io(const char  *outfname,
     if (buftype != MPI_BYTE) MPI_Type_free(&buftype);
     if (buftype != MPI_BYTE) MPI_Type_free(&filetype);
 
+    /* output timing results ----------------------------------------*/
     max_blocklen = -1;
     min_blocklen = INT_MAX;
     for (i=0; i<nreqs; i++) {
