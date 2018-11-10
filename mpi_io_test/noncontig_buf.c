@@ -284,6 +284,12 @@ test_mpi_io(const char  *outfname,
     t_pack = MPI_Wtime() - t_pack;
     free(pack_buf);
 
+    /* set MPI-IO hints */
+    MPI_Info_create(&info);
+    MPI_Info_set(info, "romio_ds_write", "disable"); /* MPI-IO data sieving */
+    MPI_Info_set(info, "romio_cb_write", "enable");  /* collective write */
+    MPI_Info_set(info, "romio_no_indep_rw", "true"); /* no independent MPI-IO */
+
     /* open output file */
     err = MPI_File_open(comm, outfname, MPI_MODE_CREATE | MPI_MODE_RDWR,
                         info, &fh);
@@ -298,6 +304,7 @@ test_mpi_io(const char  *outfname,
         err_handler(err, "MPI_File_set_view()");
         return 1;
     }
+    MPI_Info_free(&info);
 
     /* collective write to file using a contiguous buffer ----------*/
     MPI_Barrier(comm); /*-------------------------------------------*/
