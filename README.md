@@ -29,12 +29,13 @@ patterns shared by its 381 variables.
   * Build the conversion utility program, `dat2nc.c`, by running command
     `make dat2nc`.
   * The command to combine and convert the three dat files to a NetCDF file:
-```
-     ./dat2nc -q -o outputfile.nc -1 decomp_1.dat -2 decomp_2.dat -3 decomp_3.dat
-```
+    ```
+      % ./dat2nc -q -o outputfile.nc -1 decomp_1.dat -2 decomp_2.dat -3 decomp_3.dat
+    ```
   * Command-line options of `./dat2nc`:
-```
-     Usage: ./dat2nc [OPTION]... [FILE]...
+    ```
+      % ./dat2nc -h
+      Usage: ./dat2nc [OPTION]... [FILE]...
             -h               Print help
             -q               Quiet mode (reports when fail)
             -l num           max number of characters per line in input file
@@ -42,48 +43,48 @@ patterns shared by its 381 variables.
             -1 input_file    name of 1st 1D decomposition file
             -2 input_file    name of 2nd 1D decomposition file
             -3 input_file    name of     2D decomposition file
-```
+    ```
   * Three small input decomposition files are provide in directory `datasets/`.
     * `piodecomp16tasks16io01dims_ioid_514.dat`  (decomposition along the fastest dimensions)
     * `piodecomp16tasks16io01dims_ioid_516.dat`  (decomposition along the fastest dimensions)
     * `piodecomp16tasks16io02dims_ioid_548.dat`  (decomposition along the fastest two dimensions)
   * The combined NetCDF output file from these 3 decomposition files is
     provided in `datasets/866x72_16p.nc`. Its metadata is shown below.
-```
-    % cd ./datasets
-    % ncmpidump -h 866x72_16p.nc
-    netcdf 866x72_16p {
-    // file format: CDF-1
-    dimensions:
-        num_procs = 16 ;
-        D3.max_nreqs = 4032 ;
-        D2.max_nreqs = 56 ;
-        D1.max_nreqs = 70 ;
-    variables:
-        int D3.nreqs(num_procs) ;
+    ```
+      % cd ./datasets
+      % ncmpidump -h 866x72_16p.nc
+      netcdf 866x72_16p {
+      // file format: CDF-1
+      dimensions:
+          num_procs = 16 ;
+          D3.max_nreqs = 4032 ;
+          D2.max_nreqs = 56 ;
+          D1.max_nreqs = 70 ;
+      variables:
+          int D3.nreqs(num_procs) ;
                 D3.nreqs:description = "Number of noncontiguous subarray requests by each MPI process" ;
-        int D3.offsets(num_procs, D3.max_nreqs) ;
+          int D3.offsets(num_procs, D3.max_nreqs) ;
                 D3.offsets:description = "Flattened starting indices of noncontiguous requests. Each row corresponds to requests by an MPI process." ;
-        int D2.nreqs(num_procs) ;
+          int D2.nreqs(num_procs) ;
                 D2.nreqs:description = "Number of noncontiguous subarray requests by each MPI process" ;
-        int D2.offsets(num_procs, D2.max_nreqs) ;
+          int D2.offsets(num_procs, D2.max_nreqs) ;
                 D2.offsets:description = "Flattened starting indices of noncontiguous requests. Each row corresponds to requests by an MPI process." ;
-        int D1.nreqs(num_procs) ;
+          int D1.nreqs(num_procs) ;
                 D1.nreqs:description = "Number of noncontiguous subarray requests by each MPI process" ;
-        int D1.offsets(num_procs, D1.max_nreqs) ;
+          int D1.offsets(num_procs, D1.max_nreqs) ;
                 D1.offsets:description = "Flattened starting indices of noncontiguous requests. Each row corresponds to requests by an MPI process." ;
 
-    // global attributes:
-        :dim_len_Y = 72 ;
-        :dim_len_X = 866 ;
-        :D3.max_nreqs = 4032 ;
-        :D3.min_nreqs = 3744 ;
-        :D2.max_nreqs = 56 ;
-        :D2.min_nreqs = 52 ;
-        :D1.max_nreqs = 70 ;
-        :D1.min_nreqs = 40 ;
-    }
-```
+      // global attributes:
+          :dim_len_Y = 72 ;
+          :dim_len_X = 866 ;
+          :D3.max_nreqs = 4032 ;
+          :D3.min_nreqs = 3744 ;
+          :D2.max_nreqs = 56 ;
+          :D2.min_nreqs = 52 ;
+          :D1.max_nreqs = 70 ;
+          :D1.min_nreqs = 40 ;
+      }
+    ```
 
 * Compile command:
   * Edit `Makefile` to customize the compiler, compile options, location of
@@ -104,16 +105,17 @@ patterns shared by its 381 variables.
     those processes with MPI ranks greater than or equal to 16 will have no
     data to write but simply participate the collective I/O subroutines.
   * Command-line options:
-```
-    Usage: e3sm_io [OPTION]... [FILE]...
-       [-h] Print help
-       [-q] Quiet mode
-       [-k] Keep the output files when program exits
-       [-o output_dir]: output directory name (default ./)
-       input_file: name of input netCDF file describing data decompositions
-```
+    ```
+      % ./e3sm_io -h
+      Usage: ./e3sm_io [OPTION]... [FILE]...
+         [-h] Print help
+         [-q] Quiet mode
+         [-k] Keep the output files when program exits
+         [-o output_dir]: output directory name (default ./)
+         input_file: name of input netCDF file describing data decompositions
+    ```
 * Example outputs on screen
-```
+  ```
     % mpiexec -n 8 ./e3sm_io -q -k datasets/866x72_16p.nc
 
     Total number of MPI processes      = 8
@@ -147,7 +149,7 @@ patterns shared by its 381 variables.
     Max Time of close                  = 0.0159 sec
     Max Time of TOTAL                  = 0.9131 sec
     I/O bandwidth                      = 17.6687 MiB/sec
-```
+  ```
 * Output files
   * The above example command uses command-line option `-k` to keep the output
     files (otherwise the default is to delete them when program exits.) Each

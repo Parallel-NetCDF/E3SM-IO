@@ -17,16 +17,19 @@ user buffer is noncontiguous and it makes copy of user buffer to a contiguous
 one before posting asynchronous send requests.
 
 * Compile command:
-  * Edit `Makefile` to customize the compiler, compile options, location of
-    PnetCDF library, etc.
-  * PnetCDF library is used only to read the decomposition file.
-  * Run command `make` to generate the executable program named `noncontig_buf`.
+  * Edit file `Makefile` to customize the C compiler, compile options,
+    location of PnetCDF library, etc.
+  * [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF) library is used
+    only to read the decomposition file.
+  * Run command `make` to compile and generate the executable program named
+    `noncontig_buf`.
   * To compile for KNL nodes on Cori @NERSC, run command model swap below,
-    before running `make`. A PnetCDF library built for KNL nodes is available
-    in `/global/u2/w/wkliao/PnetCDF/1.10.0`.
-```
-    module swap craype-haswell craype-mic-knl
-```
+    before running `make`.
+    ```
+      % module swap craype-haswell craype-mic-knl
+    ```
+  * A PnetCDF library built for KNL nodes is available in
+    `/global/u2/w/wkliao/PnetCDF/1.10.0`.
 
 * Example data decomposition file:
   * Three median-scale decomposition files are included, which store the data
@@ -36,46 +39,47 @@ one before posting asynchronous send requests.
       size 48602x72 (in Fortran dimension order), decomposition done among 512
       processes, and pattern 3. The file header can be shown using command
       `ncdump -h`.
-```
-    % ncdump -h 48602x72_512p_D3.nc
-    netcdf \48602x72_512p_D3 {
-    dimensions:
-            num_procs = 512 ;
-            array_size = 3499344 ;
-            nreq_00000 = 1152 ;
-            nreq_00001 = 1152 ;
-            nreq_00002 = 1152 ;
-            ...
-    variables:
-            int off_00000(nreq_00000) ;
-            int len_00000(nreq_00000) ;
-            int off_00001(nreq_00001) ;
-            int len_00001(nreq_00001) ;
-            int off_00002(nreq_00002) ;
-            int len_00002(nreq_00002) ;
-            ...
-```
+      ```
+        % ncdump -h 48602x72_512p_D3.nc
+        netcdf \48602x72_512p_D3 {
+        dimensions:
+              num_procs = 512 ;
+              array_size = 3499344 ;
+              nreq_00000 = 1152 ;
+              nreq_00001 = 1152 ;
+              nreq_00002 = 1152 ;
+              ...
+        variables:
+              int off_00000(nreq_00000) ;
+              int len_00000(nreq_00000) ;
+              int off_00001(nreq_00001) ;
+              int len_00001(nreq_00001) ;
+              int off_00002(nreq_00002) ;
+              int len_00002(nreq_00002) ;
+              ...
+      ```
 * Run command:
   * Example run command using `mpiexec` and 512 MPI processes:
-```
-    mpiexec -n 512 ./noncontig_buf -q 48602x72_512p_D3.nc -o output_file
-```
+    ```
+      % mpiexec -n 512 ./noncontig_buf -q 48602x72_512p_D3.nc -o output_file
+    ```
   * It is recommended to use the same number of MPI processes as the value set
     in the dimension `num_procs` in the decomposition NetCDF file.
   * Command-line options:
-```
-    % ./noncontig_buf -h
-    Usage: noncontig_buf [OPTION]... [FILE]...
-       [-h] Print help
-       [-q] Quiet mode
-       [-n] number of variables
-       [-o] output file name (default "./testfile")
-       input_file: name of input netCDF file describing data decompositions
-```
-  * An example batch script file is given in `./pbs.knl`.
+    ```
+      % ./noncontig_buf -h
+      Usage: noncontig_buf [OPTION]... [FILE]...
+         [-h] Print help
+         [-q] Quiet mode
+         [-n] number of variables
+         [-o] output file name (default "./testfile")
+         input_file: name of input netCDF file describing data decompositions
+    ```
+  * An example batch script file for job running on Cori @NERSC is given in
+    `./pbs.knl`.
 
 * Example outputs on screen
-```
+  ```
     % srun -n 512 -c 4 --cpu_bind=cores ./noncontig_buf -q -n 63 -o $SCRATCH/FS_1M_8/testfile $SCRATCH/FS_1M_8/48602x72_512p_D3.nc
 
     input  file name = $SCRATCH/FS_1M_8/48602x72_512p_D3.nc
@@ -114,7 +118,7 @@ one before posting asynchronous send requests.
     Max write time when buf is noncontig = 4.8056 sec
     Max time of MPI_Pack()               = 0.0015 sec
     -----------------------------------------------------------
-```
+  ```
 
 ## Questions/Comments:
 email: wkliao@eecs.northwestern.edu
