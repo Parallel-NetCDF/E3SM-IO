@@ -111,6 +111,8 @@ patterns shared by its 381 variables.
          [-h] Print help
          [-q] Quiet mode
          [-k] Keep the output files when program exits
+         [-d] run test that uses PnetCDF vard API
+         [-n] run test that uses PnetCDF varn API
          [-o output_dir]: output directory name (default ./)
          input_file: name of input netCDF file describing data decompositions
     ```
@@ -134,7 +136,8 @@ patterns shared by its 381 variables.
     Max Time of ncmpi_put_vard         = 0.6843 sec
     Max Time of close                  = 0.0095 sec
     Max Time of TOTAL                  = 0.7686 sec
-    I/O bandwidth                      = 20.9924 MiB/sec
+    I/O bandwidth (end-to-end)         = 20.7708 MiB/sec
+    I/O bandwidth (write-only)         = 20.8784 MiB/sec
 
     ---- benchmarking varn API -----------------------
     -----------------------------------------------------------
@@ -148,7 +151,8 @@ patterns shared by its 381 variables.
     Max Time of ncmpi_wait_all         = 0.7720 sec
     Max Time of close                  = 0.0159 sec
     Max Time of TOTAL                  = 0.9131 sec
-    I/O bandwidth                      = 17.6687 MiB/sec
+    I/O bandwidth (end-to-end)         = 17.6687 MiB/sec
+    I/O bandwidth (write-only)         = 20.8784 MiB/sec
   ```
 * Output files
   * The above example command uses command-line option `-k` to keep the output

@@ -288,7 +288,8 @@ int run_vard(char       *out_dir,      /* output folder name */
     double pre_timing, open_timing, io_timing, close_timing;
     double timing, total_timing,  max_timing;
     MPI_Aint *var_disps;
-    MPI_Offset offset_dbl, offset_flt, var_offset, put_size, total_size;
+    MPI_Offset tmp, metadata_size, put_size, total_size;
+    MPI_Offset offset_dbl, offset_flt, var_offset;
     MPI_Datatype *var_types, type[4], filetype_flt, filetype_dbl;
     MPI_Info info_used=MPI_INFO_NULL;
     MPI_Comm comm=MPI_COMM_WORLD;
@@ -314,6 +315,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     /* exit define mode and enter data mode */
     err = ncmpi_enddef(ncid); ERR
 
+    err = ncmpi_inq_put_size(ncid, &metadata_size); ERR
     err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing = MPI_Wtime() - open_timing;
 
@@ -340,6 +342,9 @@ int run_vard(char       *out_dir,      /* output folder name */
     for (k=0; k<nreqs_D1; k++) nelems_D1 += blocklens_D1[k];
     for (k=0; k<nreqs_D2; k++) nelems_D2 += blocklens_D2[k];
     for (k=0; k<nreqs_D3; k++) nelems_D3 += blocklens_D3[k];
+
+    if (verbose && rank == 0)
+        printf("nelems_D1=%zd nelems_D2=%zd nelems_D3=%zd\n",nelems_D1,nelems_D2,nelems_D3);
 
     /* the first 3 variables are of type NC_DOUBLE -------------------*/
     i = 0;
@@ -476,7 +481,8 @@ int run_vard(char       *out_dir,      /* output folder name */
     MPI_Type_free(&filetype_flt);
     MPI_Type_free(&filetype_dbl);
 
-    err = ncmpi_inq_put_size(ncid, &put_size); ERR
+    err = ncmpi_inq_put_size(ncid, &total_size); ERR
+    put_size = total_size - metadata_size;
     err = ncmpi_close(ncid); ERR
 
     free(flt_buf);
@@ -487,14 +493,16 @@ int run_vard(char       *out_dir,      /* output folder name */
     close_timing = timing - close_timing;
     total_timing = timing - total_timing;
 
-    MPI_Reduce(&nreqs, &max_nreqs, 1, MPI_INT, MPI_MAX, 0, comm);
-    MPI_Reduce(&put_size, &total_size, 1, MPI_OFFSET, MPI_SUM, 0, comm);
-
-    MPI_Reduce(&open_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&nreqs,         &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
+    MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    put_size = tmp;
+    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    total_size = tmp;
+    MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
     open_timing = max_timing;
-    MPI_Reduce(&pre_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
     pre_timing = max_timing;
-    MPI_Reduce(&io_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&io_timing,     &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
     io_timing = max_timing;
     MPI_Reduce(&close_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
     close_timing = max_timing;
@@ -528,8 +536,10 @@ int run_vard(char       *out_dir,      /* output folder name */
         printf("Max Time of ncmpi_put_vard         = %.4f sec\n",io_timing);
         printf("Max Time of close                  = %.4f sec\n",close_timing);
         printf("Max Time of TOTAL                  = %.4f sec\n",total_timing);
-        printf("I/O bandwidth                      = %.4f MiB/sec\n",
+        printf("I/O bandwidth (end-to-end)         = %.4f MiB/sec\n",
                (double)total_size/1048576.0/total_timing);
+        printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
+               (double)put_size/1048576.0/io_timing);
         if (verbose) print_info(&info_used);
     }
 fn_exit:
@@ -610,15 +620,18 @@ int run_varn(char       *out_dir,      /* output folder name */
     double *dbl_buf, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing,  max_timing;
-    MPI_Offset put_size, total_size;
+    MPI_Offset tmp, metadata_size, put_size, total_size;
     MPI_Offset **fix_starts_D1, **fix_counts_D1;
     MPI_Offset **fix_starts_D2, **fix_counts_D2;
     MPI_Offset **starts_D2, **counts_D2;
     MPI_Offset **starts_D3, **counts_D3;
     MPI_Comm comm=MPI_COMM_WORLD;
+    MPI_Info info_used=MPI_INFO_NULL;
 
     MPI_Barrier(comm); /*-----------------------------------------*/
     total_timing = open_timing = MPI_Wtime();
+
+    MPI_Comm_rank(comm, &rank);
 
     /* set output file name */
     sprintf(outfname, "%s/testfile_varn.nc",out_dir);
@@ -636,6 +649,8 @@ int run_varn(char       *out_dir,      /* output folder name */
     /* exit define mode and enter data mode */
     err = ncmpi_enddef(ncid); ERR
 
+    err = ncmpi_inq_put_size(ncid, &metadata_size); ERR
+    err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing = MPI_Wtime() - open_timing;
 
     MPI_Barrier(comm); /*-----------------------------------------*/
@@ -647,6 +662,9 @@ int run_varn(char       *out_dir,      /* output folder name */
     for (k=0; k<nreqs_D2; k++) nelems_D2 += blocklens_D2[k];
     for (k=0; k<nreqs_D3; k++) nelems_D3 += blocklens_D3[k];
 
+    if (verbose && rank == 0)
+        printf("nelems_D1=%zd nelems_D2=%zd nelems_D3=%zd\n",nelems_D1,nelems_D2,nelems_D3);
+
     /* construct varn API arguments starts[][] and counts[][] */
     ndims = 1;
     FIX_STARTS_COUNTS(fix_starts_D1, fix_counts_D1, nreqs_D1, disps_D1, blocklens_D1)
@@ -656,8 +674,6 @@ int run_varn(char       *out_dir,      /* output folder name */
     REC_STARTS_COUNTS(0, starts_D2, counts_D2, nreqs_D2, disps_D2, blocklens_D2)
     ndims = 3;
     REC_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs_D3, disps_D3, blocklens_D3)
-
-    MPI_Comm_rank(comm, &rank);
 
     /* allocate and initialize write buffer */
     dbl_buflen = nelems_D2 * 2 + nelems_D1;
@@ -769,7 +785,8 @@ int run_varn(char       *out_dir,      /* output folder name */
     MPI_Barrier(comm); /*-----------------------------------------*/
     close_timing = MPI_Wtime();
 
-    err = ncmpi_inq_put_size(ncid, &put_size); ERR
+    err = ncmpi_inq_put_size(ncid, &total_size); ERR
+    put_size = total_size - metadata_size;
     err = ncmpi_close(ncid); ERR
 
     free(starts_D3[0]); free(starts_D3);
@@ -785,7 +802,10 @@ int run_varn(char       *out_dir,      /* output folder name */
     total_timing = timing - total_timing;
 
     MPI_Reduce(&nreqs,         &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
-    MPI_Reduce(&put_size,      &total_size, 1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    put_size = tmp;
+    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    total_size = tmp;
     MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
     open_timing = max_timing;
     MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
@@ -827,10 +847,14 @@ int run_varn(char       *out_dir,      /* output folder name */
         printf("Max Time of ncmpi_wait_all         = %.4f sec\n",wait_timing);
         printf("Max Time of close                  = %.4f sec\n",close_timing);
         printf("Max Time of TOTAL                  = %.4f sec\n",total_timing);
-        printf("I/O bandwidth                      = %.4f MiB/sec\n",
+        printf("I/O bandwidth (end-to-end)         = %.4f MiB/sec\n",
                (double)total_size/1048576.0/total_timing);
+        printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
+               (double)put_size/1048576.0/wait_timing);
+        if (verbose) print_info(&info_used);
     }
 fn_exit:
+    if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!keep_outfile) unlink(outfname);
     MPI_Barrier(comm);
     return nerrs;
@@ -864,6 +888,8 @@ usage(char *argv0)
     "       [-h] Print help\n"
     "       [-q] Quiet mode\n"
     "       [-k] Keep the output files when program exits\n"
+    "       [-d] run test that uses PnetCDF vard API\n"
+    "       [-n] run test that uses PnetCDF varn API\n"
     "       [-o output_dir]: output directory name (default ./)\n"
     "       input_file: name of input netCDF file describing data decompositions\n";
     fprintf(stderr, help, argv0);
@@ -874,7 +900,7 @@ int main(int argc, char** argv)
 {
     extern int optind;
     char *infname, out_dir[1024];
-    int i, rank, nprocs, err, nerrs=0;
+    int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0;
     int contig_nreqs_D1, *disps_D1=NULL, *blocklens_D1=NULL;
     int contig_nreqs_D2, *disps_D2=NULL, *blocklens_D2=NULL;
     int contig_nreqs_D3, *disps_D3=NULL, *blocklens_D3=NULL;
@@ -889,11 +915,15 @@ int main(int argc, char** argv)
     keep_outfile = 0;
 
     /* command-line arguments */
-    while ((i = getopt(argc, argv, "hkqo:")) != EOF)
+    while ((i = getopt(argc, argv, "hkqdno:")) != EOF)
         switch(i) {
             case 'q': verbose = 0;
                       break;
             case 'k': keep_outfile = 1;
+                      break;
+            case 'd': tst_vard = 1;
+                      break;
+            case 'n': tst_varn = 1;
                       break;
             case 'o': strcpy(out_dir, optarg);
                       break;
@@ -908,6 +938,9 @@ int main(int argc, char** argv)
         MPI_Finalize();
         return 1;
     }
+    if (tst_vard == 0 && tst_varn == 0)
+        /* neither command-line option -d or -n is used, run both */
+        tst_vard = tst_varn = 1;
 
     /* input file contains number of write requests and their file access
      * offsets (per array element) */
@@ -924,7 +957,7 @@ int main(int argc, char** argv)
     err = read_io_decomp(infname, "D1", 1, dims_D1, &contig_nreqs_D1,
                          &disps_D1, &blocklens_D1);
     if (err) goto fn_exit;
-    err = read_io_decomp(infname, "D2", 2, dims_D2, &contig_nreqs_D2,
+    err = read_io_decomp(infname, "D2", 1, dims_D2, &contig_nreqs_D2,
                          &disps_D2, &blocklens_D2);
     if (err) goto fn_exit;
     err = read_io_decomp(infname, "D3", 2, dims_D3, &contig_nreqs_D3,
@@ -940,28 +973,34 @@ int main(int argc, char** argv)
     /* set PnetCDF I/O hints */
     MPI_Info_set(info, "nc_var_align_size", "1"); /* no gap between variables */
     MPI_Info_set(info, "nc_in_place_swap", "enable"); /* in-place byte swap */
+    // MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
 
     if (!rank) {
         printf("Total number of MPI processes      = %d\n",nprocs);
         printf("Input decomposition file           = %s\n",infname);
         printf("Output file directory              = %s\n",out_dir);
         printf("Variable dimensions (C order)      = %lld x %lld\n",dims_D3[0],dims_D3[1]);
-        printf("\n---- benchmarking vard API -----------------------\n");
     }
-    fflush(stdout);
-    MPI_Barrier(MPI_COMM_WORLD);
-    nerrs += run_vard(out_dir, info, dims_D3,
-                      contig_nreqs_D1, disps_D1, blocklens_D1,
-                      contig_nreqs_D2, disps_D2, blocklens_D2,
-                      contig_nreqs_D3, disps_D3, blocklens_D3);
 
-    if (!rank) printf("\n---- benchmarking varn API -----------------------\n");
-    fflush(stdout);
-    MPI_Barrier(MPI_COMM_WORLD);
-    nerrs += run_varn(out_dir, info, dims_D3,
-                      contig_nreqs_D1, disps_D1, blocklens_D1,
-                      contig_nreqs_D2, disps_D2, blocklens_D2,
-                      contig_nreqs_D3, disps_D3, blocklens_D3);
+    if (tst_vard) {
+        if (!rank) printf("\n---- benchmarking vard API -----------------------\n");
+        fflush(stdout);
+        MPI_Barrier(MPI_COMM_WORLD);
+        nerrs += run_vard(out_dir, info, dims_D3,
+                          contig_nreqs_D1, disps_D1, blocklens_D1,
+                          contig_nreqs_D2, disps_D2, blocklens_D2,
+                          contig_nreqs_D3, disps_D3, blocklens_D3);
+    }
+
+    if (tst_varn) {
+        if (!rank) printf("\n---- benchmarking varn API -----------------------\n");
+        fflush(stdout);
+        MPI_Barrier(MPI_COMM_WORLD);
+        nerrs += run_varn(out_dir, info, dims_D3,
+                          contig_nreqs_D1, disps_D1, blocklens_D1,
+                          contig_nreqs_D2, disps_D2, blocklens_D2,
+                          contig_nreqs_D3, disps_D3, blocklens_D3);
+    }
 
 fn_exit:
     if (info != MPI_INFO_NULL) MPI_Info_free(&info);
