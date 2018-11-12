@@ -136,8 +136,8 @@ patterns shared by its 381 variables.
     Max Time of ncmpi_put_vard         = 0.6843 sec
     Max Time of close                  = 0.0095 sec
     Max Time of TOTAL                  = 0.7686 sec
-    I/O bandwidth (end-to-end)         = 20.7708 MiB/sec
-    I/O bandwidth (write-only)         = 20.8784 MiB/sec
+    I/O bandwidth (open-to-close)      = 20.7708 MiB/sec
+    I/O bandwidth (write-only)         = 23.5715 MiB/sec
 
     ---- benchmarking varn API -----------------------
     -----------------------------------------------------------
@@ -151,8 +151,8 @@ patterns shared by its 381 variables.
     Max Time of ncmpi_wait_all         = 0.7720 sec
     Max Time of close                  = 0.0159 sec
     Max Time of TOTAL                  = 0.9131 sec
-    I/O bandwidth (end-to-end)         = 17.6687 MiB/sec
-    I/O bandwidth (write-only)         = 20.8784 MiB/sec
+    I/O bandwidth (open-to-close)      = 17.6687 MiB/sec
+    I/O bandwidth (write-only)         = 20.8937 MiB/sec
   ```
 * Output files
   * The above example command uses command-line option `-k` to keep the output

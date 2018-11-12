@@ -536,7 +536,7 @@ int run_vard(char       *out_dir,      /* output folder name */
         printf("Max Time of ncmpi_put_vard         = %.4f sec\n",io_timing);
         printf("Max Time of close                  = %.4f sec\n",close_timing);
         printf("Max Time of TOTAL                  = %.4f sec\n",total_timing);
-        printf("I/O bandwidth (end-to-end)         = %.4f MiB/sec\n",
+        printf("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
                (double)total_size/1048576.0/total_timing);
         printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
                (double)put_size/1048576.0/io_timing);
@@ -847,7 +847,7 @@ int run_varn(char       *out_dir,      /* output folder name */
         printf("Max Time of ncmpi_wait_all         = %.4f sec\n",wait_timing);
         printf("Max Time of close                  = %.4f sec\n",close_timing);
         printf("Max Time of TOTAL                  = %.4f sec\n",total_timing);
-        printf("I/O bandwidth (end-to-end)         = %.4f MiB/sec\n",
+        printf("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
                (double)total_size/1048576.0/total_timing);
         printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
                (double)put_size/1048576.0/wait_timing);
