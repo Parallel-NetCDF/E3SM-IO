@@ -113,6 +113,7 @@ patterns shared by its 381 variables.
          [-k] Keep the output files when program exits
          [-d] run test that uses PnetCDF vard API
          [-n] run test that uses PnetCDF varn API
+         [-m] run test using noncontiguous write buffer
          [-o output_dir]: output directory name (default ./)
          input_file: name of input netCDF file describing data decompositions
     ```
@@ -124,6 +125,7 @@ patterns shared by its 381 variables.
     Input decomposition file           = datasets/866x72_16p.nc
     Output file directory              = .
     Variable dimensions (C order)      = 72 x 866
+    Using noncontiguous write buffer   = no
 
     ---- benchmarking vard API -----------------------
     -----------------------------------------------------------
