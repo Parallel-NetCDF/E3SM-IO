@@ -5,16 +5,26 @@ collective write given a fileview consisting of a long list of noncontiguous,
 small regions in the file. Under the same fileview, it compares two cases. One
 uses a contiguous user buffer and the other a noncontiguous buffer.
 
-The noncontiguous fileview is constructed based on the I/O patterns used by
-[E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model. When
-running this program on
+The noncontiguous I/O pattern is used by the production runs of
+[E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model. The
+offset-length pairs of individual write requests from all MPI processes are
+traced and saved in the provided NetCDF files. PnetCDF library is used only to
+read in the offset-length pairs. Once the inputs are read, the remaining
+program makes only MPI-IO calls. Two noncontiguous MP derived datatypes are
+constructed by calling `MPI_Type_create_hindexed()`. One is used to set the
+fileview and the other to describe a noncontiguous user buffer when calling
+`MPI_File_write_all()`. The timings of two collective write calls are measured
+reported at the end. Both collective writes use the same fileview and data
+amount.
+
+When running this program on
 [Cori](http://www.nersc.gov/users/computational-systems/cori) KNL nodes, we
 found that the collective write performs significantly poorer when using a
 noncontiguous user buffer than a contiguous one. Preliminary time profiling
-shows a significant amount of time spent on subroutine
-`ADIOI_Lustre_Fill_send_buffer()` in ROMIO. This subroutine is called when
-user buffer is noncontiguous and it makes copy of user buffer to a contiguous
-one before posting asynchronous send requests.
+shows a significant amount of time spent on posting `MPI_Irecv()`, and
+`MPI_Isend()` in subroutine `ADIOI_LUSTRE_W_Exchange_data()` in ROMIO.
+This occurs especially when a high number of MPI processes per KNL node
+is used. We are still investigating the real cause.
 
 * Compile command:
   * Edit file `Makefile` to customize the C compiler, compile options,
