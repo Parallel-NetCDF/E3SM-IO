@@ -360,16 +360,16 @@ fn_exit:
 #define SET_TYPE(kind) { \
     var_types[i] = type[kind]; \
     err = ncmpi_inq_varoffset(ncid, varids[i], &var_offset); ERR \
-    var_disps[i] = var_offset - offset_flt; \
+    var_disps[i] = var_offset - offset_rec; \
     if (kind == 2) { \
-        flt_buflen += nelems_D2 + gap; \
+        rec_buflen += nelems_D2 + gap; \
         nreqs += nreqs_D2; \
-        if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems_D2+gap) * sizeof(float); \
+        if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems_D2+gap) * sizeof(dtype); \
         buf_blocklens[i] = nelems_D2; \
     } else { /* kind == 3 */ \
-        flt_buflen += nelems_D3 + gap; \
+        rec_buflen += nelems_D3 + gap; \
         nreqs += nreqs_D3; \
-        if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems_D3+gap) * sizeof(float); \
+        if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems_D3+gap) * sizeof(dtype); \
         buf_blocklens[i] = nelems_D3; \
     } \
     i++; \
@@ -379,16 +379,16 @@ fn_exit:
     for (j=0; j<num; j++) { \
         var_types[i] = type[kind]; \
         err = ncmpi_inq_varoffset(ncid, varids[i], &var_offset); ERR \
-        var_disps[i] = var_offset - offset_flt; \
+        var_disps[i] = var_offset - offset_rec; \
         if (kind == 2) { \
-            flt_buflen += nelems_D2 + gap; \
+            rec_buflen += nelems_D2 + gap; \
             nreqs += nreqs_D2; \
-            if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems_D2+gap) * sizeof(float); \
+            if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems_D2+gap) * sizeof(dtype); \
             buf_blocklens[i] = nelems_D2; \
         } else { /* kind == 3 */ \
-            flt_buflen += nelems_D3 + gap; \
+            rec_buflen += nelems_D3 + gap; \
             nreqs += nreqs_D3; \
-            if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems_D3+gap) * sizeof(float); \
+            if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems_D3+gap) * sizeof(dtype); \
             buf_blocklens[i] = nelems_D3; \
         } \
         i++; \
@@ -414,17 +414,17 @@ int run_vard(char       *out_dir,      /* output folder name */
     int i, j, k, err, nerrs=0, rank, ncid, cmode, nvars, *varids;
     int *var_blocklens, *buf_blocklens, nreqs, max_nreqs, gap=0;
     int int_buf[10], *int_buf_ptr;
-    size_t fix_buflen, dbl_buflen, flt_buflen;
+    size_t fix_buflen, dbl_buflen, rec_buflen;
     size_t nelems_D1, nelems_D2, nelems_D3;
-    float *flt_buf;
+    dtype *rec_buf;
     double *dbl_buf, *dbl_buf_ptr;
     double pre_timing, open_timing, io_timing, close_timing;
     double timing, total_timing,  max_timing;
     MPI_Aint *var_disps, *buf_disps;
     MPI_Offset tmp, metadata_size, put_size, total_size;
-    MPI_Offset offset_dbl, offset_flt, var_offset;
-    MPI_Datatype *var_types, type[4], filetype_flt, filetype_dbl;
-    MPI_Datatype buftype_flt, buftype_dbl;
+    MPI_Offset offset_rec, var_offset;
+    MPI_Datatype *var_types, type[4], filetype_rec, filetype_dbl;
+    MPI_Datatype buftype_rec, buftype_dbl;
     MPI_Info info_used=MPI_INFO_NULL;
     MPI_Comm comm=MPI_COMM_WORLD;
 
@@ -467,9 +467,9 @@ int run_vard(char       *out_dir,      /* output folder name */
     MPI_Type_commit(&type[0]);
     MPI_Type_indexed(nreqs_D2, blocklens_D2, disps_D2, MPI_DOUBLE, &type[1]);
     MPI_Type_commit(&type[1]);
-    MPI_Type_indexed(nreqs_D2, blocklens_D2, disps_D2, MPI_FLOAT, &type[2]);
+    MPI_Type_indexed(nreqs_D2, blocklens_D2, disps_D2, REC_DTYPE, &type[2]);
     MPI_Type_commit(&type[2]);
-    MPI_Type_indexed(nreqs_D3, blocklens_D3, disps_D3, MPI_FLOAT, &type[3]);
+    MPI_Type_indexed(nreqs_D3, blocklens_D3, disps_D3, REC_DTYPE, &type[3]);
     MPI_Type_commit(&type[3]);
 
     nreqs = 0;
@@ -489,7 +489,7 @@ int run_vard(char       *out_dir,      /* output folder name */
 
     /* lat */
     var_types[i] = type[1];
-    err = ncmpi_inq_varoffset(ncid, varids[i], &offset_dbl); ERR
+    err = ncmpi_inq_varoffset(ncid, varids[i], &offset_rec); ERR
     var_disps[i] = 0;
     buf_disps[0] = 0;
     buf_blocklens[0] = nelems_D2;
@@ -500,7 +500,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     /* lon */
     var_types[i] = type[1];
     err = ncmpi_inq_varoffset(ncid, varids[i], &var_offset); ERR
-    var_disps[i] = var_offset - offset_dbl;
+    var_disps[i] = var_offset - offset_rec;
     buf_disps[i] = buf_disps[i-1] + (nelems_D2 + gap) * sizeof (double);
     buf_blocklens[1] = nelems_D2;
     i++;
@@ -510,7 +510,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     /* area */
     var_types[i] = type[0];
     err = ncmpi_inq_varoffset(ncid, varids[i], &var_offset); ERR
-    var_disps[i] = var_offset - offset_dbl;
+    var_disps[i] = var_offset - offset_rec;
     buf_disps[i] = buf_disps[i-1] + (nelems_D2 + gap) * sizeof (double);
     buf_blocklens[2] = nelems_D1;
     i++;
@@ -550,7 +550,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     i += 27;
 
     /* the remaining variables are all of type NC_FLOAT --------------*/
-    flt_buflen = 0;
+    rec_buflen = 0;
 
 /* TODO: currently the implementation below only handles one record.
  * Need to revise for writing more than one.
@@ -558,13 +558,13 @@ int run_vard(char       *out_dir,      /* output folder name */
 
     /* AEROD_v */
     var_types[i] = type[2];
-    err = ncmpi_inq_varoffset(ncid, varids[i], &offset_flt); ERR
+    err = ncmpi_inq_varoffset(ncid, varids[i], &offset_rec); ERR
     var_disps[i] = 0;
     buf_disps[i] = 0;
-    buf_disps[i+1] = nelems_D2 * sizeof(float);
+    buf_disps[i+1] = nelems_D2 * sizeof(dtype);
     buf_blocklens[i] = nelems_D2;
     i++;
-    flt_buflen += nelems_D2 + gap;
+    rec_buflen += nelems_D2 + gap;
     nreqs += nreqs_D2;
 
     SET_TYPES(3, 2)   /* ANRAIN and ANSNOW */
@@ -612,25 +612,25 @@ int run_vard(char       *out_dir,      /* output folder name */
     SET_TYPE(3)       /* hstobie_linoz */
     SET_TYPES(2, 129) /* mlip ... soa_c3SFWET */
 
-    /* concatenate nvars-30 var_types[] into filetype_flt */
+    /* concatenate nvars-30 var_types[] into filetype_rec */
     MPI_Type_create_struct(nvars-30, var_blocklens+30, var_disps+30,
-                           var_types+30, &filetype_flt);
-    MPI_Type_commit(&filetype_flt);
+                           var_types+30, &filetype_rec);
+    MPI_Type_commit(&filetype_rec);
 
     for (j=0; j<4; j++) MPI_Type_free(&type[j]);
     free(var_types);
 
     /* allocate and initialize write buffer */
-    flt_buf = (float*) malloc(flt_buflen * sizeof(float));
-    for (j=0; j<flt_buflen; j++) flt_buf[j] = rank;
+    rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
+    for (j=0; j<rec_buflen; j++) rec_buf[j] = rank;
 
     if (noncontig_buf) {
         MPI_Type_create_hindexed(nvars-30, buf_blocklens+30, buf_disps+30,
-                                 MPI_FLOAT, &buftype_flt);
-        MPI_Type_commit(&buftype_flt);
+                                 REC_DTYPE, &buftype_rec);
+        MPI_Type_commit(&buftype_rec);
     }
     else {
-        buftype_flt = MPI_FLOAT;
+        buftype_rec = REC_DTYPE;
     }
     free(var_disps);
     free(var_blocklens);
@@ -640,29 +640,29 @@ int run_vard(char       *out_dir,      /* output folder name */
     MPI_Barrier(comm); /*-----------------------------------------*/
     io_timing = MPI_Wtime();
 
-    if (noncontig_buf) fix_buflen = flt_buflen = 1;
+    if (noncontig_buf) fix_buflen = rec_buflen = 1;
 
     /* write all NC_DOUBLE variables in one vard call */
-    err = ncmpi_put_vard_all(ncid, varids[0], filetype_dbl, dbl_buf,
+    err = ncmpi_put_vard_all(ncid, varids[0], filetype_dbl, dbl_buf_ptr,
                              fix_buflen, buftype_dbl); ERR
 
     /* flush small variables */
     err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
 
     /* write all NC_FLOAT variables in one vard call */
-    err = ncmpi_put_vard_all(ncid, varids[30], filetype_flt, flt_buf,
-                             flt_buflen, buftype_flt); ERR
+    err = ncmpi_put_vard_all(ncid, varids[30], filetype_rec, rec_buf,
+                             rec_buflen, buftype_rec); ERR
 
     io_timing = MPI_Wtime() - io_timing;
 
     MPI_Barrier(comm); /*-----------------------------------------*/
     close_timing = MPI_Wtime();
 
-    MPI_Type_free(&filetype_flt);
+    MPI_Type_free(&filetype_rec);
     MPI_Type_free(&filetype_dbl);
 
     if (noncontig_buf) {
-        MPI_Type_free(&buftype_flt);
+        MPI_Type_free(&buftype_rec);
         MPI_Type_free(&buftype_dbl);
     }
 
@@ -670,7 +670,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     put_size = total_size - metadata_size;
     err = ncmpi_close(ncid); ERR
 
-    free(flt_buf);
+    free(rec_buf);
     free(dbl_buf);
     free(varids);
 
@@ -775,9 +775,9 @@ fn_exit:
 #define POST_VARN(k, num) \
     for (j=0; j<num; j++) { \
         err = ncmpi_iput_varn(ncid, varids[i++], nreqs_D##k, starts_D##k, \
-                              counts_D##k, flt_buf_ptr, -1, MPI_FLOAT, NULL); \
+                              counts_D##k, rec_buf_ptr, -1, REC_DTYPE, NULL); \
         ERR \
-        flt_buf_ptr += nelems_D##k + gap; \
+        rec_buf_ptr += nelems_D##k + gap; \
         nreqs += nreqs_D##k; \
     }
 
@@ -800,9 +800,9 @@ int run_varn(char       *out_dir,      /* output folder name */
     char outfname[512], txt_buf[16], *txt_buf_ptr;
     int i, j, k, err, nerrs=0, rank, ndims, ncid, cmode, nvars, *varids;
     int gap=0, nreqs, max_nreqs, int_buf[10], *int_buf_ptr;
-    size_t dbl_buflen, flt_buflen;
+    size_t dbl_buflen, rec_buflen;
     size_t nelems_D1, nelems_D2, nelems_D3;
-    float *flt_buf, *flt_buf_ptr;
+    dtype *rec_buf, *rec_buf_ptr;
     double *dbl_buf, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing,  max_timing;
@@ -869,9 +869,9 @@ int run_varn(char       *out_dir,      /* output folder name */
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
     for (i=0; i<dbl_buflen; i++) dbl_buf[i] = rank;
 
-    flt_buflen = nelems_D2 * 315 + nelems_D3 * 63 + (315+63) * gap;
-    flt_buf = (float*) malloc(flt_buflen * sizeof(float));
-    for (i=0; i<flt_buflen; i++) flt_buf[i] = rank;
+    rec_buflen = nelems_D2 * 315 + nelems_D3 * 63 + (315+63) * gap;
+    rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
+    for (i=0; i<rec_buflen; i++) rec_buf[i] = rank;
 
     for (i=0; i<10; i++) int_buf[i] = rank;
 
@@ -927,7 +927,7 @@ int run_varn(char       *out_dir,      /* output folder name */
     MPI_Barrier(comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
-    flt_buf_ptr = flt_buf;
+    rec_buf_ptr = rec_buf;
 
     POST_VARN(2, 1)   /* AEROD_v */
     POST_VARN(3, 2)   /* ANRAIN and ANSNOW */
@@ -994,7 +994,7 @@ int run_varn(char       *out_dir,      /* output folder name */
     free(starts_D2[0]); free(starts_D2);
     free(fix_starts_D2[0]); free(fix_starts_D2);
     free(fix_starts_D1[0]); free(fix_starts_D1);
-    free(flt_buf);
+    free(rec_buf);
     free(dbl_buf);
     free(varids);
 
@@ -1177,7 +1177,6 @@ int main(int argc, char** argv)
     /* set PnetCDF I/O hints */
     MPI_Info_set(info, "nc_var_align_size", "1"); /* no gap between variables */
     MPI_Info_set(info, "nc_in_place_swap", "enable"); /* in-place byte swap */
-    // MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
 
     if (!rank) {
         printf("Total number of MPI processes      = %d\n",nprocs);
@@ -1187,7 +1186,9 @@ int main(int argc, char** argv)
         printf("Using noncontiguous write buffer   = %s\n",noncontig_buf?"yes":"no");
     }
 
+    /* vard APIs require internal data type matches external one */
     if (tst_vard) {
+#if REC_XTYPE == NC_FLOAT
         if (!rank) printf("\n---- benchmarking vard API -----------------------\n");
         fflush(stdout);
         MPI_Barrier(MPI_COMM_WORLD);
@@ -1195,6 +1196,10 @@ int main(int argc, char** argv)
                           contig_nreqs_D1, disps_D1, blocklens_D1,
                           contig_nreqs_D2, disps_D2, blocklens_D2,
                           contig_nreqs_D3, disps_D3, blocklens_D3);
+#else
+        if (!rank)
+            printf("PnetCDF vard API requires internal and external data types match, skip\n");
+#endif
     }
 
     if (tst_varn) {

@@ -16,6 +16,9 @@ all: e3sm_io
 dat2nc: dat2nc.o
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
+e3sm_io.o: e3sm_io.h
+def_header.o: e3sm_io.h
+
 e3sm_io: e3sm_io.o def_header.o
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
