@@ -234,6 +234,129 @@ fn_exit:
     return nerrs;
 }
 
+/*----< write_small_vars() >-------------------------------------------------*/
+static int
+write_small_vars(int          ncid,
+                 int          vid,    /* starting variable ID */
+                 int         *varids,
+                 int          gap,
+                 MPI_Offset   lev,
+                 MPI_Offset   ilev,
+                 MPI_Offset   nbnd,
+                 MPI_Offset   nchars,
+                 int        **int_buf,
+                 char       **txt_buf,
+                 double     **dbl_buf)
+{
+    int i, err, nerrs=0;
+    MPI_Offset start[2], count[2];
+
+    /* scalar and small variables are written by rank 0 only */
+    i = vid;
+
+    /* lev */
+    err = ncmpi_iput_var_double(ncid, varids[i++], *dbl_buf, NULL); ERR
+    *dbl_buf += lev + gap;
+    /* hyam */
+    err = ncmpi_iput_var_double(ncid, varids[i++], *dbl_buf, NULL); ERR
+    *dbl_buf += lev + gap;
+    /* hybm */
+    err = ncmpi_iput_var_double(ncid, varids[i++], *dbl_buf, NULL); ERR
+    *dbl_buf += lev + gap;
+    /* P0 */
+    err = ncmpi_iput_var_double(ncid, varids[i++], *dbl_buf, NULL); ERR
+    *dbl_buf += 1 + gap;
+    /* ilev */
+    err = ncmpi_iput_var_double(ncid, varids[i++], *dbl_buf, NULL); ERR
+    *dbl_buf += ilev + gap;
+    /* hyai */
+    err = ncmpi_iput_var_double(ncid, varids[i++], *dbl_buf, NULL); ERR
+    *dbl_buf += ilev + gap;
+    /* hybi */
+    err = ncmpi_iput_var_double(ncid, varids[i++], *dbl_buf, NULL); ERR
+    *dbl_buf += ilev + gap;
+    /* time */
+    start[0] = 0;
+    err = ncmpi_iput_var1_double(ncid, varids[i++], start, *dbl_buf, NULL); ERR
+    *dbl_buf += 1 + gap;
+    /* date */
+    start[0] = 0;
+    err = ncmpi_iput_var1_int(ncid, varids[i++], start, *int_buf, NULL); ERR
+    *int_buf += 1;
+    /* datesec */
+    start[0] = 0;
+    err = ncmpi_iput_var1_int(ncid, varids[i++], start, *int_buf, NULL); ERR
+    *int_buf += 1;
+    /* time_bnds */
+    start[0] = 0; start[1] = 0;
+    count[0] = 1; count[1] = nbnd;
+    err = ncmpi_iput_vara_double(ncid, varids[i++], start, count, *dbl_buf, NULL); ERR
+    *dbl_buf += nbnd + gap;
+    /* date_written */
+    start[0] = 0; start[1] = 0;
+    count[0] = 1; count[1] = nchars;
+    err = ncmpi_iput_vara_text(ncid, varids[i++], start, count, *txt_buf, NULL); ERR
+    *txt_buf += nchars;
+    /* time_written */
+    start[0] = 0; start[1] = 0;
+    count[0] = 1; count[1] = nchars;
+    err = ncmpi_iput_vara_text(ncid, varids[i++], start, count, *txt_buf, NULL); ERR
+    *txt_buf += nchars;
+    /* ndbase */
+    err = ncmpi_iput_var_int(ncid, varids[i++], *int_buf, NULL); ERR
+    *int_buf += 1;
+    /* nsbase */
+    err = ncmpi_iput_var_int(ncid, varids[i++], *int_buf, NULL); ERR
+    *int_buf += 1;
+    /* nbdate */
+    err = ncmpi_iput_var_int(ncid, varids[i++], *int_buf, NULL); ERR
+    *int_buf += 1;
+    /* nbsec */
+    err = ncmpi_iput_var_int(ncid, varids[i++], *int_buf, NULL); ERR
+    *int_buf += 1;
+    /* mdt */
+    err = ncmpi_iput_var_int(ncid, varids[i++], *int_buf, NULL); ERR
+    *int_buf += 1;
+    /* ndcur */
+    start[0] = 0;
+    err = ncmpi_iput_var1_int(ncid, varids[i++], start, *int_buf, NULL); ERR
+    *int_buf += 1;
+    /* nscur */
+    start[0] = 0;
+    err = ncmpi_iput_var1_int(ncid, varids[i++], start, *int_buf, NULL); ERR
+    *int_buf += 1;
+    /* co2vmr */
+    start[0] = 0;
+    err = ncmpi_iput_var1_double(ncid, varids[i++], start, *dbl_buf, NULL); ERR
+    *dbl_buf += 1 + gap;
+    /* ch4vmr */
+    start[0] = 0;
+    err = ncmpi_iput_var1_double(ncid, varids[i++], start, *dbl_buf, NULL); ERR
+    *dbl_buf += 1 + gap;
+    /* n2ovmr */
+    start[0] = 0;
+    err = ncmpi_iput_var1_double(ncid, varids[i++], start, *dbl_buf, NULL); ERR
+    *dbl_buf += 1 + gap;
+    /* f11vmr */
+    start[0] = 0;
+    err = ncmpi_iput_var1_double(ncid, varids[i++], start, *dbl_buf, NULL); ERR
+    *dbl_buf += 1 + gap;
+    /* f12vmr */
+    start[0] = 0;
+    err = ncmpi_iput_var1_double(ncid, varids[i++], start, *dbl_buf, NULL); ERR
+    *dbl_buf += 1 + gap;
+    /* sol_tsi */
+    start[0] = 0;
+    err = ncmpi_iput_var1_double(ncid, varids[i++], start, *dbl_buf, NULL); ERR
+    *dbl_buf += 1 + gap;
+    /* nsteph */
+    start[0] = 0;
+    err = ncmpi_iput_var1_int(ncid, varids[i++], start, *int_buf, NULL); ERR
+    *int_buf += 1;
+fn_exit:
+    return err;
+}
+
 #define SET_TYPE(kind) { \
     var_types[i] = type[kind]; \
     err = ncmpi_inq_varoffset(ncid, varids[i], &var_offset); ERR \
@@ -287,13 +410,14 @@ int run_vard(char       *out_dir,      /* output folder name */
              int        *disps_D3,     /* [nreqs_D3] request's displacements */
              int        *blocklens_D3) /* [nreqs_D3] request's block lengths */
 {
-    char outfname[512];
+    char outfname[512], txt_buf[16], *txt_buf_ptr;
     int i, j, k, err, nerrs=0, rank, ncid, cmode, nvars, *varids;
     int *var_blocklens, *buf_blocklens, nreqs, max_nreqs, gap=0;
-    size_t dbl_buflen, flt_buflen;
+    int int_buf[10], *int_buf_ptr;
+    size_t fix_buflen, dbl_buflen, flt_buflen;
     size_t nelems_D1, nelems_D2, nelems_D3;
     float *flt_buf;
-    double *dbl_buf;
+    double *dbl_buf, *dbl_buf_ptr;
     double pre_timing, open_timing, io_timing, close_timing;
     double timing, total_timing,  max_timing;
     MPI_Aint *var_disps, *buf_disps;
@@ -392,6 +516,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     i++;
     dbl_buflen += nelems_D1 + gap;
     nreqs += nreqs_D1;
+    fix_buflen = dbl_buflen;
 
     /* concatenate 3 var_types[] into filetype_dbl */
     MPI_Type_create_struct(3, var_blocklens, var_disps, var_types,
@@ -408,10 +533,20 @@ int run_vard(char       *out_dir,      /* output folder name */
     }
 
     /* allocate and initialize write buffer */
+    dbl_buflen += 3 * dims[0] + 3 * (dims[0]+1) + 8 + 2 + 20 * gap;
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
     for (j=0; j<dbl_buflen; j++) dbl_buf[j] = rank;
 
-    /* skip next 27 variables that have no decomposition file */
+    int_buf_ptr = int_buf;
+    txt_buf_ptr = txt_buf;
+    dbl_buf_ptr = dbl_buf;
+
+    /* next 27 small variables are written by rank 0 only */
+    if (rank == 0) {
+        nreqs += 27;
+        err = write_small_vars(ncid, i, varids, gap, dims[0], dims[0]+1, 2, 8,
+                               &int_buf_ptr, &txt_buf_ptr, &dbl_buf_ptr); ERR
+    }
     i += 27;
 
     /* the remaining variables are all of type NC_FLOAT --------------*/
@@ -505,11 +640,14 @@ int run_vard(char       *out_dir,      /* output folder name */
     MPI_Barrier(comm); /*-----------------------------------------*/
     io_timing = MPI_Wtime();
 
-    if (noncontig_buf) dbl_buflen = flt_buflen = 1;
+    if (noncontig_buf) fix_buflen = flt_buflen = 1;
 
     /* write all NC_DOUBLE variables in one vard call */
     err = ncmpi_put_vard_all(ncid, varids[0], filetype_dbl, dbl_buf,
-                             dbl_buflen, buftype_dbl); ERR
+                             fix_buflen, buftype_dbl); ERR
+
+    /* flush small variables */
+    err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
 
     /* write all NC_FLOAT variables in one vard call */
     err = ncmpi_put_vard_all(ncid, varids[30], filetype_flt, flt_buf,
@@ -659,9 +797,9 @@ int run_varn(char       *out_dir,      /* output folder name */
              int        *disps_D3,     /* [nreqs_D3] request's displacements */
              int        *blocklens_D3) /* [nreqs_D3] request's block lengths */
 {
-    char outfname[512];
+    char outfname[512], txt_buf[16], *txt_buf_ptr;
     int i, j, k, err, nerrs=0, rank, ndims, ncid, cmode, nvars, *varids;
-    int gap=0, nreqs, max_nreqs;
+    int gap=0, nreqs, max_nreqs, int_buf[10], *int_buf_ptr;
     size_t dbl_buflen, flt_buflen;
     size_t nelems_D1, nelems_D2, nelems_D3;
     float *flt_buf, *flt_buf_ptr;
@@ -725,13 +863,19 @@ int run_varn(char       *out_dir,      /* output folder name */
 
     /* allocate and initialize write buffer */
     if (noncontig_buf) gap = 10;
-    dbl_buflen = nelems_D2 * 2 + nelems_D1 + 3 * gap;
+    dbl_buflen = nelems_D2 * 2 + nelems_D1
+               + 3 * dims[0] + 3 * (dims[0]+1) + 8 + 2
+               + 20 * gap;
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
     for (i=0; i<dbl_buflen; i++) dbl_buf[i] = rank;
 
     flt_buflen = nelems_D2 * 315 + nelems_D3 * 63 + (315+63) * gap;
     flt_buf = (float*) malloc(flt_buflen * sizeof(float));
     for (i=0; i<flt_buflen; i++) flt_buf[i] = rank;
+
+    for (i=0; i<10; i++) int_buf[i] = rank;
+
+    for (i=0; i<16; i++) txt_buf[i] = 'a' + rank;
 
     pre_timing = MPI_Wtime() - pre_timing;
 
@@ -756,7 +900,19 @@ int run_varn(char       *out_dir,      /* output folder name */
     /* area */
     err = ncmpi_iput_varn(ncid, varids[i++], nreqs_D1, fix_starts_D1, fix_counts_D1,
                           dbl_buf_ptr, nelems_D1, MPI_DOUBLE, NULL); ERR
+    dbl_buf_ptr += nelems_D1 + gap;
     nreqs += nreqs_D1;
+
+    int_buf_ptr = int_buf;
+    txt_buf_ptr = txt_buf;
+
+    /* next 27 small variables are written by rank 0 only */
+    if (rank == 0) {
+        nreqs += 27;
+        err = write_small_vars(ncid, i, varids, gap, dims[0], dims[0]+1, 2, 8,
+                               &int_buf_ptr, &txt_buf_ptr, &dbl_buf_ptr); ERR
+    }
+    i += 27;
 
     post_timing = MPI_Wtime() - post_timing;
 
@@ -770,9 +926,6 @@ int run_varn(char       *out_dir,      /* output folder name */
 
     MPI_Barrier(comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
-
-    /* skip next 27 variables that have no decomposition file */
-    i += 27;
 
     flt_buf_ptr = flt_buf;
 
