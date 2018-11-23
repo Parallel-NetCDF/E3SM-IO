@@ -552,6 +552,9 @@ int run_vard(char       *out_dir,      /* output folder name */
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
     for (j=0; j<dbl_buflen; j++) dbl_buf[j] = rank;
 
+    for (j=0; j<10; j++) int_buf[j] = rank;
+    for (j=0; j<16; j++) txt_buf[j] = 'a' + rank;
+
     int_buf_ptr = int_buf;
     txt_buf_ptr = txt_buf;
     dbl_buf_ptr = dbl_buf;
@@ -576,7 +579,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     buf_disps[i] = 0;
 
     if (nvars == 408) {
-        SET_TYPES(2, 1)   /* AEROD_v */
+        SET_TYPE(2)       /* AEROD_v */
         SET_TYPES(3, 2)   /* ANRAIN and ANSNOW */
         SET_TYPES(2, 18)  /* AODABS ... ANSNOW */
         SET_TYPES(3, 2)   /* AQRAIN and AQSNOW */
