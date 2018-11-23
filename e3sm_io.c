@@ -424,7 +424,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     double timing, total_timing,  max_timing;
     MPI_Aint *var_disps, *buf_disps;
     MPI_Offset tmp, metadata_size, put_size, total_size;
-    MPI_Offset offset_rec, var_offset;
+    MPI_Offset offset_fix, offset_rec, var_offset;
     MPI_Datatype *var_types, type[4], filetype_rec, filetype_dbl;
     MPI_Datatype buftype_rec, buftype_dbl;
     MPI_Info info_used=MPI_INFO_NULL;
@@ -438,6 +438,8 @@ int run_vard(char       *out_dir,      /* output folder name */
     /* set output file name */
     sprintf(outfname, "%s/%s",out_dir, outfile);
 
+    if (noncontig_buf) gap = 10;
+
     varids = (int*) malloc(nvars * sizeof(int));
 
     /* create a new CDF-5 file for writing */
@@ -446,15 +448,18 @@ int run_vard(char       *out_dir,      /* output folder name */
 
     /* define dimensions, variables, and attributes */
     if (nvars == 408) {
+        /* for h0 file */
         err = e3sm_io_header(ncid, dims, nvars, varids); ERR
     }
     else {
+        /* for h1 file */
         err = e3sm_io_header1(ncid, dims, nvars, varids); ERR
     }
 
     /* exit define mode and enter data mode */
     err = ncmpi_enddef(ncid); ERR
 
+    /* I/O amount so far */
     err = ncmpi_inq_put_size(ncid, &metadata_size); ERR
     err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing = MPI_Wtime() - open_timing;
@@ -462,13 +467,14 @@ int run_vard(char       *out_dir,      /* output folder name */
     MPI_Barrier(comm); /*-----------------------------------------*/
     pre_timing = MPI_Wtime();
 
+    /* allocate arrays for constructing fileview and buffer type */
     var_types = (MPI_Datatype*) malloc(nvars * sizeof(MPI_Datatype));
     var_blocklens = (int*) malloc(nvars * 2 * sizeof(int));
     buf_blocklens = var_blocklens + nvars;
     var_disps = (MPI_Aint*) malloc(nvars * 2 * sizeof(MPI_Aint));
     buf_disps = var_disps + nvars;
 
-    /* define MPI datatypes for 4 kinds */
+    /* define MPI datatypes for 4 kinds from 3 decompositions */
     MPI_Type_indexed(nreqs_D1, blocklens_D1, disps_D1, MPI_DOUBLE, &type[0]);
     MPI_Type_commit(&type[0]);
     MPI_Type_indexed(nreqs_D2, blocklens_D2, disps_D2, MPI_DOUBLE, &type[1]);
@@ -478,6 +484,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     MPI_Type_indexed(nreqs_D3, blocklens_D3, disps_D3, REC_DTYPE, &type[3]);
     MPI_Type_commit(&type[3]);
 
+    /* number of variable elements from 3 decompositions */
     nreqs = 0;
     for (j=0; j<nvars; j++) var_blocklens[j] = 1;
     nelems_D1 = nelems_D2 = nelems_D3 = 0;
@@ -491,11 +498,10 @@ int run_vard(char       *out_dir,      /* output folder name */
     /* the first 3 variables are of type NC_DOUBLE -------------------*/
     i = 0;
     dbl_buflen = 0;
-    if (noncontig_buf) gap = 10;
 
     /* lat */
     var_types[i] = type[1];
-    err = ncmpi_inq_varoffset(ncid, varids[i], &offset_rec); ERR
+    err = ncmpi_inq_varoffset(ncid, varids[i], &offset_fix); ERR
     var_disps[i] = 0;
     buf_disps[0] = 0;
     buf_blocklens[0] = nelems_D2;
@@ -506,7 +512,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     /* lon */
     var_types[i] = type[1];
     err = ncmpi_inq_varoffset(ncid, varids[i], &var_offset); ERR
-    var_disps[i] = var_offset - offset_rec;
+    var_disps[i] = var_offset - offset_fix;
     buf_disps[i] = buf_disps[i-1] + (nelems_D2 + gap) * sizeof (double);
     buf_blocklens[1] = nelems_D2;
     i++;
@@ -516,7 +522,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     /* area */
     var_types[i] = type[0];
     err = ncmpi_inq_varoffset(ncid, varids[i], &var_offset); ERR
-    var_disps[i] = var_offset - offset_rec;
+    var_disps[i] = var_offset - offset_fix;
     buf_disps[i] = buf_disps[i-1] + (nelems_D2 + gap) * sizeof (double);
     buf_blocklens[2] = nelems_D1;
     i++;
@@ -530,11 +536,13 @@ int run_vard(char       *out_dir,      /* output folder name */
     MPI_Type_commit(&filetype_dbl);
 
     if (noncontig_buf) {
+        /* construct buffer type for 3 variables */
         MPI_Type_create_hindexed(3, buf_blocklens, buf_disps, MPI_DOUBLE,
                                  &buftype_dbl);
         MPI_Type_commit(&buftype_dbl);
     }
     else {
+        /* buffer type is contiguous */
         buftype_dbl = MPI_DOUBLE;
     }
 
@@ -551,6 +559,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     /* next 27 small variables are written by rank 0 only */
     if (rank == 0) {
         nreqs += 27;
+        /* post nonblocking requests using ncmpi_iput_varn() */
         err = write_small_vars(ncid, i, varids, gap, dims[0], dims[0]+1, 2, 8,
                                &int_buf_ptr, &txt_buf_ptr, &dbl_buf_ptr); ERR
     }
@@ -615,7 +624,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     }
     else {
         SET_TYPES(2, 13)  /* CLDHGH ... T5 */
-        SET_TYPES(3, 1)   /* U */
+        SET_TYPE(3)       /* U */
         SET_TYPES(2, 7)   /* U250 ... Z500 */
     }
 
@@ -632,11 +641,13 @@ int run_vard(char       *out_dir,      /* output folder name */
     for (j=0; j<rec_buflen; j++) rec_buf[j] = rank;
 
     if (noncontig_buf) {
+        /* construct buffer type for record variables */
         MPI_Type_create_hindexed(nvars-30, buf_blocklens+30, buf_disps+30,
                                  REC_DTYPE, &buftype_rec);
         MPI_Type_commit(&buftype_rec);
     }
     else {
+        /* all record variables are in a single contiguous buffer */
         buftype_rec = REC_DTYPE;
     }
     free(var_disps);
@@ -649,14 +660,14 @@ int run_vard(char       *out_dir,      /* output folder name */
 
     if (noncontig_buf) fix_buflen = rec_buflen = 1;
 
-    /* write all NC_DOUBLE variables in one vard call */
-    err = ncmpi_put_vard_all(ncid, varids[0], filetype_dbl, dbl_buf_ptr,
+    /* write first 3 NC_DOUBLE variables in one vard call */
+    err = ncmpi_put_vard_all(ncid, varids[0], filetype_dbl, dbl_buf,
                              fix_buflen, buftype_dbl); ERR
 
     /* flush small variables */
     err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
 
-    /* write all NC_FLOAT variables in one vard call */
+    /* write remaining record variables in one vard call */
     err = ncmpi_put_vard_all(ncid, varids[30], filetype_rec, rec_buf,
                              rec_buflen, buftype_rec); ERR
 
@@ -833,6 +844,8 @@ int run_varn(char       *out_dir,      /* output folder name */
     /* set output file name */
     sprintf(outfname, "%s/%s",out_dir, outfile);
 
+    if (noncontig_buf) gap = 10;
+
     varids = (int*) malloc(nvars * sizeof(int));
 
     /* create a new CDF-5 file for writing */
@@ -841,15 +854,18 @@ int run_varn(char       *out_dir,      /* output folder name */
 
     /* define dimensions, variables, and attributes */
     if (nvars == 408) {
+        /* for h0 file */
         err = e3sm_io_header(ncid, dims, nvars, varids); ERR
     }
     else {
+        /* for h1 file */
         err = e3sm_io_header1(ncid, dims, nvars, varids); ERR
     }
 
     /* exit define mode and enter data mode */
     err = ncmpi_enddef(ncid); ERR
 
+    /* I/O amount so far */
     err = ncmpi_inq_put_size(ncid, &metadata_size); ERR
     err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing = MPI_Wtime() - open_timing;
@@ -857,6 +873,7 @@ int run_varn(char       *out_dir,      /* output folder name */
     MPI_Barrier(comm); /*-----------------------------------------*/
     pre_timing = MPI_Wtime();
 
+    /* number of variable elements from 3 decompositions */
     nreqs = 0;
     nelems_D1 = nelems_D2 = nelems_D3 = 0;
     for (k=0; k<nreqs_D1; k++) nelems_D1 += blocklens_D1[k];
@@ -875,8 +892,6 @@ int run_varn(char       *out_dir,      /* output folder name */
     REC_STARTS_COUNTS(0, starts_D2, counts_D2, nreqs_D2, disps_D2, blocklens_D2)
     ndims = 3;
     REC_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs_D3, disps_D3, blocklens_D3)
-
-    if (noncontig_buf) gap = 10;
 
     /* allocate and initialize write buffer for small variables */
     dbl_buflen = nelems_D2 * 2 + nelems_D1
@@ -930,6 +945,7 @@ int run_varn(char       *out_dir,      /* output folder name */
     /* next 27 small variables are written by rank 0 only */
     if (rank == 0) {
         nreqs += 27;
+        /* post nonblocking requests using ncmpi_iput_varn() */
         err = write_small_vars(ncid, i, varids, gap, dims[0], dims[0]+1, 2, 8,
                                &int_buf_ptr, &txt_buf_ptr, &dbl_buf_ptr); ERR
     }
@@ -940,7 +956,7 @@ int run_varn(char       *out_dir,      /* output folder name */
     MPI_Barrier(comm); /*-----------------------------------------*/
     wait_timing = MPI_Wtime();
 
-    /* flush fixed-size variables */
+    /* flush fixed-size and small variables */
     err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
 
     wait_timing = MPI_Wtime() - wait_timing;
@@ -1204,6 +1220,7 @@ int main(int argc, char** argv)
     MPI_Info_set(info, "romio_ds_write", "disable"); /* MPI-IO data sieving */
     MPI_Info_set(info, "romio_cb_write", "enable");  /* collective write */
     MPI_Info_set(info, "romio_no_indep_rw", "true"); /* no independent MPI-IO */
+    // MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
 
     /* set PnetCDF I/O hints */
     MPI_Info_set(info, "nc_var_align_size", "1"); /* no gap between variables */
