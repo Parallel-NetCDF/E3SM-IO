@@ -397,6 +397,8 @@ fn_exit:
 /*----< run_vard() >--------------------------------------------------------*/
 static
 int run_vard(char       *out_dir,      /* output folder name */
+             char       *outfile,      /* output file name */
+             int         nvars,        /* number of variables 408 or 51 */
              int         noncontig_buf,/* whether to us noncontiguous buffer */
              MPI_Info    info,
              MPI_Offset *dims,         /* [2] dimension lengths */
@@ -411,7 +413,7 @@ int run_vard(char       *out_dir,      /* output folder name */
              int        *blocklens_D3) /* [nreqs_D3] request's block lengths */
 {
     char outfname[512], txt_buf[16], *txt_buf_ptr;
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, nvars, *varids;
+    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
     int *var_blocklens, *buf_blocklens, nreqs, max_nreqs, gap=0;
     int int_buf[10], *int_buf_ptr;
     size_t fix_buflen, dbl_buflen, rec_buflen;
@@ -434,9 +436,8 @@ int run_vard(char       *out_dir,      /* output folder name */
     MPI_Comm_rank(comm, &rank);
 
     /* set output file name */
-    sprintf(outfname, "%s/testfile_vard.nc",out_dir);
+    sprintf(outfname, "%s/%s",out_dir, outfile);
 
-    nvars = 408;
     varids = (int*) malloc(nvars * sizeof(int));
 
     /* create a new CDF-5 file for writing */
@@ -444,7 +445,12 @@ int run_vard(char       *out_dir,      /* output folder name */
     err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
-    err = e3sm_io_header(ncid, dims, nvars, varids); ERR
+    if (nvars == 408) {
+        err = e3sm_io_header(ncid, dims, nvars, varids); ERR
+    }
+    else {
+        err = e3sm_io_header1(ncid, dims, nvars, varids); ERR
+    }
 
     /* exit define mode and enter data mode */
     err = ncmpi_enddef(ncid); ERR
@@ -532,8 +538,9 @@ int run_vard(char       *out_dir,      /* output folder name */
         buftype_dbl = MPI_DOUBLE;
     }
 
-    /* allocate and initialize write buffer */
+    /* allocate and initialize write buffer for small variables */
     dbl_buflen += 3 * dims[0] + 3 * (dims[0]+1) + 8 + 2 + 20 * gap;
+
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
     for (j=0; j<dbl_buflen; j++) dbl_buf[j] = rank;
 
@@ -556,61 +563,61 @@ int run_vard(char       *out_dir,      /* output folder name */
  * Need to revise for writing more than one.
  */
 
-    /* AEROD_v */
-    var_types[i] = type[2];
     err = ncmpi_inq_varoffset(ncid, varids[i], &offset_rec); ERR
-    var_disps[i] = 0;
     buf_disps[i] = 0;
-    buf_disps[i+1] = nelems_D2 * sizeof(dtype);
-    buf_blocklens[i] = nelems_D2;
-    i++;
-    rec_buflen += nelems_D2 + gap;
-    nreqs += nreqs_D2;
 
-    SET_TYPES(3, 2)   /* ANRAIN and ANSNOW */
-    SET_TYPES(2, 18)  /* AODABS ... ANSNOW */
-    SET_TYPES(3, 2)   /* AQRAIN and AQSNOW */
-    SET_TYPES(2, 6)   /* AQ_DMS ... AQ_SOAG */
-    SET_TYPES(3, 5)   /* AREI ... CCN3 */
-    SET_TYPES(2, 2)   /* CDNUMC and CLDHGH */
-    SET_TYPES(3, 2)   /* CLDICE and CLDLIQ */
-    SET_TYPES(2, 3)   /* CLDLOW ... CLDTOT */
-    SET_TYPES(3, 4)   /* CLOUD ... DCQ */
-    SET_TYPES(2, 11)  /* DF_DMS ... DSTSFMBL */
-    SET_TYPE(3)       /* DTCOND */
-    SET_TYPES(2, 2)   /* DTENDTH and DTENDTQ */
-    SET_TYPES(3, 2)   /* EXTINCT and FICE */
-    SET_TYPES(2, 7)   /* FLDS ... FLUTC */
-    SET_TYPES(3, 4)   /* FREQI ... FREQS */
-    SET_TYPES(2, 15)  /* FSDS ... ICEFRAC */
-    SET_TYPES(3, 3)   /* ICIMR ... IWC */
-    SET_TYPES(2, 2)   /* LANDFRAC and LHFLX */
-    SET_TYPES(3, 5)   /* LINOZ_DO3 ... LINOZ_SSO3 */
-    SET_TYPES(2, 3)   /* LINOZ_SZA ... LWCF */
-    SET_TYPES(3, 12)  /* Mass_bc ... O3 */
-    SET_TYPES(2, 2)   /* O3_SRF and OCNFRAC */
-    SET_TYPE(3)       /* OMEGA */
-    SET_TYPE(2)       /* OMEGA500 */
-    SET_TYPE(3)       /* OMEGAT */
-    SET_TYPES(2, 8)   /* PBLH ... PSL */
-    SET_TYPE(3)       /* Q */
-    SET_TYPES(2, 2)   /* QFLX and QREFHT */
-    SET_TYPES(3, 3)   /* QRL ... RAINQM */
-    SET_TYPE(2)       /* RAM1 */
-    SET_TYPE(3)       /* RELHUM */
-    SET_TYPES(2, 37)  /* SFDMS ... SNOWHLND */
-    SET_TYPES(3, 2)   /* SNOWQM and SO2 */
-    SET_TYPES(2, 10)  /* SO2_CLXF ... SWCF */
-    SET_TYPE(3)       /* T */
-    SET_TYPES(2, 19)  /* TAUGWX ... TVQ */
-    SET_TYPE(3)       /* U */
-    SET_TYPE(2)       /* U10 */
-    SET_TYPES(3, 6)   /* UU ... VV */
-    SET_TYPES(2, 3)   /* WD_H2O2 ... WD_SO2 */
-    SET_TYPES(3, 3)   /* WSUB ... aero_water */
-    SET_TYPES(2, 32)  /* airFV ... dst_c3SFWET */
-    SET_TYPE(3)       /* hstobie_linoz */
-    SET_TYPES(2, 129) /* mlip ... soa_c3SFWET */
+    if (nvars == 408) {
+        SET_TYPES(2, 1)   /* AEROD_v */
+        SET_TYPES(3, 2)   /* ANRAIN and ANSNOW */
+        SET_TYPES(2, 18)  /* AODABS ... ANSNOW */
+        SET_TYPES(3, 2)   /* AQRAIN and AQSNOW */
+        SET_TYPES(2, 6)   /* AQ_DMS ... AQ_SOAG */
+        SET_TYPES(3, 5)   /* AREI ... CCN3 */
+        SET_TYPES(2, 2)   /* CDNUMC and CLDHGH */
+        SET_TYPES(3, 2)   /* CLDICE and CLDLIQ */
+        SET_TYPES(2, 3)   /* CLDLOW ... CLDTOT */
+        SET_TYPES(3, 4)   /* CLOUD ... DCQ */
+        SET_TYPES(2, 11)  /* DF_DMS ... DSTSFMBL */
+        SET_TYPE(3)       /* DTCOND */
+        SET_TYPES(2, 2)   /* DTENDTH and DTENDTQ */
+        SET_TYPES(3, 2)   /* EXTINCT and FICE */
+        SET_TYPES(2, 7)   /* FLDS ... FLUTC */
+        SET_TYPES(3, 4)   /* FREQI ... FREQS */
+        SET_TYPES(2, 15)  /* FSDS ... ICEFRAC */
+        SET_TYPES(3, 3)   /* ICIMR ... IWC */
+        SET_TYPES(2, 2)   /* LANDFRAC and LHFLX */
+        SET_TYPES(3, 5)   /* LINOZ_DO3 ... LINOZ_SSO3 */
+        SET_TYPES(2, 3)   /* LINOZ_SZA ... LWCF */
+        SET_TYPES(3, 12)  /* Mass_bc ... O3 */
+        SET_TYPES(2, 2)   /* O3_SRF and OCNFRAC */
+        SET_TYPE(3)       /* OMEGA */
+        SET_TYPE(2)       /* OMEGA500 */
+        SET_TYPE(3)       /* OMEGAT */
+        SET_TYPES(2, 8)   /* PBLH ... PSL */
+        SET_TYPE(3)       /* Q */
+        SET_TYPES(2, 2)   /* QFLX and QREFHT */
+        SET_TYPES(3, 3)   /* QRL ... RAINQM */
+        SET_TYPE(2)       /* RAM1 */
+        SET_TYPE(3)       /* RELHUM */
+        SET_TYPES(2, 37)  /* SFDMS ... SNOWHLND */
+        SET_TYPES(3, 2)   /* SNOWQM and SO2 */
+        SET_TYPES(2, 10)  /* SO2_CLXF ... SWCF */
+        SET_TYPE(3)       /* T */
+        SET_TYPES(2, 19)  /* TAUGWX ... TVQ */
+        SET_TYPE(3)       /* U */
+        SET_TYPE(2)       /* U10 */
+        SET_TYPES(3, 6)   /* UU ... VV */
+        SET_TYPES(2, 3)   /* WD_H2O2 ... WD_SO2 */
+        SET_TYPES(3, 3)   /* WSUB ... aero_water */
+        SET_TYPES(2, 32)  /* airFV ... dst_c3SFWET */
+        SET_TYPE(3)       /* hstobie_linoz */
+        SET_TYPES(2, 129) /* mlip ... soa_c3SFWET */
+    }
+    else {
+        SET_TYPES(2, 13)  /* CLDHGH ... T5 */
+        SET_TYPES(3, 1)   /* U */
+        SET_TYPES(2, 7)   /* U250 ... Z500 */
+    }
 
     /* concatenate nvars-30 var_types[] into filetype_rec */
     MPI_Type_create_struct(nvars-30, var_blocklens+30, var_disps+30,
@@ -620,7 +627,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     for (j=0; j<4; j++) MPI_Type_free(&type[j]);
     free(var_types);
 
-    /* allocate and initialize write buffer */
+    /* allocate and initialize write buffer for large variables */
     rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
     for (j=0; j<rec_buflen; j++) rec_buf[j] = rank;
 
@@ -710,6 +717,8 @@ int run_vard(char       *out_dir,      /* output folder name */
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
         printf("-----------------------------------------------------------\n");
+        printf("outfile = %s\n", outfile);
+        printf("-----------------------------------------------------------\n");
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
         printf("Total number of variables          = %d\n",nvars);
@@ -784,6 +793,8 @@ fn_exit:
 /*----< run_varn() >--------------------------------------------------------*/
 static
 int run_varn(char       *out_dir,      /* output folder name */
+             char       *outfile,      /* output file name */
+             int         nvars,        /* number of variables 408 or 51 */
              int         noncontig_buf,/* whether to us noncontiguous buffer */
              MPI_Info    info,
              MPI_Offset *dims,         /* [2] dimension lengths */
@@ -798,7 +809,7 @@ int run_varn(char       *out_dir,      /* output folder name */
              int        *blocklens_D3) /* [nreqs_D3] request's block lengths */
 {
     char outfname[512], txt_buf[16], *txt_buf_ptr;
-    int i, j, k, err, nerrs=0, rank, ndims, ncid, cmode, nvars, *varids;
+    int i, j, k, err, nerrs=0, rank, ndims, ncid, cmode, *varids;
     int gap=0, nreqs, max_nreqs, int_buf[10], *int_buf_ptr;
     size_t dbl_buflen, rec_buflen;
     size_t nelems_D1, nelems_D2, nelems_D3;
@@ -820,9 +831,8 @@ int run_varn(char       *out_dir,      /* output folder name */
     MPI_Comm_rank(comm, &rank);
 
     /* set output file name */
-    sprintf(outfname, "%s/testfile_varn.nc",out_dir);
+    sprintf(outfname, "%s/%s",out_dir, outfile);
 
-    nvars = 408;
     varids = (int*) malloc(nvars * sizeof(int));
 
     /* create a new CDF-5 file for writing */
@@ -830,7 +840,12 @@ int run_varn(char       *out_dir,      /* output folder name */
     err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
-    err = e3sm_io_header(ncid, dims, nvars, varids); ERR
+    if (nvars == 408) {
+        err = e3sm_io_header(ncid, dims, nvars, varids); ERR
+    }
+    else {
+        err = e3sm_io_header1(ncid, dims, nvars, varids); ERR
+    }
 
     /* exit define mode and enter data mode */
     err = ncmpi_enddef(ncid); ERR
@@ -861,15 +876,21 @@ int run_varn(char       *out_dir,      /* output folder name */
     ndims = 3;
     REC_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs_D3, disps_D3, blocklens_D3)
 
-    /* allocate and initialize write buffer */
     if (noncontig_buf) gap = 10;
+
+    /* allocate and initialize write buffer for small variables */
     dbl_buflen = nelems_D2 * 2 + nelems_D1
                + 3 * dims[0] + 3 * (dims[0]+1) + 8 + 2
                + 20 * gap;
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
     for (i=0; i<dbl_buflen; i++) dbl_buf[i] = rank;
 
-    rec_buflen = nelems_D2 * 315 + nelems_D3 * 63 + (315+63) * gap;
+    /* allocate and initialize write buffer for large variables */
+    if (nvars == 408)
+        rec_buflen = nelems_D2 * 315 + nelems_D3 * 63 + (315+63) * gap;
+    else
+        rec_buflen = nelems_D2 * 50 + nelems_D3 + (50+1) * gap;
+
     rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
     for (i=0; i<rec_buflen; i++) rec_buf[i] = rank;
 
@@ -929,51 +950,58 @@ int run_varn(char       *out_dir,      /* output folder name */
 
     rec_buf_ptr = rec_buf;
 
-    POST_VARN(2, 1)   /* AEROD_v */
-    POST_VARN(3, 2)   /* ANRAIN and ANSNOW */
-    POST_VARN(2, 18)  /* AODABS ... ANSNOW */
-    POST_VARN(3, 2)   /* AQRAIN and AQSNOW */
-    POST_VARN(2, 6)   /* AQ_DMS ... AQ_SOAG */
-    POST_VARN(3, 5)   /* AREI ... CCN3 */
-    POST_VARN(2, 2)   /* CDNUMC and CLDHGH */
-    POST_VARN(3, 2)   /* CLDICE and CLDLIQ */
-    POST_VARN(2, 3)   /* CLDLOW ... CLDTOT */
-    POST_VARN(3, 4)   /* CLOUD ... DCQ */
-    POST_VARN(2, 11)  /* DF_DMS ... DSTSFMBL */
-    POST_VARN(3, 1)   /* DTCOND */
-    POST_VARN(2, 2)   /* DTENDTH and DTENDTQ */
-    POST_VARN(3, 2)   /* EXTINCT and FICE */
-    POST_VARN(2, 7)   /* FLDS ... FLUTC */
-    POST_VARN(3, 4)   /* FREQI ... FREQS */
-    POST_VARN(2, 15)  /* FSDS ... ICEFRAC */
-    POST_VARN(3, 3)   /* ICIMR ... IWC */
-    POST_VARN(2, 2)   /* LANDFRAC and LHFLX */
-    POST_VARN(3, 5)   /* LINOZ_DO3 ... LINOZ_SSO3 */
-    POST_VARN(2, 3)   /* LINOZ_SZA ... LWCF */
-    POST_VARN(3, 12)  /* Mass_bc ... O3 */
-    POST_VARN(2, 2)   /* O3_SRF and OCNFRAC */
-    POST_VARN(3, 1)   /* OMEGA */
-    POST_VARN(2, 1)   /* OMEGA500 */
-    POST_VARN(3, 1)   /* OMEGAT */
-    POST_VARN(2, 8)   /* PBLH ... PSL */
-    POST_VARN(3, 1)   /* Q */
-    POST_VARN(2, 2)   /* QFLX and QREFHT */
-    POST_VARN(3, 3)   /* QRL ... RAINQM */
-    POST_VARN(2, 1)   /* RAM1 */
-    POST_VARN(3, 1)   /* RELHUM */
-    POST_VARN(2, 37)  /* SFDMS ... SNOWHLND */
-    POST_VARN(3, 2)   /* SNOWQM and SO2 */
-    POST_VARN(2, 10)  /* SO2_CLXF ... SWCF */
-    POST_VARN(3, 1)   /* T */
-    POST_VARN(2, 19)  /* TAUGWX ... TVQ */
-    POST_VARN(3, 1)   /* U */
-    POST_VARN(2, 1)   /* U10 */
-    POST_VARN(3, 6)   /* UU ... VV */
-    POST_VARN(2, 3)   /* WD_H2O2 ... WD_SO2 */
-    POST_VARN(3, 3)   /* WSUB ... aero_water */
-    POST_VARN(2, 32)  /* airFV ... dst_c3SFWET */
-    POST_VARN(3, 1)   /* hstobie_linoz */
-    POST_VARN(2, 129) /* mlip ... soa_c3SFWET */
+    if (nvars == 408) {
+        POST_VARN(2, 1)   /* AEROD_v */
+        POST_VARN(3, 2)   /* ANRAIN and ANSNOW */
+        POST_VARN(2, 18)  /* AODABS ... ANSNOW */
+        POST_VARN(3, 2)   /* AQRAIN and AQSNOW */
+        POST_VARN(2, 6)   /* AQ_DMS ... AQ_SOAG */
+        POST_VARN(3, 5)   /* AREI ... CCN3 */
+        POST_VARN(2, 2)   /* CDNUMC and CLDHGH */
+        POST_VARN(3, 2)   /* CLDICE and CLDLIQ */
+        POST_VARN(2, 3)   /* CLDLOW ... CLDTOT */
+        POST_VARN(3, 4)   /* CLOUD ... DCQ */
+        POST_VARN(2, 11)  /* DF_DMS ... DSTSFMBL */
+        POST_VARN(3, 1)   /* DTCOND */
+        POST_VARN(2, 2)   /* DTENDTH and DTENDTQ */
+        POST_VARN(3, 2)   /* EXTINCT and FICE */
+        POST_VARN(2, 7)   /* FLDS ... FLUTC */
+        POST_VARN(3, 4)   /* FREQI ... FREQS */
+        POST_VARN(2, 15)  /* FSDS ... ICEFRAC */
+        POST_VARN(3, 3)   /* ICIMR ... IWC */
+        POST_VARN(2, 2)   /* LANDFRAC and LHFLX */
+        POST_VARN(3, 5)   /* LINOZ_DO3 ... LINOZ_SSO3 */
+        POST_VARN(2, 3)   /* LINOZ_SZA ... LWCF */
+        POST_VARN(3, 12)  /* Mass_bc ... O3 */
+        POST_VARN(2, 2)   /* O3_SRF and OCNFRAC */
+        POST_VARN(3, 1)   /* OMEGA */
+        POST_VARN(2, 1)   /* OMEGA500 */
+        POST_VARN(3, 1)   /* OMEGAT */
+        POST_VARN(2, 8)   /* PBLH ... PSL */
+        POST_VARN(3, 1)   /* Q */
+        POST_VARN(2, 2)   /* QFLX and QREFHT */
+        POST_VARN(3, 3)   /* QRL ... RAINQM */
+        POST_VARN(2, 1)   /* RAM1 */
+        POST_VARN(3, 1)   /* RELHUM */
+        POST_VARN(2, 37)  /* SFDMS ... SNOWHLND */
+        POST_VARN(3, 2)   /* SNOWQM and SO2 */
+        POST_VARN(2, 10)  /* SO2_CLXF ... SWCF */
+        POST_VARN(3, 1)   /* T */
+        POST_VARN(2, 19)  /* TAUGWX ... TVQ */
+        POST_VARN(3, 1)   /* U */
+        POST_VARN(2, 1)   /* U10 */
+        POST_VARN(3, 6)   /* UU ... VV */
+        POST_VARN(2, 3)   /* WD_H2O2 ... WD_SO2 */
+        POST_VARN(3, 3)   /* WSUB ... aero_water */
+        POST_VARN(2, 32)  /* airFV ... dst_c3SFWET */
+        POST_VARN(3, 1)   /* hstobie_linoz */
+        POST_VARN(2, 129) /* mlip ... soa_c3SFWET */
+    }
+    else {
+        POST_VARN(2, 13)  /* CLDHGH ... T5 */
+        POST_VARN(3, 1)   /* U */
+        POST_VARN(2, 7)   /* U250 ... Z500 */
+    }
 
     post_timing += MPI_Wtime() - timing;
 
@@ -1035,6 +1063,8 @@ int run_varn(char       *out_dir,      /* output folder name */
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
+        printf("-----------------------------------------------------------\n");
+        printf("outfile = %s\n", outfile);
         printf("-----------------------------------------------------------\n");
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
@@ -1101,8 +1131,9 @@ usage(char *argv0)
 int main(int argc, char** argv)
 {
     extern int optind;
-    char *infname, out_dir[1024];
+    char *infname, out_dir[1024], *outfname;
     int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, noncontig_buf=0;
+    int nvars;
     int contig_nreqs_D1, *disps_D1=NULL, *blocklens_D1=NULL;
     int contig_nreqs_D2, *disps_D2=NULL, *blocklens_D2=NULL;
     int contig_nreqs_D3, *disps_D3=NULL, *blocklens_D3=NULL;
@@ -1188,17 +1219,31 @@ int main(int argc, char** argv)
 
     /* vard APIs require internal data type matches external one */
     if (tst_vard) {
-#if REC_XTYPE == NC_FLOAT
+#if REC_XTYPE != NC_FLOAT
+        if (!rank)
+            printf("PnetCDF vard API requires internal and external data types match, skip\n");
+#else
         if (!rank) printf("\n---- benchmarking vard API -----------------------\n");
         fflush(stdout);
+
         MPI_Barrier(MPI_COMM_WORLD);
-        nerrs += run_vard(out_dir, noncontig_buf, info, dims_D3,
+        nvars = 408;
+        outfname = "testfile_h0_vard.nc";
+        nerrs += run_vard(out_dir, outfname, nvars,
+                          noncontig_buf, info, dims_D3,
                           contig_nreqs_D1, disps_D1, blocklens_D1,
                           contig_nreqs_D2, disps_D2, blocklens_D2,
                           contig_nreqs_D3, disps_D3, blocklens_D3);
-#else
-        if (!rank)
-            printf("PnetCDF vard API requires internal and external data types match, skip\n");
+        fflush(stdout);
+
+        MPI_Barrier(MPI_COMM_WORLD);
+        nvars = 51;
+        outfname = "testfile_h1_vard.nc";
+        nerrs += run_vard(out_dir, outfname, nvars,
+                          noncontig_buf, info, dims_D3,
+                          contig_nreqs_D1, disps_D1, blocklens_D1,
+                          contig_nreqs_D2, disps_D2, blocklens_D2,
+                          contig_nreqs_D3, disps_D3, blocklens_D3);
 #endif
     }
 
@@ -1206,7 +1251,22 @@ int main(int argc, char** argv)
         if (!rank) printf("\n---- benchmarking varn API -----------------------\n");
         fflush(stdout);
         MPI_Barrier(MPI_COMM_WORLD);
-        nerrs += run_varn(out_dir, noncontig_buf, info, dims_D3,
+
+        nvars = 408;
+        outfname = "testfile_h0_varn.nc";
+        nerrs += run_varn(out_dir, outfname, nvars,
+                          noncontig_buf, info, dims_D3,
+                          contig_nreqs_D1, disps_D1, blocklens_D1,
+                          contig_nreqs_D2, disps_D2, blocklens_D2,
+                          contig_nreqs_D3, disps_D3, blocklens_D3);
+
+        fflush(stdout);
+        MPI_Barrier(MPI_COMM_WORLD);
+
+        nvars = 51;
+        outfname = "testfile_h1_varn.nc";
+        nerrs += run_varn(out_dir, outfname, nvars,
+                          noncontig_buf, info, dims_D3,
                           contig_nreqs_D1, disps_D1, blocklens_D1,
                           contig_nreqs_D2, disps_D2, blocklens_D2,
                           contig_nreqs_D3, disps_D3, blocklens_D3);

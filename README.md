@@ -94,8 +94,8 @@ patterns shared by its 381 variables.
     `e3sm_io`.
 
 * Run command:
-  * Example run command using `mpiexec` and 8 MPI processes:
-    `mpiexec -n 8 ./e3sm_io -q datasets/866x72_16p.nc`
+  * Example run command using `mpiexec` and 16 MPI processes:
+    `mpiexec -n 16 ./e3sm_io -q datasets/866x72_16p.nc`
   * The number of MPI processes can be different from the value set in the
     variable `num_procs` in the decomposition NetCDF file. For example, in the
     case of file `866x72_16p.nc`, `num_procs` is 16, which is the number of MPI
@@ -119,51 +119,88 @@ patterns shared by its 381 variables.
     ```
 * Example outputs on screen
   ```
-    % mpiexec -n 8 ./e3sm_io -q -k datasets/866x72_16p.nc
+    % mpiexec -n 16 ./e3sm_io -q -k datasets/866x72_16p.nc
 
-    Total number of MPI processes      = 8
-    Input decomposition file           = datasets/866x72_16p.nc
+    Total number of MPI processes      = 16
+    Input decomposition file           = 866x72_16p.nc
     Output file directory              = .
     Variable dimensions (C order)      = 72 x 866
     Using noncontiguous write buffer   = no
 
     ---- benchmarking vard API -----------------------
     -----------------------------------------------------------
-    MAX heap memory allocated by PnetCDF internally is 2.16 MiB
+    outfile = testfile_h0_vard.nc
+    -----------------------------------------------------------
+    MAX heap memory allocated by PnetCDF internally is 2.22 MiB
     Total number of variables          = 408
-    Total write amount                 = 16.13 MiB = 0.02 GiB
-    Max number of requests             = 325153
-    Max Time of open + metadata define = 0.0258 sec
-    Max Time of I/O preparing          = 0.0489 sec
-    Max Time of ncmpi_put_vard         = 0.6843 sec
-    Max Time of close                  = 0.0095 sec
-    Max Time of TOTAL                  = 0.7686 sec
-    I/O bandwidth (open-to-close)      = 20.7708 MiB/sec
-    I/O bandwidth (write-only)         = 23.5715 MiB/sec
+    Total write amount                 = 16.14 MiB = 0.02 GiB
+    Max number of requests             = 189269
+    Max Time of open + metadata define = 0.1923 sec
+    Max Time of I/O preparing          = 0.0348 sec
+    Max Time of ncmpi_put_vard         = 0.8902 sec
+    Max Time of close                  = 0.0378 sec
+    Max Time of TOTAL                  = 1.2178 sec
+    I/O bandwidth (open-to-close)      = 13.2514 MiB/sec
+    I/O bandwidth (write-only)         = 18.0273 MiB/sec
+    -----------------------------------------------------------
+    outfile = testfile_h1_vard.nc
+    -----------------------------------------------------------
+    MAX heap memory allocated by PnetCDF internally is 2.22 MiB
+    Total number of variables          = 51
+    Total write amount                 = 0.34 MiB = 0.00 GiB
+    Max number of requests             = 3668
+    Max Time of open + metadata define = 0.1213 sec
+    Max Time of I/O preparing          = 0.0104 sec
+    Max Time of ncmpi_put_vard         = 0.6400 sec
+    Max Time of close                  = 0.0505 sec
+    Max Time of TOTAL                  = 0.8808 sec
+    I/O bandwidth (open-to-close)      = 0.3809 MiB/sec
+    I/O bandwidth (write-only)         = 0.5113 MiB/sec
 
     ---- benchmarking varn API -----------------------
     -----------------------------------------------------------
-    MAX heap memory allocated by PnetCDF internally is 36.59 MiB
+    outfile = testfile_h0_varn.nc
+    -----------------------------------------------------------
+    MAX heap memory allocated by PnetCDF internally is 22.20 MiB
     Total number of variables          = 408
-    Total write amount                 = 16.13 MiB = 0.02 GiB
-    Max number of requests             = 325153
-    Max Time of open + metadata define = 0.0246 sec
-    Max Time of I/O preparing          = 0.0019 sec
-    Max Time of ncmpi_iput_varn        = 0.0988 sec
-    Max Time of ncmpi_wait_all         = 0.7720 sec
-    Max Time of close                  = 0.0159 sec
-    Max Time of TOTAL                  = 0.9131 sec
-    I/O bandwidth (open-to-close)      = 17.6687 MiB/sec
-    I/O bandwidth (write-only)         = 20.8937 MiB/sec
+    Total write amount                 = 16.14 MiB = 0.02 GiB
+    Max number of requests             = 189269
+    Max Time of open + metadata define = 0.1709 sec
+    Max Time of I/O preparing          = 0.0109 sec
+    Max Time of ncmpi_iput_varn        = 0.0686 sec
+    Max Time of ncmpi_wait_all         = 0.6618 sec
+    Max Time of close                  = 0.0578 sec
+    Max Time of TOTAL                  = 1.1083 sec
+    I/O bandwidth (open-to-close)      = 14.5599 MiB/sec
+    I/O bandwidth (write-only)         = 24.2492 MiB/sec
+    -----------------------------------------------------------
+    outfile = testfile_h1_varn.nc
+    -----------------------------------------------------------
+    MAX heap memory allocated by PnetCDF internally is 22.20 MiB
+    Total number of variables          = 51
+    Total write amount                 = 0.34 MiB = 0.00 GiB
+    Max number of requests             = 3668
+    Max Time of open + metadata define = 0.1410 sec
+    Max Time of I/O preparing          = 0.0101 sec
+    Max Time of ncmpi_iput_varn        = 0.0106 sec
+    Max Time of ncmpi_wait_all         = 0.5099 sec
+    Max Time of close                  = 0.0401 sec
+    Max Time of TOTAL                  = 0.8204 sec
+    I/O bandwidth (open-to-close)      = 0.4090 MiB/sec
+    I/O bandwidth (write-only)         = 0.6417 MiB/sec
   ```
 * Output files
   * The above example command uses command-line option `-k` to keep the output
     files (otherwise the default is to delete them when program exits.) Each
-    run of `e3sm_io` produces two output netCDF files named `testfile_vard.nc`
-    and `testfile_varn.nc`. The contents of two files should be the same. Their
-    file header (metadata) obtainable by command `ncdump -h testfile_vard.nc`
-    from running the provided decomposition file `866x72_16p.nc` is available
-    in [datasets/outputfile_header.txt](datasets/outputfile_header.txt).
+    run of `e3sm_io` produces four output netCDF files named
+    `testfile_h0_vard.nc`, `testfile_h1_vard.nc`, `testfile_h0_varn.nc`, and
+    `testfile_h1_varn.nc`. The contents of h0 and h1 files should be the same
+    between vard and varn APIs. Their file header (metadata) obtainable by
+    command `ncdump -h` from running the provided decomposition file
+    `866x72_16p.nc` is available in
+    [datasets/outputfile_h0.txt](datasets/outputfile_h0.txt),
+    and
+    [datasets/outputfile_h1.txt](datasets/outputfile_h1.txt).
 
 ## Questions/Comments:
 email: wkliao@eecs.northwestern.edu

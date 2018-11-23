@@ -41,3 +41,6 @@ typedef float dtype;
 extern
 int e3sm_io_header(int ncid, MPI_Offset dims[2], int nvars, int *varids);
 
+extern
+int e3sm_io_header1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
+
