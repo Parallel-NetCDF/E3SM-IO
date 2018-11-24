@@ -34,6 +34,8 @@ romio_patch.o: romio_patch.c
 
 clean:
 	rm -f core.* *.o dat2nc e3sm_io e3sm_io.romio_patch
+	rm -f testfile_h0_varn.nc testfile_h1_varn.nc
+	rm -f testfile_h0_vard.nc testfile_h1_vard.nc
 
 .PHONY: clean
 
