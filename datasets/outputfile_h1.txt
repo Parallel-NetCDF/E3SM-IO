@@ -2,7 +2,7 @@ netcdf testfile_h1_vard {
 // file format: CDF-5 (big variables)
 dimensions:
 	ncol = 866 ;
-	time = UNLIMITED ; // (1 currently)
+	time = UNLIMITED ; // (3 currently)
 	nbnd = 2 ;
 	chars = 8 ;
 	lev = 72 ;
