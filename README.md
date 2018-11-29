@@ -118,6 +118,9 @@ patterns shared by its 381 variables.
          [-o output_dir]: output directory name (default ./)
          input_file: name of input netCDF file describing data decompositions
     ```
+  * An example batch script file for running a job with 8 KNL nodes, 64 MPI
+    processes per node, on Cori @NERSC is provided in `./slurm.knl`.
+
 * Example outputs on screen
   ```
     % mpiexec -n 16 ./e3sm_io -k -q -r 3 -m datasets/866x72_16p.nc

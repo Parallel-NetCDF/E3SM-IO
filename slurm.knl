@@ -1,0 +1,48 @@
+#!/bin/bash -l
+#SBATCH -A m2887
+#SBATCH -p debug
+#SBATCH -N 8
+#SBATCH -t 00:05:00
+#SBATCH -o qout.%j
+#SBATCH -e qout.%j
+#SBATCH -L SCRATCH
+#SBATCH -C knl,quad,cache
+
+cd $SLURM_SUBMIT_DIR
+
+# display the names and values of all MPI-IO hints
+export MPICH_MPIIO_HINTS_DISPLAY=1
+
+# specifiy the number of MPI process per compute node
+nprocs_per_node=64
+
+# calculate the number of logical cores to allocate per MPI process
+cpus_per_task=$((68 / $nprocs_per_node))
+cpus_per_task=$(($cpus_per_task * 4))
+
+# NP is the total number of MPI processes to run
+NP=$(($nprocs_per_node * $SLURM_JOB_NUM_NODES))
+
+KNL_OPTS="-c $cpus_per_task --cpu_bind=cores"
+
+echo "--------------------------------------------------"
+echo "---- Running on $NP MPI processes on Cori NKL ----"
+echo "---- SLURM_JOB_NUM_NODES = $SLURM_JOB_NUM_NODES"
+echo "---- Running $nprocs_per_node MPI processes per KNL node"
+echo "---- command: srun -n $NP $KNL_OPTS"
+echo "--------------------------------------------------"
+echo ""
+
+# input/output files
+OUTDIR=$SCRATCH/FS_1M_64
+INFILE=$OUTDIR/48602x72_512p.nc
+
+# run command
+RUN_CMMD=e3sm_io
+RUN_OPTS="-q -k -r 3 -o $OUTDIR $INFILE"
+
+echo "---- KNL $RUN_CMMD ----"
+command="srun -n $NP $KNL_OPTS ./$RUN_CMMD $RUN_OPTS"
+echo "command=$command"
+$command
+
