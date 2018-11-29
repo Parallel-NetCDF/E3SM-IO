@@ -12,6 +12,8 @@ cd $SLURM_SUBMIT_DIR
 
 # display the names and values of all MPI-IO hints
 export MPICH_MPIIO_HINTS_DISPLAY=1
+# display the MPI rank IDs of all I/O aggregators
+export MPICH_MPIIO_AGGREGATOR_PLACEMENT_DISPLAY=1
 
 # specifiy the number of MPI process per compute node
 nprocs_per_node=64
