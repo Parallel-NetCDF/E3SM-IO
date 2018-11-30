@@ -14,6 +14,10 @@ cd $SLURM_SUBMIT_DIR
 export MPICH_MPIIO_HINTS_DISPLAY=1
 # display the MPI rank IDs of all I/O aggregators
 export MPICH_MPIIO_AGGREGATOR_PLACEMENT_DISPLAY=1
+# display file write and read access patterns
+export MPICH_MPIIO_STATS=1
+# display timing data for different phases in MPI-IO
+export MPICH_MPIIO_TIMERS=1
 
 # specifiy the number of MPI process per compute node
 nprocs_per_node=64
