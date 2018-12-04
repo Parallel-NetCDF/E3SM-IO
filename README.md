@@ -120,6 +120,8 @@ patterns shared by its 381 variables.
     ```
   * An example batch script file for running a job with 8 KNL nodes, 64 MPI
     processes per node, on Cori @NERSC is provided in `./slurm.knl`.
+  * A median-size decomposition file `datasets/48602x72_512p.nc.gz` contains
+    the I/O pattern from a bigger problem size ran on 512 MPI processes.
 
 * Example outputs on screen
   ```
