@@ -2,11 +2,11 @@
 MPICC		= mpicc
 CFLAGS          = -O2
 
-PnetCDF_DIR	= $(HOME)/PnetCDF/1.10.0
+PnetCDF_DIR	= $(HOME)/PnetCDF/1.11.0
 
 INCLUDES	= -I$(PnetCDF_DIR)/include -I.
 LDFLAGS		= -L$(PnetCDF_DIR)/lib
-LIBS		= -lpnetcdf
+LIBS		= -lpnetcdf $(shell $(PnetCDF_DIR)/bin/pnetcdf-config --libs)
 
 .c.o:
 	$(MPICC) $(CFLAGS) $(INCLUDES) -c $<
@@ -24,7 +24,8 @@ e3sm_io: e3sm_io.o def_header.o
 
 # romio_patch.c contains fix in https://github.com/pmodels/mpich/pull/3089
 # ROMIO_PATCH	= -Wl,--wrap=ADIOI_Type_create_hindexed_x -l:libmpich_intel.a
-ROMIO_PATCH	= -Wl,--wrap=ADIOI_Type_create_hindexed_x -l:libmpi.a
+# ROMIO_PATCH	= -Wl,--wrap=ADIOI_Type_create_hindexed_x -l:libmpi.a
+ROMIO_PATCH	= -Wl,--wrap=ADIOI_Type_create_hindexed_x
 
 e3sm_io.romio_patch: e3sm_io.o def_header.o romio_patch.o
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS) $(ROMIO_PATCH)

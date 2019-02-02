@@ -137,7 +137,6 @@ read_io_decomp(const char  *infname,
     /* calculate the total number of requests responsible by this process */
     nreqs = 0;
     for (i=0; i<proc_numb; i++) nreqs += num_reqs[i];
-    if (verbose) printf("rank %d: nreqs=%d\n",rank,nreqs);
 
     /* read the starting offsets of all requests into disps[] */
     *disps = (int*) malloc(proc_numb * max_nreqs * sizeof(int));
@@ -728,9 +727,7 @@ int run_vard(char       *out_dir,      /* output folder name */
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf("-----------------------------------------------------------\n");
-        printf("outfile = %s\n", outfile);
-        printf("-----------------------------------------------------------\n");
+        printf("History output file                = %s\n", outfile);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
         printf("Total number of variables          = %d\n",nvars);
@@ -747,10 +744,12 @@ int run_vard(char       *out_dir,      /* output folder name */
         printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
                (double)put_size/1048576.0/io_timing);
         if (verbose) print_info(&info_used);
+        printf("-----------------------------------------------------------\n");
     }
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!keep_outfile) unlink(outfname);
+    fflush(stdout);
     MPI_Barrier(comm);
     return nerrs;
 }
@@ -793,14 +792,16 @@ fn_exit:
     } \
 }
 
-#define POST_VARN(k, num) \
+#define POST_VARN(k, num, vid) \
     for (j=0; j<num; j++) { \
-        err = ncmpi_iput_varn(ncid, varids[i++], nreqs_D##k, starts_D##k, \
+        err = ncmpi_iput_varn(ncid, vid+j, nreqs_D##k, starts_D##k, \
                               counts_D##k, rec_buf_ptr, -1, REC_DTYPE, NULL); \
         ERR \
         rec_buf_ptr += nelems_D##k + gap; \
         nreqs += nreqs_D##k; \
     }
+
+static int two_buf;
 
 /*----< run_varn() >--------------------------------------------------------*/
 static
@@ -851,7 +852,7 @@ int run_varn(char       *out_dir,      /* output folder name */
     if (noncontig_buf) gap = 10;
 
     /* number of variable elements from 3 decompositions */
-    nreqs = 0;
+    nreqs = max_nreqs = 0;
     nelems_D1 = nelems_D2 = nelems_D3 = 0;
     for (k=0; k<nreqs_D1; k++) nelems_D1 += blocklens_D1[k];
     for (k=0; k<nreqs_D2; k++) nelems_D2 += blocklens_D2[k];
@@ -981,62 +982,125 @@ int run_varn(char       *out_dir,      /* output folder name */
         MPI_Barrier(comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
+        /* high water mark of number of noncontiguous requests */
+        if (nreqs > max_nreqs) max_nreqs = nreqs;
+        nreqs = 0;
+
         rec_buf_ptr = rec_buf;
 
         for (j=0; j<nreqs_D2; j++) starts_D2[j][0] = rec_no;
         for (j=0; j<nreqs_D3; j++) starts_D3[j][0] = rec_no;
 
         if (nvars == 408) {
-            POST_VARN(2, 1)   /* AEROD_v */
-            POST_VARN(3, 2)   /* ANRAIN and ANSNOW */
-            POST_VARN(2, 18)  /* AODABS ... ANSNOW */
-            POST_VARN(3, 2)   /* AQRAIN and AQSNOW */
-            POST_VARN(2, 6)   /* AQ_DMS ... AQ_SOAG */
-            POST_VARN(3, 5)   /* AREI ... CCN3 */
-            POST_VARN(2, 2)   /* CDNUMC and CLDHGH */
-            POST_VARN(3, 2)   /* CLDICE and CLDLIQ */
-            POST_VARN(2, 3)   /* CLDLOW ... CLDTOT */
-            POST_VARN(3, 4)   /* CLOUD ... DCQ */
-            POST_VARN(2, 11)  /* DF_DMS ... DSTSFMBL */
-            POST_VARN(3, 1)   /* DTCOND */
-            POST_VARN(2, 2)   /* DTENDTH and DTENDTQ */
-            POST_VARN(3, 2)   /* EXTINCT and FICE */
-            POST_VARN(2, 7)   /* FLDS ... FLUTC */
-            POST_VARN(3, 4)   /* FREQI ... FREQS */
-            POST_VARN(2, 15)  /* FSDS ... ICEFRAC */
-            POST_VARN(3, 3)   /* ICIMR ... IWC */
-            POST_VARN(2, 2)   /* LANDFRAC and LHFLX */
-            POST_VARN(3, 5)   /* LINOZ_DO3 ... LINOZ_SSO3 */
-            POST_VARN(2, 3)   /* LINOZ_SZA ... LWCF */
-            POST_VARN(3, 12)  /* Mass_bc ... O3 */
-            POST_VARN(2, 2)   /* O3_SRF and OCNFRAC */
-            POST_VARN(3, 1)   /* OMEGA */
-            POST_VARN(2, 1)   /* OMEGA500 */
-            POST_VARN(3, 1)   /* OMEGAT */
-            POST_VARN(2, 8)   /* PBLH ... PSL */
-            POST_VARN(3, 1)   /* Q */
-            POST_VARN(2, 2)   /* QFLX and QREFHT */
-            POST_VARN(3, 3)   /* QRL ... RAINQM */
-            POST_VARN(2, 1)   /* RAM1 */
-            POST_VARN(3, 1)   /* RELHUM */
-            POST_VARN(2, 37)  /* SFDMS ... SNOWHLND */
-            POST_VARN(3, 2)   /* SNOWQM and SO2 */
-            POST_VARN(2, 10)  /* SO2_CLXF ... SWCF */
-            POST_VARN(3, 1)   /* T */
-            POST_VARN(2, 19)  /* TAUGWX ... TVQ */
-            POST_VARN(3, 1)   /* U */
-            POST_VARN(2, 1)   /* U10 */
-            POST_VARN(3, 6)   /* UU ... VV */
-            POST_VARN(2, 3)   /* WD_H2O2 ... WD_SO2 */
-            POST_VARN(3, 3)   /* WSUB ... aero_water */
-            POST_VARN(2, 32)  /* airFV ... dst_c3SFWET */
-            POST_VARN(3, 1)   /* hstobie_linoz */
-            POST_VARN(2, 129) /* mlip ... soa_c3SFWET */
+            if (two_buf) {
+                /* write 2D variables */
+                POST_VARN(2,   1,  30)   /* AEROD_v */
+                POST_VARN(2,  18,  33)   /* AODABS ... ANSNOW */
+                POST_VARN(2,   6,  53)   /* AQ_DMS ... AQ_SOAG */
+                POST_VARN(2,   2,  64)   /* CDNUMC and CLDHGH */
+                POST_VARN(2,   3,  68)   /* CLDLOW ... CLDTOT */
+                POST_VARN(2,  11,  75)   /* DF_DMS ... DSTSFMBL */
+                POST_VARN(2,   2,  87)   /* DTENDTH and DTENDTQ */
+                POST_VARN(2,   7,  91)   /* FLDS ... FLUTC */
+                POST_VARN(2,  15, 102)   /* FSDS ... ICEFRAC */
+                POST_VARN(2,   2, 120)   /* LANDFRAC and LHFLX */
+                POST_VARN(2,   3, 127)   /* LINOZ_SZA ... LWCF */
+                POST_VARN(2,   2, 142)   /* O3_SRF and OCNFRAC */
+                POST_VARN(2,   1, 145)   /* OMEGA500 */
+                POST_VARN(2,   8, 147)   /* PBLH ... PSL */
+                POST_VARN(2,   2, 156)   /* QFLX and QREFHT */
+                POST_VARN(2,   1, 161)   /* RAM1 */
+                POST_VARN(2,  37, 163)   /* SFDMS ... SNOWHLND */
+                POST_VARN(2,  10, 202)   /* SO2_CLXF ... SWCF */
+                POST_VARN(2,  19, 213)   /* TAUGWX ... TVQ */
+                POST_VARN(2,   1, 233)   /* U10 */
+                POST_VARN(2,   3, 240)   /* WD_H2O2 ... WD_SO2 */
+                POST_VARN(2,  32, 246)   /* airFV ... dst_c3SFWET */
+                POST_VARN(2, 129, 279)   /* mlip ... soa_c3SFWET */
+                /* write 3D variables */
+                POST_VARN(3,   2,  31)   /* ANRAIN and ANSNOW */
+                POST_VARN(3,   2,  51)   /* AQRAIN and AQSNOW */
+                POST_VARN(3,   5,  59)   /* AREI ... CCN3 */
+                POST_VARN(3,   2,  66)   /* CLDICE and CLDLIQ */
+                POST_VARN(3,   4,  71)   /* CLOUD ... DCQ */
+                POST_VARN(3,   1,  86)   /* DTCOND */
+                POST_VARN(3,   2,  89)   /* EXTINCT and FICE */
+                POST_VARN(3,   4,  98)   /* FREQI ... FREQS */
+                POST_VARN(3,   3, 117)   /* ICIMR ... IWC */
+                POST_VARN(3,   5, 122)   /* LINOZ_DO3 ... LINOZ_SSO3 */
+                POST_VARN(3,  12, 130)   /* Mass_bc ... O3 */
+                POST_VARN(3,   1, 144)   /* OMEGA */
+                POST_VARN(3,   1, 146)   /* OMEGAT */
+                POST_VARN(3,   1, 155)   /* Q */
+                POST_VARN(3,   3, 158)   /* QRL ... RAINQM */
+                POST_VARN(3,   1, 162)   /* RELHUM */
+                POST_VARN(3,   2, 200)   /* SNOWQM and SO2 */
+                POST_VARN(3,   1, 212)   /* T */
+                POST_VARN(3,   1, 232)   /* U */
+                POST_VARN(3,   6, 234)   /* UU ... VV */
+                POST_VARN(3,   3, 243)   /* WSUB ... aero_water */
+                POST_VARN(3,   1, 278)   /* hstobie_linoz */
+            } else {
+                /* write variables in the same order as they defined */
+                POST_VARN(2,   1,  30)   /* AEROD_v */
+                POST_VARN(3,   2,  31)   /* ANRAIN and ANSNOW */
+                POST_VARN(2,  18,  33)   /* AODABS ... ANSNOW */
+                POST_VARN(3,   2,  51)   /* AQRAIN and AQSNOW */
+                POST_VARN(2,   6,  53)   /* AQ_DMS ... AQ_SOAG */
+                POST_VARN(3,   5,  59)   /* AREI ... CCN3 */
+                POST_VARN(2,   2,  64)   /* CDNUMC and CLDHGH */
+                POST_VARN(3,   2,  66)   /* CLDICE and CLDLIQ */
+                POST_VARN(2,   3,  68)   /* CLDLOW ... CLDTOT */
+                POST_VARN(3,   4,  71)   /* CLOUD ... DCQ */
+                POST_VARN(2,  11,  75)   /* DF_DMS ... DSTSFMBL */
+                POST_VARN(3,   1,  86)   /* DTCOND */
+                POST_VARN(2,   2,  87)   /* DTENDTH and DTENDTQ */
+                POST_VARN(3,   2,  89)   /* EXTINCT and FICE */
+                POST_VARN(2,   7,  91)   /* FLDS ... FLUTC */
+                POST_VARN(3,   4,  98)   /* FREQI ... FREQS */
+                POST_VARN(2,  15, 102)   /* FSDS ... ICEFRAC */
+                POST_VARN(3,   3, 117)   /* ICIMR ... IWC */
+                POST_VARN(2,   2, 120)   /* LANDFRAC and LHFLX */
+                POST_VARN(3,   5, 122)   /* LINOZ_DO3 ... LINOZ_SSO3 */
+                POST_VARN(2,   3, 127)   /* LINOZ_SZA ... LWCF */
+                POST_VARN(3,  12, 130)   /* Mass_bc ... O3 */
+                POST_VARN(2,   2, 142)   /* O3_SRF and OCNFRAC */
+                POST_VARN(3,   1, 144)   /* OMEGA */
+                POST_VARN(2,   1, 145)   /* OMEGA500 */
+                POST_VARN(3,   1, 146)   /* OMEGAT */
+                POST_VARN(2,   8, 147)   /* PBLH ... PSL */
+                POST_VARN(3,   1, 155)   /* Q */
+                POST_VARN(2,   2, 156)   /* QFLX and QREFHT */
+                POST_VARN(3,   3, 158)   /* QRL ... RAINQM */
+                POST_VARN(2,   1, 161)   /* RAM1 */
+                POST_VARN(3,   1, 162)   /* RELHUM */
+                POST_VARN(2,  37, 163)   /* SFDMS ... SNOWHLND */
+                POST_VARN(3,   2, 200)   /* SNOWQM and SO2 */
+                POST_VARN(2,  10, 202)   /* SO2_CLXF ... SWCF */
+                POST_VARN(3,   1, 212)   /* T */
+                POST_VARN(2,  19, 213)   /* TAUGWX ... TVQ */
+                POST_VARN(3,   1, 232)   /* U */
+                POST_VARN(2,   1, 233)   /* U10 */
+                POST_VARN(3,   6, 234)   /* UU ... VV */
+                POST_VARN(2,   3, 240)   /* WD_H2O2 ... WD_SO2 */
+                POST_VARN(3,   3, 243)   /* WSUB ... aero_water */
+                POST_VARN(2,  32, 246)   /* airFV ... dst_c3SFWET */
+                POST_VARN(3,   1, 278)   /* hstobie_linoz */
+                POST_VARN(2, 129, 279)   /* mlip ... soa_c3SFWET */
+            }
         }
         else {
-            POST_VARN(2, 13)  /* CLDHGH ... T5 */
-            POST_VARN(3, 1)   /* U */
-            POST_VARN(2, 7)   /* U250 ... Z500 */
+            if (two_buf) {
+                /* write 2D variables followed by 3D variables */
+                POST_VARN(2, 13, 30)   /* CLDHGH ... T5 */
+                POST_VARN(2,  7, 44)   /* U250 ... Z500 */
+                POST_VARN(3,  1, 43)   /* U */
+            } else {
+                /* write variables in the same order as they defined */
+                POST_VARN(2, 13, 30)   /* CLDHGH ... T5 */
+                POST_VARN(3,  1, 43)   /* U */
+                POST_VARN(2,  7, 44)   /* U250 ... Z500 */
+            }
         }
 
         post_timing += MPI_Wtime() - timing;
@@ -1045,6 +1109,11 @@ int run_varn(char       *out_dir,      /* output folder name */
         timing = MPI_Wtime();
 
         err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
+
+        /* high water mark of number of noncontiguous requests */
+        if (nreqs > max_nreqs) max_nreqs = nreqs;
+        nreqs = 0;
+
         wait_timing += MPI_Wtime() - timing;
     }
 
@@ -1066,6 +1135,7 @@ int run_varn(char       *out_dir,      /* output folder name */
 
     total_timing = MPI_Wtime() - total_timing;
 
+    nreqs = max_nreqs;
     MPI_Reduce(&nreqs,         &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
     MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
     put_size = tmp;
@@ -1099,9 +1169,7 @@ int run_varn(char       *out_dir,      /* output folder name */
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf("-----------------------------------------------------------\n");
-        printf("outfile = %s\n", outfile);
-        printf("-----------------------------------------------------------\n");
+        printf("History output file                = %s\n", outfile);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
         printf("Total number of variables          = %d\n",nvars);
@@ -1119,10 +1187,12 @@ int run_varn(char       *out_dir,      /* output folder name */
         printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
                (double)put_size/1048576.0/wait_timing);
         if (verbose) print_info(&info_used);
+        printf("-----------------------------------------------------------\n");
     }
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!keep_outfile) unlink(outfname);
+    fflush(stdout);
     MPI_Barrier(comm);
     return nerrs;
 }
@@ -1151,16 +1221,17 @@ static void
 usage(char *argv0)
 {
     char *help =
-    "Usage: %s [OPTION]... [FILE]...\n"
+    "Usage: %s [OPTION]... FILE\n"
     "       [-h] Print help\n"
-    "       [-q] Quiet mode\n"
+    "       [-v] Verbose mode\n"
     "       [-k] Keep the output files when program exits\n"
-    "       [-d] run test that uses PnetCDF vard API\n"
-    "       [-n] run test that uses PnetCDF varn API\n"
-    "       [-m] run test using noncontiguous write buffer\n"
-    "       [-r num] number of records (default 1)\n"
-    "       [-o output_dir]: output directory name (default ./)\n"
-    "       input_file: name of input netCDF file describing data decompositions\n";
+    "       [-d] Run test that uses PnetCDF vard API\n"
+    "       [-n] Run test that uses PnetCDF varn API\n"
+    "       [-m] Run test using noncontiguous write buffer\n"
+    "       [-t] Write 2D variables followed by 3D variables\n"
+    "       [-r num] Number of records (default 1)\n"
+    "       [-o output_dir] Output directory name (default ./)\n"
+    "       FILE: Name of input netCDF file describing data decompositions\n";
     fprintf(stderr, help, argv0);
 }
 
@@ -1181,14 +1252,15 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     out_dir[0] = '\0';
-    verbose = 1;
+    verbose = 0;
     keep_outfile = 0;
     num_recs = 1;
+    two_buf = 0;
 
     /* command-line arguments */
-    while ((i = getopt(argc, argv, "hkqdnmo:r:")) != EOF)
+    while ((i = getopt(argc, argv, "hkvdnmto:r:")) != EOF)
         switch(i) {
-            case 'q': verbose = 0;
+            case 'v': verbose = 1;
                       break;
             case 'k': keep_outfile = 1;
                       break;
@@ -1199,6 +1271,8 @@ int main(int argc, char** argv)
             case 'n': tst_varn = 1;
                       break;
             case 'm': noncontig_buf = 1;
+                      break;
+            case 't': two_buf = 1;
                       break;
             case 'o': strcpy(out_dir, optarg);
                       break;
@@ -1239,12 +1313,17 @@ int main(int argc, char** argv)
                          &disps_D3, &blocklens_D3);
     if (err) goto fn_exit;
 
+    if (verbose && rank==0) {
+        printf("number of noncontiguous requests for D1 = %d\n",contig_nreqs_D1);
+        printf("number of noncontiguous requests for D2 = %d\n",contig_nreqs_D2);
+        printf("number of noncontiguous requests for D3 = %d\n",contig_nreqs_D3);
+    }
+
     /* set MPI-IO hints */
     MPI_Info_create(&info);
     MPI_Info_set(info, "romio_ds_write", "disable"); /* MPI-IO data sieving */
     MPI_Info_set(info, "romio_cb_write", "enable");  /* collective write */
     MPI_Info_set(info, "romio_no_indep_rw", "true"); /* no independent MPI-IO */
-    // MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
 
     /* set PnetCDF I/O hints */
     MPI_Info_set(info, "nc_var_align_size", "1"); /* no gap between variables */
@@ -1265,10 +1344,13 @@ int main(int argc, char** argv)
         if (!rank)
             printf("PnetCDF vard API requires internal and external data types match, skip\n");
 #else
-        if (!rank) printf("\n---- benchmarking vard API -----------------------\n");
+        if (!rank) {
+            printf("\n==== benchmarking vard API ================================\n");
+            printf("Variable written order: same as variables are defined\n\n");
+        }
         fflush(stdout);
-
         MPI_Barrier(MPI_COMM_WORLD);
+
         nvars = 408;
         outfname = "testfile_h0_vard.nc";
         nerrs += run_vard(out_dir, outfname, nvars, num_recs,
@@ -1276,9 +1358,9 @@ int main(int argc, char** argv)
                           contig_nreqs_D1, disps_D1, blocklens_D1,
                           contig_nreqs_D2, disps_D2, blocklens_D2,
                           contig_nreqs_D3, disps_D3, blocklens_D3);
-        fflush(stdout);
 
         MPI_Barrier(MPI_COMM_WORLD);
+
         nvars = 51;
         outfname = "testfile_h1_vard.nc";
         nerrs += run_vard(out_dir, outfname, nvars, num_recs,
@@ -1290,10 +1372,20 @@ int main(int argc, char** argv)
     }
 
     if (tst_varn) {
-        if (!rank) printf("\n---- benchmarking varn API -----------------------\n");
+        if (!rank) {
+            printf("\n==== benchmarking varn API ================================\n");
+            printf("Variable written order: ");
+            if (two_buf)
+                printf("2D variables then 3D variables\n\n");
+            else
+                printf("same as variables are defined\n\n");
+        }
         fflush(stdout);
         MPI_Barrier(MPI_COMM_WORLD);
 
+        /* There are two kinds of outputs for history variables.
+         * Output 1st kind history variables.
+         */
         nvars = 408;
         outfname = "testfile_h0_varn.nc";
         nerrs += run_varn(out_dir, outfname, nvars, num_recs,
@@ -1302,9 +1394,9 @@ int main(int argc, char** argv)
                           contig_nreqs_D2, disps_D2, blocklens_D2,
                           contig_nreqs_D3, disps_D3, blocklens_D3);
 
-        fflush(stdout);
         MPI_Barrier(MPI_COMM_WORLD);
 
+        /* Output 2nd kind history variables. */
         nvars = 51;
         outfname = "testfile_h1_varn.nc";
         nerrs += run_varn(out_dir, outfname, nvars, num_recs,

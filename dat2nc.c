@@ -242,9 +242,9 @@ static void
 usage(char *argv0)
 {
     char *help =
-    "Usage: %s [OPTION]... [FILE]...\n"
+    "Usage: %s [OPTION]...\n"
     "       -h               Print help\n"
-    "       -q               Quiet mode (reports when fail)\n"
+    "       -v               Verbose mode\n"
     "       -l num           max number of characters per line in input file\n"
     "       -o out_file      name of output netCDF file\n"
     "       -1 input_file    name of 1st 1D decomposition file\n"
@@ -270,12 +270,12 @@ int main(int argc, char **argv) {
 
     outfname[0] = '\0';
     line_sz = LINE_SIZE;
-    verbose = 1;
+    verbose = 0;
 
     /* get command-line arguments */
-    while ((i = getopt(argc, argv, "hqo:l:1:2:3:")) != EOF)
+    while ((i = getopt(argc, argv, "hvo:l:1:2:3:")) != EOF)
         switch(i) {
-            case 'q': verbose = 0;
+            case 'v': verbose = 1;
                       break;
             case 'o': strcpy(outfname, optarg);
                       break;

@@ -45,7 +45,7 @@ INFILE=$OUTDIR/48602x72_512p.nc
 
 # run command
 RUN_CMMD=e3sm_io
-RUN_OPTS="-q -k -r 3 -o $OUTDIR $INFILE"
+RUN_OPTS="-k -r 3 -o $OUTDIR $INFILE"
 
 echo "---- KNL $RUN_CMMD ----"
 command="srun -n $NP $KNL_OPTS ./$RUN_CMMD $RUN_OPTS"

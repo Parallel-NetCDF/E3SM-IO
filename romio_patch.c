@@ -82,28 +82,6 @@ int __wrap_ADIOI_Type_create_hindexed_x(int count,
      * which I have not yet precicesly nailed down, but appears to have
      * something to do with struct-of-chunks when the chunks are small */
 
-#ifdef USE_ORIGINAL_MPICH_3_2
-    for(i=0; i<count; i++) {
-        if (array_of_blocklengths[i] > INT_MAX) {
-            blocklens[i] = 1;
-            is_big=1;
-            type_create_contiguous_x(array_of_blocklengths[i], oldtype,  &(types[i]));
-        } else {
-            /* OK to cast: checked for "bigness" above */
-            blocklens[i] = (int)array_of_blocklengths[i];
-            MPI_Type_contiguous(blocklens[i], oldtype, &(types[i]));
-        }
-    }
-
-    if (is_big) {
-        ret = MPI_Type_create_struct(count, blocklens, array_of_displacements,
-                types, newtype);
-    } else {
-        ret = MPI_Type_create_hindexed(count, blocklens, array_of_displacements, oldtype, newtype);
-    }
-    for (i=0; i< count; i++)
-        MPI_Type_free(&(types[i]));
-#else
     /* See https://github.com/pmodels/mpich/pull/3089 */
     for (i = 0; i < count; i++) {
         if (array_of_blocklengths[i] > INT_MAX) {
@@ -125,7 +103,6 @@ int __wrap_ADIOI_Type_create_hindexed_x(int count,
     } else {
         ret = MPI_Type_create_hindexed(count, blocklens, array_of_displacements, oldtype, newtype);
     }
-#endif
     free(types);
     free(blocklens);
 
