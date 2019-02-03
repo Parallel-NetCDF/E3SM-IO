@@ -126,75 +126,75 @@ patterns shared by its 381 2D and 3D variables.
 
 * Example outputs shown on screen
   ```
-    % mpiexec -n 16 ./e3sm_io -k -r 3 -m datasets/866x72_16p.nc
+    % mpiexec -n 512 ./e3sm_io -k -r 3  -o $SCRATCH/FS_1M_64 datasets/48602x72_512p.nc
 
-    Total number of MPI processes      = 16
-    Input decomposition file           = datasets/866x72_16p.nc
-    Output file directory              = .
-    Variable dimensions (C order)      = 72 x 866
+    Total number of MPI processes      = 512
+    Input decomposition file           = $SCRATCH/FS_1M_64/48602x72_512p.nc
+    Output file directory              = $SCRATCH/FS_1M_64
+    Variable dimensions (C order)      = 72 x 48602
     Write number of records (time dim) = 3
-    Using noncontiguous write buffer   = yes
+    Using noncontiguous write buffer   = no
 
     ==== benchmarking vard API ================================
     Variable written order: same as variables are defined
 
     History output file                = testfile_h0_vard.nc
-    MAX heap memory allocated by PnetCDF internally is 3.11 MiB
+    MAX heap memory allocated by PnetCDF internally is 2.22 MiB
     Total number of variables          = 408
-    Total write amount                 = 48.19 MiB = 0.05 GiB
-    Max number of requests             = 189269
-    Max Time of open + metadata define = 0.2202 sec
-    Max Time of I/O preparing          = 0.0781 sec
-    Max Time of ncmpi_put_vard         = 2.9201 sec
-    Max Time of close                  = 0.0377 sec
-    Max Time of TOTAL                  = 3.3555 sec
-    I/O bandwidth (open-to-close)      = 14.3611 MiB/sec
-    I/O bandwidth (write-only)         = 16.4722 MiB/sec
+    Total write amount                 = 2699.36 MiB = 2.64 GiB
+    Max number of requests             = 310598
+    Max Time of open + metadata define = 0.0533 sec
+    Max Time of I/O preparing          = 0.1156 sec
+    Max Time of ncmpi_put_vard         = 5.4311 sec
+    Max Time of close                  = 0.0306 sec
+    Max Time of TOTAL                  = 5.6385 sec
+    I/O bandwidth (open-to-close)      = 478.7341 MiB/sec
+    I/O bandwidth (write-only)         = 496.9981 MiB/sec
     -----------------------------------------------------------
     History output file                = testfile_h1_vard.nc
-    MAX heap memory allocated by PnetCDF internally is 3.11 MiB
+    MAX heap memory allocated by PnetCDF internally is 2.22 MiB
     Total number of variables          = 51
-    Total write amount                 = 0.94 MiB = 0.00 GiB
-    Max number of requests             = 3668
-    Max Time of open + metadata define = 0.2395 sec
-    Max Time of I/O preparing          = 0.0210 sec
-    Max Time of ncmpi_put_vard         = 1.6695 sec
-    Max Time of close                  = 0.0305 sec
-    Max Time of TOTAL                  = 2.0205 sec
-    I/O bandwidth (open-to-close)      = 0.4670 MiB/sec
-    I/O bandwidth (write-only)         = 0.5602 MiB/sec
+    Total write amount                 = 52.30 MiB = 0.05 GiB
+    Max number of requests             = 6022
+    Max Time of open + metadata define = 0.0338 sec
+    Max Time of I/O preparing          = 0.0014 sec
+    Max Time of ncmpi_put_vard         = 0.2489 sec
+    Max Time of close                  = 0.0055 sec
+    Max Time of TOTAL                  = 0.2907 sec
+    I/O bandwidth (open-to-close)      = 179.8902 MiB/sec
+    I/O bandwidth (write-only)         = 210.1002 MiB/sec
     -----------------------------------------------------------
 
     ==== benchmarking varn API ================================
     Variable written order: same as variables are defined
 
     History output file                = testfile_h0_varn.nc
-    MAX heap memory allocated by PnetCDF internally is 22.21 MiB
+    MAX heap memory allocated by PnetCDF internally is 35.07 MiB
     Total number of variables          = 408
-    Total write amount                 = 48.19 MiB = 0.05 GiB
-    Max number of requests             = 189189
-    Max Time of open + metadata define = 0.2008 sec
-    Max Time of I/O preparing          = 0.0108 sec
-    Max Time of ncmpi_iput_varn        = 0.2031 sec
-    Max Time of ncmpi_wait_all         = 2.9683 sec
-    Max Time of close                  = 0.0442 sec
-    Max Time of TOTAL                  = 3.7903 sec
-    I/O bandwidth (open-to-close)      = 12.7137 MiB/sec
-    I/O bandwidth (write-only)         = 16.2043 MiB/sec
+    Total write amount                 = 2699.36 MiB = 2.64 GiB
+    Max number of requests             = 310464
+    Max Time of open + metadata define = 0.0635 sec
+    Max Time of I/O preparing          = 0.0018 sec
+    Max Time of ncmpi_iput_varn        = 0.2468 sec
+    Max Time of ncmpi_wait_all         = 5.8602 sec
+    Max Time of close                  = 0.0190 sec
+    Max Time of TOTAL                  = 6.2001 sec
+    I/O bandwidth (open-to-close)      = 435.3753 MiB/sec
+    I/O bandwidth (write-only)         = 460.6144 MiB/sec
     -----------------------------------------------------------
     History output file                = testfile_h1_varn.nc
-    MAX heap memory allocated by PnetCDF internally is 22.21 MiB
+    MAX heap memory allocated by PnetCDF internally is 35.07 MiB
     Total number of variables          = 51
-    Total write amount                 = 0.94 MiB = 0.00 GiB
-    Max number of requests             = 3588
-    Max Time of open + metadata define = 0.1806 sec
-    Max Time of I/O preparing          = 0.0102 sec
-    Max Time of ncmpi_iput_varn        = 0.0114 sec
-    Max Time of ncmpi_wait_all         = 1.6894 sec
-    Max Time of close                  = 0.0504 sec
-    Max Time of TOTAL                  = 2.2908 sec
-    I/O bandwidth (open-to-close)      = 0.4119 MiB/sec
-    I/O bandwidth (write-only)         = 0.5536 MiB/sec
+    Total write amount                 = 52.30 MiB = 0.05 GiB
+    Max number of requests             = 5888
+    Max Time of open + metadata define = 0.0370 sec
+    Max Time of I/O preparing          = 0.0005 sec
+    Max Time of ncmpi_iput_varn        = 0.0048 sec
+    Max Time of ncmpi_wait_all         = 0.2423 sec
+    Max Time of close                  = 0.0058 sec
+    Max Time of TOTAL                  = 0.2925 sec
+    I/O bandwidth (open-to-close)      = 178.7747 MiB/sec
+    I/O bandwidth (write-only)         = 215.7512 MiB/sec
     -----------------------------------------------------------
   ```
 * Output files
