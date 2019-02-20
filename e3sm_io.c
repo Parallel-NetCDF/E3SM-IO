@@ -771,6 +771,41 @@ fn_exit:
     } \
 }
 
+#define FIX_2D_VAR_STARTS_COUNTS(starts, counts, nreqs, disps, blocklens, last_dimlen, nreqs_merged) { \
+    starts = (MPI_Offset**) malloc(2 * nreqs * sizeof(MPI_Offset*)); \
+    counts = starts + nreqs; \
+    starts[0] = (MPI_Offset*) malloc(2 * nreqs * 2 * sizeof(MPI_Offset)); \
+    counts[0] = starts[0] + nreqs * 2; \
+    \
+    for (i=1; i<nreqs; i++) { \
+        starts[i] = starts[i-1] + 2; \
+        counts[i] = counts[i-1] + 2; \
+    } \
+    \
+    int reqs_cnt = 0; \
+    i = 0; \
+    while (i < nreqs) { \
+        starts[reqs_cnt][1] = disps[i] % last_dimlen; /* decomposition is 2D */ \
+        counts[reqs_cnt][1] = blocklens[i]; /* each blocklens[i] is no bigger than last_dimlen */ \
+        \
+        starts[reqs_cnt][0] = disps[i] / last_dimlen; \
+        counts[reqs_cnt][0] = 1; \
+        \
+        /* merge consecutive "1 by last_dimlen" regions into a larger one */ \
+        while ((i < nreqs - 1) && \
+               (disps[i] % last_dimlen == 0 && blocklens[i] == last_dimlen) && \
+               (disps[i + 1] - disps[i] == last_dimlen && blocklens[i + 1] == last_dimlen)) { \
+            i++; \
+            counts[reqs_cnt][0]++; \
+        } \
+        \
+        reqs_cnt++; \
+        i++; \
+    } \
+    \
+    nreqs_merged = reqs_cnt; \
+}
+
 #define REC_2D_VAR_STARTS_COUNTS(rec, starts, counts, nreqs, disps, blocklens) { \
     starts = (MPI_Offset**) malloc(2 * nreqs * sizeof(MPI_Offset*)); \
     counts = starts + nreqs; \
@@ -791,7 +826,7 @@ fn_exit:
     } \
 }
 
-#define REC_3D_VAR_STARTS_COUNTS(rec, starts, counts, nreqs, disps, blocklens, last_dimlen) { \
+#define REC_3D_VAR_STARTS_COUNTS(rec, starts, counts, nreqs, disps, blocklens, last_dimlen, nreqs_merged) { \
     starts = (MPI_Offset**) malloc(2 * nreqs * sizeof(MPI_Offset*)); \
     counts = starts + nreqs; \
     starts[0] = (MPI_Offset*) malloc(2 * nreqs * 3 * sizeof(MPI_Offset)); \
@@ -802,16 +837,31 @@ fn_exit:
         counts[i] = counts[i-1] + 3; \
     } \
     \
-    for (i=0; i<nreqs; i++) { \
-        starts[i][2] = disps[i] % last_dimlen; /* decomposition is 2D */ \
-        counts[i][2] = blocklens[i]; /* each blocklens[i] is no bigger than last_dimlen */ \
+    int reqs_cnt = 0; \
+    i = 0; \
+    while (i < nreqs) { \
+        starts[reqs_cnt][2] = disps[i] % last_dimlen; /* decomposition is 2D */ \
+        counts[reqs_cnt][2] = blocklens[i]; /* each blocklens[i] is no bigger than last_dimlen */ \
         \
-        starts[i][1] = disps[i] / last_dimlen; \
-        counts[i][1] = 1; \
+        starts[reqs_cnt][1] = disps[i] / last_dimlen; \
+        counts[reqs_cnt][1] = 1; \
         \
-        starts[i][0] = rec; /* record ID */ \
-        counts[i][0] = 1;   /* one record only */ \
+        starts[reqs_cnt][0] = rec; /* record ID */ \
+        counts[reqs_cnt][0] = 1;   /* one record only */ \
+        \
+        /* merge consecutive "1 by last_dimlen" regions into a larger one */ \
+        while ((i < nreqs - 1) && \
+               (disps[i] % last_dimlen == 0 && blocklens[i] == last_dimlen) && \
+               (disps[i + 1] - disps[i] == last_dimlen && blocklens[i + 1] == last_dimlen)) { \
+            i++; \
+            counts[reqs_cnt][1]++; \
+        } \
+        \
+        reqs_cnt++; \
+        i++; \
     } \
+    \
+    nreqs_merged = reqs_cnt; \
 }
 
 #define POST_VARN(k, num, vid) \
@@ -845,7 +895,7 @@ int run_varn(char       *out_dir,      /* output folder name */
              int        *blocklens_D3) /* [nreqs_D3] request's block lengths */
 {
     char outfname[512], txt_buf[16], *txt_buf_ptr;
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
+    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nreqs_D3_merged;
     int rec_no, gap=0, nreqs, max_nreqs, int_buf[10], *int_buf_ptr;
     size_t dbl_buflen, rec_buflen;
     size_t nelems_D1, nelems_D2, nelems_D3;
@@ -890,7 +940,9 @@ int run_varn(char       *out_dir,      /* output folder name */
 
     REC_2D_VAR_STARTS_COUNTS(0, starts_D2, counts_D2, nreqs_D2, disps_D2, blocklens_D2)
 
-    REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs_D3, disps_D3, blocklens_D3, dims[1])
+    REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs_D3, disps_D3, blocklens_D3, dims[1], nreqs_D3_merged)
+    if (nreqs_D3_merged < nreqs_D3)
+        nreqs_D3 = nreqs_D3_merged;
 
     /* allocate and initialize write buffer for small variables */
     dbl_buflen = nelems_D2 * 2 + nelems_D1
