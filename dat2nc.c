@@ -377,7 +377,7 @@ usage(char *argv0)
 /*----< main() >------------------------------------------------------------*/
 int main(int argc, char **argv) {
     char *infname[6], outfname[1024], cmd_line[4096];
-    int  i, rank, ncid, num_decomp, dimid, err, nerrs=0;
+    int  i, rank, ncid, num_decomp=0, dimid, err, nerrs=0;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -403,28 +403,42 @@ int main(int argc, char **argv) {
             case 'l': line_sz = atoi(optarg);
                       break;
             case '1': infname[0] = optarg;
-                      num_decomp = 1;
+                      num_decomp++;
                       break;
             case '2': infname[1] = optarg;
-                      num_decomp = 2;
+                      num_decomp++;
                       break;
             case '3': infname[2] = optarg;
-                      num_decomp = 3;
+                      num_decomp++;
                       break;
             case '4': infname[3] = optarg;
-                      num_decomp = 4;
+                      num_decomp++;
                       break;
             case '5': infname[4] = optarg;
-                      num_decomp = 5;
+                      num_decomp++;
                       break;
             case '6': infname[5] = optarg;
-                      num_decomp = 6;
+                      num_decomp++;
                       break;
             case 'h':
             default:  if (rank==0) usage(argv[0]);
                       MPI_Finalize();
                       return 1;
         }
+
+    if (num_decomp == 0) {
+        printf("Error: input decomposition files are required.\n");
+        printf("       add -h to see all available command-line options.\n");
+        MPI_Finalize();
+        return 1;
+    }
+
+    if (num_decomp != 3 && num_decomp != 6) {
+        printf("Error: e3sm_io currently supports F case (3 decomposition files)\n");
+        printf("       and G case (6 decomposition files) only.\n");
+        MPI_Finalize();
+        return 1;
+    }
 
     if (verbose) {
         for (i=0; i<6; i++) {
