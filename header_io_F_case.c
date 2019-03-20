@@ -11,11 +11,11 @@
 
 #include <e3sm_io.h>
 
-/*----< e3sm_io_header() >---------------------------------------------------*/
-int e3sm_io_header(int         ncid,    /* file ID */
-                   MPI_Offset  dims[2], /* dimension sizes */
-                   int         nvars,   /* number of variables */
-                   int        *varids)  /* variable IDs */
+/*----< def_F_case_h0() >----------------------------------------------------*/
+int def_F_case_h0(int         ncid,    /* file ID */
+                  MPI_Offset  dims[2], /* dimension sizes */
+                  int         nvars,   /* number of variables */
+                  int        *varids)  /* variable IDs */
 {
     /* Total 408 variables */
     int lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date,
@@ -3474,11 +3474,11 @@ fn_exit:
     return nerrs;
 }
 
-/*----< e3sm_io_header1() >---------------------------------------------------*/
-int e3sm_io_header1(int         ncid,    /* file ID */
-                    MPI_Offset  dims[2], /* dimension sizes */
-                    int         nvars,   /* number of variables */
-                    int        *varids)  /* variable IDs */
+/*----< def_F_case_h1() >----------------------------------------------------*/
+int def_F_case_h1(int         ncid,    /* file ID */
+                  MPI_Offset  dims[2], /* dimension sizes */
+                  int         nvars,   /* number of variables */
+                  int        *varids)  /* variable IDs */
 {
     /* Total 51 variables */
     int lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date,

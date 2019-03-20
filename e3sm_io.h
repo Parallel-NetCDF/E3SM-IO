@@ -7,10 +7,22 @@
  *
  *********************************************************************/
 
+#ifndef _H_E3SM_IO_
+#define _H_E3SM_IO_
+
 #include <stdio.h>
 
 #include <mpi.h>
 #include <pnetcdf.h>
+
+/* minimum PnetCDF version required is 1.10.0 */
+#if (PNETCDF_VERSION_MAJOR*1000000 + PNETCDF_VERSION_MINOR*1000 + PNETCDF_VERSION_SUB < 1010000)
+#error "PnetCDF 1.10.0 and later is required to build this program"
+#endif
+
+int verbose; /* verbose mode to print additional messages on screen */
+int keep_outfile; /* whether to keep the output files when exits */
+int two_buf;
 
 #ifndef MAX
 #define MAX(a,b) ((a) > (b)) ? (a) : (b)
@@ -38,9 +50,27 @@ typedef float dtype;
 #define REC_XTYPE NC_FLOAT
 #endif
 
-extern
-int e3sm_io_header(int ncid, MPI_Offset dims[2], int nvars, int *varids);
+extern int
+def_F_case_h0(int ncid, MPI_Offset dims[2], int nvars, int *varids);
 
-extern
-int e3sm_io_header1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
+extern int
+def_F_case_h1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
 
+extern int
+read_decomp(const char *infname, MPI_Offset dims[3][2], int contig_nreqs[3],
+            int *disps[3], int *blocklens[3]);
+
+extern void
+print_info(MPI_Info *info_used);
+
+extern int
+run_vard_F_case(char *out_dir, char *outfile, int nvars, int num_recs,
+		int noncontig_buf, MPI_Info info, MPI_Offset dims[3][2],
+                int nreqs[3], int *disps[3], int *blocklens[3]);
+
+extern int
+run_varn_F_case(char *out_dir, char *outfile, int nvars, int num_recs,
+		int noncontig_buf, MPI_Info info, MPI_Offset dims[3][2],
+                int nreqs[3], int *disps[3], int *blocklens[3]);
+
+#endif

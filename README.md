@@ -27,7 +27,7 @@ patterns shared by its 381 2D and 3D variables.
     input file by this benchmark program.
   * A utility program, `dat2nc.c`, is provided to combine the three text files.
     To build this utility program, run command `make dat2nc`.
-  * The command to combine the three dat files to a NetCDF file is:
+  * The command to combine the three .dat files to a NetCDF file is:
     ```
       % ./dat2nc -o outputfile.nc -1 decomp_1.dat -2 decomp_2.dat -3 decomp_3.dat
     ```
@@ -47,41 +47,54 @@ patterns shared by its 381 2D and 3D variables.
     * `piodecomp16tasks16io01dims_ioid_514.dat`  (decomposition along the fastest dimensions)
     * `piodecomp16tasks16io01dims_ioid_516.dat`  (decomposition along the fastest dimensions)
     * `piodecomp16tasks16io02dims_ioid_548.dat`  (decomposition along the fastest two dimensions)
-  * The NetCDF file combined from these 3 decomposition dat files is provided
-    in folder `datasets` named `866x72_16p.nc`. Its metadata is shown below.
+  * The NetCDF file combined from these 3 decomposition .dat files is provided
+    in folder `datasets` named `f_case_866x72_16p.nc`. Its metadata is shown below.
     ```
       % cd ./datasets
-      % ncmpidump -h 866x72_16p.nc
-      netcdf 866x72_16p {
+      % ncmpidump -h f_case_866x72_16p.nc
+      netcdf f_case_866x72_16p {
       // file format: CDF-1
       dimensions:
-          num_procs = 16 ;
-          D3.max_nreqs = 4032 ;
-          D2.max_nreqs = 56 ;
-          D1.max_nreqs = 70 ;
+	  num_decomp = 3 ;
+          decomp_nprocs = 16 ;
+          D1.total_nreqs = 47 ;
+          D2.total_nreqs = 407 ;
+          D3.total_nreqs = 29304 ;
       variables:
-          int D3.nreqs(num_procs) ;
-                D3.nreqs:description = "Number of noncontiguous subarray requests by each MPI process" ;
-          int D3.offsets(num_procs, D3.max_nreqs) ;
-                D3.offsets:description = "Flattened starting indices of noncontiguous requests. Each row corresponds to requests by an MPI process." ;
-          int D2.nreqs(num_procs) ;
-                D2.nreqs:description = "Number of noncontiguous subarray requests by each MPI process" ;
-          int D2.offsets(num_procs, D2.max_nreqs) ;
-                D2.offsets:description = "Flattened starting indices of noncontiguous requests. Each row corresponds to requests by an MPI process." ;
-          int D1.nreqs(num_procs) ;
-                D1.nreqs:description = "Number of noncontiguous subarray requests by each MPI process" ;
-          int D1.offsets(num_procs, D1.max_nreqs) ;
-                D1.offsets:description = "Flattened starting indices of noncontiguous requests. Each row corresponds to requests by an MPI process." ;
+          int D1.nreqs(decomp_nprocs) ;
+              D1.nreqs:description = "Number of noncontiguous requests per process" ;
+          int D1.offsets(D1.total_nreqs) ;
+              D1.offsets:description = "Flattened starting indices of noncontiguous requests" ;
+          int D1.lengths(D1.total_nreqs) ;
+              D1.lengths:description = "Lengths of noncontiguous requests" ;
+          int D2.nreqs(decomp_nprocs) ;
+              D2.nreqs:description = "Number of noncontiguous requests per process" ;
+          int D2.offsets(D2.total_nreqs) ;
+              D2.offsets:description = "Flattened starting indices of noncontiguous requests" ;
+          int D2.lengths(D2.total_nreqs) ;
+              D2.lengths:description = "Lengths of noncontiguous requests" ;
+          int D3.nreqs(decomp_nprocs) ;
+              D3.nreqs:description = "Number of noncontiguous requests per process" ;
+          int D3.offsets(D3.total_nreqs) ;
+              D3.offsets:description = "Flattened starting indices of noncontiguous requests" ;
+          int D3.lengths(D3.total_nreqs) ;
+              D3.lengths:description = "Lengths of noncontiguous requests" ;
 
       // global attributes:
-          :dim_len_Y = 72 ;
-          :dim_len_X = 866 ;
-          :D3.max_nreqs = 4032 ;
-          :D3.min_nreqs = 3744 ;
-          :D2.max_nreqs = 56 ;
-          :D2.min_nreqs = 52 ;
-          :D1.max_nreqs = 70 ;
-          :D1.min_nreqs = 40 ;
+          :command_line = "./dat2nc -o f_case_866x72_16p.nc -1 datasets/piodecomp16tasks16io01dims_ioid_514.dat -2 datasets/piodecomp16tasks16io01dims_ioid_516.dat -3 datasets/piodecomp16tasks16io02dims_ioid_548.dat " ;
+          :D1.ndims = 1 ;
+          :D1.dim_0 = 866 ;
+          :D1.max_nreqs = 4 ;
+          :D1.min_nreqs = 2 ;
+          :D2.ndims = 1 ;
+          :D2.dim_0 = 866 ;
+          :D2.max_nreqs = 39 ;
+          :D2.min_nreqs = 13 ;
+          :D3.ndims = 2 ;
+          :D3.dim_0 = 72 ;
+          :D3.dim_1 = 866 ;
+          :D3.max_nreqs = 2808 ;
+          :D3.min_nreqs = 936 ;
       }
     ```
 
@@ -94,10 +107,10 @@ patterns shared by its 381 2D and 3D variables.
 
 * Run command:
   * An example run command using `mpiexec` and 16 MPI processes is:
-    `mpiexec -n 16 ./e3sm_io datasets/866x72_16p.nc`
+    `mpiexec -n 16 ./e3sm_io -f datasets/f_case_866x72_16p.nc`
   * The number of MPI processes can be different from the value of the variable
     `num_procs` stored in the decomposition NetCDF file. For example, in file
-    `866x72_16p.nc`, `num_procs` is 16, the number of MPI processes originally
+    `f_case_866x72_16p.nc`, `num_procs` is 16, the number of MPI processes originally
     used to produce the decomposition dat files. When using less number of MPI
     processes to run this benchmark, the workload will be divided among all
     the allocated MPI processes. When using more processes, those processes
@@ -109,6 +122,8 @@ patterns shared by its 381 2D and 3D variables.
       Usage: ./e3sm_io [OPTION]... FILE
              [-h] Print help
              [-v] Verbose mode
+             [-f] run the E3SM F case
+             [-g] run the E3SM G case
              [-k] Keep the output files when program exits
              [-d] Run test that uses PnetCDF vard API
              [-n] Run test that uses PnetCDF varn API
@@ -126,7 +141,7 @@ patterns shared by its 381 2D and 3D variables.
 
 * Example outputs shown on screen
   ```
-    % mpiexec -n 512 ./e3sm_io -k -r 3  -o $SCRATCH/FS_1M_64 datasets/48602x72_512p.nc
+    % mpiexec -n 512 ./e3sm_io -f -k -r 3  -o $SCRATCH/FS_1M_64 datasets/48602x72_512p.nc
 
     Total number of MPI processes      = 512
     Input decomposition file           = datasets/48602x72_512p.nc
@@ -138,7 +153,7 @@ patterns shared by its 381 2D and 3D variables.
     ==== benchmarking vard API ================================
     Variable written order: same as variables are defined
 
-    History output file                = testfile_h0_vard.nc
+    History output file                = f_case_h0_vard.nc
     MAX heap memory allocated by PnetCDF internally is 2.22 MiB
     Total number of variables          = 408
     Total write amount                 = 2699.36 MiB = 2.64 GiB
@@ -151,7 +166,7 @@ patterns shared by its 381 2D and 3D variables.
     I/O bandwidth (open-to-close)      = 478.7341 MiB/sec
     I/O bandwidth (write-only)         = 496.9981 MiB/sec
     -----------------------------------------------------------
-    History output file                = testfile_h1_vard.nc
+    History output file                = f_case_h1_vard.nc
     MAX heap memory allocated by PnetCDF internally is 2.22 MiB
     Total number of variables          = 51
     Total write amount                 = 52.30 MiB = 0.05 GiB
@@ -168,7 +183,7 @@ patterns shared by its 381 2D and 3D variables.
     ==== benchmarking varn API ================================
     Variable written order: same as variables are defined
 
-    History output file                = testfile_h0_varn.nc
+    History output file                = f_case_h0_varn.nc
     MAX heap memory allocated by PnetCDF internally is 35.07 MiB
     Total number of variables          = 408
     Total write amount                 = 2699.36 MiB = 2.64 GiB
@@ -182,7 +197,7 @@ patterns shared by its 381 2D and 3D variables.
     I/O bandwidth (open-to-close)      = 435.3753 MiB/sec
     I/O bandwidth (write-only)         = 460.6144 MiB/sec
     -----------------------------------------------------------
-    History output file                = testfile_h1_varn.nc
+    History output file                = f_case_h1_varn.nc
     MAX heap memory allocated by PnetCDF internally is 35.07 MiB
     Total number of variables          = 51
     Total write amount                 = 52.30 MiB = 0.05 GiB
@@ -201,14 +216,14 @@ patterns shared by its 381 2D and 3D variables.
   * The above example command uses command-line option `-k` to keep the output
     files (otherwise the default is to delete them when program exits.) Each
     run of `e3sm_io` produces four output netCDF files named
-    `testfile_h0_vard.nc`, `testfile_h1_vard.nc`, `testfile_h0_varn.nc`, and
-    `testfile_h1_varn.nc`. The contents of h0 and h1 files should be the same
+    `f_case_h0_vard.nc`, `f_case_h1_vard.nc`, `f_case_h0_varn.nc`, and
+    `f_case_h1_varn.nc`. The contents of h0 and h1 files should be the same
     between vard and varn APIs. Their file header (metadata) obtainable by
     command `ncdump -h` from running the provided decomposition file
-    `866x72_16p.nc` is available in
-    [datasets/outputfile_h0.txt](datasets/outputfile_h0.txt),
+    `f_case_866x72_16p.nc` is available in
+    [datasets/f_case_h0.txt](datasets/f_case_h0.txt),
     and
-    [datasets/outputfile_h1.txt](datasets/outputfile_h1.txt).
+    [datasets/f_case_h1.txt](datasets/f_case_h1.txt).
 
 ## Questions/Comments:
 email: wkliao@eecs.northwestern.edu
