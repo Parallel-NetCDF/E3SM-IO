@@ -23,8 +23,10 @@ read_decomp.o: read_decomp.c e3sm_io.h
 
 header_io_F_case.o: header_io_F_case.c e3sm_io.h
 var_io_F_case.o: var_io_F_case.c e3sm_io.h
+header_io_G_case.o: header_io_G_case.c e3sm_io.h
+var_io_G_case.o: var_io_G_case.c e3sm_io.h
 
-OBJS = read_decomp.o header_io_F_case.o var_io_F_case.o
+OBJS = read_decomp.o header_io_F_case.o var_io_F_case.o header_io_G_case.o var_io_G_case.o
 
 e3sm_io: e3sm_io.o $(OBJS)
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
@@ -44,6 +46,7 @@ clean:
 	rm -f core.* *.o dat2nc e3sm_io e3sm_io.romio_patch
 	rm -f f_case_h0_varn.nc f_case_h1_varn.nc
 	rm -f f_case_h0_vard.nc f_case_h1_vard.nc
+	rm -f g_case_hist_varn.nc
 
 .PHONY: clean
 

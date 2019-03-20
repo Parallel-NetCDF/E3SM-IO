@@ -232,6 +232,43 @@ MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
     }
 
     if (run_g_case) {
+        MPI_Offset dims[6][2];
+
+        /* read request information from decompositions 1, 2, 3, 4, 5, 6 */
+        err = read_decomp(infname, dims, contig_nreqs, disps, blocklens);
+        if (err) goto fn_exit;
+
+        if (verbose && rank==0) {
+            printf("number of requests for D1=%d D2=%d D3=%d D4=%d D5=%d D6=%d\n",
+                   contig_nreqs[0], contig_nreqs[1], contig_nreqs[2],
+                   contig_nreqs[3], contig_nreqs[4], contig_nreqs[5]);
+        }
+
+        if (!rank) {
+            printf("Total number of MPI processes      = %d\n",nprocs);
+            printf("Input decomposition file           = %s\n",infname);
+            printf("Output file directory              = %s\n",out_dir);
+            printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
+            printf("Write number of records (time dim) = %d\n",num_recs);
+            printf("Using noncontiguous write buffer   = %s\n",noncontig_buf?"yes":"no");
+        }
+
+        if (tst_varn) {
+            if (!rank) {
+                printf("\n==== benchmarking G case using varn API ========================\n");
+            }
+            fflush(stdout);
+            MPI_Barrier(MPI_COMM_WORLD);
+
+            nvars = 51;
+            outfname = "g_case_hist_varn.nc";
+            nerrs += run_varn_G_case(out_dir, outfname, nvars, num_recs, info,
+                                     dims, contig_nreqs, disps, blocklens);
+        }
+        for (i=0; i<6; i++) {
+            free(disps[i]);
+            free(blocklens[i]);
+        }
     }
 
 fn_exit:
