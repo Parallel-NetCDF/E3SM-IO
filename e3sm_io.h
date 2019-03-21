@@ -20,6 +20,8 @@
 #error "PnetCDF 1.10.0 and later is required to build this program"
 #endif
 
+#define MAX_NUM_DECOMP 6
+
 int verbose; /* verbose mode to print additional messages on screen */
 int keep_outfile; /* whether to keep the output files when exits */
 int two_buf;
@@ -57,8 +59,8 @@ extern int
 def_F_case_h1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
 
 extern int
-read_decomp(const char *infname, MPI_Offset dims[3][2], int contig_nreqs[3],
-            int *disps[3], int *blocklens[3]);
+read_decomp(const char *infname, int *num_decomp, MPI_Offset dims[][2],
+            int contig_nreqs[3], int *disps[3], int *blocklens[3]);
 
 extern void
 print_info(MPI_Info *info_used);

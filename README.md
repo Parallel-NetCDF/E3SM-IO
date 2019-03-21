@@ -61,7 +61,7 @@ decompositions shared by 51 variables.
       netcdf f_case_866x72_16p {
       // file format: CDF-1
       dimensions:
-	  num_decomp = 3 ;
+          num_decomp = 3 ;
           decomp_nprocs = 16 ;
           D1.total_nreqs = 47 ;
           D2.total_nreqs = 407 ;
@@ -113,7 +113,7 @@ decompositions shared by 51 variables.
 
 * Run command:
   * An example run command using `mpiexec` and 16 MPI processes is:
-    `mpiexec -n 16 ./e3sm_io -f datasets/f_case_866x72_16p.nc`
+    `mpiexec -n 16 ./e3sm_io datasets/f_case_866x72_16p.nc`
   * The number of MPI processes can be different from the value of the variable
     `num_procs` stored in the decomposition NetCDF file. For example, in file
     `f_case_866x72_16p.nc`, `num_procs` is 16, the number of MPI processes originally
@@ -128,8 +128,6 @@ decompositions shared by 51 variables.
       Usage: ./e3sm_io [OPTION]... FILE
              [-h] Print help
              [-v] Verbose mode
-             [-f] run the E3SM F case
-             [-g] run the E3SM G case
              [-k] Keep the output files when program exits
              [-d] Run test that uses PnetCDF vard API
              [-n] Run test that uses PnetCDF varn API
@@ -147,7 +145,7 @@ decompositions shared by 51 variables.
 
 * Example outputs shown on screen
   ```
-    % mpiexec -n 512 ./e3sm_io -f -k -r 3  -o $SCRATCH/FS_1M_64 datasets/f_case_48602x72_512p.nc
+    % mpiexec -n 512 ./e3sm_io -k -r 3  -o $SCRATCH/FS_1M_64 datasets/f_case_48602x72_512p.nc
 
     Total number of MPI processes      = 512
     Input decomposition file           = datasets/f_case_48602x72_512p.nc

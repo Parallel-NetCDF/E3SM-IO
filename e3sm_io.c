@@ -66,8 +66,10 @@ int main(int argc, char** argv)
     extern int optind;
     char *infname, out_dir[1024], *outfname;
     int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, noncontig_buf=0;
-    int nvars, num_recs, run_f_case, run_g_case;
-    int contig_nreqs[6], *disps[6], *blocklens[6];
+    int num_decomp, nvars, num_recs, run_f_case, run_g_case;
+    int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
+    int *blocklens[MAX_NUM_DECOMP];
+    MPI_Offset dims[MAX_NUM_DECOMP][2];
     MPI_Info info=MPI_INFO_NULL;
 
     MPI_Init(&argc, &argv);
@@ -82,13 +84,9 @@ int main(int argc, char** argv)
     run_g_case = 0;
 
     /* command-line arguments */
-    while ((i = getopt(argc, argv, "hfgkvdnmto:r:")) != EOF)
+    while ((i = getopt(argc, argv, "hkvdnmto:r:")) != EOF)
         switch(i) {
             case 'v': verbose = 1;
-                      break;
-            case 'f': run_f_case = 1;
-                      break;
-            case 'g': run_g_case = 1;
                       break;
             case 'k': keep_outfile = 1;
                       break;
@@ -114,10 +112,6 @@ int main(int argc, char** argv)
         if (!rank) usage(argv[0]);
         MPI_Finalize();
         return 1;
-    }
-    if (run_f_case == 0 && run_g_case == 0) {
-        if (!rank) printf("Usage: add -f to run F case, add -g to run G case\n");
-        goto fn_exit;
     }
 
     if (tst_vard == 0 && tst_varn == 0)
@@ -146,13 +140,15 @@ MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
     MPI_Info_set(info, "nc_var_align_size", "1"); /* no gap between variables */
     MPI_Info_set(info, "nc_in_place_swap", "enable"); /* in-place byte swap */
 
+    /* read request information from decompositions 1, 2 and 3 */
+    err = read_decomp(infname, &num_decomp, dims, contig_nreqs, disps, blocklens);
+    if (err) goto fn_exit;
+
+    /* F case has 3 decompositions, G case has 6 */
+    if (num_decomp == 3) run_f_case = 1;
+    else if (num_decomp == 6) run_g_case = 1;
+
     if (run_f_case) {
-        MPI_Offset dims[3][2];
-
-        /* read request information from decompositions 1, 2 and 3 */
-        err = read_decomp(infname, dims, contig_nreqs, disps, blocklens);
-        if (err) goto fn_exit;
-
         if (verbose && rank==0) {
             printf("number of requests for D1=%d D2=%d D3=%d\n",
                    contig_nreqs[0], contig_nreqs[1], contig_nreqs[2]);
@@ -232,12 +228,6 @@ MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
     }
 
     if (run_g_case) {
-        MPI_Offset dims[6][2];
-
-        /* read request information from decompositions 1, 2, 3, 4, 5, 6 */
-        err = read_decomp(infname, dims, contig_nreqs, disps, blocklens);
-        if (err) goto fn_exit;
-
         if (verbose && rank==0) {
             printf("number of requests for D1=%d D2=%d D3=%d D4=%d D5=%d D6=%d\n",
                    contig_nreqs[0], contig_nreqs[1], contig_nreqs[2],

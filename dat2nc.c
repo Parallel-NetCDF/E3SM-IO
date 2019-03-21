@@ -111,17 +111,15 @@ add_decomp(int         ncid,
     map = (char*) calloc(gsize, 1);
 
     /* nreqs[i] is the number of elements accessed by process i */
-    nreqs = (int*) malloc(nprocs * sizeof(int));
+    nreqs = (int*) calloc(nprocs, sizeof(int));
 
-    /* calculate max_nreqs, min_nreqs and nreqs[]
-     * decomposition data format:
+    /* decomposition data format:
      *     (process.rank.ID) (number.of.requests)
      *     a list of element offsets accessed by this process (one element each)
      * Offsets are indices of array flattened into 1D and start with 1, i.e.
      * Fortran index based. Note the offsets are not sorted in an increasing
      * order and may contain 0s which should be ignored.
      */
-    total_nreqs = 0;
     for (rank=0; rank<nprocs; rank++) {
         int ncontig=0, decomp_rank;
         char *ret;
@@ -134,21 +132,16 @@ add_decomp(int         ncid,
             /* there is no request for remaining ranks */
             for (decomp_rank=rank; decomp_rank<nprocs; decomp_rank++)
                 nreqs[rank] = 0;
-            min_nreqs = 0;
             break; /* loop of rank */
         }
 
         decomp_rank = atoi(strtok(buf, " ")); /* rank ID */
-        while (rank < decomp_rank) { /* this rank has no request */
+        while (rank < decomp_rank) /* this rank has no request */
             nreqs[rank++] = 0;
-            min_nreqs = 0;
-        }
 
         nreqs[rank] = atoi(strtok(NULL, " "));  /* number of requests */
-        if (nreqs[rank] == 0) { /* this rank has zero request */
-            min_nreqs = 0;
+        if (nreqs[rank] == 0) /* this rank has zero request */
             continue; /* loop of rank */
-        }
 
         off = (int*) malloc(nreqs[rank] * sizeof(int));
         fgets(buf, LINE_SIZE+1, fd); /* 2nd line: list of offsets */
@@ -183,21 +176,18 @@ add_decomp(int         ncid,
             if (off[j] % dims[0] == 0 || off[j] > off[j-1] + 1)
                 ncontig++;
         }
+        nreqs[rank] = ncontig;
 
         for (j=0; j<k; j++) map[off[j]]=1;
         free(off);
+    }
 
-        total_nreqs += ncontig;
-
-        /* find max and min nreqs amount all processes */
-        if (rank == 0) {
-            max_nreqs = min_nreqs = ncontig;
-        }
-        else {
-            max_nreqs = (ncontig > max_nreqs) ? ncontig : max_nreqs;
-            min_nreqs = (ncontig < min_nreqs) ? ncontig : min_nreqs;
-        }
-        nreqs[rank] = ncontig;
+    /* find total, max, and min nreqs amount all processes */
+    total_nreqs = max_nreqs = min_nreqs = nreqs[0];
+    for (i=1; i<nprocs; i++) {
+        total_nreqs += nreqs[i];
+        max_nreqs = (nreqs[i] > max_nreqs) ? nreqs[i] : max_nreqs;
+        min_nreqs = (nreqs[i] < min_nreqs) ? nreqs[i] : min_nreqs;
     }
 
     if (verbose)
@@ -295,10 +285,8 @@ add_decomp(int         ncid,
             rank++;
 
         nreqs[rank] = atoi(strtok(NULL, " "));  /* number of requests */
-        if (nreqs[rank] == 0) { /* this rank has zero request */
-            min_nreqs = 0;
+        if (nreqs[rank] == 0) /* this rank has zero request */
             continue; /* loop of rank */
-        }
 
         off = (int*) malloc(nreqs[rank] * sizeof(int));
         len = (int*) malloc(nreqs[rank] * sizeof(int));

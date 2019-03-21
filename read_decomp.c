@@ -101,6 +101,7 @@ static int compare(const void *p1, const void *p2)
  */
 int
 read_decomp(const char *infname,        /* IN */
+            int        *num_decomp,     /* OUT */
             MPI_Offset  dims[][2],      /* OUT */
             int         contig_nreqs[], /* OUT */
             int        *disps[],        /* OUT: to be freed by caller */
@@ -109,7 +110,7 @@ read_decomp(const char *infname,        /* IN */
     char name[128];
     int err, nerrs=0, rank, nprocs, ncid, varid, proc_start, proc_numb;
     int i, j, k, nreqs, *all_nreqs, ndims, dimids[2], decomp_id;
-    MPI_Offset num_decomp, decomp_nprocs, total_nreqs, start, count;
+    MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -120,7 +121,8 @@ read_decomp(const char *infname,        /* IN */
 
     /* number of decompositions stored in file */
     err = ncmpi_inq_dimid(ncid, "num_decomp", &dimids[0]); ERR
-    err = ncmpi_inq_dimlen(ncid, dimids[0], &num_decomp); ERR
+    err = ncmpi_inq_dimlen(ncid, dimids[0], &num); ERR
+    *num_decomp = (int)num;
 
     /* number of processes used when the decomposition was produced */
     err = ncmpi_inq_dimid(ncid, "decomp_nprocs", &dimids[0]); ERR
@@ -150,7 +152,7 @@ read_decomp(const char *infname,        /* IN */
      */
 
     /* decomp_id: D1, D2, ... D6, indicates different decompositions */
-    for (decomp_id=0; decomp_id<num_decomp; decomp_id++) {
+    for (decomp_id=0; decomp_id<*num_decomp; decomp_id++) {
         contig_nreqs[decomp_id] = 0;
         disps[decomp_id] = NULL;
         blocklens[decomp_id] = NULL;
@@ -257,7 +259,7 @@ read_decomp(const char *infname,        /* IN */
 
 fn_exit:
     if (nerrs) {
-        for (decomp_id=0; decomp_id<num_decomp; decomp_id++) {
+        for (decomp_id=0; decomp_id<*num_decomp; decomp_id++) {
             contig_nreqs[decomp_id] = 0;
             if (disps[decomp_id] != NULL) free(disps[decomp_id]);
             if (blocklens[decomp_id] != NULL) free(blocklens[decomp_id]);
