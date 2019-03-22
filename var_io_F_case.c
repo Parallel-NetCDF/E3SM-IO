@@ -259,7 +259,7 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
                + 3 * dims[2][0] + 3 * (dims[2][0]+1) + 8 + 2 + 20 * gap;
 
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
-    for (j=0; j<dbl_buflen; j++) dbl_buf[j] = rank;
+    for (j=0; j<dbl_buflen; j++) dbl_buf[j] = rank + i;
 
     for (j=0; j<10; j++) int_buf[j] = rank;
     for (j=0; j<16; j++) txt_buf[j] = 'a' + rank;
@@ -271,7 +271,7 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
         rec_buflen = nelems[1] * 20 + nelems[2] + (20+1) * gap;
 
     rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
-    for (i=0; i<rec_buflen; i++) rec_buf[i] = rank;
+    for (i=0; i<rec_buflen; i++) rec_buf[i] = rank + i;
 
     pre_timing = MPI_Wtime() - pre_timing;
 
@@ -753,7 +753,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
                + 3 * dims[2][0] + 3 * (dims[2][0]+1) + 8 + 2
                + 20 * gap;
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
-    for (i=0; i<dbl_buflen; i++) dbl_buf[i] = rank;
+    for (i=0; i<dbl_buflen; i++) dbl_buf[i] = rank + i;
 
     /* allocate and initialize write buffer for large variables */
     if (nvars == 408)
@@ -762,7 +762,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
         rec_buflen = nelems[1] * 20 + nelems[2] + (20+1) * gap;
 
     rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
-    for (i=0; i<rec_buflen; i++) rec_buf[i] = rank;
+    for (i=0; i<rec_buflen; i++) rec_buf[i] = rank + i;
 
     for (i=0; i<10; i++) int_buf[i] = rank;
 

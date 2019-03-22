@@ -281,7 +281,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     /* int (nCells): maxLevelCell */
     if (nelems_D1 > 0) {
         D1_fix_int_buf = (int*) malloc(nelems_D1 * sizeof(int));
-        for (i = 0; i < nelems_D1; i++) D1_fix_int_buf[i] = rank;
+        for (i = 0; i < nelems_D1; i++) D1_fix_int_buf[i] = rank + i;
     }
     else
         D1_fix_int_buf = NULL;
@@ -289,7 +289,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     /* int (nEdges): maxLevelEdgeTop and maxLevelEdgeBot */
     if (nelems_D2 > 0) {
         D2_fix_int_buf = (int*) malloc(2 * nelems_D2 * sizeof(int));
-        for (i = 0; i < 2 * nelems_D2; i++) D2_fix_int_buf[i] = rank;
+        for (i = 0; i < 2 * nelems_D2; i++) D2_fix_int_buf[i] = rank + i;
     }
     else
         D2_fix_int_buf = NULL;
@@ -297,7 +297,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     /* int (nCells, nVertLevels): cellMask */
     if (nelems_D3 > 0) {
         D3_fix_int_buf = (int*) malloc(nelems_D3 * sizeof(int));
-        for (i = 0; i < nelems_D3; i++) D3_fix_int_buf[i] = rank;
+        for (i = 0; i < nelems_D3; i++) D3_fix_int_buf[i] = rank + i;
     }
     else
         D3_fix_int_buf = NULL;
@@ -305,7 +305,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     /* int (nEdges, nVertLevels): edgeMask */
     if (nelems_D4 > 0) {
         D4_fix_int_buf = (int*) malloc(nelems_D4 * sizeof(int));
-        for (i = 0; i < nelems_D4; i++) D4_fix_int_buf[i] = rank;
+        for (i = 0; i < nelems_D4; i++) D4_fix_int_buf[i] = rank + i;
     }
     else
         D4_fix_int_buf = NULL;
@@ -313,7 +313,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     /* int (nVertices, nVertLevels): vertexMask */
     if (nelems_D5 > 0) {
         D5_fix_int_buf = (int*) malloc(nelems_D5 * sizeof(int));
-        for (i = 0; i < nelems_D5; i++) D5_fix_int_buf[i] = rank;
+        for (i = 0; i < nelems_D5; i++) D5_fix_int_buf[i] = rank + i;
     }
     else
         D5_fix_int_buf = NULL;
@@ -321,7 +321,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     /* double (nCells): bottomDepth */
     if (nelems_D1 > 0) {
         D1_fix_dbl_buf = (double*) malloc(nelems_D1 * sizeof(double));
-        for (i = 0; i < nelems_D1; i++) D1_fix_dbl_buf[i] = rank;
+        for (i = 0; i < nelems_D1; i++) D1_fix_dbl_buf[i] = rank + i;
     }
     else
         D1_fix_dbl_buf = NULL;
@@ -330,7 +330,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     if (nelems_D1 > 0) {
         rec_buflen = nelems_D1 * nD1_rec_2d_vars;
         D1_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D1_rec_dbl_buf[i] = rank;
+        for (i = 0; i < rec_buflen; i++) D1_rec_dbl_buf[i] = rank + i;
     }
     else
         D1_rec_dbl_buf = NULL;
@@ -338,7 +338,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     if (nelems_D3 > 0) {
         rec_buflen = nelems_D3 * nD3_rec_3d_vars;
         D3_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D3_rec_dbl_buf[i] = rank;
+        for (i = 0; i < rec_buflen; i++) D3_rec_dbl_buf[i] = rank + i;
     }
     else
         D3_rec_dbl_buf = NULL;
@@ -346,7 +346,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     if (nelems_D4 > 0) {
         rec_buflen = nelems_D4 * nD4_rec_3d_vars;
         D4_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D4_rec_dbl_buf[i] = rank;
+        for (i = 0; i < rec_buflen; i++) D4_rec_dbl_buf[i] = rank + i;
     }
     else
         D4_rec_dbl_buf = NULL;
@@ -354,7 +354,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     if (nelems_D5 > 0) {
         rec_buflen = nelems_D5 * nD5_rec_3d_vars;
         D5_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D5_rec_dbl_buf[i] = rank;
+        for (i = 0; i < rec_buflen; i++) D5_rec_dbl_buf[i] = rank + i;
     }
     else
         D5_rec_dbl_buf = NULL;
@@ -362,14 +362,14 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     if (nelems_D6 > 0) {
         rec_buflen = nelems_D6 * nD6_rec_3d_vars;
         D6_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D6_rec_dbl_buf[i] = rank;
+        for (i = 0; i < rec_buflen; i++) D6_rec_dbl_buf[i] = rank + i;
     }
     else
         D6_rec_dbl_buf = NULL;
 
     /* initialize write buffer for 11 small variables */
     for (i = 0; i < 100; i++) dummy_double_buf[i] = rank;
-    for (i = 0; i < 64; i++) dummy_char_buf[i] = 'a' + rank;
+    for (i = 0; i < 64; i++) dummy_char_buf[i] = 'a' + rank + i;
 
     varids = (int*) malloc(nvars * sizeof(int));
 
