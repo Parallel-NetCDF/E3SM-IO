@@ -638,7 +638,7 @@ fn_exit:
     } \
 }
 
-#define REC_3D_VAR_STARTS_COUNTS(rec, starts, counts, nreqs, disps, blocklens, last_dimlen, nreqs_merged) { \
+#define REC_3D_VAR_STARTS_COUNTS(rec, starts, counts, nreqs, disps, blocklens, last_dimlen) { \
     starts = (MPI_Offset**) malloc(2 * nreqs * sizeof(MPI_Offset*)); \
     counts = starts + nreqs; \
     starts[0] = (MPI_Offset*) malloc(2 * nreqs * 3 * sizeof(MPI_Offset)); \
@@ -673,7 +673,7 @@ fn_exit:
         i++; \
     } \
     \
-    nreqs_merged = reqs_cnt; \
+    if (reqs_cnt < nreqs) nreqs = reqs_cnt; \
 }
 
 #define POST_VARN(k, num, vid) \
@@ -702,13 +702,12 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
     char outfname[512], txt_buf[16], *txt_buf_ptr;
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nreqs_D3_merged;
     int rec_no, gap=0, my_nreqs, max_nreqs, int_buf[10], *int_buf_ptr;
-    size_t dbl_buflen, rec_buflen;
-    size_t nelems[3];
+    size_t dbl_buflen, rec_buflen, nelems[3];
     dtype *rec_buf, *rec_buf_ptr;
     double *dbl_buf, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing,  max_timing;
-    MPI_Offset tmp, metadata_size, put_size, total_size;
+    MPI_Offset tmp, metadata_size, put_size, total_size, total_nreqs;
     MPI_Offset **fix_starts_D1, **fix_counts_D1;
     MPI_Offset **fix_starts_D2, **fix_counts_D2;
     MPI_Offset **starts_D2, **counts_D2;
@@ -729,12 +728,12 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
     if (noncontig_buf) gap = 10;
 
     /* calculate number of variable elements from 3 decompositions */
+    total_nreqs = 0;
     my_nreqs = max_nreqs = 0;
-    nelems[0] = nelems[1] = nelems[2] = 0;
-    for (k=0; k<nreqs[0]; k++) nelems[0] += blocklens[0][k];
-    for (k=0; k<nreqs[1]; k++) nelems[1] += blocklens[1][k];
-    for (k=0; k<nreqs[2]; k++) nelems[2] += blocklens[2][k];
-
+    for (i=0; i<3; i++) {
+        for (nelems[i]=0, k=0; k<nreqs[i]; k++)
+            nelems[i] += blocklens[i][k];
+    }
     if (verbose && rank == 0)
         printf("nelems=%zd %zd %zd\n", nelems[0],nelems[1],nelems[2]);
 
@@ -744,9 +743,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
 
     REC_2D_VAR_STARTS_COUNTS(0, starts_D2, counts_D2, nreqs[1], disps[1], blocklens[1])
 
-    REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1], nreqs_D3_merged)
-    if (nreqs_D3_merged < nreqs[2])
-        nreqs[2] = nreqs_D3_merged;
+    REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1])
 
     /* allocate and initialize write buffer for small variables */
     dbl_buflen = nelems[1] * 2 + nelems[0]
@@ -990,6 +987,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
 
         /* high water mark of number of noncontiguous requests */
         if (my_nreqs > max_nreqs) max_nreqs = my_nreqs;
+        total_nreqs += my_nreqs;
         my_nreqs = 0;
 
         wait_timing += MPI_Wtime() - timing;
@@ -1013,8 +1011,9 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
 
     total_timing = MPI_Wtime() - total_timing;
 
-    my_nreqs = max_nreqs;
-    MPI_Reduce(&my_nreqs,      &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
+    MPI_Reduce(&total_nreqs,   &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
+    MPI_Reduce(&total_nreqs,   &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    total_nreqs = tmp;
     MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
     put_size = tmp;
     MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
@@ -1053,6 +1052,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
         printf("Total number of variables          = %d\n",nvars);
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)total_size/1048576,(double)total_size/1073741824);
+        printf("Total number of requests           = %lld\n",total_nreqs);
         printf("Max number of requests             = %d\n",max_nreqs);
         printf("Max Time of open + metadata define = %.4f sec\n",open_timing);
         printf("Max Time of I/O preparing          = %.4f sec\n",pre_timing);

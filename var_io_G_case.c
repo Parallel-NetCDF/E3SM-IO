@@ -37,7 +37,7 @@
     } \
 }
 
-#define FIX_2D_VAR_STARTS_COUNTS(starts, counts, nreqs, disps, blocklens, last_dimlen, nreqs_merged) { \
+#define FIX_2D_VAR_STARTS_COUNTS(starts, counts, nreqs, disps, blocklens, last_dimlen) { \
     starts = (MPI_Offset**) malloc(2 * nreqs * sizeof(MPI_Offset*)); \
     counts = starts + nreqs; \
     starts[0] = (MPI_Offset*) malloc(2 * nreqs * 2 * sizeof(MPI_Offset)); \
@@ -68,8 +68,6 @@
         reqs_cnt++; \
         i++; \
     } \
-    \
-    nreqs_merged = reqs_cnt; \
 }
 
 #define REC_2D_VAR_STARTS_COUNTS(rec, starts, counts, nreqs, disps, blocklens) { \
@@ -92,7 +90,7 @@
     } \
 }
 
-#define REC_3D_VAR_STARTS_COUNTS(rec, starts, counts, nreqs, disps, blocklens, last_dimlen, nreqs_merged) { \
+#define REC_3D_VAR_STARTS_COUNTS(rec, starts, counts, nreqs, disps, blocklens, last_dimlen) { \
     starts = (MPI_Offset**) malloc(2 * nreqs * sizeof(MPI_Offset*)); \
     counts = starts + nreqs; \
     starts[0] = (MPI_Offset*) malloc(2 * nreqs * 3 * sizeof(MPI_Offset)); \
@@ -126,8 +124,7 @@
         reqs_cnt++; \
         i++; \
     } \
-    \
-    nreqs_merged = reqs_cnt; \
+    if (reqs_cnt < nreqs) nreqs = reqs_cnt; \
 }
 
 /*----< run_varn_G_case() >--------------------------------------------------*/
@@ -145,15 +142,13 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     char outfname[512];
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
     int rec_no, my_nreqs, max_nreqs;
-    int nreqs_D3_merged, nreqs_D4_merged, nreqs_D5_merged, nreqs_D6_merged;
-    size_t rec_buflen;
-    size_t nelems_D1, nelems_D2, nelems_D3, nelems_D4, nelems_D5, nelems_D6;
+    size_t rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf, *rec_buf_ptr;
     int *D1_fix_int_buf, *D2_fix_int_buf, *D3_fix_int_buf, *D4_fix_int_buf, *D5_fix_int_buf;
     double *D1_fix_dbl_buf;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing, max_timing;
-    MPI_Offset tmp, metadata_size, put_size, total_size;
+    MPI_Offset tmp, metadata_size, put_size, total_size, total_nreqs;
     MPI_Offset **fix_starts_D1, **fix_counts_D1;
     MPI_Offset **fix_starts_D2, **fix_counts_D2;
     MPI_Offset **fix_starts_D3, **fix_counts_D3;
@@ -166,22 +161,22 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     MPI_Offset **starts_D6, **counts_D6;
     MPI_Comm comm=MPI_COMM_WORLD;
     MPI_Info info_used=MPI_INFO_NULL;
-    int nD1_rec_2d_vars = 3;
-    int D1_rec_2d_varids[3] = {3, 6, 37};
+    int nD1_rec_2d_vars = 4;
+    int D1_rec_2d_varids[4] = {0, 4, 7, 38};
     int nD3_rec_3d_vars = 24;
-    int D3_rec_3d_varids[24] = {4, 15, 16, 18, 25, 27, 28, 29, 30, 31,
-                               33, 38, 39, 40, 41, 42, 43, 44, 45, 46,
-                               47, 48, 49, 50};
+    int D3_rec_3d_varids[24] = {5, 16, 17, 19, 26, 28, 29, 30, 31, 32,
+                               34, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+                               48, 49, 50, 51};
     int nD4_rec_3d_vars = 1;
-    int D4_rec_3d_varids[1] = {5};
+    int D4_rec_3d_varids[1] = {6};
     int nD5_rec_3d_vars = 1;
-    int D5_rec_3d_varids[1] = {17};
+    int D5_rec_3d_varids[1] = {18};
     int nD6_rec_3d_vars = 4;
-    int D6_rec_3d_varids[4] = {0, 1, 2, 26};
+    int D6_rec_3d_varids[4] = {1, 2, 3, 27};
     MPI_Offset stride[2] = {1, 1};
     MPI_Offset start[2] = {0, 0};
     MPI_Offset count[2] = {1, 1};
-    double dummy_double_buf[100];
+    double dummy_double_buf[80];
     char dummy_char_buf[64];
 
     MPI_Barrier(comm); /*-----------------------------------------*/
@@ -195,18 +190,16 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     MPI_Comm_rank(comm, &rank);
 
     /* number of variable elements from 6 decompositions */
+    total_nreqs = 0;
     my_nreqs = max_nreqs = 0;
-    nelems_D1 = nelems_D2 = nelems_D3 = nelems_D4 = nelems_D5 = nelems_D6 = 0;
-    for (k=0; k<nreqs[0]; k++) nelems_D1 += blocklens[0][k];
-    for (k=0; k<nreqs[1]; k++) nelems_D2 += blocklens[1][k];
-    for (k=0; k<nreqs[2]; k++) nelems_D3 += blocklens[2][k];
-    for (k=0; k<nreqs[3]; k++) nelems_D4 += blocklens[3][k];
-    for (k=0; k<nreqs[4]; k++) nelems_D5 += blocklens[4][k];
-    for (k=0; k<nreqs[5]; k++) nelems_D6 += blocklens[5][k];
+    for (i=0; i<6; i++) {
+        for (nelems[i]=0, k=0; k<nreqs[i]; k++)
+            nelems[i] += blocklens[i][k];
+    }
 
     if (verbose && rank == 0)
-        printf("nelems_D1=%zd nelems_D2=%zd nelems_D3=%zd nelems_D4=%zd nelems_D5=%zd nelems_D6=%zd\n",
-               nelems_D1,nelems_D2,nelems_D3,nelems_D4,nelems_D5,nelems_D6);
+        printf("nelems=%zd %zd %zd %zd %zd %zd\n",
+               nelems[0],nelems[1],nelems[2],nelems[3],nelems[4],nelems[5]);
 
     /* construct varn API arguments starts[][] and counts[][] */
     if (nreqs[0] > 0) {
@@ -229,10 +222,8 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     }
 
     if (nreqs[2] > 0) {
-        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D3, fix_counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1], nreqs_D3_merged)
-        REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1], nreqs_D3_merged)
-        if (nreqs_D3_merged < nreqs[2])
-            nreqs[2] = nreqs_D3_merged;
+        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D3, fix_counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1])
+        REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1])
     }
     else {
         fix_starts_D3 = NULL;
@@ -242,10 +233,8 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     }
 
     if (nreqs[3] > 0) {
-        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D4, fix_counts_D4, nreqs[3], disps[3], blocklens[3], dims[3][1], nreqs_D4_merged)
-        REC_3D_VAR_STARTS_COUNTS(0, starts_D4, counts_D4, nreqs[3], disps[3], blocklens[3], dims[3][1], nreqs_D4_merged)
-        if (nreqs_D4_merged < nreqs[3])
-            nreqs[3] = nreqs_D4_merged;
+        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D4, fix_counts_D4, nreqs[3], disps[3], blocklens[3], dims[3][1])
+        REC_3D_VAR_STARTS_COUNTS(0, starts_D4, counts_D4, nreqs[3], disps[3], blocklens[3], dims[3][1])
     }
     else {
         fix_starts_D4 = NULL;
@@ -255,10 +244,8 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     }
 
     if (nreqs[4] > 0) {
-        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D5, fix_counts_D5, nreqs[4], disps[4], blocklens[4], dims[4][1], nreqs_D5_merged)
-        REC_3D_VAR_STARTS_COUNTS(0, starts_D5, counts_D5, nreqs[4], disps[4], blocklens[4], dims[4][1], nreqs_D5_merged)
-        if (nreqs_D5_merged < nreqs[4])
-            nreqs[4] = nreqs_D5_merged;
+        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D5, fix_counts_D5, nreqs[4], disps[4], blocklens[4], dims[4][1])
+        REC_3D_VAR_STARTS_COUNTS(0, starts_D5, counts_D5, nreqs[4], disps[4], blocklens[4], dims[4][1])
     }
     else {
         fix_starts_D5 = NULL;
@@ -268,9 +255,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     }
 
     if (nreqs[5] > 0) {
-        REC_3D_VAR_STARTS_COUNTS(0, starts_D6, counts_D6, nreqs[5], disps[5], blocklens[5], dims[5][1], nreqs_D6_merged)
-        if (nreqs_D6_merged < nreqs[5])
-            nreqs[5] = nreqs_D6_merged;
+        REC_3D_VAR_STARTS_COUNTS(0, starts_D6, counts_D6, nreqs[5], disps[5], blocklens[5], dims[5][1])
     }
     else {
         starts_D6 = NULL;
@@ -279,97 +264,97 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
 
     /* allocate and initialize write buffer for 7 fixed-size variables */
     /* int (nCells): maxLevelCell */
-    if (nelems_D1 > 0) {
-        D1_fix_int_buf = (int*) malloc(nelems_D1 * sizeof(int));
-        for (i = 0; i < nelems_D1; i++) D1_fix_int_buf[i] = rank + i;
+    if (nelems[0] > 0) {
+        D1_fix_int_buf = (int*) malloc(nelems[0] * sizeof(int));
+        for (i = 0; i < nelems[0]; i++) D1_fix_int_buf[i] = rank;
     }
     else
         D1_fix_int_buf = NULL;
 
     /* int (nEdges): maxLevelEdgeTop and maxLevelEdgeBot */
-    if (nelems_D2 > 0) {
-        D2_fix_int_buf = (int*) malloc(2 * nelems_D2 * sizeof(int));
-        for (i = 0; i < 2 * nelems_D2; i++) D2_fix_int_buf[i] = rank + i;
+    if (nelems[1] > 0) {
+        D2_fix_int_buf = (int*) malloc(2 * nelems[1] * sizeof(int));
+        for (i = 0; i < 2 * nelems[1]; i++) D2_fix_int_buf[i] = rank;
     }
     else
         D2_fix_int_buf = NULL;
 
     /* int (nCells, nVertLevels): cellMask */
-    if (nelems_D3 > 0) {
-        D3_fix_int_buf = (int*) malloc(nelems_D3 * sizeof(int));
-        for (i = 0; i < nelems_D3; i++) D3_fix_int_buf[i] = rank + i;
+    if (nelems[2] > 0) {
+        D3_fix_int_buf = (int*) malloc(nelems[2] * sizeof(int));
+        for (i = 0; i < nelems[2]; i++) D3_fix_int_buf[i] = rank;
     }
     else
         D3_fix_int_buf = NULL;
 
     /* int (nEdges, nVertLevels): edgeMask */
-    if (nelems_D4 > 0) {
-        D4_fix_int_buf = (int*) malloc(nelems_D4 * sizeof(int));
-        for (i = 0; i < nelems_D4; i++) D4_fix_int_buf[i] = rank + i;
+    if (nelems[3] > 0) {
+        D4_fix_int_buf = (int*) malloc(nelems[3] * sizeof(int));
+        for (i = 0; i < nelems[3]; i++) D4_fix_int_buf[i] = rank;
     }
     else
         D4_fix_int_buf = NULL;
 
     /* int (nVertices, nVertLevels): vertexMask */
-    if (nelems_D5 > 0) {
-        D5_fix_int_buf = (int*) malloc(nelems_D5 * sizeof(int));
-        for (i = 0; i < nelems_D5; i++) D5_fix_int_buf[i] = rank + i;
+    if (nelems[4] > 0) {
+        D5_fix_int_buf = (int*) malloc(nelems[4] * sizeof(int));
+        for (i = 0; i < nelems[4]; i++) D5_fix_int_buf[i] = rank;
     }
     else
         D5_fix_int_buf = NULL;
 
     /* double (nCells): bottomDepth */
-    if (nelems_D1 > 0) {
-        D1_fix_dbl_buf = (double*) malloc(nelems_D1 * sizeof(double));
-        for (i = 0; i < nelems_D1; i++) D1_fix_dbl_buf[i] = rank + i;
+    if (nelems[0] > 0) {
+        D1_fix_dbl_buf = (double*) malloc(nelems[0] * sizeof(double));
+        for (i = 0; i < nelems[0]; i++) D1_fix_dbl_buf[i] = rank;
     }
     else
         D1_fix_dbl_buf = NULL;
 
-    /* allocate and initialize write buffer for 33 record variables */
-    if (nelems_D1 > 0) {
-        rec_buflen = nelems_D1 * nD1_rec_2d_vars;
+    /* allocate and initialize write buffer for 34 record variables */
+    if (nelems[0] > 0) {
+        rec_buflen = nelems[0] * nD1_rec_2d_vars;
         D1_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D1_rec_dbl_buf[i] = rank + i;
+        for (i = 0; i < rec_buflen; i++) D1_rec_dbl_buf[i] = rank;
     }
     else
         D1_rec_dbl_buf = NULL;
 
-    if (nelems_D3 > 0) {
-        rec_buflen = nelems_D3 * nD3_rec_3d_vars;
+    if (nelems[2] > 0) {
+        rec_buflen = nelems[2] * nD3_rec_3d_vars;
         D3_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D3_rec_dbl_buf[i] = rank + i;
+        for (i = 0; i < rec_buflen; i++) D3_rec_dbl_buf[i] = rank;
     }
     else
         D3_rec_dbl_buf = NULL;
 
-    if (nelems_D4 > 0) {
-        rec_buflen = nelems_D4 * nD4_rec_3d_vars;
+    if (nelems[3] > 0) {
+        rec_buflen = nelems[3] * nD4_rec_3d_vars;
         D4_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D4_rec_dbl_buf[i] = rank + i;
+        for (i = 0; i < rec_buflen; i++) D4_rec_dbl_buf[i] = rank;
     }
     else
         D4_rec_dbl_buf = NULL;
 
-    if (nelems_D5 > 0) {
-        rec_buflen = nelems_D5 * nD5_rec_3d_vars;
+    if (nelems[4] > 0) {
+        rec_buflen = nelems[4] * nD5_rec_3d_vars;
         D5_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D5_rec_dbl_buf[i] = rank + i;
+        for (i = 0; i < rec_buflen; i++) D5_rec_dbl_buf[i] = rank;
     }
     else
         D5_rec_dbl_buf = NULL;
 
-    if (nelems_D6 > 0) {
-        rec_buflen = nelems_D6 * nD6_rec_3d_vars;
+    if (nelems[5] > 0) {
+        rec_buflen = nelems[5] * nD6_rec_3d_vars;
         D6_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
-        for (i = 0; i < rec_buflen; i++) D6_rec_dbl_buf[i] = rank + i;
+        for (i = 0; i < rec_buflen; i++) D6_rec_dbl_buf[i] = rank;
     }
     else
         D6_rec_dbl_buf = NULL;
 
     /* initialize write buffer for 11 small variables */
-    for (i = 0; i < 100; i++) dummy_double_buf[i] = rank;
-    for (i = 0; i < 64; i++) dummy_char_buf[i] = 'a' + rank + i;
+    for (i = 0; i < 80; i++) dummy_double_buf[i] = rank;
+    for (i = 0; i < 64; i++) dummy_char_buf[i] = 'a' + rank;
 
     varids = (int*) malloc(nvars * sizeof(int));
 
@@ -405,38 +390,38 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     /* write 7 fixed-size variables */
 
     /* int maxLevelEdgeTop(nEdges) */
-    err = ncmpi_iput_varn(ncid, 7, nreqs[1], fix_starts_D2, fix_counts_D2,
-                          D2_fix_int_buf, nelems_D2, MPI_INT, NULL); ERR
+    err = ncmpi_iput_varn(ncid, 8, nreqs[1], fix_starts_D2, fix_counts_D2,
+                          D2_fix_int_buf, nelems[1], MPI_INT, NULL); ERR
     my_nreqs += nreqs[1];
 
     /* int maxLevelEdgeBot(nEdges) */
-    err = ncmpi_iput_varn(ncid, 36, nreqs[1], fix_starts_D2, fix_counts_D2,
-                          D2_fix_int_buf + nelems_D2, nelems_D2, MPI_INT, NULL); ERR
+    err = ncmpi_iput_varn(ncid, 37, nreqs[1], fix_starts_D2, fix_counts_D2,
+                          D2_fix_int_buf + nelems[1], nelems[1], MPI_INT, NULL); ERR
     my_nreqs += nreqs[1];
 
     /* int edgeMask(nEdges, nVertLevels) */
-    err = ncmpi_iput_varn(ncid, 9, nreqs[3], fix_starts_D4, fix_counts_D4,
-                          D4_fix_int_buf, nelems_D4, MPI_INT, NULL); ERR
+    err = ncmpi_iput_varn(ncid, 10, nreqs[3], fix_starts_D4, fix_counts_D4,
+                          D4_fix_int_buf, nelems[3], MPI_INT, NULL); ERR
     my_nreqs += nreqs[3];
 
     /* int cellMask(nCells, nVertLevels) */
-    err = ncmpi_iput_varn(ncid, 10, nreqs[2], fix_starts_D3, fix_counts_D3,
-                          D3_fix_int_buf, nelems_D3, MPI_INT, NULL); ERR
+    err = ncmpi_iput_varn(ncid, 11, nreqs[2], fix_starts_D3, fix_counts_D3,
+                          D3_fix_int_buf, nelems[2], MPI_INT, NULL); ERR
     my_nreqs += nreqs[2];
 
     /* int vertexMask(nVertices, nVertLevels) */
-    err = ncmpi_iput_varn(ncid, 11, nreqs[4], fix_starts_D5, fix_counts_D5,
-                          D5_fix_int_buf, nelems_D5, MPI_INT, NULL); ERR
+    err = ncmpi_iput_varn(ncid, 12, nreqs[4], fix_starts_D5, fix_counts_D5,
+                          D5_fix_int_buf, nelems[4], MPI_INT, NULL); ERR
     my_nreqs += nreqs[4];
 
     /* double bottomDepth(nCells)  */
-    err = ncmpi_iput_varn(ncid, 34, nreqs[0], fix_starts_D1, fix_counts_D1,
-                          D1_fix_dbl_buf, nelems_D1, MPI_DOUBLE, NULL); ERR
+    err = ncmpi_iput_varn(ncid, 35, nreqs[0], fix_starts_D1, fix_counts_D1,
+                          D1_fix_dbl_buf, nelems[0], MPI_DOUBLE, NULL); ERR
     my_nreqs += nreqs[0];
 
     /* int maxLevelCell(nCells) */
-    err = ncmpi_iput_varn(ncid, 35, nreqs[0], fix_starts_D1, fix_counts_D1,
-                          D1_fix_int_buf, nelems_D1, MPI_INT, NULL); ERR
+    err = ncmpi_iput_varn(ncid, 36, nreqs[0], fix_starts_D1, fix_counts_D1,
+                          D1_fix_int_buf, nelems[0], MPI_INT, NULL); ERR
     my_nreqs += nreqs[0];
 
     /* next 11 small variables are written by rank 0 only */
@@ -444,16 +429,16 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         count[0] = dims[2][1]; /* dimension nVertLevels */
 
         /* double vertCoordMovementWeights(nVertLevels) */
-        err = ncmpi_bput_vars_double(ncid, 8, start, count, stride, dummy_double_buf, NULL); ERR
+        err = ncmpi_bput_vars_double(ncid, 9, start, count, stride, dummy_double_buf, NULL); ERR
 
         /* double refZMid(nVertLevels) */
-        err = ncmpi_bput_vars_double(ncid, 12, start, count, stride, dummy_double_buf, NULL); ERR
-
-        /* double refLayerThickness(nVertLevels) */
         err = ncmpi_bput_vars_double(ncid, 13, start, count, stride, dummy_double_buf, NULL); ERR
 
+        /* double refLayerThickness(nVertLevels) */
+        err = ncmpi_bput_vars_double(ncid, 14, start, count, stride, dummy_double_buf, NULL); ERR
+
         /* double refBottomDepth(nVertLevels) */
-        err = ncmpi_bput_vars_double(ncid, 32, start, count, stride, dummy_double_buf, NULL); ERR
+        err = ncmpi_bput_vars_double(ncid, 33, start, count, stride, dummy_double_buf, NULL); ERR
 
         my_nreqs += 4; /* 4 non-record variables */
         
@@ -463,31 +448,44 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
             count[1] = 64; /* dimension StrLen */
 
             /* char xtime(Time, StrLen) */
-            err = ncmpi_bput_vars_text(ncid, 14, start, count, stride, dummy_char_buf, NULL); ERR
+            err = ncmpi_bput_vars_text(ncid, 15, start, count, stride, dummy_char_buf, NULL); ERR
 
             /* double areaCellGlobal(Time) */
-            err = ncmpi_bput_vars_double(ncid, 19, start, count, stride, dummy_double_buf, NULL); ERR
-
-            /* double areaEdgeGlobal(Time) */
             err = ncmpi_bput_vars_double(ncid, 20, start, count, stride, dummy_double_buf, NULL); ERR
 
-            /* double areaTriangleGlobal(Time) */
+            /* double areaEdgeGlobal(Time) */
             err = ncmpi_bput_vars_double(ncid, 21, start, count, stride, dummy_double_buf, NULL); ERR
 
-            /* double volumeCellGlobal(Time) */
+            /* double areaTriangleGlobal(Time) */
             err = ncmpi_bput_vars_double(ncid, 22, start, count, stride, dummy_double_buf, NULL); ERR
 
-            /* double volumeEdgeGlobal(Time) */
+            /* double volumeCellGlobal(Time) */
             err = ncmpi_bput_vars_double(ncid, 23, start, count, stride, dummy_double_buf, NULL); ERR
 
-            /* double CFLNumberGlobal(Time) */
+            /* double volumeEdgeGlobal(Time) */
             err = ncmpi_bput_vars_double(ncid, 24, start, count, stride, dummy_double_buf, NULL); ERR
+
+            /* double CFLNumberGlobal(Time) */
+            err = ncmpi_bput_vars_double(ncid, 25, start, count, stride, dummy_double_buf, NULL); ERR
 
             my_nreqs += 7; /* 7 record variables */
         }
     }
 
-    /* write 33 record variables */
+    /* write 34 record variables */
+
+    /* 4 D1 record variables: double (Time, nCells) */
+    for (rec_no = 0; rec_no < num_recs; rec_no++) {
+        for (j = 0; j < nreqs[0]; j++) starts_D1[j][0] = rec_no;
+
+        rec_buf_ptr = D1_rec_dbl_buf;
+        for (j = 0; j < nD1_rec_2d_vars; j++) {
+            err = ncmpi_iput_varn(ncid, D1_rec_2d_varids[j], nreqs[0], starts_D1,
+                                  counts_D1, rec_buf_ptr, nelems[0], MPI_DOUBLE, NULL); ERR
+            rec_buf_ptr += nelems[0];
+            my_nreqs += nreqs[0];
+        }
+    }
 
     /* 4 D6 record variables: double (Time, nCells, nVertLevelsP1) */
     for (rec_no = 0; rec_no < num_recs; rec_no++) {
@@ -496,22 +494,9 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         rec_buf_ptr = D6_rec_dbl_buf;
         for (j = 0; j < nD6_rec_3d_vars; j++) {
             err = ncmpi_iput_varn(ncid, D6_rec_3d_varids[j], nreqs[5], starts_D6,
-                                  counts_D6, rec_buf_ptr, nelems_D6, MPI_DOUBLE, NULL); ERR
-            rec_buf_ptr += nelems_D6;
+                                  counts_D6, rec_buf_ptr, nelems[5], MPI_DOUBLE, NULL); ERR
+            rec_buf_ptr += nelems[5];
             my_nreqs += nreqs[5];
-        }
-    }
-
-    /* 3 D1 record variables: double (Time, nCells) */
-    for (rec_no = 0; rec_no < num_recs; rec_no++) {
-        for (j = 0; j < nreqs[0]; j++) starts_D1[j][0] = rec_no;
-
-        rec_buf_ptr = D1_rec_dbl_buf;
-        for (j = 0; j < nD1_rec_2d_vars; j++) {
-            err = ncmpi_iput_varn(ncid, D1_rec_2d_varids[j], nreqs[0], starts_D1,
-                                  counts_D1, rec_buf_ptr, nelems_D1, MPI_DOUBLE, NULL); ERR
-            rec_buf_ptr += nelems_D1;
-            my_nreqs += nreqs[0];
         }
     }
 
@@ -522,8 +507,8 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         rec_buf_ptr = D3_rec_dbl_buf;
         for (j = 0; j < nD3_rec_3d_vars; j++) {
             err = ncmpi_iput_varn(ncid, D3_rec_3d_varids[j], nreqs[2], starts_D3,
-                                  counts_D3, rec_buf_ptr, nelems_D3, MPI_DOUBLE, NULL); ERR
-            rec_buf_ptr += nelems_D3;
+                                  counts_D3, rec_buf_ptr, nelems[2], MPI_DOUBLE, NULL); ERR
+            rec_buf_ptr += nelems[2];
             my_nreqs += nreqs[2];
         }
     }
@@ -535,8 +520,8 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         rec_buf_ptr = D4_rec_dbl_buf;
         for (j = 0; j < nD4_rec_3d_vars; j++) {
             err = ncmpi_iput_varn(ncid, D4_rec_3d_varids[j], nreqs[3], starts_D4,
-                                  counts_D4, rec_buf_ptr, nelems_D4, MPI_DOUBLE, NULL); ERR
-            rec_buf_ptr += nelems_D4;
+                                  counts_D4, rec_buf_ptr, nelems[3], MPI_DOUBLE, NULL); ERR
+            rec_buf_ptr += nelems[3];
             my_nreqs += nreqs[3];
         }
     }
@@ -548,11 +533,12 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         rec_buf_ptr = D5_rec_dbl_buf;
         for (j = 0; j < nD5_rec_3d_vars; j++) {
             err = ncmpi_iput_varn(ncid, D5_rec_3d_varids[j], nreqs[4], starts_D5,
-                                  counts_D5, rec_buf_ptr, nelems_D5, MPI_DOUBLE, NULL); ERR
-            rec_buf_ptr += nelems_D5;
+                                  counts_D5, rec_buf_ptr, nelems[4], MPI_DOUBLE, NULL); ERR
+            rec_buf_ptr += nelems[4];
             my_nreqs += nreqs[4];
         }
     }
+    total_nreqs += my_nreqs;
 
     post_timing += MPI_Wtime() - timing;
 
@@ -614,7 +600,9 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
 
     total_timing = MPI_Wtime() - total_timing;
 
-    MPI_Reduce(&my_nreqs,      &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
+    MPI_Reduce(&total_nreqs,   &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
+    MPI_Reduce(&total_nreqs,   &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    total_nreqs = tmp;
     MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
     put_size = tmp;
     MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
@@ -653,6 +641,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         printf("Total number of variables          = %d\n",nvars);
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)total_size/1048576,(double)total_size/1073741824);
+        printf("Total number of requests           = %lld\n",total_nreqs);
         printf("Max number of requests             = %d\n",max_nreqs);
         printf("Max Time of open + metadata define = %.4f sec\n",open_timing);
         printf("Max Time of I/O preparing          = %.4f sec\n",pre_timing);

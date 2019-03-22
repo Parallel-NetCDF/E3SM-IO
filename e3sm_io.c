@@ -157,6 +157,7 @@ MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
         if (!rank) {
             printf("Total number of MPI processes      = %d\n",nprocs);
             printf("Input decomposition file           = %s\n",infname);
+            printf("Number of decompositions           = %d\n",num_decomp);
             printf("Output file directory              = %s\n",out_dir);
             printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
             printf("Write number of records (time dim) = %d\n",num_recs);
@@ -237,6 +238,7 @@ MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
         if (!rank) {
             printf("Total number of MPI processes      = %d\n",nprocs);
             printf("Input decomposition file           = %s\n",infname);
+            printf("Number of decompositions           = %d\n",num_decomp);
             printf("Output file directory              = %s\n",out_dir);
             printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
             printf("Write number of records (time dim) = %d\n",num_recs);
@@ -250,7 +252,7 @@ MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
             fflush(stdout);
             MPI_Barrier(MPI_COMM_WORLD);
 
-            nvars = 51;
+            nvars = 52;
             outfname = "g_case_hist_varn.nc";
             nerrs += run_varn_G_case(out_dir, outfname, nvars, num_recs, info,
                                      dims, contig_nreqs, disps, blocklens);

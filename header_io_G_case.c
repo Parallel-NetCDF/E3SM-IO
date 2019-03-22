@@ -23,10 +23,10 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att(ncid, NC_GLOBAL, "sphere_radius", NC_DOUBLE, 1, &dattr); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "model_name", 4, "mpas"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "core_name", 5, "ocean"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "history", 26, "mpirun -n 16 ./ocean_model"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "history", 28, "mpirun -n 9600 ./ocean_model"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "source", 4, "MPAS"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "Conventions", 4, "MPAS"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "parent_id", 44, "f5z41zseqm\na3ix7sajjh\nfo1xwy6fbp\ne513bmrqm3\n"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "parent_id", 65, "mt6vdoeok9\nrz1tbn0bed\n555vk5hkh9\n0s1lcmezuy\n7z1uysqc5i\nwj661vqvze"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "mesh_spec", 3, "0.0"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "git_version", 16, "MPAS_GIT_VERSION"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_ocean_run_mode", 7, "forward"); ERR
@@ -43,8 +43,8 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_pio_stride", NC_INT, 1, &iattr); ERR
     iattr = 3;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_num_halos", NC_INT, 1, &iattr); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_block_decomp_file_prefix", 78, \
-                             "/home/climate1/acme/inputdata/ocn/mpas-o/oQU120/mpas-o.graph.info.160318.part."); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_block_decomp_file_prefix", 89, \
+                             "/project/projectdirs/acme/inputdata/ocn/mpas-o/oRRS18to6v3/mpas-o.graph.info.170111.part."); ERR
     iattr = 0;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_number_of_blocks", NC_INT, 1, &iattr); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_explicit_proc_decomp", 2, "NO"); ERR
@@ -63,7 +63,7 @@ define_global_attributes(int ncid)
     dattr = 1.2;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_1dCVTgenerator_dzSeed", NC_DOUBLE, 1, &dattr); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_iterative_init_variable", 15, "landIcePressure"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_dt", 8, "00:30:00"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_dt", 8, "00:06:00"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_time_integrator", 14, "split_explicit"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_vert_coord_movement", 18, "uniform_stretching"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_min_max_thickness", 2, "NO"); ERR
@@ -85,7 +85,7 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_pbc_alteration_type", 9, "full_cell"); ERR
     dattr = 0.1;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_min_pbc_fraction", NC_DOUBLE, 1, &dattr); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_hmix_scaleWithMesh", 2, "NO"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_hmix_scaleWithMesh", 3, "YES"); ERR
     dattr = -1.;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_maxMeshDensity", NC_DOUBLE, 1, &dattr); ERR
     dattr = 0.;
@@ -98,7 +98,7 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_tracer_del2", NC_DOUBLE, 1, &dattr); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_mom_del4", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_tracer_del4", 2, "NO"); ERR
-    dattr = 26000000000000.;
+    dattr = 3200000000.;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_mom_del4", NC_DOUBLE, 1, &dattr); ERR
     dattr = 1.;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_mom_del4_div_factor", NC_DOUBLE, 1, &dattr); ERR
@@ -111,7 +111,7 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_Leith_dx", NC_DOUBLE, 1, &dattr); ERR
     dattr = 2500.;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_Leith_visc2_max", NC_DOUBLE, 1, &dattr); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_standardGM", 3, "YES"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_standardGM", 2, "NO"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_Redi_surface_layer_tapering", 2, "NO"); ERR
     dattr = 0.;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_Redi_surface_layer_tapering_extent", NC_DOUBLE, 1, &dattr); ERR
@@ -349,7 +349,7 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_n_bcl_iter_mid", NC_INT, 1, &iattr); ERR
     iattr = 2;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_n_bcl_iter_end", NC_INT, 1, &iattr); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_btr_dt", 13, "0000_00:01:30"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_btr_dt", 13, "0000_00:00:12"); ERR
     iattr = 2;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_n_btr_cor_iter", NC_INT, 1, &iattr); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_vel_correction", 3, "YES"); ERR
@@ -1041,16 +1041,16 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_isomip_plus_effective_density", NC_DOUBLE, 1, &dattr); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_activeTracers", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_activeTracers_surface_bulk_forcing", 3, "YES"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_activeTracers_surface_restoring", 2, "NO"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_activeTracers_surface_restoring", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_activeTracers_interior_restoring", 2, "NO"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_activeTracers_exponential_decay", 2, "NO"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_activeTracers_idealAge_forcing", 2, "NO"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_activeTracers_ttd_forcing", 2, "NO"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_surface_salinity_monthly_restoring", 2, "NO"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_surface_salinity_monthly_restoring", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_surface_salinity_monthly_restoring_compute_interval", 19, "0000-00-01_00:00:00"); ERR
     dattr = 1.585e-06;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_salinity_restoring_constant_piston_velocity", NC_DOUBLE, 1, &dattr); ERR
-    dattr = 0.5;
+    dattr = 100;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_salinity_restoring_max_difference", NC_DOUBLE, 1, &dattr); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_salinity_restoring_under_sea_ice", 2, "NO"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_use_debugTracers", 2, "NO"); ERR
@@ -1387,12 +1387,12 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_transectTransport_compute_on_startup", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_transectTransport_write_on_startup", 2, "NO"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_transectTransport_transect_group", 3, "all"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_eddyProductVariables_enable", 2, "NO"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_eddyProductVariables_enable", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_eddyProductVariables_compute_interval", 19, "0000-00-00_01:00:00"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_eddyProductVariables_output_stream", 26, "eddyProductVariablesOutput"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_eddyProductVariables_compute_on_startup", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_eddyProductVariables_write_on_startup", 2, "NO"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_mocStreamfunction_enable", 2, "NO"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_mocStreamfunction_enable", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_mocStreamfunction_compute_interval", 19, "0000-00-00_01:00:00"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_mocStreamfunction_output_stream", 23, "mocStreamfunctionOutput"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_mocStreamfunction_compute_on_startup", 3, "YES"); ERR
@@ -1407,25 +1407,27 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_mocStreamfunction_normal_velocity_value", 14, "normalVelocity"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_mocStreamfunction_region_group", 3, "all"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_mocStreamfunction_transect_group", 3, "all"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "file_id", 10, "7fsz10wxip"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "file_id", 10, "3q7jdjett8"); ERR
 
 fn_exit:
     return nerrs;
 }
 
 /*----< def_G_case_h0() >----------------------------------------------------*/
-int def_G_case_h0(int         ncid,       /* file ID */
-                  MPI_Offset  dims_D1[1], /* dimension sizes of of decomposition 1 */
-                  MPI_Offset  dims_D2[1], /* dimension sizes of of decomposition 2 */
-                  MPI_Offset  dims_D3[2], /* dimension sizes of of decomposition 3 */
-                  MPI_Offset  dims_D4[2], /* dimension sizes of of decomposition 4 */
-                  MPI_Offset  dims_D5[2], /* dimension sizes of of decomposition 5 */
-                  MPI_Offset  dims_D6[2], /* dimension sizes of of decomposition 6 */
-                  int         nvars,      /* number of variables */
-                  int        *varids)     /* variable IDs */
+int
+def_G_case_h0(int         ncid,       /* file ID */
+              MPI_Offset  dims_D1[1], /* dimension sizes of decomposition 1 */
+              MPI_Offset  dims_D2[1], /* dimension sizes of decomposition 2 */
+              MPI_Offset  dims_D3[2], /* dimension sizes of decomposition 3 */
+              MPI_Offset  dims_D4[2], /* dimension sizes of decomposition 4 */
+              MPI_Offset  dims_D5[2], /* dimension sizes of decomposition 5 */
+              MPI_Offset  dims_D6[2], /* dimension sizes of decomposition 6 */
+              int         nvars,      /* number of variables */
+              int        *varids)     /* variable IDs */
 {
-    /* Total 51 variables */
-    int vertTransportVelocityTop, vertGMBolusVelocityTop, vertAleTransportTop,
+    /* Total 52 variables */
+    int salinitySurfaceRestoringTendency,
+        vertTransportVelocityTop, vertGMBolusVelocityTop, vertAleTransportTop,
         tendSSH, layerThickness, normalVelocity, ssh, maxLevelEdgeTop,
         vertCoordMovementWeights, edgeMask, cellMask, vertexMask,
         refZMid, refLayerThickness, xtime, kineticEnergyCell,
@@ -1449,9 +1451,9 @@ int def_G_case_h0(int         ncid,       /* file ID */
     err = define_global_attributes(ncid); ERR
 
     /* define dimensions */
-    err = ncmpi_def_dim(ncid, "nVertLevelsP1", dims_D6[1], &dim_nVertLevelsP1); ERR
     err = ncmpi_def_dim(ncid, "nCells", dims_D1[0], &dim_nCells); ERR
     err = ncmpi_def_dim(ncid, "Time", NC_UNLIMITED, &dim_Time); ERR
+    err = ncmpi_def_dim(ncid, "nVertLevelsP1", dims_D6[1], &dim_nVertLevelsP1); ERR
     err = ncmpi_def_dim(ncid, "nVertLevels", dims_D3[1], &dim_nVertLevels); ERR
     err = ncmpi_def_dim(ncid, "nEdges", dims_D2[0], &dim_nEdges); ERR
     err = ncmpi_def_dim(ncid, "nVertices", dims_D5[0], &dim_nVertices); ERR
@@ -1460,6 +1462,15 @@ int def_G_case_h0(int         ncid,       /* file ID */
     i = 0;
 
     /* define variables */
+    /* 1 double (Time, nCells) */
+    dimids[0] = dim_Time;
+    dimids[1] = dim_nCells;
+
+    err = ncmpi_def_var(ncid, "salinitySurfaceRestoringTendency", NC_DOUBLE, 2, dimids, &salinitySurfaceRestoringTendency); ERR
+    err = ncmpi_put_att_text(ncid, salinitySurfaceRestoringTendency, "units", 7, "m PSU/s"); ERR
+    err = ncmpi_put_att_text(ncid, salinitySurfaceRestoringTendency, "long_name", 42, "salinity tendency due to surface restoring"); ERR
+    varids[i++] = salinitySurfaceRestoringTendency;
+
     /* 3 double (Time, nCells, nVertLevelsP1) */
     dimids[0] = dim_Time;
     dimids[1] = dim_nCells;
