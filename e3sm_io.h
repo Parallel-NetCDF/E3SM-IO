@@ -43,12 +43,12 @@ int two_buf;
 }
 
 #ifdef _DOUBLE_TYPE_
-typedef double dtype;
-#define REC_DTYPE MPI_DOUBLE
+typedef double itype;  /* internal data type of buffer in memory */
+#define REC_ITYPE MPI_DOUBLE
 #define REC_XTYPE NC_DOUBLE
 #else
-typedef float dtype;
-#define REC_DTYPE MPI_FLOAT
+typedef float itype;   /* internal data type of buffer in memory */
+#define REC_ITYPE MPI_FLOAT
 #define REC_XTYPE NC_FLOAT
 #endif
 

@@ -244,7 +244,7 @@ add_decomp(int         ncid,
     err = ncmpi_put_att_int(ncid, NC_GLOBAL, name, NC_INT, 1, &ndims); ERR
     for (i=0; i<ndims; i++) {
         sprintf(name, "D%d.dim_%d", label, i);
-        /* dims[] is in Fortran order */
+        /* dims[] is in Fortran order, save in NC file in C order */
         err = ncmpi_put_att_longlong(ncid, NC_GLOBAL, name, NC_INT, 1, &dims[ndims-1-i]);
         ERR
     }

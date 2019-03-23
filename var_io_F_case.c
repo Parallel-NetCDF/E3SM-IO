@@ -160,11 +160,11 @@ fn_exit:
     var_disps[i] = var_offset - offset_rec; \
     if (kind == 2) { \
         my_nreqs += nreqs[1]; \
-        if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[1]+gap) * sizeof(dtype); \
+        if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[1]+gap) * sizeof(itype); \
         buf_blocklens[i] = nelems[1]; \
     } else { /* kind == 3 */ \
         my_nreqs += nreqs[2]; \
-        if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[2]+gap) * sizeof(dtype); \
+        if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[2]+gap) * sizeof(itype); \
         buf_blocklens[i] = nelems[2]; \
     } \
     i++; \
@@ -177,11 +177,11 @@ fn_exit:
         var_disps[i] = var_offset - offset_rec; \
         if (kind == 2) { \
             my_nreqs += nreqs[1]; \
-            if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[1]+gap) * sizeof(dtype); \
+            if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[1]+gap) * sizeof(itype); \
             buf_blocklens[i] = nelems[1]; \
         } else { /* kind == 3 */ \
             my_nreqs += nreqs[2]; \
-            if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[2]+gap) * sizeof(dtype); \
+            if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[2]+gap) * sizeof(itype); \
             buf_blocklens[i] = nelems[2]; \
         } \
         i++; \
@@ -206,7 +206,7 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
     int int_buf[10], *int_buf_ptr;
     size_t fix_buflen, dbl_buflen, rec_buflen;
     size_t nelems[3];
-    dtype *rec_buf;
+    itype *rec_buf;
     double *dbl_buf, *dbl_buf_ptr;
     double pre_timing, open_timing, io_timing, close_timing;
     double timing, total_timing,  max_timing;
@@ -239,9 +239,9 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
     MPI_Type_commit(&type[0]);
     MPI_Type_indexed(nreqs[1], blocklens[1], disps[1], MPI_DOUBLE, &type[1]);
     MPI_Type_commit(&type[1]);
-    MPI_Type_indexed(nreqs[1], blocklens[1], disps[1], REC_DTYPE, &type[2]);
+    MPI_Type_indexed(nreqs[1], blocklens[1], disps[1], REC_ITYPE, &type[2]);
     MPI_Type_commit(&type[2]);
-    MPI_Type_indexed(nreqs[2], blocklens[2], disps[2], REC_DTYPE, &type[3]);
+    MPI_Type_indexed(nreqs[2], blocklens[2], disps[2], REC_ITYPE, &type[3]);
     MPI_Type_commit(&type[3]);
 
     /* number of variable elements from 3 decompositions */
@@ -269,7 +269,7 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20+1) * gap;
 
-    rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
+    rec_buf = (itype*) malloc(rec_buflen * sizeof(itype));
     for (i=0; i<rec_buflen; i++) rec_buf[i] = rank + i;
 
     pre_timing = MPI_Wtime() - pre_timing;
@@ -416,12 +416,12 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
     if (noncontig_buf) {
         /* construct buffer type for record variables */
         MPI_Type_create_hindexed(nvars-30, buf_blocklens+30, buf_disps+30,
-                                 REC_DTYPE, &buftype_rec);
+                                 REC_ITYPE, &buftype_rec);
         MPI_Type_commit(&buftype_rec);
     }
     else {
         /* all record variables are in a single contiguous buffer */
-        buftype_rec = REC_DTYPE;
+        buftype_rec = REC_ITYPE;
     }
 
     filetype_rec = (MPI_Datatype*)malloc(num_recs * sizeof(MPI_Datatype));
@@ -678,7 +678,7 @@ fn_exit:
 #define POST_VARN(k, num, vid) \
     for (j=0; j<num; j++) { \
         err = ncmpi_iput_varn(ncid, vid+j, nreqs[k-1], starts_D##k, \
-                              counts_D##k, rec_buf_ptr, -1, REC_DTYPE, NULL); \
+                              counts_D##k, rec_buf_ptr, -1, REC_ITYPE, NULL); \
         ERR \
         rec_buf_ptr += nelems[k-1] + gap; \
         my_nreqs += nreqs[k-1]; \
@@ -702,7 +702,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nreqs_D3_merged;
     int rec_no, gap=0, my_nreqs, max_nreqs, int_buf[10], *int_buf_ptr;
     size_t dbl_buflen, rec_buflen, nelems[3];
-    dtype *rec_buf, *rec_buf_ptr;
+    itype *rec_buf, *rec_buf_ptr;
     double *dbl_buf, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing,  max_timing;
@@ -757,7 +757,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20+1) * gap;
 
-    rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
+    rec_buf = (itype*) malloc(rec_buflen * sizeof(itype));
     for (i=0; i<rec_buflen; i++) rec_buf[i] = rank + i;
 
     for (i=0; i<10; i++) int_buf[i] = rank + i;
