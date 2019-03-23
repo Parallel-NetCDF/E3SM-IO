@@ -245,11 +245,10 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
     MPI_Type_commit(&type[3]);
 
     /* number of variable elements from 3 decompositions */
-    for (j=0; j<nvars; j++) var_blocklens[j] = 1;
-    nelems[0] = nelems[1] = nelems[2] = 0;
-    for (k=0; k<nreqs[0]; k++) nelems[0] += blocklens[0][k];
-    for (k=0; k<nreqs[1]; k++) nelems[1] += blocklens[1][k];
-    for (k=0; k<nreqs[2]; k++) nelems[2] += blocklens[2][k];
+    for (i=0; i<nvars; i++) var_blocklens[i] = 1;
+    for (i=0; i<3; i++)
+        for (nelems[i]=0, j=0; j<nreqs[i]; j++)
+            nelems[i] += blocklens[i][j];
 
     if (verbose && rank == 0)
         printf("nelems=%zd %zd %zd\n", nelems[0],nelems[1],nelems[2]);
@@ -259,10 +258,10 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
                + 3 * dims[2][0] + 3 * (dims[2][0]+1) + 8 + 2 + 20 * gap;
 
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
-    for (j=0; j<dbl_buflen; j++) dbl_buf[j] = rank + i;
+    for (i=0; i<dbl_buflen; i++) dbl_buf[i] = rank + i;
 
-    for (j=0; j<10; j++) int_buf[j] = rank;
-    for (j=0; j<16; j++) txt_buf[j] = 'a' + rank;
+    for (i=0; i<10; i++) int_buf[i] = rank + i;
+    for (i=0; i<16; i++) txt_buf[i] = 'a' + rank + i;
 
     /* allocate and initialize write buffer for large variables */
     if (nvars == 408)
@@ -761,9 +760,8 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
     rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
     for (i=0; i<rec_buflen; i++) rec_buf[i] = rank + i;
 
-    for (i=0; i<10; i++) int_buf[i] = rank;
-
-    for (i=0; i<16; i++) txt_buf[i] = 'a' + rank;
+    for (i=0; i<10; i++) int_buf[i] = rank + i;
+    for (i=0; i<16; i++) txt_buf[i] = 'a' + rank + i;
 
     varids = (int*) malloc(nvars * sizeof(int));
 
