@@ -202,7 +202,7 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
 {
     char outfname[512], txt_buf[16], *txt_buf_ptr;
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
-    int *var_blocklens, *buf_blocklens, my_nreqs, max_nreqs, rec_no, gap=0;
+    int *var_blocklens, *buf_blocklens, my_nreqs, rec_no, gap=0;
     int int_buf[10], *int_buf_ptr;
     size_t fix_buflen, dbl_buflen, rec_buflen;
     size_t nelems[3];
@@ -212,7 +212,7 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
     double timing, total_timing,  max_timing;
     MPI_Aint *var_disps, *buf_disps;
     MPI_Offset tmp, metadata_size, rec_size, put_size, total_size;
-    MPI_Offset offset_fix, offset_rec, var_offset;
+    MPI_Offset offset_fix, offset_rec, var_offset, max_nreqs, total_nreqs;
     MPI_Datatype *var_types, type[4], *filetype_rec, filetype_dbl;
     MPI_Datatype buftype_rec, buftype_dbl;
     MPI_Info info_used=MPI_INFO_NULL;
@@ -507,7 +507,9 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
 
     total_timing = MPI_Wtime() - total_timing;
 
-    MPI_Reduce(&my_nreqs,      &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
+    tmp = my_nreqs;
+    MPI_Reduce(&tmp,           &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, comm);
+    MPI_Reduce(&tmp,           &total_nreqs,1, MPI_OFFSET, MPI_MAX, 0, comm);
     MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
     put_size = tmp;
     MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
@@ -544,7 +546,8 @@ run_vard_F_case(char       *out_dir,      /* output folder name */
         printf("Total number of variables          = %d\n",nvars);
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)total_size/1048576,(double)total_size/1073741824);
-        printf("Max number of requests             = %d\n",max_nreqs);
+        printf("Total number of requests           = %lld\n",total_nreqs);
+        printf("Max number of requests             = %lld\n",max_nreqs);
         printf("Max Time of open + metadata define = %.4f sec\n",open_timing);
         printf("Max Time of I/O preparing          = %.4f sec\n",pre_timing);
         printf("Max Time of ncmpi_put_vard         = %.4f sec\n",io_timing);
@@ -571,50 +574,49 @@ fn_exit:
     starts[0] = (MPI_Offset*) malloc(2 * nreqs * sizeof(MPI_Offset)); \
     counts[0] = starts[0] + nreqs; \
     \
-    for (i=1; i<nreqs; i++) { \
-        starts[i] = starts[i-1] + 1; \
-        counts[i] = counts[i-1] + 1; \
+    for (j=1; j<nreqs; j++) { \
+        starts[j] = starts[j-1] + 1; \
+        counts[j] = counts[j-1] + 1; \
     } \
     \
-    for (i=0; i<nreqs; i++) { \
-        starts[i][0] = disps[i]; \
-        counts[i][0] = blocklens[i]; \
+    for (j=0; j<nreqs; j++) { \
+        starts[j][0] = disps[j]; \
+        counts[j][0] = blocklens[j]; \
     } \
 }
 
-#define FIX_2D_VAR_STARTS_COUNTS(starts, counts, nreqs, disps, blocklens, last_dimlen, nreqs_merged) { \
+#define FIX_2D_VAR_STARTS_COUNTS(starts, counts, nreqs, disps, blocklens, last_dimlen) { \
     starts = (MPI_Offset**) malloc(2 * nreqs * sizeof(MPI_Offset*)); \
     counts = starts + nreqs; \
     starts[0] = (MPI_Offset*) malloc(2 * nreqs * 2 * sizeof(MPI_Offset)); \
     counts[0] = starts[0] + nreqs * 2; \
     \
-    for (i=1; i<nreqs; i++) { \
-        starts[i] = starts[i-1] + 2; \
-        counts[i] = counts[i-1] + 2; \
+    for (j=1; j<nreqs; j++) { \
+        starts[j] = starts[j-1] + 2; \
+        counts[j] = counts[j-1] + 2; \
     } \
     \
-    int reqs_cnt = 0; \
-    i = 0; \
-    while (i < nreqs) { \
-        starts[reqs_cnt][1] = disps[i] % last_dimlen; /* decomposition is 2D */ \
-        counts[reqs_cnt][1] = blocklens[i]; /* each blocklens[i] is no bigger than last_dimlen */ \
-        \
-        starts[reqs_cnt][0] = disps[i] / last_dimlen; \
-        counts[reqs_cnt][0] = 1; \
-        \
-        /* merge consecutive "1 by last_dimlen" regions into a larger one */ \
-        while ((i < nreqs - 1) && \
-               (disps[i] % last_dimlen == 0 && blocklens[i] == last_dimlen) && \
-               (disps[i + 1] - disps[i] == last_dimlen && blocklens[i + 1] == last_dimlen)) { \
-            i++; \
-            counts[reqs_cnt][0]++; \
+    k = 0; \
+    starts[0][0] = disps[0] / last_dimlen; \
+    starts[0][1] = disps[0] % last_dimlen; /* decomposition is 2D */ \
+    counts[0][0] = 1; \
+    counts[0][1] = blocklens[0]; /* each blocklens[j] is no bigger than last_dimlen */ \
+    for (j=1; j<nreqs; j++) { \
+        MPI_Offset _start[2]; \
+        _start[0] = disps[j] / last_dimlen; \
+        _start[1] = disps[j] % last_dimlen; \
+        if (_start[0] == starts[k][0] + counts[k][0] && \
+            _start[1] == starts[k][1] && blocklens[j] == counts[k][1]) \
+            counts[k][0]++; \
+        else { \
+            k++; \
+            starts[k][0] = _start[0]; \
+            starts[k][1] = _start[1]; \
+            counts[k][0] = 1; \
+            counts[k][1] = blocklens[j]; /* each blocklens[j] is no bigger than last_dimlen */ \
         } \
-        \
-        reqs_cnt++; \
-        i++; \
     } \
-    \
-    nreqs_merged = reqs_cnt; \
+    nreqs = k + 1; \
 }
 
 #define REC_2D_VAR_STARTS_COUNTS(rec, starts, counts, nreqs, disps, blocklens) { \
@@ -623,17 +625,17 @@ fn_exit:
     starts[0] = (MPI_Offset*) malloc(2 * nreqs * 2 * sizeof(MPI_Offset)); \
     counts[0] = starts[0] + nreqs * 2; \
     \
-    for (i=1; i<nreqs; i++) { \
-        starts[i] = starts[i-1] + 2; \
-        counts[i] = counts[i-1] + 2; \
+    for (j=1; j<nreqs; j++) { \
+        starts[j] = starts[j-1] + 2; \
+        counts[j] = counts[j-1] + 2; \
     } \
     \
-    for (i=0; i<nreqs; i++) { \
-        starts[i][1] = disps[i]; /* decomposition is 1D */ \
-        counts[i][1] = blocklens[i]; \
+    for (j=0; j<nreqs; j++) { \
+        starts[j][1] = disps[j]; /* decomposition is 1D */ \
+        counts[j][1] = blocklens[j]; \
         \
-        starts[i][0] = rec; /* record ID */ \
-        counts[i][0] = 1;   /* one record only */ \
+        starts[j][0] = rec; /* record ID */ \
+        counts[j][0] = 1;   /* one record only */ \
     } \
 }
 
@@ -643,36 +645,36 @@ fn_exit:
     starts[0] = (MPI_Offset*) malloc(2 * nreqs * 3 * sizeof(MPI_Offset)); \
     counts[0] = starts[0] + nreqs * 3; \
     \
-    for (i=1; i<nreqs; i++) { \
-        starts[i] = starts[i-1] + 3; \
-        counts[i] = counts[i-1] + 3; \
+    for (j=1; j<nreqs; j++) { \
+        starts[j] = starts[j-1] + 3; \
+        counts[j] = counts[j-1] + 3; \
     } \
     \
-    int reqs_cnt = 0; \
-    i = 0; \
-    while (i < nreqs) { \
-        starts[reqs_cnt][2] = disps[i] % last_dimlen; /* decomposition is 2D */ \
-        counts[reqs_cnt][2] = blocklens[i]; /* each blocklens[i] is no bigger than last_dimlen */ \
-        \
-        starts[reqs_cnt][1] = disps[i] / last_dimlen; \
-        counts[reqs_cnt][1] = 1; \
-        \
-        starts[reqs_cnt][0] = rec; /* record ID */ \
-        counts[reqs_cnt][0] = 1;   /* one record only */ \
-        \
-        /* merge consecutive "1 by last_dimlen" regions into a larger one */ \
-        while ((i < nreqs - 1) && \
-               (disps[i] % last_dimlen == 0 && blocklens[i] == last_dimlen) && \
-               (disps[i + 1] - disps[i] == last_dimlen && blocklens[i + 1] == last_dimlen)) { \
-            i++; \
-            counts[reqs_cnt][1]++; \
+    k = 0; \
+    starts[0][0] = rec; /* record ID */ \
+    starts[0][1] = disps[0] / last_dimlen; \
+    starts[0][2] = disps[0] % last_dimlen; /* decomposition is 2D */ \
+    counts[0][0] = 1;   /* one record only */ \
+    counts[0][1] = 1; \
+    counts[0][2] = blocklens[0]; /* each blocklens[j] is no bigger than last_dimlen */ \
+    for (j=1; j<nreqs; j++) { \
+        MPI_Offset _start[2]; \
+        _start[0] = disps[j] / last_dimlen; \
+        _start[1] = disps[j] % last_dimlen; \
+        if (starts[k][0] == rec && _start[0] == starts[k][1] + counts[k][1] && \
+            _start[1] == starts[k][2] && blocklens[j] == counts[k][2]) \
+            counts[k][1]++; \
+        else { \
+            k++; \
+            starts[k][0] = rec; \
+            starts[k][1] = _start[0]; \
+            starts[k][2] = _start[1]; \
+            counts[k][0] = 1; \
+            counts[k][1] = 1; \
+            counts[k][2] = blocklens[j]; /* each blocklens[j] is no bigger than last_dimlen */ \
         } \
-        \
-        reqs_cnt++; \
-        i++; \
     } \
-    \
-    if (reqs_cnt < nreqs) nreqs = reqs_cnt; \
+    nreqs = k+1; \
 }
 
 #define POST_VARN(k, num, vid) \
@@ -700,17 +702,15 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
 {
     char outfname[512], txt_buf[16], *txt_buf_ptr;
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nreqs_D3_merged;
-    int rec_no, gap=0, my_nreqs, max_nreqs, int_buf[10], *int_buf_ptr;
+    int rec_no, gap=0, my_nreqs, int_buf[10], *int_buf_ptr;
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf, *rec_buf_ptr;
     double *dbl_buf, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing,  max_timing;
-    MPI_Offset tmp, metadata_size, put_size, total_size, total_nreqs;
-    MPI_Offset **fix_starts_D1, **fix_counts_D1;
-    MPI_Offset **fix_starts_D2, **fix_counts_D2;
-    MPI_Offset **starts_D2, **counts_D2;
-    MPI_Offset **starts_D3, **counts_D3;
+    MPI_Offset tmp, metadata_size, put_size, total_size, max_nreqs, total_nreqs;
+    MPI_Offset **starts_D2=NULL, **counts_D2=NULL;
+    MPI_Offset **starts_D3=NULL, **counts_D3=NULL;
     MPI_Comm comm=MPI_COMM_WORLD;
     MPI_Info info_used=MPI_INFO_NULL;
 
@@ -727,22 +727,13 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
     if (noncontig_buf) gap = 10;
 
     /* calculate number of variable elements from 3 decompositions */
-    total_nreqs = 0;
-    my_nreqs = max_nreqs = 0;
+    my_nreqs = 0;
     for (i=0; i<3; i++) {
         for (nelems[i]=0, k=0; k<nreqs[i]; k++)
             nelems[i] += blocklens[i][k];
     }
     if (verbose && rank == 0)
         printf("nelems=%zd %zd %zd\n", nelems[0],nelems[1],nelems[2]);
-
-    /* construct varn API arguments starts[][] and counts[][] */
-    FIX_1D_VAR_STARTS_COUNTS(fix_starts_D1, fix_counts_D1, nreqs[0], disps[0], blocklens[0])
-    FIX_1D_VAR_STARTS_COUNTS(fix_starts_D2, fix_counts_D2, nreqs[1], disps[1], blocklens[1])
-
-    REC_2D_VAR_STARTS_COUNTS(0, starts_D2, counts_D2, nreqs[1], disps[1], blocklens[1])
-
-    REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1])
 
     /* allocate and initialize write buffer for small variables */
     dbl_buflen = nelems[1] * 2 + nelems[0]
@@ -801,23 +792,52 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
     i = 0;
     dbl_buf_ptr = dbl_buf;
 
-    /* lat */
-    err = ncmpi_iput_varn(ncid, varids[i++], nreqs[1], fix_starts_D2, fix_counts_D2,
-                          dbl_buf_ptr, nelems[1], MPI_DOUBLE, NULL); ERR
-    dbl_buf_ptr += nelems[1] + gap;
-    my_nreqs += nreqs[1];
+    if (nreqs[1] > 0) {
+        /* lat */
+        MPI_Offset **fix_starts_D2, **fix_counts_D2;
 
-    /* lon */
-    err = ncmpi_iput_varn(ncid, varids[i++], nreqs[1], fix_starts_D2, fix_counts_D2,
-                          dbl_buf_ptr, nelems[1], MPI_DOUBLE, NULL); ERR
-    dbl_buf_ptr += nelems[1] + gap;
-    my_nreqs += nreqs[1];
+        /* construct varn API arguments starts[][] and counts[][] */
+        int num = nreqs[1];
+        FIX_1D_VAR_STARTS_COUNTS(fix_starts_D2, fix_counts_D2, num, disps[1], blocklens[1])
+
+        REC_2D_VAR_STARTS_COUNTS(0, starts_D2, counts_D2, nreqs[1], disps[1], blocklens[1])
+
+        err = ncmpi_iput_varn(ncid, varids[i], nreqs[1], fix_starts_D2, fix_counts_D2,
+                              dbl_buf_ptr, nelems[1], MPI_DOUBLE, NULL); ERR
+        dbl_buf_ptr += nelems[1] + gap;
+        my_nreqs += nreqs[1];
+
+        /* lon */
+        err = ncmpi_iput_varn(ncid, varids[i], nreqs[1], fix_starts_D2, fix_counts_D2,
+                              dbl_buf_ptr, nelems[1], MPI_DOUBLE, NULL); ERR
+        dbl_buf_ptr += nelems[1] + gap;
+        my_nreqs += nreqs[1];
+
+        free(fix_starts_D2[0]);
+        free(fix_starts_D2);
+    }
+    i += 2;
 
     /* area */
-    err = ncmpi_iput_varn(ncid, varids[i++], nreqs[0], fix_starts_D1, fix_counts_D1,
-                          dbl_buf_ptr, nelems[0], MPI_DOUBLE, NULL); ERR
-    dbl_buf_ptr += nelems[0] + gap;
-    my_nreqs += nreqs[0];
+    if (nreqs[0] > 0) {
+        MPI_Offset **fix_starts_D1, **fix_counts_D1;
+
+        /* construct varn API arguments starts[][] and counts[][] */
+        FIX_1D_VAR_STARTS_COUNTS(fix_starts_D1, fix_counts_D1, nreqs[0], disps[0], blocklens[0])
+
+        err = ncmpi_iput_varn(ncid, varids[i], nreqs[0], fix_starts_D1, fix_counts_D1,
+                              dbl_buf_ptr, nelems[0], MPI_DOUBLE, NULL); ERR
+        dbl_buf_ptr += nelems[0] + gap;
+        my_nreqs += nreqs[0];
+
+        free(fix_starts_D1[0]);
+        free(fix_starts_D1);
+    }
+    i++;
+
+    /* construct varn API arguments starts[][] and counts[][] */
+    if (nreqs[2] > 0)
+        REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1])
 
     post_timing += MPI_Wtime() - timing;
 
@@ -854,10 +874,6 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
 
         MPI_Barrier(comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
-
-        /* high water mark of number of noncontiguous requests */
-        if (my_nreqs > max_nreqs) max_nreqs = my_nreqs;
-        my_nreqs = 0;
 
         rec_buf_ptr = rec_buf;
 
@@ -983,11 +999,6 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
 
         err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
 
-        /* high water mark of number of noncontiguous requests */
-        if (my_nreqs > max_nreqs) max_nreqs = my_nreqs;
-        total_nreqs += my_nreqs;
-        my_nreqs = 0;
-
         wait_timing += MPI_Wtime() - timing;
     }
 
@@ -999,19 +1010,23 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
     err = ncmpi_close(ncid); ERR
     close_timing += MPI_Wtime() - timing;
 
-    free(starts_D3[0]); free(starts_D3);
-    free(starts_D2[0]); free(starts_D2);
-    free(fix_starts_D2[0]); free(fix_starts_D2);
-    free(fix_starts_D1[0]); free(fix_starts_D1);
+    if (starts_D3 != NULL) {
+        free(starts_D3[0]);
+        free(starts_D3);
+    }
+    if (starts_D2 != NULL) {
+        free(starts_D2[0]);
+        free(starts_D2);
+    }
     free(rec_buf);
     free(dbl_buf);
     free(varids);
 
     total_timing = MPI_Wtime() - total_timing;
 
-    MPI_Reduce(&total_nreqs,   &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
-    MPI_Reduce(&total_nreqs,   &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
-    total_nreqs = tmp;
+    tmp = my_nreqs;
+    MPI_Reduce(&tmp,           &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, comm);
+    MPI_Reduce(&tmp,           &total_nreqs,1, MPI_OFFSET, MPI_SUM, 0, comm);
     MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
     put_size = tmp;
     MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
@@ -1051,7 +1066,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)total_size/1048576,(double)total_size/1073741824);
         printf("Total number of requests           = %lld\n",total_nreqs);
-        printf("Max number of requests             = %d\n",max_nreqs);
+        printf("Max number of requests             = %lld\n",max_nreqs);
         printf("Max Time of open + metadata define = %.4f sec\n",open_timing);
         printf("Max Time of I/O preparing          = %.4f sec\n",pre_timing);
         printf("Max Time of ncmpi_iput_varn        = %.4f sec\n",post_timing);

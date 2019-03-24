@@ -1,8 +1,10 @@
 
 MPICC		= mpicc
 CFLAGS          = -O2
+CFLAGS          = -O0 -g
 
 PnetCDF_DIR	= $(HOME)/PnetCDF/1.11.0
+PnetCDF_DIR	= $(HOME)/PnetCDF/GitHub/dest
 
 INCLUDES	= -I$(PnetCDF_DIR)/include -I.
 LDFLAGS		= -L$(PnetCDF_DIR)/lib

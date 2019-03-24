@@ -206,7 +206,7 @@ int def_F_case_h0(int         ncid,    /* file ID */
     varids[i++] = time_written;
 
     err = ncmpi_def_var(ncid, "ndbase", NC_INT, 0, NULL, &ndbase); ERR
-    err = ncmpi_put_att_text(ncid, ndbase, "long_name", 8, "base day"); ERR 
+    err = ncmpi_put_att_text(ncid, ndbase, "long_name", 8, "base day"); ERR
     varids[i++] = ndbase;
     err = ncmpi_def_var(ncid, "nsbase", NC_INT, 0, NULL, &nsbase); ERR
     err = ncmpi_put_att_text(ncid, nsbase, "long_name", 19, "seconds of base day"); ERR
@@ -3616,7 +3616,7 @@ int def_F_case_h1(int         ncid,    /* file ID */
     varids[i++] = time_written;
 
     err = ncmpi_def_var(ncid, "ndbase", NC_INT, 0, NULL, &ndbase); ERR
-    err = ncmpi_put_att_text(ncid, ndbase, "long_name", 8, "base day"); ERR 
+    err = ncmpi_put_att_text(ncid, ndbase, "long_name", 8, "base day"); ERR
     varids[i++] = ndbase;
     err = ncmpi_def_var(ncid, "nsbase", NC_INT, 0, NULL, &nsbase); ERR
     err = ncmpi_put_att_text(ncid, nsbase, "long_name", 19, "seconds of base day"); ERR

@@ -65,7 +65,7 @@ static int compare(const void *p1, const void *p2)
  *           D3.offsets:description = "Flattened starting indices of noncontiguous requests" ;
  *       int D3.lengths(D3.total_nreqs) ;
  *           D3.lengths:description = "Lengths of noncontiguous requests" ;
- * 
+ *
  *   // global attributes:
  *       :command_line = "./dat2nc -o f_case_866x72_16p.nc -1 datasets/piodecomp16tasks16io01dims_ioid_514.dat -2 datasets/piodecomp16tasks16io01dims_ioid_516.dat -3 datasets/piodecomp16tasks16io02dims_ioid_548.dat " ;
  *       :D1.ndims = 1 ;

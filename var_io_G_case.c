@@ -48,25 +48,25 @@
         counts[i] = counts[i-1] + 2; \
     } \
     \
-    int reqs_cnt = 0; \
-    i = 0; \
-    while (i < nreqs) { \
-        starts[reqs_cnt][1] = disps[i] % last_dimlen; /* decomposition is 2D */ \
-        counts[reqs_cnt][1] = blocklens[i]; /* each blocklens[i] is no bigger than last_dimlen */ \
-        \
-        starts[reqs_cnt][0] = disps[i] / last_dimlen; \
-        counts[reqs_cnt][0] = 1; \
-        \
-        /* merge consecutive "1 by last_dimlen" regions into a larger one */ \
-        while ((i < nreqs - 1) && \
-               (disps[i] % last_dimlen == 0 && blocklens[i] == last_dimlen) && \
-               (disps[i + 1] - disps[i] == last_dimlen && blocklens[i + 1] == last_dimlen)) { \
-            i++; \
-            counts[reqs_cnt][0]++; \
+    j = 0; \
+    starts[0][0] = disps[0] / last_dimlen; \
+    starts[0][1] = disps[0] % last_dimlen; /* decomposition is 2D */ \
+    counts[0][0] = 1; \
+    counts[0][1] = blocklens[0]; /* each blocklens[i] is no bigger than last_dimlen */ \
+    for (i=1; i<nreqs; i++) { \
+        MPI_Offset _start[2]; \
+        _start[0] = disps[i] / last_dimlen; \
+        _start[1] = disps[i] % last_dimlen; \
+        if (_start[0] == starts[j][0] + counts[j][0] && \
+            _start[1] == starts[j][1] && blocklens[i] == counts[j][1]) \
+            counts[j][0]++; \
+        else { \
+            j++; \
+            starts[j][0] = _start[0]; \
+            starts[j][1] = _start[1]; \
+            counts[j][0] = 1; \
+            counts[j][1] = blocklens[i]; /* each blocklens[i] is no bigger than last_dimlen */ \
         } \
-        \
-        reqs_cnt++; \
-        i++; \
     } \
 }
 
@@ -101,30 +101,31 @@
         counts[i] = counts[i-1] + 3; \
     } \
     \
-    int reqs_cnt = 0; \
-    i = 0; \
-    while (i < nreqs) { \
-        starts[reqs_cnt][2] = disps[i] % last_dimlen; /* decomposition is 2D */ \
-        counts[reqs_cnt][2] = blocklens[i]; /* each blocklens[i] is no bigger than last_dimlen */ \
-        \
-        starts[reqs_cnt][1] = disps[i] / last_dimlen; \
-        counts[reqs_cnt][1] = 1; \
-        \
-        starts[reqs_cnt][0] = rec; /* record ID */ \
-        counts[reqs_cnt][0] = 1;   /* one record only */ \
-        \
-        /* merge consecutive "1 by last_dimlen" regions into a larger one */ \
-        while ((i < nreqs - 1) && \
-               (disps[i] % last_dimlen == 0 && blocklens[i] == last_dimlen) && \
-               (disps[i + 1] - disps[i] == last_dimlen && blocklens[i + 1] == last_dimlen)) { \
-            i++; \
-            counts[reqs_cnt][1]++; \
+    j = 0; \
+    starts[0][0] = rec; /* record ID */ \
+    starts[0][1] = disps[0] / last_dimlen; \
+    starts[0][2] = disps[0] % last_dimlen; /* decomposition is 2D */ \
+    counts[0][0] = 1;   /* one record only */ \
+    counts[0][1] = 1; \
+    counts[0][2] = blocklens[0]; /* each blocklens[i] is no bigger than last_dimlen */ \
+    for (i=1; i<nreqs; i++) { \
+        MPI_Offset _start[2]; \
+        _start[0] = disps[i] / last_dimlen; \
+        _start[1] = disps[i] % last_dimlen; \
+        if (starts[j][0] == rec && _start[0] == starts[j][1] + counts[j][1] && \
+            _start[1] == starts[j][2] && blocklens[i] == counts[j][2]) \
+            counts[j][1]++; \
+        else { \
+            j++; \
+            starts[j][0] = rec; \
+            starts[j][1] = _start[0]; \
+            starts[j][2] = _start[1]; \
+            counts[j][0] = 1; \
+            counts[j][1] = 1; \
+            counts[j][2] = blocklens[i]; /* each blocklens[i] is no bigger than last_dimlen */ \
         } \
-        \
-        reqs_cnt++; \
-        i++; \
     } \
-    if (reqs_cnt < nreqs) nreqs = reqs_cnt; \
+    nreqs = j+1; \
 }
 
 /*----< run_varn_G_case() >--------------------------------------------------*/
@@ -141,14 +142,14 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
 {
     char outfname[512];
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
-    int rec_no, my_nreqs, max_nreqs;
+    int rec_no, my_nreqs;
     size_t rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf, *rec_buf_ptr;
     int *D1_fix_int_buf, *D2_fix_int_buf, *D3_fix_int_buf, *D4_fix_int_buf, *D5_fix_int_buf;
     double *D1_fix_dbl_buf;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing, max_timing;
-    MPI_Offset tmp, metadata_size, put_size, total_size, total_nreqs;
+    MPI_Offset tmp, metadata_size, put_size, total_size, total_nreqs, max_nreqs;
     MPI_Offset **fix_starts_D1, **fix_counts_D1;
     MPI_Offset **fix_starts_D2, **fix_counts_D2;
     MPI_Offset **fix_starts_D3, **fix_counts_D3;
@@ -190,8 +191,8 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     MPI_Comm_rank(comm, &rank);
 
     /* number of variable elements from 6 decompositions */
-    total_nreqs = 0;
-    my_nreqs = max_nreqs = 0;
+    total_nreqs = max_nreqs = 0;
+    my_nreqs = 0;
     for (i=0; i<6; i++) {
         for (nelems[i]=0, k=0; k<nreqs[i]; k++)
             nelems[i] += blocklens[i][k];
@@ -441,7 +442,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         err = ncmpi_bput_vars_double(ncid, 33, start, count, stride, dummy_double_buf, NULL); ERR
 
         my_nreqs += 4; /* 4 non-record variables */
-        
+
         for (rec_no = 0; rec_no < num_recs; rec_no++) {
             start[0] = rec_no; count[0] = 1;
 
@@ -600,7 +601,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
 
     total_timing = MPI_Wtime() - total_timing;
 
-    MPI_Reduce(&total_nreqs,   &max_nreqs,  1, MPI_INT,    MPI_MAX, 0, comm);
+    MPI_Reduce(&total_nreqs,   &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, comm);
     MPI_Reduce(&total_nreqs,   &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
     total_nreqs = tmp;
     MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
@@ -642,7 +643,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)total_size/1048576,(double)total_size/1073741824);
         printf("Total number of requests           = %lld\n",total_nreqs);
-        printf("Max number of requests             = %d\n",max_nreqs);
+        printf("Max number of requests             = %lld\n",max_nreqs);
         printf("Max Time of open + metadata define = %.4f sec\n",open_timing);
         printf("Max Time of I/O preparing          = %.4f sec\n",pre_timing);
         printf("Max Time of ncmpi_iput_varn        = %.4f sec\n",post_timing);
