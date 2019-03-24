@@ -42,6 +42,13 @@ int two_buf;
     } \
 }
 
+/* In E3SM production runs, the write buffers are of type double in memory,
+ * and the variables stored in NetCDF files are of type NC_FLOAT. This default
+ * behavior can be changed (i.e. memory buffer of type float) by removing the
+ * line "#define _DOUBLE_TYPE_" below.
+ */
+#define _DOUBLE_TYPE_
+
 #ifdef _DOUBLE_TYPE_
 typedef double itype;  /* internal data type of buffer in memory */
 #define REC_ITYPE MPI_DOUBLE
@@ -53,17 +60,17 @@ typedef float itype;   /* internal data type of buffer in memory */
 #endif
 
 extern int
-def_F_case_h0(int ncid, MPI_Offset dims[2], int nvars, int *varids);
-
-extern int
-def_F_case_h1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
-
-extern int
 read_decomp(const char *infname, int *num_decomp, MPI_Offset dims[][2],
             int contig_nreqs[3], int *disps[3], int *blocklens[3]);
 
 extern void
 print_info(MPI_Info *info_used);
+
+extern int
+def_F_case_h0(int ncid, MPI_Offset dims[2], int nvars, int *varids);
+
+extern int
+def_F_case_h1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
 
 extern int
 run_vard_F_case(char *out_dir, char *outfile, int nvars, int num_recs,
