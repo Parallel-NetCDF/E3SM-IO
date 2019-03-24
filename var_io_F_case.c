@@ -802,13 +802,13 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
 
         REC_2D_VAR_STARTS_COUNTS(0, starts_D2, counts_D2, nreqs[1], disps[1], blocklens[1])
 
-        err = ncmpi_iput_varn(ncid, varids[i], nreqs[1], fix_starts_D2, fix_counts_D2,
+        err = ncmpi_iput_varn(ncid, varids[i++], nreqs[1], fix_starts_D2, fix_counts_D2,
                               dbl_buf_ptr, nelems[1], MPI_DOUBLE, NULL); ERR
         dbl_buf_ptr += nelems[1] + gap;
         my_nreqs += nreqs[1];
 
         /* lon */
-        err = ncmpi_iput_varn(ncid, varids[i], nreqs[1], fix_starts_D2, fix_counts_D2,
+        err = ncmpi_iput_varn(ncid, varids[i++], nreqs[1], fix_starts_D2, fix_counts_D2,
                               dbl_buf_ptr, nelems[1], MPI_DOUBLE, NULL); ERR
         dbl_buf_ptr += nelems[1] + gap;
         my_nreqs += nreqs[1];
@@ -816,7 +816,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
         free(fix_starts_D2[0]);
         free(fix_starts_D2);
     }
-    i += 2;
+    else i += 2;
 
     /* area */
     if (nreqs[0] > 0) {
@@ -825,7 +825,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
         /* construct varn API arguments starts[][] and counts[][] */
         FIX_1D_VAR_STARTS_COUNTS(fix_starts_D1, fix_counts_D1, nreqs[0], disps[0], blocklens[0])
 
-        err = ncmpi_iput_varn(ncid, varids[i], nreqs[0], fix_starts_D1, fix_counts_D1,
+        err = ncmpi_iput_varn(ncid, varids[i++], nreqs[0], fix_starts_D1, fix_counts_D1,
                               dbl_buf_ptr, nelems[0], MPI_DOUBLE, NULL); ERR
         dbl_buf_ptr += nelems[0] + gap;
         my_nreqs += nreqs[0];
@@ -833,7 +833,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
         free(fix_starts_D1[0]);
         free(fix_starts_D1);
     }
-    i++;
+    else i++;
 
     /* construct varn API arguments starts[][] and counts[][] */
     if (nreqs[2] > 0)
