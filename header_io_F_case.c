@@ -3795,7 +3795,7 @@ int def_F_case_h1(int         ncid,    /* file ID */
     dimids[1] = dim_ncol;
     err = ncmpi_def_var(ncid, "U850", NC_FLOAT, 2, dimids, &U850); ERR
     err = ncmpi_put_att_text(ncid, U850, "units", 3, "m/s"); ERR
-    err = ncmpi_put_att_text(ncid, U850, "long_name", 39, "Zonal wind at 250 mbar pressure surface"); ERR
+    err = ncmpi_put_att_text(ncid, U850, "long_name", 39, "Zonal wind at 850 mbar pressure surface"); ERR
     varids[i++] = U850;
 
     dimids[0] = dim_time;

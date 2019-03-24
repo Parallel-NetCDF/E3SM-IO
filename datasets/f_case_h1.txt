@@ -133,7 +133,7 @@ variables:
 		U250:long_name = "Zonal wind at 250 mbar pressure surface" ;
 	float U850(time, ncol) ;
 		U850:units = "m/s" ;
-		U850:long_name = "Zonal wind at 250 mbar pressure surface" ;
+		U850:long_name = "Zonal wind at 850 mbar pressure surface" ;
 	float UBOT(time, ncol) ;
 		UBOT:units = "m/s" ;
 		UBOT:long_name = "Lowest model level zonal wind" ;
