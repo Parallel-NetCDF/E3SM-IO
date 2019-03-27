@@ -69,7 +69,7 @@ int main(int argc, char** argv)
     int num_decomp, nvars, num_recs, run_f_case, run_g_case;
     int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
     int *blocklens[MAX_NUM_DECOMP];
-    MPI_Offset dims[MAX_NUM_DECOMP][2];
+    MPI_Offset dims[MAX_NUM_DECOMP][2], estimated_nc_ibuf_size;
     MPI_Info info=MPI_INFO_NULL;
 
     MPI_Init(&argc, &argv);
@@ -146,6 +146,15 @@ int main(int argc, char** argv)
     /* F case has 3 decompositions, G case has 6 */
     if (num_decomp == 3) run_f_case = 1;
     else if (num_decomp == 6) run_g_case = 1;
+
+    /* use total write amount to estimate nc_ibuf_size */
+    estimated_nc_ibuf_size = dims[2][0] * dims[2][1] * sizeof(double) / nprocs;
+    estimated_nc_ibuf_size *= (run_f_case) ? 408 : 52;
+    if (estimated_nc_ibuf_size > 16777216) {
+        char nc_ibuf_size_str[16];
+        sprintf(nc_ibuf_size_str, "%lld", estimated_nc_ibuf_size);
+        MPI_Info_set(info, "nc_ibuf_size", nc_ibuf_size_str);
+    }
 
     if (run_f_case) {
         if (verbose && rank==0) {
