@@ -134,7 +134,6 @@ int main(int argc, char** argv)
     MPI_Info_set(info, "romio_ds_write", "disable"); /* MPI-IO data sieving */
     MPI_Info_set(info, "romio_cb_write", "enable");  /* collective write */
     MPI_Info_set(info, "romio_no_indep_rw", "true"); /* no independent MPI-IO */
-MPI_Info_set(info, "cb_config_list", "*:*");  /* all aggregators */
 
     /* set PnetCDF I/O hints */
     MPI_Info_set(info, "nc_var_align_size", "1"); /* no gap between variables */
