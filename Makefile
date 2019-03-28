@@ -34,11 +34,8 @@ e3sm_io: e3sm_io.o $(OBJS)
 # ROMIO_PATCH	= -Wl,--wrap=ADIOI_Type_create_hindexed_x -l:libmpi.a
 ROMIO_PATCH	= -Wl,--wrap=ADIOI_Type_create_hindexed_x
 
-e3sm_io.romio_patch: e3sm_io.o header_io_case_F.o romio_patch.o
+e3sm_io.romio_patch: e3sm_io.o $(OBJS) romio_patch.o
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS) $(ROMIO_PATCH)
-
-romio_patch.o: romio_patch.c
-	$(MPICC) $(CFLAGS) -o $@ -c $^
 
 clean:
 	rm -f core.* *.o dat2nc e3sm_io e3sm_io.romio_patch
