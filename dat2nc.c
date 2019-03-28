@@ -46,7 +46,7 @@ add_decomp(int         ncid,
     int   rank, nprocs, ndims;
     int   i, j, dimid, varid[3], *nreqs, err, nerrs=0, *off, *len;
     int   total_nreqs, max_nreqs, min_nreqs;
-    MPI_Offset k, gsize, *dims, start, count;
+    MPI_Offset k, gsize, *dims, *dims_C, start, count;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
@@ -242,12 +242,14 @@ add_decomp(int         ncid,
     /* add attribute to describe dimensionality */
     sprintf(name, "D%d.ndims", label);
     err = ncmpi_put_att_int(ncid, NC_GLOBAL, name, NC_INT, 1, &ndims); ERR
-    for (i=0; i<ndims; i++) {
-        sprintf(name, "D%d.dim_%d", label, i);
-        /* dims[] is in Fortran order, save in NC file in C order */
-        err = ncmpi_put_att_longlong(ncid, NC_GLOBAL, name, NC_INT, 1, &dims[ndims-1-i]);
-        ERR
-    }
+
+    /* swap dims in Fortran order to dims_C in C order */
+    dims_C = (MPI_Offset*) malloc(ndims * sizeof(MPI_Offset));
+    for (i=0; i<ndims; i++) dims_C[i] = dims[ndims-i-1];
+    sprintf(name, "D%d.dims", label);
+    err = ncmpi_put_att_longlong(ncid, NC_GLOBAL, name, NC_INT, ndims, dims_C);
+    ERR
+    free(dims_C);
 
     sprintf(name, "D%d.max_nreqs", label);
     err = ncmpi_put_att_int(ncid, NC_GLOBAL, name, NC_INT, 1, &max_nreqs); ERR

@@ -12,8 +12,8 @@ CDF-2, and CDF-5 formats. NetCDF-4 provides parallel I/O capability for
 The benchmark program in this repository, e3sm_io.c, is designed to evaluate
 the E3SM I/O kernel when using the PnetCDF library to perform the I/O task.
 In particular, it studies one of the E3SM's most challenging I/O patterns
-used by the cubed sphere variables which are partitioned into long lists of
-small and noncontiguous requests across all MPI processes.
+when the problem domain is represented by cubed sphere grids which produce
+long lists of small and noncontiguous requests in each of all MPI processes.
 
 The I/O kernel is implemented by using PnetCDF nonblocking varn APIs, which
 can aggregate multiple requests to a variable or across variables. In addition
@@ -102,16 +102,15 @@ data decompositions shared by 52 variables.
       // global attributes:
           :command_line = "./dat2nc -o f_case_866x72_16p.nc -1 datasets/piodecomp16tasks16io01dims_ioid_514.dat -2 datasets/piodecomp16tasks16io01dims_ioid_516.dat -3 datasets/piodecomp16tasks16io02dims_ioid_548.dat " ;
           :D1.ndims = 1 ;
-          :D1.dim_0 = 866 ;
+          :D1.dims = 866 ;
           :D1.max_nreqs = 4 ;
           :D1.min_nreqs = 2 ;
           :D2.ndims = 1 ;
-          :D2.dim_0 = 866 ;
+          :D2.dims = 866 ;
           :D2.max_nreqs = 39 ;
           :D2.min_nreqs = 13 ;
           :D3.ndims = 2 ;
-          :D3.dim_0 = 72 ;
-          :D3.dim_1 = 866 ;
+          :D3.dims = 72, 866 ;
           :D3.max_nreqs = 2808 ;
           :D3.min_nreqs = 936 ;
       }

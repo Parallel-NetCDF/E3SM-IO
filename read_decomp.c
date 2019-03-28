@@ -166,13 +166,12 @@ read_decomp(const char *infname,        /* IN */
          * In E3SM, decomposition is along the lowest 1 or 2 dimensions of 2D
          * or 3D variables.
          */
-        sprintf(name, "D%d.ndims", decomp_id+1);
-        err = ncmpi_get_att_int(ncid, NC_GLOBAL, name, &ndims); ERR
-
-        for (i=0; i<ndims; i++) {
-            sprintf(name, "D%d.dim_%d", decomp_id+1, i);
-            err = ncmpi_get_att_longlong(ncid, NC_GLOBAL, name, &dims[decomp_id][i]); ERR
-        }
+        sprintf(name, "D%d.dims", decomp_id+1);
+        /* obtain the number of dimensions of this decomposition */
+        err = ncmpi_inq_attlen(ncid, NC_GLOBAL, name, &num); ERR
+        ndims = num;
+        /* obtain the dimension lengths of this decomposition */
+        err = ncmpi_get_att_longlong(ncid, NC_GLOBAL, name, dims[decomp_id]); ERR
 
         /* obtain varid of request variable Dx.nreqs */
         sprintf(name, "D%d.nreqs", decomp_id+1);
