@@ -245,7 +245,10 @@ data decompositions shared by 52 variables.
     `f_case_866x72_16p.nc` is available in
     [datasets/f_case_h0.txt](datasets/f_case_h0.txt), and
     [datasets/f_case_h1.txt](datasets/f_case_h1.txt).
-  * For the G case, there is one output file, namely `g_case_hist_varn.nc`.
+  * For the G case, there is one output file, namely `g_case_hist_varn.nc`, and
+    its file header can be found in
+    [datasets/g_case_hist.txt](datasets/g_case_hist.txt).
+
 
 ## Questions/Comments:
 email: wkliao@eecs.northwestern.edu
