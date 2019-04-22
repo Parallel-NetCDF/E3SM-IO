@@ -12,7 +12,7 @@ before_install:
   - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.11.1.tar.gz 
   - tar -xzvf pnetcdf-1.11.1.tar.gz
   - pushd pnetcdf-1.11.1
-  - ./configure --prefix=$HOME/PnetCDF --enable-shared --disable-fortran --disable-cxx --silent MPICC=mpicc
+  - ./configure --prefix=$HOME/PnetCDF --disable-fortran --disable-cxx --silent MPICC=mpicc
   - make -s LIBTOOLFLAGS=--silent V=1 -j4
   - make -s install
   - popd
