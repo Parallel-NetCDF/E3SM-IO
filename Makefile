@@ -1,6 +1,6 @@
 
 MPICC		= mpicc
-CFLAGS          = -O2
+CFLAGS      = -O2
 
 PnetCDF_DIR	= $(HOME)/PnetCDF/1.11.0
 
@@ -18,8 +18,9 @@ dat2nc: dat2nc.o
 
 e3sm_io.o: e3sm_io.h
 def_header.o: e3sm_io.h
+inq_header.o: e3sm_io.h
 
-e3sm_io: e3sm_io.o def_header.o
+e3sm_io: e3sm_io.o def_header.o inq_header.o
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
 # romio_patch.c contains fix in https://github.com/pmodels/mpich/pull/3089
@@ -27,7 +28,7 @@ e3sm_io: e3sm_io.o def_header.o
 # ROMIO_PATCH	= -Wl,--wrap=ADIOI_Type_create_hindexed_x -l:libmpi.a
 ROMIO_PATCH	= -Wl,--wrap=ADIOI_Type_create_hindexed_x
 
-e3sm_io.romio_patch: e3sm_io.o def_header.o romio_patch.o
+e3sm_io.romio_patch: e3sm_io.o def_header.o inq_header.o romio_patch.o
 	$(MPICC) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS) $(ROMIO_PATCH)
 
 romio_patch.o: romio_patch.c
