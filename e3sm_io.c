@@ -331,10 +331,8 @@ int main(int argc, char** argv)
         }
 
         if (tst_varn) {
-            double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
-            itype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
-            char txt_buf[2][16];
-            int int_buf[2][10];
+            double *D1_rec_dbl_buf = NULL, *D3_rec_dbl_buf = NULL, *D4_rec_dbl_buf = NULL, *D5_rec_dbl_buf = NULL, *D6_rec_dbl_buf = NULL, *D1_fix_dbl_buf = NULL;
+            int *D1_fix_int_buf = NULL, *D2_fix_int_buf = NULL, *D3_fix_int_buf = NULL, *D4_fix_int_buf = NULL, *D5_fix_int_buf = NULL;
 
             if (tst_rd){
                 if (!rank) {
@@ -346,8 +344,9 @@ int main(int argc, char** argv)
 
                 nvars = 52;
                 outfname = "g_case_hist_varn.nc";
-                nerrs += run_varn_G_case(out_dir, outfname, nvars, num_recs, info,
-                                        dims, contig_nreqs, disps, blocklens);
+                nerrs += run_varn_G_case_rd(out_dir, outfname, nvars, num_recs, info,
+                                        dims, contig_nreqs, disps, blocklens, &D1_fix_int_buf, &D2_fix_int_buf, &D3_fix_int_buf, &D4_fix_int_buf, &D5_fix_int_buf,
+                &D1_rec_dbl_buf, &D3_rec_dbl_buf, &D4_rec_dbl_buf, &D5_rec_dbl_buf, &D6_rec_dbl_buf, &D1_fix_dbl_buf);
             }
 
             if (tst_wr){
@@ -361,13 +360,48 @@ int main(int argc, char** argv)
                 nvars = 52;
                 outfname = "g_case_hist_varn.nc";
                 nerrs += run_varn_G_case(out_dir, outfname, nvars, num_recs, info,
-                                        dims, contig_nreqs, disps, blocklens);
+                                        dims, contig_nreqs, disps, blocklens, D1_fix_int_buf, D2_fix_int_buf, D3_fix_int_buf, D4_fix_int_buf, D5_fix_int_buf,
+                D1_rec_dbl_buf, D3_rec_dbl_buf, D4_rec_dbl_buf, D5_rec_dbl_buf, D6_rec_dbl_buf, D1_fix_dbl_buf);
+            }
+
+            if (D1_rec_dbl_buf != NULL){
+                free(D1_rec_dbl_buf);
+            }
+            if (D3_rec_dbl_buf != NULL){
+                free(D3_rec_dbl_buf);
+            }
+            if (D4_rec_dbl_buf != NULL){
+                free(D4_rec_dbl_buf);
+            }
+            if (D5_rec_dbl_buf != NULL){
+                free(D5_rec_dbl_buf);
+            }
+            if (D6_rec_dbl_buf != NULL){
+                free(D6_rec_dbl_buf);
+            }
+            if (D1_fix_dbl_buf != NULL){
+                free(D1_fix_dbl_buf);
+            }
+            if (D1_fix_int_buf != NULL){
+                free(D1_fix_int_buf);
+            }
+            if (D2_fix_int_buf != NULL){
+                free(D2_fix_int_buf);
+            }
+            if (D3_fix_int_buf != NULL){
+                free(D3_fix_int_buf);
+            }
+            if (D4_fix_int_buf != NULL){
+                free(D4_fix_int_buf);
+            }
+            if (D5_fix_int_buf != NULL){
+                free(D5_fix_int_buf);
             }
         }
         for (i=0; i<6; i++) {
             free(disps[i]);
             free(blocklens[i]);
-        }
+        }       
     }
 
 fn_exit:

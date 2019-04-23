@@ -1,8 +1,8 @@
 
 MPICC		= mpicc
-CFLAGS		= -O2
+CFLAGS		= -O0 -ggdb
 
-PnetCDF_DIR	= $(HOME)/PnetCDF
+PnetCDF_DIR	= $(HOME)/.local/ncmpi_zip
 
 INCLUDES	= -I$(PnetCDF_DIR)/include -I.
 LDFLAGS		= -L$(PnetCDF_DIR)/lib
