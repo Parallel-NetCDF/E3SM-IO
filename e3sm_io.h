@@ -73,15 +73,23 @@ extern int
 def_F_case_h1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
 
 extern int
+inq_F_case_h0(int ncid, MPI_Offset dims[2], int nvars, int *varids);
+
+extern int
+inq_F_case_h1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
+
+extern int
 run_vard_F_case(char *out_dir, char *outfile, int nvars, int num_recs,
 		int noncontig_buf, MPI_Info info, MPI_Offset dims[3][2],
                 int nreqs[3], int *disps[3], int *blocklens[3]);
-
 extern int
 run_varn_F_case(char *out_dir, char *outfile, int nvars, int num_recs,
 		int noncontig_buf, MPI_Info info, MPI_Offset dims[3][2],
-                int nreqs[3], int *disps[3], int *blocklens[3]);
-
+                int nreqs[3], int *disps[3], int *blocklens[3], double*, itype*, char*, int*);
+extern int
+run_varn_F_case_rd(char *out_dir, char *outfile, int nvars, int num_recs,
+		int noncontig_buf, MPI_Info info, MPI_Offset dims[3][2],
+                int nreqs[3], int *disps[3], int *blocklens[3], double**, itype**, char*, int*);
 extern int
 def_G_case_h0(int ncid, MPI_Offset dims_D1[1], MPI_Offset dims_D2[1],
 	      MPI_Offset dims_D3[2], MPI_Offset dims_D4[2],

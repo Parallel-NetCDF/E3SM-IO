@@ -7353,14 +7353,25 @@ int inq_F_case_h1(int         ncid,    /* file ID */
     "/home/climate1/acme/inputdata/atm/cam/topo/USGS-gtopo30_ne4np4_16x.c20160612.nc"); ERR
     err = NOP(ncid, NC_GLOBAL, "time_period_freq", 6, "hour_2"); ERR
 
-    /* define dimensions */
+    /* inquery dimensions */
+    err = ncmpi_inq_dimid(ncid, "ncol", &dim_ncol); ERR
+    //err = ncmpi_inq_dimid(ncid, "time", &dim_time); ERR
+    //err = ncmpi_inq_dimid(ncid, "nbnd", &dim_nbnd); ERR
+    //err = ncmpi_inq_dimid(ncid, "chars", &dim_chars); ERR
+    err = ncmpi_inq_dimid(ncid, "lev", &dim_lev); ERR
+    //err = ncmpi_inq_dimid(ncid, "ilev", &dim_ilev); ERR
+
+    err = ncmpi_inq_dimlen(ncid, dim_ncol, dims + 1); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_lev, dims); ERR
+    /*
     err = ncmpi_def_dim(ncid, "ncol", dims[1],      &dim_ncol); ERR
     err = ncmpi_def_dim(ncid, "time", NC_UNLIMITED, &dim_time); ERR
     err = ncmpi_def_dim(ncid, "nbnd",  2,           &dim_nbnd); ERR
     err = ncmpi_def_dim(ncid, "chars", 8,           &dim_chars); ERR
     err = ncmpi_def_dim(ncid, "lev",   dims[0],     &dim_lev); ERR
     err = ncmpi_def_dim(ncid, "ilev",  dims[0]+1,   &dim_ilev); ERR
-
+    */
+   
     i = 0;
 
     /* define variables */

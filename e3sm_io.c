@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     run_g_case = 0;
 
     /* command-line arguments */
-    while ((i = getopt(argc, argv, "hkvdnmto:r:")) != EOF)
+    while ((i = getopt(argc, argv, "hkvdnmto:r:WR:")) != EOF)
         switch(i) {
             case 'v': verbose = 1;
                       break;
@@ -175,7 +175,7 @@ int main(int argc, char** argv)
 
     if (run_f_case) {
         double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
-        dtype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
+        itype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
         char txt_buf[2][16];
         int int_buf[2][10];
 
@@ -233,7 +233,7 @@ int main(int argc, char** argv)
         if (tst_varn) {
             if (tst_rd){        
                 if (!rank) {
-                    printf("\n==== benchmarking varn API read ================================\n");
+                    printf("\n==== benchmarking F case reading using varn API ========================\n");
                     printf("Variable written order: ");
                     if (two_buf)
                         printf("2D variables then 3D variables\n\n");
@@ -248,7 +248,7 @@ int main(int argc, char** argv)
                 */
                 nvars = 408;
                 outfname = "f_case_h0_varn.nc";
-                nerrs += run_varn_F_case_rd(out_dir, outfname, nvars, num_recs,
+                nerrs += run_varn_F_case_rd(in_dir, outfname, nvars, num_recs,
                                         noncontig_buf, info, dims,
                                         contig_nreqs, disps, blocklens, &dbl_buf_h0, &rec_buf_h0, txt_buf[0], int_buf[0]);
 
@@ -257,14 +257,14 @@ int main(int argc, char** argv)
                 /* Output 2nd kind history variables. */
                 nvars = 51;
                 outfname = "f_case_h1_varn.nc";
-                nerrs += run_varn_F_case_rd(out_dir, outfname, nvars, num_recs,
+                nerrs += run_varn_F_case_rd(in_dir, outfname, nvars, num_recs,
                                         noncontig_buf, info, dims,
                                         contig_nreqs, disps, blocklens, &dbl_buf_h1, &rec_buf_h1, txt_buf[1], int_buf[1]);
             }
 
             if (tst_wr){
                 if (!rank) {
-                    printf("\n==== benchmarking F case using varn API ========================\n");
+                    printf("\n==== benchmarking F case writing using varn API ========================\n");
                     printf("Variable written order: ");
                     if (two_buf)
                         printf("2D variables then 3D variables\n\n");
@@ -331,11 +331,28 @@ int main(int argc, char** argv)
         }
 
         if (tst_varn) {
+            double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
+            itype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
+            char txt_buf[2][16];
+            int int_buf[2][10];
 
+            if (tst_rd){
+                if (!rank) {
+                    printf("\n==== benchmarking G case writing using varn API ========================\n");
+                }
+                fflush(stdout);
+
+                MPI_Barrier(MPI_COMM_WORLD);
+
+                nvars = 52;
+                outfname = "g_case_hist_varn.nc";
+                nerrs += run_varn_G_case(out_dir, outfname, nvars, num_recs, info,
+                                        dims, contig_nreqs, disps, blocklens);
+            }
 
             if (tst_wr){
                 if (!rank) {
-                    printf("\n==== benchmarking G case using varn API ========================\n");
+                    printf("\n==== benchmarking G case writing using varn API ========================\n");
                 }
                 fflush(stdout);
 

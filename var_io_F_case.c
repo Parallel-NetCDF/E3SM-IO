@@ -843,7 +843,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
                 int        *disps[3],     /* request's displacements */
                 int        *blocklens[3], /* request's block lengths */
                 double     *dbl_bufp,
-                dtype      *rec_bufp,
+                itype      *rec_bufp,
                 char       *txt_buf,
                 int        *int_buf)
 {
@@ -904,7 +904,7 @@ run_varn_F_case(char       *out_dir,      /* output folder name */
         rec_buf = rec_bufp;
     }
     else{
-        rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
+        rec_buf = (itype*) malloc(rec_buflen * sizeof(itype));
 
         for (i=0; i<rec_buflen; i++) rec_buf[i] = rank;
         for (i=0; i<10; i++) int_buf[i] = rank;
@@ -1264,7 +1264,7 @@ run_varn_F_case_rd(char       *out_dir,      /* output folder name */
                 int        *disps[3],     /* request's displacements */
                 int        *blocklens[3], /* request's block lengths */
                 double     **dbl_bufp,
-                dtype      **rec_bufp,
+                itype      **rec_bufp,
                 char       *txt_buf,
                 int        *int_buf)
 {
@@ -1319,7 +1319,7 @@ run_varn_F_case_rd(char       *out_dir,      /* output folder name */
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20+1) * gap;
 
-    rec_buf = (dtype*) malloc(rec_buflen * sizeof(dtype));
+    rec_buf = (itype*) malloc(rec_buflen * sizeof(itype));
     *rec_bufp = rec_buf;
 
     for (i=0; i<rec_buflen; i++) rec_buf[i] = rank;
@@ -1356,7 +1356,7 @@ run_varn_F_case_rd(char       *out_dir,      /* output folder name */
     //err = ncmpi_enddef(ncid); ERR
 
     /* I/O amount so far */
-    err = ncmpi_inq_pet_size(ncid, &metadata_size); ERR
+    err = ncmpi_inq_get_size(ncid, &metadata_size); ERR
     err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing += MPI_Wtime() - timing;
 
