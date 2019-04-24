@@ -1419,15 +1419,15 @@ fn_exit:
 
 /*----< def_G_case_h0() >----------------------------------------------------*/
 int
-def_G_case_h0(int         ncid,       /* file ID */
-              MPI_Offset  dims_D1[1], /* dimension sizes of decomposition 1 */
-              MPI_Offset  dims_D2[1], /* dimension sizes of decomposition 2 */
-              MPI_Offset  dims_D3[2], /* dimension sizes of decomposition 3 */
-              MPI_Offset  dims_D4[2], /* dimension sizes of decomposition 4 */
-              MPI_Offset  dims_D5[2], /* dimension sizes of decomposition 5 */
-              MPI_Offset  dims_D6[2], /* dimension sizes of decomposition 6 */
-              int         nvars,      /* number of variables */
-              int        *varids)     /* variable IDs */
+def_G_case_h0(int               ncid,       /* file ID */
+              const MPI_Offset  dims_D1[1], /* dimension sizes of decomposition 1 */
+              const MPI_Offset  dims_D2[1], /* dimension sizes of decomposition 2 */
+              const MPI_Offset  dims_D3[2], /* dimension sizes of decomposition 3 */
+              const MPI_Offset  dims_D4[2], /* dimension sizes of decomposition 4 */
+              const MPI_Offset  dims_D5[2], /* dimension sizes of decomposition 5 */
+              const MPI_Offset  dims_D6[2], /* dimension sizes of decomposition 6 */
+              int               nvars,      /* number of variables */
+              int              *varids)     /* variable IDs */
 {
     /* Total 52 variables */
     int salinitySurfaceRestoringTendency,
@@ -1893,12 +1893,12 @@ fn_exit:
 /*----< def_G_case_h0() >----------------------------------------------------*/
 int
 inq_G_case_h0(int         ncid,       /* file ID */
-              MPI_Offset  dims_D1[1], /* dimension sizes of decomposition 1 */
-              MPI_Offset  dims_D2[1], /* dimension sizes of decomposition 2 */
-              MPI_Offset  dims_D3[2], /* dimension sizes of decomposition 3 */
-              MPI_Offset  dims_D4[2], /* dimension sizes of decomposition 4 */
-              MPI_Offset  dims_D5[2], /* dimension sizes of decomposition 5 */
-              MPI_Offset  dims_D6[2], /* dimension sizes of decomposition 6 */
+              const MPI_Offset  dims_D1[1], /* dimension sizes of decomposition 1 */
+              const MPI_Offset  dims_D2[1], /* dimension sizes of decomposition 2 */
+              const MPI_Offset  dims_D3[2], /* dimension sizes of decomposition 3 */
+              const MPI_Offset  dims_D4[2], /* dimension sizes of decomposition 4 */
+              const MPI_Offset  dims_D5[2], /* dimension sizes of decomposition 5 */
+              const MPI_Offset  dims_D6[2], /* dimension sizes of decomposition 6 */
               int         nvars,      /* number of variables */
               int        *varids)     /* variable IDs */
 {

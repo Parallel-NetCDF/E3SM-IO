@@ -67,10 +67,10 @@ extern void
 print_info(MPI_Info *info_used);
 
 extern int
-def_F_case_h0(int ncid, MPI_Offset dims[2], int nvars, int *varids);
+def_F_case_h0(int ncid, const MPI_Offset dims[2], int nvars, int *varids);
 
 extern int
-def_F_case_h1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
+def_F_case_h1(int ncid, const MPI_Offset dims[2], int nvars, int *varids);
 
 extern int
 inq_F_case_h0(int ncid, MPI_Offset dims[2], int nvars, int *varids);
@@ -79,35 +79,88 @@ extern int
 inq_F_case_h1(int ncid, MPI_Offset dims[2], int nvars, int *varids);
 
 extern int
-run_vard_F_case(char *out_dir, char *outfile, int nvars, int num_recs,
-		int noncontig_buf, MPI_Info info, MPI_Offset dims[3][2],
-                int nreqs[3], int *disps[3], int *blocklens[3]);
+run_vard_F_case(const char       *out_dir,      /* output folder name */
+                const char       *outfile,      /* output file name */
+                int               nvars,        /* number of variables 408 or 51 */
+                int               num_recs,     /* number of records */
+                int               noncontig_buf,/* whether to us noncontiguous buffer */
+                MPI_Info          info,
+                const MPI_Offset  dims[3][2],   /* dimension lengths */
+                const int         nreqs[3],     /* no. request in decompositions 1,2,3 */
+                int* const        disps[3],     /* request's displacements */
+                int* const        blocklens[3]);/* request's block lengths */
+
 extern int
-run_varn_F_case(char *out_dir, char *outfile, int nvars, int num_recs,
-		int noncontig_buf, MPI_Info info, MPI_Offset dims[3][2],
-                int nreqs[3], int *disps[3], int *blocklens[3], double*, itype*, char*, int*);
+run_varn_F_case(const char *out_dir,      /* output folder name */
+                const char *outfile,      /* output file name */
+                int         nvars,        /* number of variables 408 or 51 */
+                int         num_recs,     /* number of records */
+                int         noncontig_buf,/* whether to us noncontiguous buffer */
+                MPI_Info    info,
+                MPI_Offset  dims[3][2],   /* dimension lengths */
+                const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
+                int* const  disps[3],     /* request's displacements */
+                int* const  blocklens[3], /* request's block lengths */
+                double*, itype*, char*, int*);
+
 extern int
-run_varn_F_case_rd(char *out_dir, char *outfile, int nvars, int num_recs,
-		int noncontig_buf, MPI_Info info, MPI_Offset dims[3][2],
-                int nreqs[3], int *disps[3], int *blocklens[3], double**, itype**, char*, int*);
+run_varn_F_case_rd(const char *out_dir,      /* output folder name */
+                const char *outfile,      /* output file name */
+                int         nvars,        /* number of variables 408 or 51 */
+                int         num_recs,     /* number of records */
+                int         noncontig_buf,/* whether to us noncontiguous buffer */
+                MPI_Info    info,
+                MPI_Offset  dims[3][2],   /* dimension lengths */
+                const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
+                int* const  disps[3],     /* request's displacements */
+                int* const  blocklens[3], /* request's block lengths */
+                double**, itype**, char*, int*);
+
 extern int
-def_G_case_h0(int ncid, MPI_Offset dims_D1[1], MPI_Offset dims_D2[1],
-	      MPI_Offset dims_D3[2], MPI_Offset dims_D4[2],
-	      MPI_Offset dims_D5[2], MPI_Offset dims_D6[2], int nvars,
-              int *varids);
+def_G_case_h0(int               ncid,       /* file ID */
+              const MPI_Offset  dims_D1[1], /* dimension sizes of decomposition 1 */
+              const MPI_Offset  dims_D2[1], /* dimension sizes of decomposition 2 */
+              const MPI_Offset  dims_D3[2], /* dimension sizes of decomposition 3 */
+              const MPI_Offset  dims_D4[2], /* dimension sizes of decomposition 4 */
+              const MPI_Offset  dims_D5[2], /* dimension sizes of decomposition 5 */
+              const MPI_Offset  dims_D6[2], /* dimension sizes of decomposition 6 */
+              int               nvars,      /* number of variables */
+              int              *varids);    /* variable IDs */
+
 extern int
-inq_G_case_h0(int ncid, MPI_Offset dims_D1[1], MPI_Offset dims_D2[1],
-	      MPI_Offset dims_D3[2], MPI_Offset dims_D4[2],
-	      MPI_Offset dims_D5[2], MPI_Offset dims_D6[2], int nvars,
-              int *varids);
+inq_G_case_h0(int               ncid,       /* file ID */
+              const MPI_Offset  dims_D1[1], /* dimension sizes of decomposition 1 */
+              const MPI_Offset  dims_D2[1], /* dimension sizes of decomposition 2 */
+              const MPI_Offset  dims_D3[2], /* dimension sizes of decomposition 3 */
+              const MPI_Offset  dims_D4[2], /* dimension sizes of decomposition 4 */
+              const MPI_Offset  dims_D5[2], /* dimension sizes of decomposition 5 */
+              const MPI_Offset  dims_D6[2], /* dimension sizes of decomposition 6 */
+              int               nvars,      /* number of variables */
+              int              *varids);    /* variable IDs */
+
 extern int
-run_varn_G_case(char *out_dir, char *outfile, int nvars, int num_recs,
-		MPI_Info info, MPI_Offset dims[6][2], int nreqs[6],
-                int *disps[6], int *blocklens[6], int*, int*, int*, int*, int*, double*, double*, double*, double*, double*, double*);
+run_varn_G_case(const char       *out_dir,      /* output folder name */
+                const char       *outfile,      /* output file name */
+                int               nvars,        /* number of variables 51 */
+                int               num_recs,     /* number of records */
+                MPI_Info          info,
+                const MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
+                const int         nreqs[6],     /* no. request in decomposition 1-6 */
+                int* const        disps[6],     /* request's displacements */
+                int* const        blocklens[6], /* request's block lengths */
+                int*, int*, int*, int*, int*, double*, double*, double*, double*, double*, double*);
+
 extern int
-run_varn_G_case_rd(char *out_dir, char *outfile, int nvars, int num_recs,
-		MPI_Info info, MPI_Offset dims[6][2], int nreqs[6],
-                int *disps[6], int *blocklens[6], int**, int**, int**, int**, int**, double**, double**, double**, double**, double**, double**);
+run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
+                const char       *outfile,      /* output file name */
+                int               nvars,        /* number of variables 51 */
+                int               num_recs,     /* number of records */
+                MPI_Info          info,
+                const MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
+                const int         nreqs[6],     /* no. request in decomposition 1-6 */
+                int* const        disps[6],     /* request's displacements */
+                int* const        blocklens[6], /* request's block lengths */
+                int**, int**, int**, int**, int**, double**, double**, double**, double**, double**, double**);
 
 #endif
 
