@@ -95,12 +95,15 @@ def_G_case_h0(int ncid, MPI_Offset dims_D1[1], MPI_Offset dims_D2[1],
 	      MPI_Offset dims_D3[2], MPI_Offset dims_D4[2],
 	      MPI_Offset dims_D5[2], MPI_Offset dims_D6[2], int nvars,
               int *varids);
-
+extern int
+inq_G_case_h0(int ncid, MPI_Offset dims_D1[1], MPI_Offset dims_D2[1],
+	      MPI_Offset dims_D3[2], MPI_Offset dims_D4[2],
+	      MPI_Offset dims_D5[2], MPI_Offset dims_D6[2], int nvars,
+              int *varids);
 extern int
 run_varn_G_case(char *out_dir, char *outfile, int nvars, int num_recs,
 		MPI_Info info, MPI_Offset dims[6][2], int nreqs[6],
                 int *disps[6], int *blocklens[6], int*, int*, int*, int*, int*, double*, double*, double*, double*, double*, double*);
-
 extern int
 run_varn_G_case_rd(char *out_dir, char *outfile, int nvars, int num_recs,
 		MPI_Info info, MPI_Offset dims[6][2], int nreqs[6],

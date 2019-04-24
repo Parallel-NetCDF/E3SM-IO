@@ -970,17 +970,17 @@ run_varn_G_case_rd(char       *out_dir,      /* output folder name */
     sprintf(outfname, "%s/%s",out_dir, outfile);
 
     /* create a new CDF-5 file for writing */
-    cmode = NC_CLOBBER | NC_64BIT_DATA;
-    err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
+    cmode = NC_64BIT_DATA;
+    err = ncmpi_open(comm, outfname, cmode, info, &ncid); ERR
 
     MPI_Offset get_buffer_size_limit = 10485760;
     err = ncmpi_buffer_attach(ncid, get_buffer_size_limit); ERR
 
     /* define dimensions, variables, and attributes */
-    err = def_G_case_h0(ncid, dims[0], dims[1], dims[2], dims[3], dims[4], dims[5], nvars, varids); ERR
+    err = inq_G_case_h0(ncid, dims[0], dims[1], dims[2], dims[3], dims[4], dims[5], nvars, varids); ERR
 
     /* exit define mode and enter data mode */
-    err = ncmpi_enddef(ncid); ERR
+    //err = ncmpi_enddef(ncid); ERR
 
     /* I/O amount so far */
     err = ncmpi_inq_get_size(ncid, &metadata_size); ERR
