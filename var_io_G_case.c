@@ -269,6 +269,8 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         counts_D6 = NULL;
     }
 
+    printf("Rank: %d, nelems = [%lld, %lld, %lld, %lld, %lld, %lld], rec_buflen = %lld\n", rank, nelems[0], nelems[1], nelems[2], nelems[3], nelems[4], nelems[5], rec_buflen); fflush(stdout);
+
     /* allocate and initialize write buffer for 7 fixed-size variables */
     /* int (nCells): maxLevelCell */
     if (nelems[0] > 0) {
@@ -865,6 +867,8 @@ run_varn_G_case_rd(char       *out_dir,      /* output folder name */
         counts_D6 = NULL;
     }
 
+    printf("Rank: %d, nelems = [%lld, %lld, %lld, %lld, %lld, %lld], rec_buflen = %lld\n", rank, nelems[0], nelems[1], nelems[2], nelems[3], nelems[4], nelems[5], rec_buflen); fflush(stdout);
+
     /* allocate and initialize write buffer for 7 fixed-size variables */
     /* int (nCells): maxLevelCell */
     if (nelems[0] > 0) {
@@ -1085,6 +1089,9 @@ run_varn_G_case_rd(char       *out_dir,      /* output folder name */
         for (j = 0; j < nD1_rec_2d_vars; j++) {
             err = ncmpi_iget_varn(ncid, D1_rec_2d_varids[j], nreqs[0], starts_D1,
                                   counts_D1, rec_buf_ptr, nelems[0], MPI_DOUBLE, NULL); ERR
+            /*for(int k=0;k<nD1_rec_2d_vars;k++){
+                printf("Rank: %d, start=[%lld, %lld], count = [%lld, %lld]\n", rank, starts_D1[k][0], starts_D1[k][1], counts_D1[k][0], counts_D1[k][1]); fflush(stdout);
+            }*/
             rec_buf_ptr += nelems[0];
             my_nreqs += nreqs[0];
         }
@@ -1254,7 +1261,7 @@ run_varn_G_case_rd(char       *out_dir,      /* output folder name */
         printf("Max Time of TOTAL                  = %.4f sec\n",total_timing);
         printf("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
                (double)total_size/1048576.0/total_timing);
-        printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
+        printf("I/O bandwidth (read-only)         = %.4f MiB/sec\n",
                (double)get_size/1048576.0/wait_timing);
         if (verbose) print_info(&info_used);
         printf("-----------------------------------------------------------\n");
