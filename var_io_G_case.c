@@ -114,8 +114,10 @@
         _start[1] = disps[i] % last_dimlen; \
         if (starts[j][0] == rec && _start[0] == starts[j][1] + counts[j][1] && \
             _start[1] == starts[j][2] && blocklens[i] == counts[j][2]) \
+            /* this request can be combined into the previous one */ \
             counts[j][1]++; \
         else { \
+            /* this request cannot be combined into the previous one */ \
             j++; \
             starts[j][0] = rec; \
             starts[j][1] = _start[0]; \
@@ -130,15 +132,15 @@
 
 /*----< run_varn_G_case() >--------------------------------------------------*/
 int
-run_varn_G_case(char       *out_dir,      /* output folder name */
-                char       *outfile,      /* output file name */
-                int         nvars,        /* number of variables 51 */
-                int         num_recs,     /* number of records */
-                MPI_Info    info,
-                MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
-                int         nreqs[6],     /* no. request in decomposition 1-6 */
-                int        *disps[6],     /* request's displacements */
-                int        *blocklens[6]) /* request's block lengths */
+run_varn_G_case(const char       *out_dir,      /* output folder name */
+                const char       *outfile,      /* output file name */
+                int               nvars,        /* number of variables 51 */
+                int               num_recs,     /* number of records */
+                MPI_Info          info,
+                const MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
+                const int         nreqs[6],     /* no. request in decomposition 1-6 */
+                int* const        disps[6],     /* request's displacements */
+                int* const        blocklens[6]) /* request's block lengths */
 {
     char outfname[512];
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
@@ -179,6 +181,9 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     MPI_Offset count[2] = {1, 1};
     double dummy_double_buf[80];
     char dummy_char_buf[64];
+    int xnreqs[6]; /* number of requests after combination */
+
+    for (i=0; i<6; i++) xnreqs[i] = nreqs[i];
 
     MPI_Barrier(comm); /*-----------------------------------------*/
     total_timing = pre_timing = MPI_Wtime();
@@ -194,7 +199,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     total_nreqs = max_nreqs = 0;
     my_nreqs = 0;
     for (i=0; i<6; i++) {
-        for (nelems[i]=0, k=0; k<nreqs[i]; k++)
+        for (nelems[i]=0, k=0; k<xnreqs[i]; k++)
             nelems[i] += blocklens[i][k];
     }
 
@@ -203,9 +208,9 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
                nelems[0],nelems[1],nelems[2],nelems[3],nelems[4],nelems[5]);
 
     /* construct varn API arguments starts[][] and counts[][] */
-    if (nreqs[0] > 0) {
-        FIX_1D_VAR_STARTS_COUNTS(fix_starts_D1, fix_counts_D1, nreqs[0], disps[0], blocklens[0])
-        REC_2D_VAR_STARTS_COUNTS(0, starts_D1, counts_D1, nreqs[0], disps[0], blocklens[0])
+    if (xnreqs[0] > 0) {
+        FIX_1D_VAR_STARTS_COUNTS(fix_starts_D1, fix_counts_D1, xnreqs[0], disps[0], blocklens[0])
+        REC_2D_VAR_STARTS_COUNTS(0, starts_D1, counts_D1, xnreqs[0], disps[0], blocklens[0])
     }
     else {
         fix_starts_D1 = NULL;
@@ -214,17 +219,17 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         counts_D1 = NULL;
     }
 
-    if (nreqs[1] > 0) {
-        FIX_1D_VAR_STARTS_COUNTS(fix_starts_D2, fix_counts_D2, nreqs[1], disps[1], blocklens[1])
+    if (xnreqs[1] > 0) {
+        FIX_1D_VAR_STARTS_COUNTS(fix_starts_D2, fix_counts_D2, xnreqs[1], disps[1], blocklens[1])
     }
     else {
         fix_starts_D2 = NULL;
         fix_counts_D2 = NULL;
     }
 
-    if (nreqs[2] > 0) {
-        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D3, fix_counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1])
-        REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, nreqs[2], disps[2], blocklens[2], dims[2][1])
+    if (xnreqs[2] > 0) {
+        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D3, fix_counts_D3, xnreqs[2], disps[2], blocklens[2], dims[2][1])
+        REC_3D_VAR_STARTS_COUNTS(0, starts_D3, counts_D3, xnreqs[2], disps[2], blocklens[2], dims[2][1])
     }
     else {
         fix_starts_D3 = NULL;
@@ -233,9 +238,9 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         counts_D3 = NULL;
     }
 
-    if (nreqs[3] > 0) {
-        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D4, fix_counts_D4, nreqs[3], disps[3], blocklens[3], dims[3][1])
-        REC_3D_VAR_STARTS_COUNTS(0, starts_D4, counts_D4, nreqs[3], disps[3], blocklens[3], dims[3][1])
+    if (xnreqs[3] > 0) {
+        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D4, fix_counts_D4, xnreqs[3], disps[3], blocklens[3], dims[3][1])
+        REC_3D_VAR_STARTS_COUNTS(0, starts_D4, counts_D4, xnreqs[3], disps[3], blocklens[3], dims[3][1])
     }
     else {
         fix_starts_D4 = NULL;
@@ -244,9 +249,9 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         counts_D4 = NULL;
     }
 
-    if (nreqs[4] > 0) {
-        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D5, fix_counts_D5, nreqs[4], disps[4], blocklens[4], dims[4][1])
-        REC_3D_VAR_STARTS_COUNTS(0, starts_D5, counts_D5, nreqs[4], disps[4], blocklens[4], dims[4][1])
+    if (xnreqs[4] > 0) {
+        FIX_2D_VAR_STARTS_COUNTS(fix_starts_D5, fix_counts_D5, xnreqs[4], disps[4], blocklens[4], dims[4][1])
+        REC_3D_VAR_STARTS_COUNTS(0, starts_D5, counts_D5, xnreqs[4], disps[4], blocklens[4], dims[4][1])
     }
     else {
         fix_starts_D5 = NULL;
@@ -255,8 +260,8 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         counts_D5 = NULL;
     }
 
-    if (nreqs[5] > 0) {
-        REC_3D_VAR_STARTS_COUNTS(0, starts_D6, counts_D6, nreqs[5], disps[5], blocklens[5], dims[5][1])
+    if (xnreqs[5] > 0) {
+        REC_3D_VAR_STARTS_COUNTS(0, starts_D6, counts_D6, xnreqs[5], disps[5], blocklens[5], dims[5][1])
     }
     else {
         starts_D6 = NULL;
@@ -391,39 +396,39 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     /* write 7 fixed-size variables */
 
     /* int maxLevelEdgeTop(nEdges) */
-    err = ncmpi_iput_varn(ncid, 8, nreqs[1], fix_starts_D2, fix_counts_D2,
+    err = ncmpi_iput_varn(ncid, 8, xnreqs[1], fix_starts_D2, fix_counts_D2,
                           D2_fix_int_buf, nelems[1], MPI_INT, NULL); ERR
-    my_nreqs += nreqs[1];
+    my_nreqs += xnreqs[1];
 
     /* int maxLevelEdgeBot(nEdges) */
-    err = ncmpi_iput_varn(ncid, 37, nreqs[1], fix_starts_D2, fix_counts_D2,
+    err = ncmpi_iput_varn(ncid, 37, xnreqs[1], fix_starts_D2, fix_counts_D2,
                           D2_fix_int_buf + nelems[1], nelems[1], MPI_INT, NULL); ERR
-    my_nreqs += nreqs[1];
+    my_nreqs += xnreqs[1];
 
     /* int edgeMask(nEdges, nVertLevels) */
-    err = ncmpi_iput_varn(ncid, 10, nreqs[3], fix_starts_D4, fix_counts_D4,
+    err = ncmpi_iput_varn(ncid, 10, xnreqs[3], fix_starts_D4, fix_counts_D4,
                           D4_fix_int_buf, nelems[3], MPI_INT, NULL); ERR
-    my_nreqs += nreqs[3];
+    my_nreqs += xnreqs[3];
 
     /* int cellMask(nCells, nVertLevels) */
-    err = ncmpi_iput_varn(ncid, 11, nreqs[2], fix_starts_D3, fix_counts_D3,
+    err = ncmpi_iput_varn(ncid, 11, xnreqs[2], fix_starts_D3, fix_counts_D3,
                           D3_fix_int_buf, nelems[2], MPI_INT, NULL); ERR
-    my_nreqs += nreqs[2];
+    my_nreqs += xnreqs[2];
 
     /* int vertexMask(nVertices, nVertLevels) */
-    err = ncmpi_iput_varn(ncid, 12, nreqs[4], fix_starts_D5, fix_counts_D5,
+    err = ncmpi_iput_varn(ncid, 12, xnreqs[4], fix_starts_D5, fix_counts_D5,
                           D5_fix_int_buf, nelems[4], MPI_INT, NULL); ERR
-    my_nreqs += nreqs[4];
+    my_nreqs += xnreqs[4];
 
     /* double bottomDepth(nCells)  */
-    err = ncmpi_iput_varn(ncid, 35, nreqs[0], fix_starts_D1, fix_counts_D1,
+    err = ncmpi_iput_varn(ncid, 35, xnreqs[0], fix_starts_D1, fix_counts_D1,
                           D1_fix_dbl_buf, nelems[0], MPI_DOUBLE, NULL); ERR
-    my_nreqs += nreqs[0];
+    my_nreqs += xnreqs[0];
 
     /* int maxLevelCell(nCells) */
-    err = ncmpi_iput_varn(ncid, 36, nreqs[0], fix_starts_D1, fix_counts_D1,
+    err = ncmpi_iput_varn(ncid, 36, xnreqs[0], fix_starts_D1, fix_counts_D1,
                           D1_fix_int_buf, nelems[0], MPI_INT, NULL); ERR
-    my_nreqs += nreqs[0];
+    my_nreqs += xnreqs[0];
 
     /* next 11 small variables are written by rank 0 only */
     if (rank == 0) {
@@ -477,66 +482,66 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
 
     /* 4 D1 record variables: double (Time, nCells) */
     for (rec_no = 0; rec_no < num_recs; rec_no++) {
-        for (j = 0; j < nreqs[0]; j++) starts_D1[j][0] = rec_no;
+        for (j = 0; j < xnreqs[0]; j++) starts_D1[j][0] = rec_no;
 
         rec_buf_ptr = D1_rec_dbl_buf;
         for (j = 0; j < nD1_rec_2d_vars; j++) {
-            err = ncmpi_iput_varn(ncid, D1_rec_2d_varids[j], nreqs[0], starts_D1,
+            err = ncmpi_iput_varn(ncid, D1_rec_2d_varids[j], xnreqs[0], starts_D1,
                                   counts_D1, rec_buf_ptr, nelems[0], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[0];
-            my_nreqs += nreqs[0];
+            my_nreqs += xnreqs[0];
         }
     }
 
     /* 4 D6 record variables: double (Time, nCells, nVertLevelsP1) */
     for (rec_no = 0; rec_no < num_recs; rec_no++) {
-        for (j = 0; j < nreqs[5]; j++) starts_D6[j][0] = rec_no;
+        for (j = 0; j < xnreqs[5]; j++) starts_D6[j][0] = rec_no;
 
         rec_buf_ptr = D6_rec_dbl_buf;
         for (j = 0; j < nD6_rec_3d_vars; j++) {
-            err = ncmpi_iput_varn(ncid, D6_rec_3d_varids[j], nreqs[5], starts_D6,
+            err = ncmpi_iput_varn(ncid, D6_rec_3d_varids[j], xnreqs[5], starts_D6,
                                   counts_D6, rec_buf_ptr, nelems[5], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[5];
-            my_nreqs += nreqs[5];
+            my_nreqs += xnreqs[5];
         }
     }
 
     /* 24 D3 record variables: double (Time, nCells, nVertLevels) */
     for (rec_no = 0; rec_no < num_recs; rec_no++) {
-        for (j = 0; j < nreqs[2]; j++) starts_D3[j][0] = rec_no;
+        for (j = 0; j < xnreqs[2]; j++) starts_D3[j][0] = rec_no;
 
         rec_buf_ptr = D3_rec_dbl_buf;
         for (j = 0; j < nD3_rec_3d_vars; j++) {
-            err = ncmpi_iput_varn(ncid, D3_rec_3d_varids[j], nreqs[2], starts_D3,
+            err = ncmpi_iput_varn(ncid, D3_rec_3d_varids[j], xnreqs[2], starts_D3,
                                   counts_D3, rec_buf_ptr, nelems[2], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[2];
-            my_nreqs += nreqs[2];
+            my_nreqs += xnreqs[2];
         }
     }
 
     /* 1 D4 record variable: double (Time, nEdges, nVertLevels) */
     for (rec_no = 0; rec_no < num_recs; rec_no++) {
-        for (j = 0; j < nreqs[3]; j++) starts_D4[j][0] = rec_no;
+        for (j = 0; j < xnreqs[3]; j++) starts_D4[j][0] = rec_no;
 
         rec_buf_ptr = D4_rec_dbl_buf;
         for (j = 0; j < nD4_rec_3d_vars; j++) {
-            err = ncmpi_iput_varn(ncid, D4_rec_3d_varids[j], nreqs[3], starts_D4,
+            err = ncmpi_iput_varn(ncid, D4_rec_3d_varids[j], xnreqs[3], starts_D4,
                                   counts_D4, rec_buf_ptr, nelems[3], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[3];
-            my_nreqs += nreqs[3];
+            my_nreqs += xnreqs[3];
         }
     }
 
     /* 1 D5 record variable: double (Time, nVertices, nVertLevels) */
     for (rec_no = 0; rec_no < num_recs; rec_no++) {
-        for (j = 0; j < nreqs[4]; j++) starts_D5[j][0] = rec_no;
+        for (j = 0; j < xnreqs[4]; j++) starts_D5[j][0] = rec_no;
 
         rec_buf_ptr = D5_rec_dbl_buf;
         for (j = 0; j < nD5_rec_3d_vars; j++) {
-            err = ncmpi_iput_varn(ncid, D5_rec_3d_varids[j], nreqs[4], starts_D5,
+            err = ncmpi_iput_varn(ncid, D5_rec_3d_varids[j], xnreqs[4], starts_D5,
                                   counts_D5, rec_buf_ptr, nelems[4], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[4];
-            my_nreqs += nreqs[4];
+            my_nreqs += xnreqs[4];
         }
     }
     total_nreqs += my_nreqs;
@@ -559,40 +564,40 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
     err = ncmpi_close(ncid); ERR
     close_timing += MPI_Wtime() - timing;
 
-    if (nreqs[0] > 0) {
+    if (xnreqs[0] > 0) {
         free(fix_starts_D1[0]); free(fix_starts_D1);
         free(D1_fix_int_buf); free(D1_fix_dbl_buf);
         free(starts_D1[0]); free(starts_D1);
         free(D1_rec_dbl_buf);
     }
 
-    if (nreqs[1] > 0) {
+    if (xnreqs[1] > 0) {
         free(fix_starts_D2[0]); free(fix_starts_D2);
         free(D2_fix_int_buf);
     }
 
-    if (nreqs[2] > 0) {
+    if (xnreqs[2] > 0) {
         free(fix_starts_D3[0]); free(fix_starts_D3);
         free(D3_fix_int_buf);
         free(starts_D3[0]); free(starts_D3);
         free(D3_rec_dbl_buf);
     }
 
-    if (nreqs[3] > 0) {
+    if (xnreqs[3] > 0) {
         free(fix_starts_D4[0]); free(fix_starts_D4);
         free(D4_fix_int_buf);
         free(starts_D4[0]); free(starts_D4);
         free(D4_rec_dbl_buf);
     }
 
-    if (nreqs[4] > 0) {
+    if (xnreqs[4] > 0) {
         free(fix_starts_D5[0]); free(fix_starts_D5);
         free(D5_fix_int_buf);
         free(starts_D5[0]); free(starts_D5);
         free(D5_rec_dbl_buf);
     }
 
-    if (nreqs[5] > 0) {
+    if (xnreqs[5] > 0) {
         free(starts_D6[0]); free(starts_D6);
         free(D6_rec_dbl_buf);
     }
