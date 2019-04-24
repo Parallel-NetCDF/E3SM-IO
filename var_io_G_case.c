@@ -269,7 +269,7 @@ run_varn_G_case(char       *out_dir,      /* output folder name */
         counts_D6 = NULL;
     }
 
-    printf("Rank: %d, nelems = [%lld, %lld, %lld, %lld, %lld, %lld], rec_buflen = %lld\n", rank, nelems[0], nelems[1], nelems[2], nelems[3], nelems[4], nelems[5], rec_buflen); fflush(stdout);
+    //printf("Rank: %d, nelems = [%lld, %lld, %lld, %lld, %lld, %lld], rec_buflen = %lld\n", rank, nelems[0], nelems[1], nelems[2], nelems[3], nelems[4], nelems[5], rec_buflen); fflush(stdout);
 
     /* allocate and initialize write buffer for 7 fixed-size variables */
     /* int (nCells): maxLevelCell */
@@ -867,7 +867,7 @@ run_varn_G_case_rd(char       *out_dir,      /* output folder name */
         counts_D6 = NULL;
     }
 
-    printf("Rank: %d, nelems = [%lld, %lld, %lld, %lld, %lld, %lld], rec_buflen = %lld\n", rank, nelems[0], nelems[1], nelems[2], nelems[3], nelems[4], nelems[5], rec_buflen); fflush(stdout);
+    //printf("Rank: %d, nelems = [%lld, %lld, %lld, %lld, %lld, %lld], rec_buflen = %lld\n", rank, nelems[0], nelems[1], nelems[2], nelems[3], nelems[4], nelems[5], rec_buflen); fflush(stdout);
 
     /* allocate and initialize write buffer for 7 fixed-size variables */
     /* int (nCells): maxLevelCell */
