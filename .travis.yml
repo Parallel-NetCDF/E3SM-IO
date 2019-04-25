@@ -9,6 +9,7 @@ before_install:
   - sudo add-apt-repository ppa:dns/gnu -y
   - sudo apt-get update -qq
   - sudo apt-get install -y mpich2
+  - sudo apt-get install valgrind
   - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.11.1.tar.gz 
   - tar -xzvf pnetcdf-1.11.1.tar.gz
   - pushd pnetcdf-1.11.1
