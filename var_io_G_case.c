@@ -732,7 +732,6 @@ fn_exit:
     return nerrs;
 }
 
-
 /*----< run_varn_G_case() >--------------------------------------------------*/
 int
 run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
@@ -745,8 +744,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
                 int* const        disps[6],     /* request's displacements */
                 int* const        blocklens[6], /* request's block lengths */
                 int **D1_fix_int_bufp, int **D2_fix_int_bufp, int **D3_fix_int_bufp, int **D4_fix_int_bufp, int **D5_fix_int_bufp,
-                double **D1_rec_dbl_bufp, double **D3_rec_dbl_bufp, double **D4_rec_dbl_bufp, double **D5_rec_dbl_bufp, double **D6_rec_dbl_bufp, double **D1_fix_dbl_bufp
-                )
+                double **D1_rec_dbl_bufp, double **D3_rec_dbl_bufp, double **D4_rec_dbl_bufp, double **D5_rec_dbl_bufp, double **D6_rec_dbl_bufp, double **D1_fix_dbl_bufp)
 {
     char outfname[512];
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
@@ -873,7 +871,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
         starts_D6 = NULL;
         counts_D6 = NULL;
     }
-    
+
     //printf("Rank: %d, nelems = [%lld, %lld, %lld, %lld, %lld, %lld], rec_buflen = %lld\n", rank, nelems[0], nelems[1], nelems[2], nelems[3], nelems[4], nelems[5], rec_buflen); fflush(stdout);
 
     /* allocate and initialize write buffer for 7 fixed-size variables */
@@ -881,6 +879,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
     if (nelems[0] > 0) {
         D1_fix_int_buf = (int*) malloc(nelems[0] * sizeof(int));
         for (i = 0; i < nelems[0]; i++) D1_fix_int_buf[i] = rank + i;
+        *D1_fix_int_bufp = D1_fix_int_buf;
     }
     else
         D1_fix_int_buf = NULL;
@@ -889,14 +888,16 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
     if (nelems[1] > 0) {
         D2_fix_int_buf = (int*) malloc(2 * nelems[1] * sizeof(int));
         for (i = 0; i < 2 * nelems[1]; i++) D2_fix_int_buf[i] = rank + i;
+        *D2_fix_int_bufp = D2_fix_int_buf;
     }
     else
         D2_fix_int_buf = NULL;
 
     /* int (nCells, nVertLevels): cellMask */
-    if (nelems[2] > 0) {       
+    if (nelems[2] > 0) {
         D3_fix_int_buf = (int*) malloc(nelems[2] * sizeof(int));
         for (i = 0; i < nelems[2]; i++) D3_fix_int_buf[i] = rank + i;
+        *D3_fix_int_bufp = D3_fix_int_buf;
     }
     else
         D3_fix_int_buf = NULL;
@@ -905,6 +906,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
     if (nelems[3] > 0) {
         D4_fix_int_buf = (int*) malloc(nelems[3] * sizeof(int));
         for (i = 0; i < nelems[3]; i++) D4_fix_int_buf[i] = rank + i;
+        *D4_fix_int_bufp = D4_fix_int_buf;
     }
     else
         D4_fix_int_buf = NULL;
@@ -913,6 +915,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
     if (nelems[4] > 0) {
         D5_fix_int_buf = (int*) malloc(nelems[4] * sizeof(int));
         for (i = 0; i < nelems[4]; i++) D5_fix_int_buf[i] = rank + i;
+        *D5_fix_int_bufp = D5_fix_int_buf;
     }
     else
         D5_fix_int_buf = NULL;
@@ -921,6 +924,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
     if (nelems[0] > 0) {
         D1_fix_dbl_buf = (double*) malloc(nelems[0] * sizeof(double));
         for (i = 0; i < nelems[0]; i++) D1_fix_dbl_buf[i] = rank + i;
+        *D1_fix_dbl_bufp = D1_fix_dbl_buf;
     }
     else
         D1_fix_dbl_buf = NULL;
@@ -930,6 +934,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
         rec_buflen = nelems[0] * nD1_rec_2d_vars;
         D1_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
         for (i = 0; i < rec_buflen; i++) D1_rec_dbl_buf[i] = rank + i;
+        *D1_rec_dbl_bufp = D1_rec_dbl_buf;
     }
     else
         D1_rec_dbl_buf = NULL;
@@ -938,6 +943,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
         rec_buflen = nelems[2] * nD3_rec_3d_vars;
         D3_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
         for (i = 0; i < rec_buflen; i++) D3_rec_dbl_buf[i] = rank + i;
+        *D3_rec_dbl_bufp = D3_rec_dbl_buf;
     }
     else
         D3_rec_dbl_buf = NULL;
@@ -946,6 +952,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
         rec_buflen = nelems[3] * nD4_rec_3d_vars;
         D4_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
         for (i = 0; i < rec_buflen; i++) D4_rec_dbl_buf[i] = rank + i;
+        *D4_rec_dbl_bufp = D4_rec_dbl_buf;
     }
     else
         D4_rec_dbl_buf = NULL;
@@ -954,6 +961,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
         rec_buflen = nelems[4] * nD5_rec_3d_vars;
         D5_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
         for (i = 0; i < rec_buflen; i++) D5_rec_dbl_buf[i] = rank + i;
+        *D5_rec_dbl_bufp = D5_rec_dbl_buf;
     }
     else
         D5_rec_dbl_buf = NULL;
@@ -962,6 +970,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
         rec_buflen = nelems[5] * nD6_rec_3d_vars;
         D6_rec_dbl_buf = (double*) malloc(rec_buflen * sizeof(double));
         for (i = 0; i < rec_buflen; i++) D6_rec_dbl_buf[i] = rank + i;
+        *D6_rec_dbl_bufp = D6_rec_dbl_buf;
     }
     else
         D6_rec_dbl_buf = NULL;
@@ -984,8 +993,8 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
     cmode = NC_64BIT_DATA;
     err = ncmpi_open(comm, outfname, cmode, info, &ncid); ERR
 
-    MPI_Offset get_buffer_size_limit = 10485760;
-    err = ncmpi_buffer_attach(ncid, get_buffer_size_limit); ERR
+    MPI_Offset put_buffer_size_limit = 10485760;
+    err = ncmpi_buffer_attach(ncid, put_buffer_size_limit); ERR
 
     /* define dimensions, variables, and attributes */
     err = inq_G_case_h0(ncid, dims[0], dims[1], dims[2], dims[3], dims[4], dims[5], nvars, varids); ERR
@@ -1001,7 +1010,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
     MPI_Barrier(comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
-    /* write 7 fixed-size variables */
+    /* read 7 fixed-size variables */
 
     /* int maxLevelEdgeTop(nEdges) */
     err = ncmpi_iget_varn(ncid, 8, xnreqs[1], fix_starts_D2, fix_counts_D2,
@@ -1086,7 +1095,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
         }
     }
 
-    /* write 34 record variables */
+    /* read 34 record variables */
 
     /* 4 D1 record variables: double (Time, nCells) */
     for (rec_no = 0; rec_no < num_recs; rec_no++) {
@@ -1249,7 +1258,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf("History input file                = %s\n", outfile);
+        printf("History output file                = %s\n", outfile);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
         printf("Total number of variables          = %d\n",nvars);
@@ -1257,7 +1266,7 @@ run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
                (double)total_size/1048576,(double)total_size/1073741824);
         printf("Total number of requests           = %lld\n",total_nreqs);
         printf("Max number of requests             = %lld\n",max_nreqs);
-        printf("Max Time of open + metadata inquery= %.4f sec\n",open_timing);
+        printf("Max Time of open + metadata define = %.4f sec\n",open_timing);
         printf("Max Time of I/O preparing          = %.4f sec\n",pre_timing);
         printf("Max Time of ncmpi_iget_varn        = %.4f sec\n",post_timing);
         printf("Max Time of ncmpi_wait_all         = %.4f sec\n",wait_timing);

@@ -1942,7 +1942,7 @@ inq_G_case_h0(int         ncid,       /* file ID */
     err = ncmpi_inq_dimid(ncid, "nVertLevelsP1", &dim_nVertLevelsP1); ERR
     err = ncmpi_inq_dimid(ncid, "nVertLevels", &dim_nVertLevels); ERR
     err = ncmpi_inq_dimid(ncid, "nEdges", &dim_nEdges); ERR
-    err = ncmpi_inq_dimid(ncid, "nCells", &dim_nCells); ERR
+    err = ncmpi_inq_dimid(ncid, "nVertices", &dim_nVertices); ERR
     
     err = ncmpi_inq_dimlen(ncid, dim_nCells, &dims_D1[0]); ERR
     err = ncmpi_inq_dimlen(ncid, dim_nVertLevelsP1, &dims_D6[1]); ERR
