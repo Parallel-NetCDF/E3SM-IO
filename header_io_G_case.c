@@ -1944,11 +1944,11 @@ inq_G_case_h0(int         ncid,       /* file ID */
     err = ncmpi_inq_dimid(ncid, "nEdges", &dim_nEdges); ERR
     err = ncmpi_inq_dimid(ncid, "nVertices", &dim_nVertices); ERR
     
-    err = ncmpi_inq_dimlen(ncid, dim_nCells, &dims_D1[0]); ERR
-    err = ncmpi_inq_dimlen(ncid, dim_nVertLevelsP1, &dims_D6[1]); ERR
-    err = ncmpi_inq_dimlen(ncid, dim_nVertLevels, &dims_D3[1]); ERR
-    err = ncmpi_inq_dimlen(ncid, dim_nEdges, &dims_D2[0]); ERR
-    err = ncmpi_inq_dimlen(ncid, dim_nVertices, &dims_D5[0]); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_nCells, &(((MPI_Offset*)dims_D1)[0])); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_nVertLevelsP1, &(((MPI_Offset*)dims_D6)[1])); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_nVertLevels, &(((MPI_Offset*)dims_D3)[1])); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_nEdges, &(((MPI_Offset*)dims_D2)[0])); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_nVertices, &(((MPI_Offset*)dims_D5)[0])); ERR
 
     i = 0;
 

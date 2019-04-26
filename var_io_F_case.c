@@ -1315,7 +1315,9 @@ run_varn_F_case_rd(const char *out_dir,      /* output folder name */
                + 20 * gap;
 
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
-    *dbl_bufp = dbl_buf;
+    if (dbl_bufp != NULL){
+        *dbl_bufp = dbl_buf;
+    }
 
     for (i=0; i<dbl_buflen; i++) dbl_buf[i] = rank;
 
@@ -1326,7 +1328,9 @@ run_varn_F_case_rd(const char *out_dir,      /* output folder name */
         rec_buflen = nelems[1] * 20 + nelems[2] + (20+1) * gap;
 
     rec_buf = (itype*) malloc(rec_buflen * sizeof(itype));
-    *rec_bufp = rec_buf;
+    if (rec_bufp != NULL){
+        *rec_bufp = rec_buf;
+    }
 
     for (i=0; i<rec_buflen; i++) rec_buf[i] = rank;
 
@@ -1345,21 +1349,21 @@ run_varn_F_case_rd(const char *out_dir,      /* output folder name */
     sprintf(outfname, "%s/%s",out_dir, outfile);
 
     /* create a new CDF-5 file for writing */
-    cmode = NC_CLOBBER | NC_64BIT_DATA;
-    err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
+    cmode = NC_64BIT_DATA;
+    err = ncmpi_open(comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
     if (nvars == 408) {
         /* for h0 file */
-        err = def_F_case_h0(ncid, dims[2], nvars, varids); ERR
+        err = inq_F_case_h0(ncid, dims[2], nvars, varids); ERR
     }
     else {
         /* for h1 file */
-        err = def_F_case_h1(ncid, dims[2], nvars, varids); ERR
+        err = inq_F_case_h1(ncid, dims[2], nvars, varids); ERR
     }
 
     /* exit define mode and enter data mode */
-    err = ncmpi_enddef(ncid); ERR
+    //err = ncmpi_enddef(ncid); ERR
 
     /* I/O amount so far */
     err = ncmpi_inq_get_size(ncid, &metadata_size); ERR
