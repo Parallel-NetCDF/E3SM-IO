@@ -294,11 +294,11 @@ fn_exit:
     err = ncmpi_inq_varoffset(ncid, varids[i], &var_offset); ERR \
     var_disps[i] = var_offset - offset_rec; \
     if (kind == 2) { \
-        my_nreqs += nreqs[1]; \
+        my_nreqs += xnreqs[1]; \
         if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[1]+gap) * sizeof(itype); \
         buf_blocklens[i] = nelems[1]; \
     } else { /* kind == 3 */ \
-        my_nreqs += nreqs[2]; \
+        my_nreqs += xnreqs[2]; \
         if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[2]+gap) * sizeof(itype); \
         buf_blocklens[i] = nelems[2]; \
     } \
@@ -311,11 +311,11 @@ fn_exit:
         err = ncmpi_inq_varoffset(ncid, varids[i], &var_offset); ERR \
         var_disps[i] = var_offset - offset_rec; \
         if (kind == 2) { \
-            my_nreqs += nreqs[1]; \
+            my_nreqs += xnreqs[1]; \
             if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[1]+gap) * sizeof(itype); \
             buf_blocklens[i] = nelems[1]; \
         } else { /* kind == 3 */ \
-            my_nreqs += nreqs[2]; \
+            my_nreqs += xnreqs[2]; \
             if (i < nvars-1) buf_disps[i+1] = buf_disps[i] + (nelems[2]+gap) * sizeof(itype); \
             buf_blocklens[i] = nelems[2]; \
         } \
@@ -324,16 +324,16 @@ fn_exit:
 
 /*----< run_vard_F_case() >--------------------------------------------------*/
 int
-run_vard_F_case(const char       *out_dir,      /* output folder name */
-                const char       *outfile,      /* output file name */
-                int               nvars,        /* number of variables 408 or 51 */
-                int               num_recs,     /* number of records */
-                int               noncontig_buf,/* whether to us noncontiguous buffer */
-                MPI_Info          info,
-                const MPI_Offset  dims[3][2],   /* dimension lengths */
-                const int         nreqs[3],     /* no. request in decompositions 1,2,3 */
-                int* const        disps[3],     /* request's displacements */
-                int* const        blocklens[3]) /* request's block lengths */
+run_vard_F_case(const char *out_dir,      /* output folder name */
+                const char *outfile,      /* output file name */
+                int         nvars,        /* number of variables 408 or 51 */
+                int         num_recs,     /* number of records */
+                int         noncontig_buf,/* whether to us noncontiguous buffer */
+                MPI_Info    info,
+                MPI_Offset  dims[3][2],   /* dimension lengths */
+                const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
+                int* const  disps[3],     /* request's displacements */
+                int* const  blocklens[3]) /* request's block lengths */
 {
     char outfname[512], txt_buf[16], *txt_buf_ptr;
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
@@ -816,11 +816,11 @@ fn_exit:
 
 #define POST_VARN(k, num, vid) \
     for (j=0; j<num; j++) { \
-        err = ncmpi_iput_varn(ncid, vid+j, nreqs[k-1], starts_D##k, \
+        err = ncmpi_iput_varn(ncid, vid+j, xnreqs[k-1], starts_D##k, \
                               counts_D##k, rec_buf_ptr, -1, REC_ITYPE, NULL); \
         ERR \
         rec_buf_ptr += nelems[k-1] + gap; \
-        my_nreqs += nreqs[k-1]; \
+        my_nreqs += xnreqs[k-1]; \
     }
 
 #define POST_VARN_RD(k, num, vid) \
@@ -850,7 +850,7 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
                 int        *int_buf)
 {
     char outfname[512], *txt_buf_ptr;
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nreqs_D3_merged;
+    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
     int rec_no, gap=0, my_nreqs, *int_buf_ptr, xnreqs[3];
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf, *rec_buf_ptr;
