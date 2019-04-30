@@ -135,15 +135,15 @@
 
 /*----< run_varn_G_case() >--------------------------------------------------*/
 int
-run_varn_G_case(const char       *out_dir,      /* output folder name */
-                const char       *outfile,      /* output file name */
-                int               nvars,        /* number of variables 51 */
-                int               num_recs,     /* number of records */
-                MPI_Info          info,
-                const MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
-                const int         nreqs[6],     /* no. request in decomposition 1-6 */
-                int* const        disps[6],     /* request's displacements */
-                int* const        blocklens[6], /* request's block lengths */
+run_varn_G_case(const char *out_dir,      /* output folder name */
+                const char *outfile,      /* output file name */
+                int         nvars,        /* number of variables 51 */
+                int         num_recs,     /* number of records */
+                MPI_Info    info,
+                MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
+                const int   nreqs[6],     /* no. request in decomposition 1-6 */
+                int* const  disps[6],     /* request's displacements */
+                int* const  blocklens[6], /* request's block lengths */
                 int *D1_fix_int_bufp, int *D2_fix_int_bufp, int *D3_fix_int_bufp, int *D4_fix_int_bufp, int *D5_fix_int_bufp,
                 double *D1_rec_dbl_bufp, double *D3_rec_dbl_bufp, double *D4_rec_dbl_bufp, double *D5_rec_dbl_bufp, double *D6_rec_dbl_bufp, double *D1_fix_dbl_bufp)
 {
@@ -184,7 +184,7 @@ run_varn_G_case(const char       *out_dir,      /* output folder name */
     MPI_Offset stride[2] = {1, 1};
     MPI_Offset start[2] = {0, 0};
     MPI_Offset count[2] = {1, 1};
-    double dummy_double_buf[80];
+    double *dummy_double_buf=NULL;
     char dummy_char_buf[64];
     int xnreqs[6]; /* number of requests after combination */
 
@@ -419,7 +419,8 @@ run_varn_G_case(const char       *out_dir,      /* output folder name */
         D6_rec_dbl_buf = NULL;
 
     /* initialize write buffer for 11 small variables */
-    for (i = 0; i < 80; i++) dummy_double_buf[i] = rank + i;
+    dummy_double_buf = (double*) malloc(dims[2][1] * sizeof(double));
+    for (i = 0; i < dims[2][1]; i++) dummy_double_buf[i] = rank + i;
     for (i = 0; i < 64; i++) dummy_char_buf[i] = 'a' + rank + i;
 
     varids = (int*) malloc(nvars * sizeof(int));
@@ -624,6 +625,8 @@ run_varn_G_case(const char       *out_dir,      /* output folder name */
     err = ncmpi_close(ncid); ERR
     close_timing += MPI_Wtime() - timing;
 
+    if (dummy_double_buf != NULL) free(dummy_double_buf);
+
     if (xnreqs[0] > 0) {
         free(fix_starts_D1[0]); free(fix_starts_D1);
         FREE_N_NULL(D1_fix_int_buf); FREE_N_NULL(D1_fix_dbl_buf);
@@ -732,15 +735,15 @@ fn_exit:
 
 /*----< run_varn_G_case() >--------------------------------------------------*/
 int
-run_varn_G_case_rd(const char       *out_dir,      /* output folder name */
-                const char       *outfile,      /* output file name */
-                int               nvars,        /* number of variables 51 */
-                int               num_recs,     /* number of records */
-                MPI_Info          info,
-                const MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
-                const int         nreqs[6],     /* no. request in decomposition 1-6 */
-                int* const        disps[6],     /* request's displacements */
-                int* const        blocklens[6], /* request's block lengths */
+run_varn_G_case_rd(const char *out_dir,      /* output folder name */
+                const char *outfile,      /* output file name */
+                int         nvars,        /* number of variables 51 */
+                int         num_recs,     /* number of records */
+                MPI_Info    info,
+                MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
+                const int   nreqs[6],     /* no. request in decomposition 1-6 */
+                int* const  disps[6],     /* request's displacements */
+                int* const  blocklens[6], /* request's block lengths */
                 int **D1_fix_int_bufp, int **D2_fix_int_bufp, int **D3_fix_int_bufp, int **D4_fix_int_bufp, int **D5_fix_int_bufp,
                 double **D1_rec_dbl_bufp, double **D3_rec_dbl_bufp, double **D4_rec_dbl_bufp, double **D5_rec_dbl_bufp, double **D6_rec_dbl_bufp, double **D1_fix_dbl_bufp)
 {

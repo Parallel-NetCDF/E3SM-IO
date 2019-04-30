@@ -109,7 +109,7 @@ read_decomp(const char *infname,        /* IN */
 {
     char name[128];
     int err, nerrs=0, rank, nprocs, ncid, varid, proc_start, proc_numb;
-    int i, j, k, nreqs, *all_nreqs, ndims, dimids[2], decomp_id;
+    int i, j, nreqs, *all_nreqs, ndims, dimids[2], decomp_id;
     MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);

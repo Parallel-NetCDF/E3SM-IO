@@ -9,6 +9,11 @@ before_install:
   - sudo add-apt-repository ppa:dns/gnu -y
   - sudo apt-get update -qq
   - sudo apt-get install -y mpich2
+  - sudo apt-get install -y valgrind
+  - mpichversion
+  - mpicc -show
+  - which mpicc
+  - which valgrind
   - wget https://parallel-netcdf.github.io/Release/pnetcdf-1.11.1.tar.gz 
   - tar -xzvf pnetcdf-1.11.1.tar.gz
   - pushd pnetcdf-1.11.1
@@ -19,7 +24,10 @@ before_install:
 
 script:
   - make PnetCDF_DIR=$HOME/PnetCDF
+  # - mpiexec -n 16 valgrind --quiet --leak-check=full ./e3sm_io datasets/f_case_866x72_16p.nc
+  # - mpiexec -n 16 valgrind --quiet --leak-check=full ./e3sm_io datasets/g_case_cmpaso_16p.nc
   - mpiexec -n 16 ./e3sm_io datasets/f_case_866x72_16p.nc
+  - mpiexec -n 16 ./e3sm_io datasets/g_case_cmpaso_16p.nc
 
 after_success:
   - make -s clean
