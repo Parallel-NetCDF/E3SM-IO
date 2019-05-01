@@ -3939,8 +3939,8 @@ int inq_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_inq_dimid(ncid, "lev", &dim_lev); ERR
     //err = ncmpi_inq_dimid(ncid, "ilev", &dim_ilev); ERR
 
-    err = ncmpi_inq_dimlen(ncid, dim_ncol, dims + 1); ERR
-    err = ncmpi_inq_dimlen(ncid, dim_lev, dims); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_ncol, ((MPI_Offset*)dims) + 1); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_lev, (MPI_Offset*)dims); ERR
     /*
     err = ncmpi_def_dim(ncid, "ncol", dims[1],      &dim_ncol); ERR
     err = ncmpi_def_dim(ncid, "time", NC_UNLIMITED, &dim_time); ERR
@@ -7360,8 +7360,8 @@ int inq_F_case_h1(int               ncid,    /* file ID */
     err = ncmpi_inq_dimid(ncid, "lev", &dim_lev); ERR
     //err = ncmpi_inq_dimid(ncid, "ilev", &dim_ilev); ERR
 
-    err = ncmpi_inq_dimlen(ncid, dim_ncol, dims + 1); ERR
-    err = ncmpi_inq_dimlen(ncid, dim_lev, dims); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_ncol, ((MPI_Offset*)dims) + 1); ERR
+    err = ncmpi_inq_dimlen(ncid, dim_lev, (MPI_Offset*)dims); ERR
     /*
     err = ncmpi_def_dim(ncid, "ncol", dims[1],      &dim_ncol); ERR
     err = ncmpi_def_dim(ncid, "time", NC_UNLIMITED, &dim_time); ERR

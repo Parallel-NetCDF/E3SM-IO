@@ -16,7 +16,7 @@ when the problem domain is represented by cubed sphere grids which produce
 long lists of small and noncontiguous requests in each of all MPI processes.
 
 The benchmark program supports both read and write. When running only write 
-test, the data written is initiallied according to the rank of the process. 
+test, the data written is initialized according to the rank of the process. 
 When running both read and write test, read test will perform first, the data 
 written in the write test will be the data read.
 
