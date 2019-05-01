@@ -15,6 +15,11 @@ In particular, it studies one of the E3SM's most challenging I/O patterns
 when the problem domain is represented by cubed sphere grids which produce
 long lists of small and noncontiguous requests in each of all MPI processes.
 
+The benchmark program supports both read and write. When running only write 
+test, the data written is initiallied according to the rank of the process. 
+When running both read and write test, read test will perform first, the data 
+written in the write test will be the data read.
+
 The I/O kernel is implemented by using PnetCDF nonblocking varn APIs, which
 can aggregate multiple requests to a variable or across variables. In addition
 to timings and I/O bandwidths, the benchmark reports the PnetCDF internal
@@ -141,6 +146,10 @@ data decompositions shared by 52 variables.
   processes. When using more processes than `decomp_nprocs`, those processes
   with MPI ranks greater than or equal to `decomp_nprocs` will have no data
   to write but still participate the collective I/O in the benchmark.
+* If neither R (read) nor W (write) option is given, write test is assumed.
+* When both R and W option presents, read test will be performed first followed 
+  by write test.
+* Read test only support varn API. It will be skipped in vard test.
 * Command-line options:
   ```
     % ./e3sm_io -h
@@ -151,6 +160,8 @@ data decompositions shared by 52 variables.
            [-d] Run test that uses PnetCDF vard API
            [-n] Run test that uses PnetCDF varn API
            [-m] Run test using noncontiguous write buffer
+           [-W] Run write test 
+           [-R input_dir] Run read test reading files in input_dir
            [-t] Write 2D variables followed by 3D variables
            [-r num] Number of records (default 1)
            [-o output_dir] Output directory name (default ./)
