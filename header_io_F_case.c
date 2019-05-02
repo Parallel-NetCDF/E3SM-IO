@@ -3843,7 +3843,7 @@ fn_exit:
     return nerrs;
 }
 
-/*----< def_F_case_h0() >----------------------------------------------------*/
+/*----< inq_F_case_h0() >----------------------------------------------------*/
 int inq_F_case_h0(int               ncid,    /* file ID */
                   const MPI_Offset  dims[2], /* dimension sizes */
                   int               nvars,   /* number of variables */
@@ -3933,26 +3933,14 @@ int inq_F_case_h0(int               ncid,    /* file ID */
 
     /* inquery dimensions */
     err = ncmpi_inq_dimid(ncid, "ncol", &dim_ncol); ERR
-    //err = ncmpi_inq_dimid(ncid, "time", &dim_time); ERR
-    //err = ncmpi_inq_dimid(ncid, "nbnd", &dim_nbnd); ERR
-    //err = ncmpi_inq_dimid(ncid, "chars", &dim_chars); ERR
     err = ncmpi_inq_dimid(ncid, "lev", &dim_lev); ERR
-    //err = ncmpi_inq_dimid(ncid, "ilev", &dim_ilev); ERR
 
     err = ncmpi_inq_dimlen(ncid, dim_ncol, ((MPI_Offset*)dims) + 1); ERR
     err = ncmpi_inq_dimlen(ncid, dim_lev, (MPI_Offset*)dims); ERR
-    /*
-    err = ncmpi_def_dim(ncid, "ncol", dims[1],      &dim_ncol); ERR
-    err = ncmpi_def_dim(ncid, "time", NC_UNLIMITED, &dim_time); ERR
-    err = ncmpi_def_dim(ncid, "nbnd",  2,           &dim_nbnd); ERR
-    err = ncmpi_def_dim(ncid, "chars", 8,           &dim_chars); ERR
-    err = ncmpi_def_dim(ncid, "lev",   dims[0],     &dim_lev); ERR
-    err = ncmpi_def_dim(ncid, "ilev",  dims[0]+1,   &dim_ilev); ERR
-    */
 
     i = 0;
 
-    /* define variables */
+    /* inquery variables */
     dimids[0] = dim_ncol;
     err = INQ_VID(ncid, "lat", NC_DOUBLE, 1, dimids, &lat); ERR
     err = NOP(ncid, lat, "long_name", 8, "latitude"); ERR
@@ -7317,7 +7305,7 @@ fn_exit:
     return nerrs;
 }
 
-/*----< def_F_case_h1() >----------------------------------------------------*/
+/*----< inq_F_case_h1() >----------------------------------------------------*/
 int inq_F_case_h1(int               ncid,    /* file ID */
                   const MPI_Offset  dims[2], /* dimension sizes */
                   int               nvars,   /* number of variables */
@@ -7354,26 +7342,14 @@ int inq_F_case_h1(int               ncid,    /* file ID */
 
     /* inquery dimensions */
     err = ncmpi_inq_dimid(ncid, "ncol", &dim_ncol); ERR
-    //err = ncmpi_inq_dimid(ncid, "time", &dim_time); ERR
-    //err = ncmpi_inq_dimid(ncid, "nbnd", &dim_nbnd); ERR
-    //err = ncmpi_inq_dimid(ncid, "chars", &dim_chars); ERR
     err = ncmpi_inq_dimid(ncid, "lev", &dim_lev); ERR
-    //err = ncmpi_inq_dimid(ncid, "ilev", &dim_ilev); ERR
 
     err = ncmpi_inq_dimlen(ncid, dim_ncol, ((MPI_Offset*)dims) + 1); ERR
     err = ncmpi_inq_dimlen(ncid, dim_lev, (MPI_Offset*)dims); ERR
-    /*
-    err = ncmpi_def_dim(ncid, "ncol", dims[1],      &dim_ncol); ERR
-    err = ncmpi_def_dim(ncid, "time", NC_UNLIMITED, &dim_time); ERR
-    err = ncmpi_def_dim(ncid, "nbnd",  2,           &dim_nbnd); ERR
-    err = ncmpi_def_dim(ncid, "chars", 8,           &dim_chars); ERR
-    err = ncmpi_def_dim(ncid, "lev",   dims[0],     &dim_lev); ERR
-    err = ncmpi_def_dim(ncid, "ilev",  dims[0]+1,   &dim_ilev); ERR
-    */
 
     i = 0;
 
-    /* define variables */
+    /* inquery variables */
     dimids[0] = dim_ncol;
     err = INQ_VID(ncid, "lat", NC_DOUBLE, 1, dimids, &lat); ERR
     err = NOP(ncid, lat, "long_name", 8, "latitude"); ERR

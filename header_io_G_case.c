@@ -1889,7 +1889,7 @@ fn_exit:
 }
 
 
-/*----< def_G_case_h0() >----------------------------------------------------*/
+/*----< inq_G_case_h0() >----------------------------------------------------*/
 int
 inq_G_case_h0(int               ncid,       /* file ID */
               const MPI_Offset  dims_D1[1], /* dimension sizes of decomposition 1 */
@@ -1924,19 +1924,7 @@ inq_G_case_h0(int               ncid,       /* file ID */
     int i, err, nerrs = 0, dimids[3];
     int dim_nVertLevelsP1, dim_nCells, dim_Time, dim_nVertLevels, dim_nEdges, dim_nVertices, dim_StrLen;
 
-    //err = define_global_attributes(ncid); ERR
-
-    /* define dimensions */
-    /*
-    err = ncmpi_def_dim(ncid, "nCells", dims_D1[0], &dim_nCells); ERR
-    err = ncmpi_def_dim(ncid, "Time", NC_UNLIMITED, &dim_Time); ERR
-    err = ncmpi_def_dim(ncid, "nVertLevelsP1", dims_D6[1], &dim_nVertLevelsP1); ERR
-    err = ncmpi_def_dim(ncid, "nVertLevels", dims_D3[1], &dim_nVertLevels); ERR
-    err = ncmpi_def_dim(ncid, "nEdges", dims_D2[0], &dim_nEdges); ERR
-    err = ncmpi_def_dim(ncid, "nVertices", dims_D5[0], &dim_nVertices); ERR
-    err = ncmpi_def_dim(ncid, "StrLen", 64, &dim_StrLen); ERR
-    */
-
+    /* inquery dimensions */
     err = ncmpi_inq_dimid(ncid, "nCells", &dim_nCells); ERR
     err = ncmpi_inq_dimid(ncid, "nVertLevelsP1", &dim_nVertLevelsP1); ERR
     err = ncmpi_inq_dimid(ncid, "nVertLevels", &dim_nVertLevels); ERR
@@ -1951,7 +1939,7 @@ inq_G_case_h0(int               ncid,       /* file ID */
 
     i = 0;
 
-    /* define variables */
+    /* inquery variables */
     /* 1 double (Time, nCells) */
     dimids[0] = dim_Time;
     dimids[1] = dim_nCells;

@@ -154,7 +154,7 @@ fn_exit:
     return err;
 }
 
-/*----< write_small_vars_F_case() >------------------------------------------*/
+/*----< read_small_vars_F_case() >------------------------------------------*/
 static int
 read_small_vars_F_case(int          ncid,
                         int          vid,    /* starting variable ID */
@@ -172,7 +172,7 @@ read_small_vars_F_case(int          ncid,
     int i, err, nerrs=0;
     MPI_Offset start[2], count[2];
 
-    /* scalar and small variables are written by rank 0 only */
+    /* scalar and small variables are read by rank 0 only */
     i = vid;
 
     if (rec_no == 0) {
@@ -1257,8 +1257,8 @@ fn_exit:
 
 /*----< run_varn_F_case() >--------------------------------------------------*/
 int
-run_varn_F_case_rd(const char *out_dir,      /* output folder name */
-                const char *outfile,      /* output file name */
+run_varn_F_case_rd(const char *in_dir,      /* input folder name */
+                const char *infile,      /* input file name */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -1272,7 +1272,7 @@ run_varn_F_case_rd(const char *out_dir,      /* output folder name */
                 char       *txt_buf,
                 int        *int_buf)
 {
-    char outfname[512], *txt_buf_ptr;
+    char infname[512], *txt_buf_ptr;
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nreqs_D3_merged;
     int rec_no, gap=0, my_nreqs, *int_buf_ptr, xnreqs[3];
     size_t dbl_buflen, rec_buflen, nelems[3];
@@ -1344,14 +1344,14 @@ run_varn_F_case_rd(const char *out_dir,      /* output folder name */
     MPI_Barrier(comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
-    /* set output file name */
-    sprintf(outfname, "%s/%s",out_dir, outfile);
+    /* set input file name */
+    sprintf(infname, "%s/%s",in_dir, infile);
 
-    /* create a new CDF-5 file for writing */
+    /* open a new CDF-5 file for reading */
     cmode = NC_64BIT_DATA;
-    err = ncmpi_open(comm, outfname, cmode, info, &ncid); ERR
+    err = ncmpi_open(comm, infname, cmode, info, &ncid); ERR
 
-    /* define dimensions, variables, and attributes */
+    /* inquery dimensions, variables, and attributes */
     if (nvars == 408) {
         /* for h0 file */
         err = inq_F_case_h0(ncid, dims[2], nvars, varids); ERR
@@ -1360,9 +1360,6 @@ run_varn_F_case_rd(const char *out_dir,      /* output folder name */
         /* for h1 file */
         err = inq_F_case_h1(ncid, dims[2], nvars, varids); ERR
     }
-
-    /* exit define mode and enter data mode */
-    //err = ncmpi_enddef(ncid); ERR
 
     /* I/O amount so far */
     err = ncmpi_inq_get_size(ncid, &metadata_size); ERR
@@ -1646,7 +1643,7 @@ run_varn_F_case_rd(const char *out_dir,      /* output folder name */
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf("History output file                = %s\n", outfile);
+        printf("History input file                = %s\n", infile);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
         printf("Total number of variables          = %d\n",nvars);
@@ -1669,7 +1666,6 @@ run_varn_F_case_rd(const char *out_dir,      /* output folder name */
     }
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
-    if (!keep_outfile) unlink(outfname);
     fflush(stdout);
     MPI_Barrier(comm);
     return nerrs;

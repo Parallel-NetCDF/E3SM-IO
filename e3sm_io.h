@@ -104,8 +104,8 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
                 double*, itype*, char*, int*);
 
 extern int
-run_varn_F_case_rd(const char *out_dir,      /* output folder name */
-                const char *outfile,      /* output file name */
+run_varn_F_case_rd(const char *in_dir,    /* input folder name */
+                const char *infile,       /* input file name */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -151,8 +151,8 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
                 int*, int*, int*, int*, int*, double*, double*, double*, double*, double*, double*);
 
 extern int
-run_varn_G_case_rd(const char *out_dir,      /* output folder name */
-                const char *outfile,      /* output file name */
+run_varn_G_case_rd(const char *in_dir,    /* input folder name */
+                const char *infile,       /* input file name */
                 int         nvars,        /* number of variables 51 */
                 int         num_recs,     /* number of records */
                 MPI_Info    info,
