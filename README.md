@@ -160,11 +160,12 @@ data decompositions shared by 52 variables.
            [-d] Run test that uses PnetCDF vard API
            [-n] Run test that uses PnetCDF varn API
            [-m] Run test using noncontiguous write buffer
-           [-W] Run write test 
-           [-R input_dir] Run read test reading files in input_dir
-           [-t] Write 2D variables followed by 3D variables
-           [-r num] Number of records (default 1)
+           [-w] Run write test
+           [-r] Run read test
+           [-s] Write 2D variables followed by 3D variables
+           [-t num] Number of records (default 1)
            [-o output_dir] Output directory name (default ./)
+           [-i input_dir] Input directory name (default ./)
            FILE: Name of input netCDF file describing data decompositions
   ```
 * An example batch script file for running a job on Cori @NERSC with 8 KNL

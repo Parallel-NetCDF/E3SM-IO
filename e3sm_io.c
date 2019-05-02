@@ -53,11 +53,12 @@ usage(char *argv0)
     "       [-d] Run test that uses PnetCDF vard API\n"
     "       [-n] Run test that uses PnetCDF varn API\n"
     "       [-m] Run test using noncontiguous write buffer\n"
-    "       [-t] Write 2D variables followed by 3D variables\n"
-    "       [-W] Run write test\n"
-    "       [-R input_dir] Run read test reading files in input_dir\n"
-    "       [-r num] Number of records (default 1)\n"
+    "       [-s] Write 2D variables followed by 3D variables\n"
+    "       [-w] Run write test\n"
+    "       [-r] Run read test\n"
+    "       [-t num] Number of records (default 1)\n"
     "       [-o output_dir] Output directory name (default ./)\n"
+    "       [-i input_dir] Input directory name (default ./)\n"
     "       FILE: Name of input netCDF file describing data decompositions\n";
     fprintf(stderr, help, argv0);
 }
@@ -87,18 +88,17 @@ int main(int argc, char** argv)
     run_g_case = 0;
 
     /* command-line arguments */
-    while ((i = getopt(argc, argv, "hkvdnmto:r:WR:")) != EOF)
+    while ((i = getopt(argc, argv, "hkvdnmso:t:wri:")) != EOF)
         switch(i) {
             case 'v': verbose = 1;
                       break;
             case 'k': keep_outfile = 1;
                       break;
-            case 'r': num_recs = atoi(optarg);
+            case 't': num_recs = atoi(optarg);
                       break;
-            case 'R': strcpy(in_dir, optarg);  
-                      tst_rd = 1;
+            case 'r': tst_rd = 1;
                       break;
-            case 'W': tst_wr = 1;
+            case 'w': tst_wr = 1;
                       break;
             case 'd': tst_vard = 1;
                       break;
@@ -106,9 +106,11 @@ int main(int argc, char** argv)
                       break;
             case 'm': noncontig_buf = 1;
                       break;
-            case 't': two_buf = 1;
+            case 's': two_buf = 1;
                       break;
             case 'o': strcpy(out_dir, optarg);
+                      break;
+            case 'i': strcpy(in_dir, optarg);
                       break;
             case 'h':
             default:  if (rank==0) usage(argv[0]);
