@@ -111,6 +111,7 @@ read_decomp(const char *infname,        /* IN */
     int err, nerrs=0, rank, nprocs, ncid, varid, proc_start, proc_numb;
     int i, j, nreqs, *all_nreqs, ndims, dimids[2], decomp_id;
     MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
+    struct off_len *myreqs;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -184,11 +185,11 @@ read_decomp(const char *infname,        /* IN */
         /* calculate start index in Dx.offsets for this process */
         i = 0;
         start = 0;
-        while (i < proc_start) start += all_nreqs[i++];
+        for (start=0,i=0; i<proc_start; i++) start += all_nreqs[i];
 
         /* calculate number of requests for this process */
         count = 0;
-        while (i < proc_start + proc_numb) count += all_nreqs[i++];
+        for (; i<proc_start + proc_numb; i++) count += all_nreqs[i];
         nreqs = count;
         free(all_nreqs);
 
@@ -197,13 +198,13 @@ read_decomp(const char *infname,        /* IN */
                    decomp_id+1,rank,proc_start,proc_numb,start,count);
 
         /* read starting offsets of requests into disps[] */
-        disps[decomp_id] = (int*) malloc(count * sizeof(int));
+        disps[decomp_id] = (int*) malloc(nreqs * sizeof(int));
         sprintf(name, "D%d.offsets", decomp_id+1);
         err = ncmpi_inq_varid(ncid, name, &varid); ERR
         err = ncmpi_get_vara_int_all(ncid, varid, &start, &count, disps[decomp_id]); ERR
 
         /* read lengths of requests into blocklens[] */
-        blocklens[decomp_id] = (int*) malloc(count * sizeof(int));
+        blocklens[decomp_id] = (int*) malloc(nreqs * sizeof(int));
         sprintf(name, "D%d.lengths", decomp_id+1);
         err = ncmpi_inq_varid(ncid, name, &varid); ERR
         err = ncmpi_get_vara_int_all(ncid, varid, &start, &count, blocklens[decomp_id]); ERR
@@ -212,7 +213,7 @@ read_decomp(const char *infname,        /* IN */
          * order (this is to satisfy the MPI fileview or monotonically
          * nondecreasing file offset requirement)
          */
-        struct off_len *myreqs=(struct off_len*)malloc(nreqs*sizeof(struct off_len));
+        myreqs = (struct off_len*) malloc(nreqs*sizeof(struct off_len));
         for (i=0; i<nreqs; i++) {
             myreqs[i].off = disps[decomp_id][i];
             myreqs[i].len = blocklens[decomp_id][i];
