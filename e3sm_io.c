@@ -47,8 +47,6 @@ usage(char *argv0)
     "Usage: %s [OPTION]... FILE\n"
     "       [-h] Print help\n"
     "       [-v] Verbose mode\n"
-    "       [-f] run the E3SM F case\n"
-    "       [-g] run the E3SM G case\n"
     "       [-k] Keep the output files when program exits\n"
     "       [-d] Run test that uses PnetCDF vard API\n"
     "       [-n] Run test that uses PnetCDF varn API\n"
@@ -56,6 +54,7 @@ usage(char *argv0)
     "       [-s] Write 2D variables followed by 3D variables\n"
     "       [-w] Run write test\n"
     "       [-r] Run read test\n"
+    "       [-f h] Run only h0 or h1 in the E3SM F case (default -1 (both))\n"
     "       [-t num] Number of records (default 1)\n"
     "       [-o output_prefix] Output file path prefix (default ./)\n"
     "       [-i input_prefix] Input file path prefix (default ./)\n"
@@ -68,7 +67,7 @@ int main(int argc, char** argv)
 {
     extern int optind;
     char *infname, out_dir[1024], in_dir[1024], *outfname;
-    int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, tst_wr=0, tst_rd=0, noncontig_buf=0;
+    int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, tst_wr=0, tst_rd=0, tst_h = -1, noncontig_buf=0;
     int num_decomp, nvars, num_recs, run_f_case, run_g_case;
     int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
     int *blocklens[MAX_NUM_DECOMP];
@@ -88,7 +87,7 @@ int main(int argc, char** argv)
     run_g_case = 0;
 
     /* command-line arguments */
-    while ((i = getopt(argc, argv, "hkvdnmso:t:wri:")) != EOF)
+    while ((i = getopt(argc, argv, "hkvdnmso:t:wri:f:")) != EOF)
         switch(i) {
             case 'v': verbose = 1;
                       break;
@@ -111,6 +110,8 @@ int main(int argc, char** argv)
             case 'o': strcpy(out_dir, optarg);
                       break;
             case 'i': strcpy(in_dir, optarg);
+                      break;
+            case 'f': tst_h = atoi(optarg);
                       break;
             case 'h':
             default:  if (rank==0) usage(argv[0]);
@@ -221,19 +222,22 @@ int main(int argc, char** argv)
                 fflush(stdout);
                 MPI_Barrier(MPI_COMM_WORLD);
 
-                nvars = 408;
-                outfname = "f_case_h0_vard.nc";
-                nerrs += run_vard_F_case(out_dir, outfname, nvars, num_recs,
-                                        noncontig_buf, info, dims,
-                                        contig_nreqs, disps, blocklens);
+                if (tst_h == 0 || tst_h < 0){
+                    nvars = 408;
+                    outfname = "f_case_h0_vard.nc";
+                    nerrs += run_vard_F_case(out_dir, outfname, nvars, num_recs,
+                                            noncontig_buf, info, dims,
+                                            contig_nreqs, disps, blocklens);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
 
-                MPI_Barrier(MPI_COMM_WORLD);
-
-                nvars = 51;
-                outfname = "f_case_h1_vard.nc";
-                nerrs += run_vard_F_case(out_dir, outfname, nvars, num_recs,
-                                        noncontig_buf, info, dims,
-                                        contig_nreqs, disps, blocklens);
+                if (tst_h == 1 || tst_h < 0){
+                    nvars = 51;
+                    outfname = "f_case_h1_vard.nc";
+                    nerrs += run_vard_F_case(out_dir, outfname, nvars, num_recs,
+                                            noncontig_buf, info, dims,
+                                            contig_nreqs, disps, blocklens);
+                }
             }
 #endif
         }
@@ -253,20 +257,23 @@ int main(int argc, char** argv)
                 /* There are two kinds of outputs for history variables.
                 * Output 1st kind history variables.
                 */
-                nvars = 408;
-                outfname = "f_case_h0_varn.nc";
-                nerrs += run_varn_F_case_rd(in_dir, outfname, nvars, num_recs,
-                                        noncontig_buf, info, dims,
-                                        contig_nreqs, disps, blocklens, &dbl_buf_h0, &rec_buf_h0, txt_buf[0], int_buf[0]);
-
-                MPI_Barrier(MPI_COMM_WORLD);
+                if (tst_h == 0 || tst_h < 0){
+                    nvars = 408;
+                    outfname = "f_case_h0_varn.nc";
+                    nerrs += run_varn_F_case_rd(in_dir, outfname, nvars, num_recs,
+                                            noncontig_buf, info, dims,
+                                            contig_nreqs, disps, blocklens, &dbl_buf_h0, &rec_buf_h0, txt_buf[0], int_buf[0]);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
 
                 /* Output 2nd kind history variables. */
-                nvars = 51;
-                outfname = "f_case_h1_varn.nc";
-                nerrs += run_varn_F_case_rd(in_dir, outfname, nvars, num_recs,
-                                        noncontig_buf, info, dims,
-                                        contig_nreqs, disps, blocklens, &dbl_buf_h1, &rec_buf_h1, txt_buf[1], int_buf[1]);
+                if (tst_h == 1 || tst_h < 0){
+                    nvars = 51;
+                    outfname = "f_case_h1_varn.nc";
+                    nerrs += run_varn_F_case_rd(in_dir, outfname, nvars, num_recs,
+                                            noncontig_buf, info, dims,
+                                            contig_nreqs, disps, blocklens, &dbl_buf_h1, &rec_buf_h1, txt_buf[1], int_buf[1]);
+                }
             }
 
             if (tst_wr){
@@ -284,20 +291,23 @@ int main(int argc, char** argv)
                 /* There are two kinds of outputs for history variables.
                 * Output 1st kind history variables.
                 */
-                nvars = 408;
-                outfname = "f_case_h0_varn.nc";
-                nerrs += run_varn_F_case(out_dir, outfname, nvars, num_recs,
-                                        noncontig_buf, info, dims,
-                                        contig_nreqs, disps, blocklens, dbl_buf_h0, rec_buf_h0, txt_buf[0], int_buf[0]);
-
-                MPI_Barrier(MPI_COMM_WORLD);
+                if (tst_h == 0 || tst_h < 0){
+                    nvars = 408;
+                    outfname = "f_case_h0_varn.nc";
+                    nerrs += run_varn_F_case(out_dir, outfname, nvars, num_recs,
+                                            noncontig_buf, info, dims,
+                                            contig_nreqs, disps, blocklens, dbl_buf_h0, rec_buf_h0, txt_buf[0], int_buf[0]);
+                    MPI_Barrier(MPI_COMM_WORLD);
+                }
 
                 /* Output 2nd kind history variables. */
-                nvars = 51;
-                outfname = "f_case_h1_varn.nc";
-                nerrs += run_varn_F_case(out_dir, outfname, nvars, num_recs,
-                                        noncontig_buf, info, dims,
-                                        contig_nreqs, disps, blocklens, dbl_buf_h1, rec_buf_h1, txt_buf[1], int_buf[1]);
+                if (tst_h == 1 || tst_h < 0){
+                    nvars = 51;
+                    outfname = "f_case_h1_varn.nc";
+                    nerrs += run_varn_F_case(out_dir, outfname, nvars, num_recs,
+                                            noncontig_buf, info, dims,
+                                            contig_nreqs, disps, blocklens, dbl_buf_h1, rec_buf_h1, txt_buf[1], int_buf[1]);
+                }
             }
         }
         for (i=0; i<3; i++) {

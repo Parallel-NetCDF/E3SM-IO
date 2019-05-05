@@ -163,6 +163,7 @@ data decompositions shared by 52 variables.
            [-w] Run write test
            [-r] Run read test
            [-s] Write 2D variables followed by 3D variables
+           [-f h] Run only h0 or h1 in the E3SM F case (default -1 (both))\n"
            [-t num] Number of records (default 1)
            [-o output_dir] Output directory name (default ./)
            [-i input_dir] Input directory name (default ./)
