@@ -315,7 +315,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "AODABSBC", NC_FLOAT, 2, dimids, &AODABSBC); ERR
     err = ncmpi_put_att_float(ncid, AODABSBC, _FillValue, NC_FLOAT, 1, &fillv); ERR
     err = ncmpi_put_att_float(ncid, AODABSBC, "missing_value", NC_FLOAT, 1, &missv); ERR
-    err = ncmpi_put_att_text(ncid, AODABSBC, "long_name", 48, "Aerosol absorption optical depth 550 nm from BC"); ERR
+    err = ncmpi_put_att_text(ncid, AODABSBC, "long_name", 47, "Aerosol absorption optical depth 550 nm from BC"); ERR
     err = ncmpi_put_att_text(ncid, AODABSBC, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = AODABSBC;
 
@@ -324,7 +324,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "AODBC", NC_FLOAT, 2, dimids, &AODBC); ERR
     err = ncmpi_put_att_float(ncid, AODBC, _FillValue, NC_FLOAT, 1, &fillv); ERR
     err = ncmpi_put_att_float(ncid, AODBC, "missing_value", NC_FLOAT, 1, &missv); ERR
-    err = ncmpi_put_att_text(ncid, AODBC, "long_name", 37, "Aerosol optical depth 550 nm from BC"); ERR
+    err = ncmpi_put_att_text(ncid, AODBC, "long_name", 36, "Aerosol optical depth 550 nm from BC"); ERR
     err = ncmpi_put_att_text(ncid, AODBC, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = AODBC;
 
@@ -2207,7 +2207,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     dimids[1] = dim_ncol;
     err = ncmpi_def_var(ncid, "bc_a1_sfgaex1", NC_FLOAT, 2, dimids, &bc_a1_sfgaex1); ERR
     err = ncmpi_put_att_text(ncid, bc_a1_sfgaex1, "units", 7, "kg/m2/s"); ERR
-    err = ncmpi_put_att_text(ncid, bc_a1_sfgaex1, "long_name", 51, "bc_a1 gas-aerosol-exchange primary column tendency"); ERR
+    err = ncmpi_put_att_text(ncid, bc_a1_sfgaex1, "long_name", 50, "bc_a1 gas-aerosol-exchange primary column tendency"); ERR
     err = ncmpi_put_att_text(ncid, bc_a1_sfgaex1, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = bc_a1_sfgaex1;
 
