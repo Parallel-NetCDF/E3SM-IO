@@ -196,8 +196,8 @@ int main(int argc, char** argv)
             printf("Total number of MPI processes      = %d\n",nprocs);
             printf("Input decomposition file           = %s\n",infname);
             printf("Number of decompositions           = %d\n",num_decomp);
-            printf("Input file directory               = %s\n",in_dir);
-            printf("Output file directory              = %s\n",out_dir);
+            printf("Input file prefix                  = %s\n",in_dir);
+            printf("Output file prefix                 = %s\n",out_dir);
             printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
             printf("Write number of records (time dim) = %d\n",num_recs);
             printf("Using noncontiguous write buffer   = %s\n",noncontig_buf?"yes":"no");

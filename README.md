@@ -181,7 +181,8 @@ data decompositions shared by 52 variables.
 
   Total number of MPI processes      = 512
   Input decomposition file           = datasets/f_case_48602x72_512p.nc
-  Output file directory              = $SCRATCH/FS_1M_64
+  Output file prefix                 = $SCRATCH/FS_1M_64
+  Output file prefix                 = 
   Variable dimensions (C order)      = 72 x 48602
   Write number of records (time dim) = 3
   Using noncontiguous write buffer   = no
