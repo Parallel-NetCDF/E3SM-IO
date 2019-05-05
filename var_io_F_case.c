@@ -699,7 +699,7 @@ run_vard_F_case(const char *out_prefix,      /* output file prefix */
     }
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
-    if (!keep_out_postfix) unlink(outfname);
+    if (!keep_outfile) unlink(outfname);
     fflush(stdout);
     MPI_Barrier(comm);
     return nerrs;
@@ -1245,7 +1245,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
 
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
-    if (!keep_out_postfix) unlink(outfname);
+    if (!keep_outfile) unlink(outfname);
     fflush(stdout);
     MPI_Barrier(comm);
     return nerrs;
