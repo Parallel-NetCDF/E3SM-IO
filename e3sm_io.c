@@ -57,8 +57,8 @@ usage(char *argv0)
     "       [-w] Run write test\n"
     "       [-r] Run read test\n"
     "       [-t num] Number of records (default 1)\n"
-    "       [-o output_dir] Output directory name (default ./)\n"
-    "       [-i input_dir] Input directory name (default ./)\n"
+    "       [-o output_prefix] Output file path prefix (default ./)\n"
+    "       [-i input_prefix] Input file path prefix (default ./)\n"
     "       FILE: Name of input netCDF file describing data decompositions\n";
     fprintf(stderr, help, argv0);
 }
@@ -137,18 +137,18 @@ int main(int argc, char** argv)
     infname = argv[optind];
     if (verbose && rank==0) printf("input file name =%s\n",infname);
 
-    /* set the output folder name */
+    /* set the output file path prefix */
     if (tst_wr){
         if (out_dir[0] == '\0') {
-            strcpy(out_dir, ".");
+            strcpy(out_dir, "./");
         }
         if (verbose && rank==0) printf("output folder name =%s\n",out_dir);
     }
 
-    /* set the input folder name */
+    /* set the input file path prefix */
     if (tst_rd){
         if (in_dir[0] == '\0') {
-            strcpy(in_dir, ".");
+            strcpy(in_dir, "./");
         }
         if (verbose && rank==0) printf("input folder name =%s\n",in_dir);
     }

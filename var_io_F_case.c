@@ -415,7 +415,7 @@ run_vard_F_case(const char *out_dir,      /* output folder name */
     open_timing = MPI_Wtime();
 
     /* set output file name */
-    sprintf(outfname, "%s/%s",out_dir, outfile);
+    sprintf(outfname, "%s%s",out_dir, outfile);
 
     /* create a new CDF-5 file for writing */
     cmode = NC_CLOBBER | NC_64BIT_DATA;
@@ -924,7 +924,7 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
     timing = MPI_Wtime();
 
     /* set output file name */
-    sprintf(outfname, "%s/%s",out_dir, outfile);
+    sprintf(outfname, "%s%s",out_dir, outfile);
 
     /* create a new CDF-5 file for writing */
     cmode = NC_CLOBBER | NC_64BIT_DATA;
@@ -1345,7 +1345,7 @@ run_varn_F_case_rd(const char *in_dir,      /* input folder name */
     timing = MPI_Wtime();
 
     /* set input file name */
-    sprintf(infname, "%s/%s",in_dir, infile);
+    sprintf(infname, "%s%s",in_dir, infile);
 
     /* open a new CDF-5 file for reading */
     cmode = NC_64BIT_DATA;
