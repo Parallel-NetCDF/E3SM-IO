@@ -450,7 +450,7 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_lock_exchange_cold_temperature", NC_DOUBLE, 1, &dattr); ERR
     dattr = 30.;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_lock_exchange_warm_temperature", NC_DOUBLE, 1, &dattr); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_lock_exchange_direction", 1, "y"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_lock_exchange_prefixection", 1, "y"); ERR
     dattr = 35.;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_lock_exchange_salinity", NC_DOUBLE, 1, &dattr); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_lock_exchange_layer_type", 7, "z-level"); ERR
@@ -1106,7 +1106,7 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_globalStats_compute_on_startup", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_globalStats_write_on_startup", 2, "NO"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_globalStats_text_file", 2, "NO"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_globalStats_directory", 16, "analysis_members"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_globalStats_prefixectory", 16, "analysis_members"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_globalStats_output_stream", 17, "globalStatsOutput"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_surfaceAreaWeightedAverages_enable", 3, "YES"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_surfaceAreaWeightedAverages_compute_on_startup", 3, "YES"); ERR
@@ -1149,7 +1149,7 @@ define_global_attributes(int ncid)
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_okuboWeiss_write_on_startup", 2, "NO"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_okuboWeiss_compute_interval", 19, "0000-00-00_01:00:00"); ERR
     err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_okuboWeiss_output_stream", 16, "okuboWeissOutput"); ERR
-    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_okuboWeiss_directory", 16, "analysis_members"); ERR
+    err = ncmpi_put_att_text(ncid, NC_GLOBAL, "config_AM_okuboWeiss_prefixectory", 16, "analysis_members"); ERR
     dattr = -0.2;
     err = ncmpi_put_att(ncid, NC_GLOBAL, "config_AM_okuboWeiss_threshold_value", NC_DOUBLE, 1, &dattr); ERR
     dattr = 1.e-10;

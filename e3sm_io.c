@@ -66,7 +66,7 @@ usage(char *argv0)
 int main(int argc, char** argv)
 {
     extern int optind;
-    char *infname, out_dir[1024], in_dir[1024], *outfname;
+    char *infname, out_prefix[1024], in_prefix[1024], *outfname;
     int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, tst_wr=0, tst_rd=0, tst_h = -1, noncontig_buf=0;
     int num_decomp, nvars, num_recs, run_f_case, run_g_case;
     int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
@@ -77,8 +77,8 @@ int main(int argc, char** argv)
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
-    out_dir[0] = '\0';
-    in_dir[0] = '\0';
+    out_prefix[0] = '\0';
+    in_prefix[0] = '\0';
     verbose = 0;
     keep_outfile = 0;
     num_recs = 1;
@@ -107,9 +107,9 @@ int main(int argc, char** argv)
                       break;
             case 's': two_buf = 1;
                       break;
-            case 'o': strcpy(out_dir, optarg);
+            case 'o': strcpy(out_prefix, optarg);
                       break;
-            case 'i': strcpy(in_dir, optarg);
+            case 'i': strcpy(in_prefix, optarg);
                       break;
             case 'f': tst_h = atoi(optarg);
                       break;
@@ -140,18 +140,18 @@ int main(int argc, char** argv)
 
     /* set the output file path prefix */
     if (tst_wr){
-        if (out_dir[0] == '\0') {
-            strcpy(out_dir, "./");
+        if (out_prefix[0] == '\0') {
+            strcpy(out_prefix, "./");
         }
-        if (verbose && rank==0) printf("output folder name =%s\n",out_dir);
+        if (verbose && rank==0) printf("output file prefix =%s\n",out_prefix);
     }
 
     /* set the input file path prefix */
     if (tst_rd){
-        if (in_dir[0] == '\0') {
-            strcpy(in_dir, "./");
+        if (in_prefix[0] == '\0') {
+            strcpy(in_prefix, "./");
         }
-        if (verbose && rank==0) printf("input folder name =%s\n",in_dir);
+        if (verbose && rank==0) printf("input file prefix =%s\n",in_prefix);
     }
 
     /* set MPI-IO hints */
@@ -196,8 +196,8 @@ int main(int argc, char** argv)
             printf("Total number of MPI processes      = %d\n",nprocs);
             printf("Input decomposition file           = %s\n",infname);
             printf("Number of decompositions           = %d\n",num_decomp);
-            printf("Input file prefix                  = %s\n",in_dir);
-            printf("Output file prefix                 = %s\n",out_dir);
+            printf("Input file prefix                  = %s\n",in_prefix);
+            printf("Output file prefix                 = %s\n",out_prefix);
             printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
             printf("Write number of records (time dim) = %d\n",num_recs);
             printf("Using noncontiguous write buffer   = %s\n",noncontig_buf?"yes":"no");
@@ -225,7 +225,7 @@ int main(int argc, char** argv)
                 if (tst_h == 0 || tst_h < 0){
                     nvars = 408;
                     outfname = "f_case_h0_vard.nc";
-                    nerrs += run_vard_F_case(out_dir, outfname, nvars, num_recs,
+                    nerrs += run_vard_F_case(out_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
                                             contig_nreqs, disps, blocklens);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -234,7 +234,7 @@ int main(int argc, char** argv)
                 if (tst_h == 1 || tst_h < 0){
                     nvars = 51;
                     outfname = "f_case_h1_vard.nc";
-                    nerrs += run_vard_F_case(out_dir, outfname, nvars, num_recs,
+                    nerrs += run_vard_F_case(out_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
                                             contig_nreqs, disps, blocklens);
                 }
@@ -260,7 +260,7 @@ int main(int argc, char** argv)
                 if (tst_h == 0 || tst_h < 0){
                     nvars = 408;
                     outfname = "f_case_h0_varn.nc";
-                    nerrs += run_varn_F_case_rd(in_dir, outfname, nvars, num_recs,
+                    nerrs += run_varn_F_case_rd(in_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
                                             contig_nreqs, disps, blocklens, &dbl_buf_h0, &rec_buf_h0, txt_buf[0], int_buf[0]);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -270,7 +270,7 @@ int main(int argc, char** argv)
                 if (tst_h == 1 || tst_h < 0){
                     nvars = 51;
                     outfname = "f_case_h1_varn.nc";
-                    nerrs += run_varn_F_case_rd(in_dir, outfname, nvars, num_recs,
+                    nerrs += run_varn_F_case_rd(in_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
                                             contig_nreqs, disps, blocklens, &dbl_buf_h1, &rec_buf_h1, txt_buf[1], int_buf[1]);
                 }
@@ -294,7 +294,7 @@ int main(int argc, char** argv)
                 if (tst_h == 0 || tst_h < 0){
                     nvars = 408;
                     outfname = "f_case_h0_varn.nc";
-                    nerrs += run_varn_F_case(out_dir, outfname, nvars, num_recs,
+                    nerrs += run_varn_F_case(out_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
                                             contig_nreqs, disps, blocklens, dbl_buf_h0, rec_buf_h0, txt_buf[0], int_buf[0]);
                     MPI_Barrier(MPI_COMM_WORLD);
@@ -304,7 +304,7 @@ int main(int argc, char** argv)
                 if (tst_h == 1 || tst_h < 0){
                     nvars = 51;
                     outfname = "f_case_h1_varn.nc";
-                    nerrs += run_varn_F_case(out_dir, outfname, nvars, num_recs,
+                    nerrs += run_varn_F_case(out_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
                                             contig_nreqs, disps, blocklens, dbl_buf_h1, rec_buf_h1, txt_buf[1], int_buf[1]);
                 }
@@ -340,7 +340,8 @@ int main(int argc, char** argv)
             printf("Total number of MPI processes      = %d\n",nprocs);
             printf("Input decomposition file           = %s\n",infname);
             printf("Number of decompositions           = %d\n",num_decomp);
-            printf("Output file directory              = %s\n",out_dir);
+            printf("Input file prefix                  = %s\n",in_prefix);
+            printf("Output file prefix                 = %s\n",out_prefix);
             printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
             printf("Write number of records (time dim) = %d\n",num_recs);
             printf("Using noncontiguous write buffer   = %s\n",noncontig_buf?"yes":"no");
@@ -359,7 +360,7 @@ int main(int argc, char** argv)
 
                 nvars = 52;
                 outfname = "g_case_hist_varn.nc";
-                nerrs += run_varn_G_case_rd(in_dir, outfname, nvars, num_recs, info,
+                nerrs += run_varn_G_case_rd(in_prefix, outfname, nvars, num_recs, info,
                                         dims, contig_nreqs, disps, blocklens, &D1_fix_int_buf, &D2_fix_int_buf, &D3_fix_int_buf, &D4_fix_int_buf, &D5_fix_int_buf,
                 &D1_rec_dbl_buf, &D3_rec_dbl_buf, &D4_rec_dbl_buf, &D5_rec_dbl_buf, &D6_rec_dbl_buf, &D1_fix_dbl_buf);
             }
@@ -373,7 +374,7 @@ int main(int argc, char** argv)
 
                 nvars = 52;
                 outfname = "g_case_hist_varn.nc";
-                nerrs += run_varn_G_case(out_dir, outfname, nvars, num_recs, info,
+                nerrs += run_varn_G_case(out_prefix, outfname, nvars, num_recs, info,
                                         dims, contig_nreqs, disps, blocklens, D1_fix_int_buf, D2_fix_int_buf, D3_fix_int_buf, D4_fix_int_buf, D5_fix_int_buf,
                 D1_rec_dbl_buf, D3_rec_dbl_buf, D4_rec_dbl_buf, D5_rec_dbl_buf, D6_rec_dbl_buf, D1_fix_dbl_buf);
             }

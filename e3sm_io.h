@@ -79,8 +79,8 @@ extern int
 inq_F_case_h1(int ncid, const MPI_Offset dims[2], int nvars, int *varids);
 
 extern int
-run_vard_F_case(const char *out_dir,      /* output folder name */
-                const char *outfile,      /* output file name */
+run_vard_F_case(const char *out_prefix,   /* output file prefix */
+                const char *out_postfix,      /* output file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -91,8 +91,8 @@ run_vard_F_case(const char *out_dir,      /* output folder name */
                 int* const  blocklens[3]);/* request's block lengths */
 
 extern int
-run_varn_F_case(const char *out_dir,      /* output folder name */
-                const char *outfile,      /* output file name */
+run_varn_F_case(const char *out_prefix,   /* output file prefix */
+                const char *out_postfix,      /* output file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -104,8 +104,8 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
                 double*, itype*, char*, int*);
 
 extern int
-run_varn_F_case_rd(const char *in_dir,    /* input folder name */
-                const char *infile,       /* input file name */
+run_varn_F_case_rd(const char *in_prefix, /* input file prefix */
+                const char *in_postfix,       /* input file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -139,8 +139,8 @@ inq_G_case_h0(int               ncid,       /* file ID */
               int              *varids);    /* variable IDs */
 
 extern int
-run_varn_G_case(const char *out_dir,      /* output folder name */
-                const char *outfile,      /* output file name */
+run_varn_G_case(const char *out_prefix,   /* output file prefix */
+                const char *out_postfix,      /* output file postfix */
                 int         nvars,        /* number of variables 51 */
                 int         num_recs,     /* number of records */
                 MPI_Info    info,
@@ -151,8 +151,8 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
                 int*, int*, int*, int*, int*, double*, double*, double*, double*, double*, double*);
 
 extern int
-run_varn_G_case_rd(const char *in_dir,    /* input folder name */
-                const char *infile,       /* input file name */
+run_varn_G_case_rd(const char *in_prefix, /* input file prefix */
+                const char *in_postfix,       /* input file postfix */
                 int         nvars,        /* number of variables 51 */
                 int         num_recs,     /* number of records */
                 MPI_Info    info,

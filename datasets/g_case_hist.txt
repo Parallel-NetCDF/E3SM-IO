@@ -449,7 +449,7 @@ variables:
 		:config_lock_exchange_bottom_depth = 20. ;
 		:config_lock_exchange_cold_temperature = 5. ;
 		:config_lock_exchange_warm_temperature = 30. ;
-		:config_lock_exchange_direction = "y" ;
+		:config_lock_exchange_prefixection = "y" ;
 		:config_lock_exchange_salinity = 35. ;
 		:config_lock_exchange_layer_type = "z-level" ;
 		:config_lock_exchange_isopycnal_min_thickness = 0.00999999977648258 ;
@@ -856,7 +856,7 @@ variables:
 		:config_AM_globalStats_compute_on_startup = "YES" ;
 		:config_AM_globalStats_write_on_startup = "NO" ;
 		:config_AM_globalStats_text_file = "NO" ;
-		:config_AM_globalStats_directory = "analysis_members" ;
+		:config_AM_globalStats_prefixectory = "analysis_members" ;
 		:config_AM_globalStats_output_stream = "globalStatsOutput" ;
 		:config_AM_surfaceAreaWeightedAverages_enable = "YES" ;
 		:config_AM_surfaceAreaWeightedAverages_compute_on_startup = "YES" ;
@@ -892,7 +892,7 @@ variables:
 		:config_AM_okuboWeiss_write_on_startup = "NO" ;
 		:config_AM_okuboWeiss_compute_interval = "0000-00-00_01:00:00" ;
 		:config_AM_okuboWeiss_output_stream = "okuboWeissOutput" ;
-		:config_AM_okuboWeiss_directory = "analysis_members" ;
+		:config_AM_okuboWeiss_prefixectory = "analysis_members" ;
 		:config_AM_okuboWeiss_threshold_value = -0.2 ;
 		:config_AM_okuboWeiss_normalization = 1.e-10 ;
 		:config_AM_okuboWeiss_lambda2_normalization = 1.e-10 ;

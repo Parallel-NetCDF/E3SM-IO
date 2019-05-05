@@ -8,7 +8,7 @@
 #SBATCH -L SCRATCH
 #SBATCH -C knl,quad,cache
 
-cd $SLURM_SUBMIT_DIR
+cd $SLURM_SUBMIT_prefix
 
 # display the names and values of all MPI-IO hints
 export MPICH_MPIIO_HINTS_DISPLAY=1

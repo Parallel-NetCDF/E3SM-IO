@@ -324,8 +324,8 @@ fn_exit:
 
 /*----< run_vard_F_case() >--------------------------------------------------*/
 int
-run_vard_F_case(const char *out_dir,      /* output folder name */
-                const char *outfile,      /* output file name */
+run_vard_F_case(const char *out_prefix,      /* output file prefix */
+                const char *out_postfix,      /* output file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -415,7 +415,7 @@ run_vard_F_case(const char *out_dir,      /* output folder name */
     open_timing = MPI_Wtime();
 
     /* set output file name */
-    sprintf(outfname, "%s%s",out_dir, outfile);
+    sprintf(outfname, "%s%s",out_prefix, out_postfix);
 
     /* create a new CDF-5 file for writing */
     cmode = NC_CLOBBER | NC_64BIT_DATA;
@@ -677,7 +677,7 @@ run_vard_F_case(const char *out_dir,      /* output folder name */
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf("History output file                = %s\n", outfile);
+        printf("History output file postfix        = %s\n", out_postfix);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
         printf("Total number of variables          = %d\n",nvars);
@@ -699,7 +699,7 @@ run_vard_F_case(const char *out_dir,      /* output folder name */
     }
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
-    if (!keep_outfile) unlink(outfname);
+    if (!keep_out_postfix) unlink(outfname);
     fflush(stdout);
     MPI_Barrier(comm);
     return nerrs;
@@ -835,8 +835,8 @@ fn_exit:
 
 /*----< run_varn_F_case() >--------------------------------------------------*/
 int
-run_varn_F_case(const char *out_dir,      /* output folder name */
-                const char *outfile,      /* output file name */
+run_varn_F_case(const char *out_prefix,      /* output file prefix */
+                const char *out_postfix,      /* output file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -924,7 +924,7 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
     timing = MPI_Wtime();
 
     /* set output file name */
-    sprintf(outfname, "%s%s",out_dir, outfile);
+    sprintf(outfname, "%s%s",out_prefix, out_postfix);
 
     /* create a new CDF-5 file for writing */
     cmode = NC_CLOBBER | NC_64BIT_DATA;
@@ -1225,7 +1225,7 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf("History output file                = %s\n", outfile);
+        printf("History output file postfix        = %s\n", out_postfix);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
         printf("Total number of variables          = %d\n",nvars);
@@ -1248,7 +1248,7 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
     }
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
-    if (!keep_outfile) unlink(outfname);
+    if (!keep_out_postfix) unlink(outfname);
     fflush(stdout);
     MPI_Barrier(comm);
     return nerrs;
@@ -1257,8 +1257,8 @@ fn_exit:
 
 /*----< run_varn_F_case() >--------------------------------------------------*/
 int
-run_varn_F_case_rd(const char *in_dir,      /* input folder name */
-                const char *infile,      /* input file name */
+run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
+                const char *in_postfix,      /* input file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -1345,7 +1345,7 @@ run_varn_F_case_rd(const char *in_dir,      /* input folder name */
     timing = MPI_Wtime();
 
     /* set input file name */
-    sprintf(infname, "%s%s",in_dir, infile);
+    sprintf(infname, "%s%s",in_prefix, in_postfix);
 
     /* open a new CDF-5 file for reading */
     cmode = NC_64BIT_DATA;
@@ -1643,11 +1643,11 @@ run_varn_F_case_rd(const char *in_dir,      /* input folder name */
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf("History input file                = %s\n", infile);
+        printf("History input file postfix         = %s\n", in_postfix);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
         printf("Total number of variables          = %d\n",nvars);
-        printf("Total read amount                 = %.2f MiB = %.2f GiB\n",
+        printf("Total read amount                  = %.2f MiB = %.2f GiB\n",
                (double)total_size/1048576,(double)total_size/1073741824);
         printf("Total number of requests           = %lld\n",total_nreqs);
         printf("Max number of requests             = %lld\n",max_nreqs);

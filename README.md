@@ -165,8 +165,8 @@ data decompositions shared by 52 variables.
            [-s] Write 2D variables followed by 3D variables
            [-f h] Run only h0 or h1 in the E3SM F case (default -1 (both))\n"
            [-t num] Number of records (default 1)
-           [-o output_dir] Output directory name (default ./)
-           [-i input_dir] Input directory name (default ./)
+           [-o output_prefix] Output directory name (default ./)
+           [-i input_prefix] Input directory name (default ./)
            FILE: Name of input netCDF file describing data decompositions
   ```
 * An example batch script file for running a job on Cori @NERSC with 8 KNL
@@ -190,7 +190,7 @@ data decompositions shared by 52 variables.
   ==== benchmarking vard API ================================
   Variable written order: same as variables are defined
 
-  History output file                = f_case_h0_vard.nc
+  History output file postfix        = f_case_h0_vard.nc
   MAX heap memory allocated by PnetCDF internally is 2.22 MiB
   Total number of variables          = 408
   Total write amount                 = 2699.36 MiB = 2.64 GiB
@@ -203,7 +203,7 @@ data decompositions shared by 52 variables.
   I/O bandwidth (open-to-close)      = 478.7341 MiB/sec
   I/O bandwidth (write-only)         = 496.9981 MiB/sec
   -----------------------------------------------------------
-  History output file                = f_case_h1_vard.nc
+  History output file postfix        = f_case_h1_vard.nc
   MAX heap memory allocated by PnetCDF internally is 2.22 MiB
   Total number of variables          = 51
   Total write amount                 = 52.30 MiB = 0.05 GiB
@@ -220,7 +220,7 @@ data decompositions shared by 52 variables.
   ==== benchmarking varn API ================================
   Variable written order: same as variables are defined
 
-  History output file                = f_case_h0_varn.nc
+  History output file postfix        = f_case_h0_varn.nc
   MAX heap memory allocated by PnetCDF internally is 35.07 MiB
   Total number of variables          = 408
   Total write amount                 = 2699.36 MiB = 2.64 GiB
@@ -234,7 +234,7 @@ data decompositions shared by 52 variables.
   I/O bandwidth (open-to-close)      = 435.3753 MiB/sec
   I/O bandwidth (write-only)         = 460.6144 MiB/sec
   -----------------------------------------------------------
-  History output file                = f_case_h1_varn.nc
+  History output file postfix        = f_case_h1_varn.nc
   MAX heap memory allocated by PnetCDF internally is 35.07 MiB
   Total number of variables          = 51
   Total write amount                 = 52.30 MiB = 0.05 GiB

@@ -2,11 +2,11 @@
 MPICC		= mpicc
 CFLAGS		= -O2
 
-PnetCDF_DIR	= $(HOME)/PnetCDF
+PnetCDF_prefix	= $(HOME)/PnetCDF
 
-INCLUDES	= -I$(PnetCDF_DIR)/include -I.
-LDFLAGS		= -L$(PnetCDF_DIR)/lib
-LIBS		= -lpnetcdf $(shell $(PnetCDF_DIR)/bin/pnetcdf-config --libs)
+INCLUDES	= -I$(PnetCDF_prefix)/include -I.
+LDFLAGS		= -L$(PnetCDF_prefix)/lib
+LIBS		= -lpnetcdf $(shell $(PnetCDF_prefix)/bin/pnetcdf-config --libs)
 
 .c.o:
 	$(MPICC) $(CFLAGS) $(INCLUDES) -c $<
