@@ -706,8 +706,8 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
     int rec_no, gap=0, my_nreqs, int_buf[10], *int_buf_ptr, xnreqs[3];
     size_t dbl_buflen, rec_buflen, nelems[3];
-    itype *rec_buf, *rec_buf_ptr;
-    double *dbl_buf, *dbl_buf_ptr;
+    itype *rec_buf=NULL, *rec_buf_ptr;
+    double *dbl_buf=NULL, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing,  max_timing;
     MPI_Offset tmp, metadata_size, put_size, total_size, max_nreqs, total_nreqs;
@@ -727,6 +727,8 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
     MPI_Comm_rank(comm, &rank);
 
     if (noncontig_buf) gap = 10;
+
+    varids = (int*) malloc(nvars * sizeof(int));
 
     for (i=0; i<3; i++) xnreqs[i] = nreqs[i];
 
@@ -757,8 +759,6 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
 
     for (i=0; i<10; i++) int_buf[i] = rank + i;
     for (i=0; i<16; i++) txt_buf[i] = 'a' + rank + i;
-
-    varids = (int*) malloc(nvars * sizeof(int));
 
     pre_timing = MPI_Wtime() - pre_timing;
 
@@ -1022,8 +1022,8 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
         free(starts_D2[0]);
         free(starts_D2);
     }
-    free(rec_buf);
-    free(dbl_buf);
+    if (rec_buf != NULL) free(rec_buf);
+    if (dbl_buf != NULL) free(dbl_buf);
     free(varids);
 
     total_timing = MPI_Wtime() - total_timing;
@@ -1084,6 +1084,7 @@ run_varn_F_case(const char *out_dir,      /* output folder name */
         if (verbose) print_info(&info_used);
         printf("-----------------------------------------------------------\n");
     }
+
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!keep_outfile) unlink(outfname);
