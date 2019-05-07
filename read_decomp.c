@@ -100,7 +100,8 @@ static int compare(const void *p1, const void *p2)
  *                         and to be freed by the caller.
  */
 int
-read_decomp(const char *infname,        /* IN */
+read_decomp(MPI_Comm io_comm,           /* MPI communicator that includes all the tasks involved in IO */
+            const char *infname,        /* IN */
             int        *num_decomp,     /* OUT */
             MPI_Offset  dims[][2],      /* OUT */
             int         contig_nreqs[], /* OUT */
@@ -113,11 +114,11 @@ read_decomp(const char *infname,        /* IN */
     MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
     struct off_len *myreqs;
 
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
+    MPI_Comm_rank(io_comm, &rank);
+    MPI_Comm_size(io_comm, &nprocs);
 
     /* open input file that contains I/O decomposition information */
-    err = ncmpi_open(MPI_COMM_WORLD, infname, NC_NOWRITE, MPI_INFO_NULL,
+    err = ncmpi_open(io_comm, infname, NC_NOWRITE, MPI_INFO_NULL,
                      &ncid); ERR
 
     /* number of decompositions stored in file */
