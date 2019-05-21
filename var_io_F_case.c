@@ -825,11 +825,11 @@ fn_exit:
 
 #define POST_VARN_RD(k, num, vid) \
     for (j=0; j<num; j++) { \
-        err = ncmpi_iget_varn(ncid, vid+j, nreqs[k-1], starts_D##k, \
+        err = ncmpi_iget_varn(ncid, vid+j, xnreqs[k-1], starts_D##k, \
                               counts_D##k, rec_buf_ptr, -1, REC_ITYPE, NULL); \
         ERR \
         rec_buf_ptr += nelems[k-1] + gap; \
-        my_nreqs += nreqs[k-1]; \
+        my_nreqs += xnreqs[k-1]; \
     }
 
 

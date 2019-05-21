@@ -1,6 +1,6 @@
 
 MPICC		= mpicc
-CFLAGS		= -O2
+CFLAGS		= -O0 -ggdb
 
 PnetCDF_prefix	= $(HOME)/PnetCDF
 
