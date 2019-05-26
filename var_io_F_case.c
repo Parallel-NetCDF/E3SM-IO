@@ -845,6 +845,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
                 const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
                 int* const  disps[3],     /* request's displacements */
                 int* const  blocklens[3], /* request's block lengths */
+                int         format,
                 double     *dbl_bufp,
                 itype      *rec_bufp,
                 char       *txt_buf,
@@ -927,7 +928,12 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
     sprintf(outfname, "%s%s",out_prefix, out_postfix);
 
     /* create a new CDF-5 file for writing */
-    cmode = NC_CLOBBER | NC_64BIT_DATA;
+    if (format == 4){
+        cmode = NC_CLOBBER | NC_NETCDF4;
+    }
+    else{
+        cmode = NC_CLOBBER | NC_64BIT_DATA;
+    }
     err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
@@ -1264,6 +1270,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
                 const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
                 int* const  disps[3],     /* request's displacements */
                 int* const  blocklens[3], /* request's block lengths */
+                int         format,
                 double     **dbl_bufp,
                 itype      **rec_bufp,
                 char       *txt_buf,
@@ -1345,7 +1352,12 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
     sprintf(infname, "%s%s",in_prefix, in_postfix);
 
     /* open a new CDF-5 file for reading */
-    cmode = NC_64BIT_DATA;
+    if (format == 4){
+        cmode = NC_NETCDF4;
+    }
+    else{
+        cmode = NC_64BIT_DATA;
+    }
     err = ncmpi_open(comm, infname, cmode, info, &ncid); ERR
 
     /* inquery dimensions, variables, and attributes */

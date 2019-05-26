@@ -101,6 +101,7 @@ run_varn_F_case(const char *out_prefix,   /* output file prefix */
                 const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
                 int* const  disps[3],     /* request's displacements */
                 int* const  blocklens[3], /* request's block lengths */
+                int         format,
                 double*, itype*, char*, int*);
 
 extern int
@@ -114,6 +115,7 @@ run_varn_F_case_rd(const char *in_prefix, /* input file prefix */
                 const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
                 int* const  disps[3],     /* request's displacements */
                 int* const  blocklens[3], /* request's block lengths */
+                int         format,
                 double**, itype**, char*, int*);
 
 extern int
@@ -148,6 +150,7 @@ run_varn_G_case(const char *out_prefix,   /* output file prefix */
                 const int   nreqs[6],     /* no. request in decomposition 1-6 */
                 int* const  disps[6],     /* request's displacements */
                 int* const  blocklens[6], /* request's block lengths */
+                int         format,
                 int*, int*, int*, int*, int*, double*, double*, double*, double*, double*, double*);
 
 extern int
@@ -160,6 +163,7 @@ run_varn_G_case_rd(const char *in_prefix, /* input file prefix */
                 const int   nreqs[6],     /* no. request in decomposition 1-6 */
                 int* const  disps[6],     /* request's displacements */
                 int* const  blocklens[6], /* request's block lengths */
+                int         format,
                 int**, int**, int**, int**, int**, double**, double**, double**, double**, double**, double**);
 
 #endif

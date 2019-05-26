@@ -144,6 +144,7 @@ run_varn_G_case(const char *out_prefix,      /* output file prefix */
                 const int   nreqs[6],     /* no. request in decomposition 1-6 */
                 int* const  disps[6],     /* request's displacements */
                 int* const  blocklens[6], /* request's block lengths */
+                int         format,
                 int *D1_fix_int_bufp, int *D2_fix_int_bufp, int *D3_fix_int_bufp, int *D4_fix_int_bufp, int *D5_fix_int_bufp,
                 double *D1_rec_dbl_bufp, double *D3_rec_dbl_bufp, double *D4_rec_dbl_bufp, double *D5_rec_dbl_bufp, double *D6_rec_dbl_bufp, double *D1_fix_dbl_bufp)
 {
@@ -434,7 +435,12 @@ run_varn_G_case(const char *out_prefix,      /* output file prefix */
     sprintf(outfname, "%s%s",out_prefix, out_postfix);
 
     /* create a new CDF-5 file for writing */
-    cmode = NC_CLOBBER | NC_64BIT_DATA;
+    if (format == 4){
+        cmode = NC_CLOBBER | NC_NETCDF4;
+    }
+    else{
+        cmode = NC_CLOBBER | NC_64BIT_DATA;
+    }
     err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
 
     MPI_Offset put_buffer_size_limit = 10485760;
@@ -744,6 +750,7 @@ run_varn_G_case_rd(const char *in_prefix,      /* input file prefix */
                 const int   nreqs[6],     /* no. request in decomposition 1-6 */
                 int* const  disps[6],     /* request's displacements */
                 int* const  blocklens[6], /* request's block lengths */
+                int         format,
                 int **D1_fix_int_bufp, int **D2_fix_int_bufp, int **D3_fix_int_bufp, int **D4_fix_int_bufp, int **D5_fix_int_bufp,
                 double **D1_rec_dbl_bufp, double **D3_rec_dbl_bufp, double **D4_rec_dbl_bufp, double **D5_rec_dbl_bufp, double **D6_rec_dbl_bufp, double **D1_fix_dbl_bufp)
 {
@@ -989,7 +996,12 @@ run_varn_G_case_rd(const char *in_prefix,      /* input file prefix */
     sprintf(infname, "%s%s",in_prefix, in_postfix);
 
     /* open a new CDF-5 file for reading */
-    cmode = NC_64BIT_DATA;
+    if (format == 4){
+        cmode = NC_NETCDF4;
+    }
+    else{
+        cmode = NC_64BIT_DATA;
+    }
     err = ncmpi_open(comm, infname, cmode, info, &ncid); ERR
 
     MPI_Offset get_buffer_size_limit = 10485760;

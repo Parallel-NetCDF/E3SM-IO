@@ -54,8 +54,9 @@ usage(char *argv0)
     "       [-s] Write 2D variables followed by 3D variables\n"
     "       [-w] Run write test\n"
     "       [-r] Run read test\n"
-    "       [-f h] Run only h0 or h1 in the E3SM F case (default -1 (both))\n"
+    "       [-c h] Run only h0 or h1 in the E3SM F case (default -1 (both))\n"
     "       [-t num] Number of records (default 1)\n"
+    "       [-f format] NetCDF file format. (4:NetCDF-4, 5:CDF-5) (default 5 (CDF-5))\n"
     "       [-o output_prefix] Output file path prefix (default ./)\n"
     "       [-i input_prefix] Input file path prefix (default ./)\n"
     "       FILE: Name of input netCDF file describing data decompositions\n";
@@ -67,7 +68,7 @@ int main(int argc, char** argv)
 {
     extern int optind;
     char *infname, out_prefix[1024], in_prefix[1024], *outfname;
-    int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, tst_wr=0, tst_rd=0, tst_h = -1, noncontig_buf=0;
+    int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, tst_wr=0, tst_rd=0, tst_h = -1, format = 5, noncontig_buf=0;
     int num_decomp, nvars, num_recs, run_f_case, run_g_case;
     int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
     int *blocklens[MAX_NUM_DECOMP];
@@ -87,7 +88,7 @@ int main(int argc, char** argv)
     run_g_case = 0;
 
     /* command-line arguments */
-    while ((i = getopt(argc, argv, "hkvdnmso:t:wri:f:")) != EOF)
+    while ((i = getopt(argc, argv, "hkvdnmso:t:wri:f:c:")) != EOF)
         switch(i) {
             case 'v': verbose = 1;
                       break;
@@ -111,7 +112,9 @@ int main(int argc, char** argv)
                       break;
             case 'i': strcpy(in_prefix, optarg);
                       break;
-            case 'f': tst_h = atoi(optarg);
+            case 'c': tst_h = atoi(optarg);
+                      break;
+            case 'f': format = atoi(optarg);
                       break;
             case 'h':
             default:  if (rank==0) usage(argv[0]);
@@ -152,6 +155,12 @@ int main(int argc, char** argv)
             strcpy(in_prefix, "./");
         }
         if (verbose && rank==0) printf("input file prefix =%s\n",in_prefix);
+    }
+
+    /* Check if format is supported  */
+    if ((format) != 4 && format != 5){
+        if (rank==0) printf("Format %d is not supported, use 5 (CDF-5)\n", format);
+        format = 5;
     }
 
     /* set MPI-IO hints */
@@ -215,28 +224,34 @@ int main(int argc, char** argv)
             }
 
             if (tst_wr){
-                if (!rank) {
-                    printf("\n==== benchmarking F case using vard API ========================\n");
-                    printf("Variable written order: same as variables are defined\n\n");
+                if (format == 4){
+                    if (!rank)
+                        printf("NetCDF4 not supported for vard\n");
                 }
-                fflush(stdout);
-                MPI_Barrier(MPI_COMM_WORLD);
-
-                if (tst_h == 0 || tst_h < 0){
-                    nvars = 408;
-                    outfname = "f_case_h0_vard.nc";
-                    nerrs += run_vard_F_case(out_prefix, outfname, nvars, num_recs,
-                                            noncontig_buf, info, dims,
-                                            contig_nreqs, disps, blocklens);
+                else{
+                    if (!rank) {
+                        printf("\n==== benchmarking F case using vard API ========================\n");
+                        printf("Variable written order: same as variables are defined\n\n");
+                    }
+                    fflush(stdout);
                     MPI_Barrier(MPI_COMM_WORLD);
-                }
 
-                if (tst_h == 1 || tst_h < 0){
-                    nvars = 51;
-                    outfname = "f_case_h1_vard.nc";
-                    nerrs += run_vard_F_case(out_prefix, outfname, nvars, num_recs,
-                                            noncontig_buf, info, dims,
-                                            contig_nreqs, disps, blocklens);
+                    if (tst_h == 0 || tst_h < 0){
+                        nvars = 408;
+                        outfname = "f_case_h0_vard.nc";
+                        nerrs += run_vard_F_case(out_prefix, outfname, nvars, num_recs,
+                                                noncontig_buf, info, dims,
+                                                contig_nreqs, disps, blocklens);
+                        MPI_Barrier(MPI_COMM_WORLD);
+                    }
+
+                    if (tst_h == 1 || tst_h < 0){
+                        nvars = 51;
+                        outfname = "f_case_h1_vard.nc";
+                        nerrs += run_vard_F_case(out_prefix, outfname, nvars, num_recs,
+                                                noncontig_buf, info, dims,
+                                                contig_nreqs, disps, blocklens);
+                    }
                 }
             }
 #endif
@@ -262,7 +277,7 @@ int main(int argc, char** argv)
                     outfname = "f_case_h0_varn.nc";
                     nerrs += run_varn_F_case_rd(in_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
-                                            contig_nreqs, disps, blocklens, &dbl_buf_h0, &rec_buf_h0, txt_buf[0], int_buf[0]);
+                                            contig_nreqs, disps, blocklens, format, &dbl_buf_h0, &rec_buf_h0, txt_buf[0], int_buf[0]);
                     MPI_Barrier(MPI_COMM_WORLD);
                 }
 
@@ -272,7 +287,7 @@ int main(int argc, char** argv)
                     outfname = "f_case_h1_varn.nc";
                     nerrs += run_varn_F_case_rd(in_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
-                                            contig_nreqs, disps, blocklens, &dbl_buf_h1, &rec_buf_h1, txt_buf[1], int_buf[1]);
+                                            contig_nreqs, disps, blocklens, format, &dbl_buf_h1, &rec_buf_h1, txt_buf[1], int_buf[1]);
                 }
             }
 
@@ -296,7 +311,7 @@ int main(int argc, char** argv)
                     outfname = "f_case_h0_varn.nc";
                     nerrs += run_varn_F_case(out_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
-                                            contig_nreqs, disps, blocklens, dbl_buf_h0, rec_buf_h0, txt_buf[0], int_buf[0]);
+                                            contig_nreqs, disps, blocklens, format, dbl_buf_h0, rec_buf_h0, txt_buf[0], int_buf[0]);
                     MPI_Barrier(MPI_COMM_WORLD);
                 }
 
@@ -306,7 +321,7 @@ int main(int argc, char** argv)
                     outfname = "f_case_h1_varn.nc";
                     nerrs += run_varn_F_case(out_prefix, outfname, nvars, num_recs,
                                             noncontig_buf, info, dims,
-                                            contig_nreqs, disps, blocklens, dbl_buf_h1, rec_buf_h1, txt_buf[1], int_buf[1]);
+                                            contig_nreqs, disps, blocklens, format, dbl_buf_h1, rec_buf_h1, txt_buf[1], int_buf[1]);
                 }
             }
         }
@@ -361,7 +376,7 @@ int main(int argc, char** argv)
                 nvars = 52;
                 outfname = "g_case_hist_varn.nc";
                 nerrs += run_varn_G_case_rd(in_prefix, outfname, nvars, num_recs, info,
-                                        dims, contig_nreqs, disps, blocklens, &D1_fix_int_buf, &D2_fix_int_buf, &D3_fix_int_buf, &D4_fix_int_buf, &D5_fix_int_buf,
+                                        dims, contig_nreqs, disps, blocklens, format, &D1_fix_int_buf, &D2_fix_int_buf, &D3_fix_int_buf, &D4_fix_int_buf, &D5_fix_int_buf,
                 &D1_rec_dbl_buf, &D3_rec_dbl_buf, &D4_rec_dbl_buf, &D5_rec_dbl_buf, &D6_rec_dbl_buf, &D1_fix_dbl_buf);
             }
 
@@ -375,7 +390,7 @@ int main(int argc, char** argv)
                 nvars = 52;
                 outfname = "g_case_hist_varn.nc";
                 nerrs += run_varn_G_case(out_prefix, outfname, nvars, num_recs, info,
-                                        dims, contig_nreqs, disps, blocklens, D1_fix_int_buf, D2_fix_int_buf, D3_fix_int_buf, D4_fix_int_buf, D5_fix_int_buf,
+                                        dims, contig_nreqs, disps, blocklens, format, D1_fix_int_buf, D2_fix_int_buf, D3_fix_int_buf, D4_fix_int_buf, D5_fix_int_buf,
                 D1_rec_dbl_buf, D3_rec_dbl_buf, D4_rec_dbl_buf, D5_rec_dbl_buf, D6_rec_dbl_buf, D1_fix_dbl_buf);
             }
 
