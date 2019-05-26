@@ -17,8 +17,12 @@ long lists of small and noncontiguous requests in each of all MPI processes.
 
 The benchmark program supports both read and write. When running only write 
 test, the data written is initialized according to the rank of the process. 
-When running both read and write test, read test will perform first, the data 
-written in the write test will be the data read.
+If the input file is provided, the read test will perform before the write test
+(if enabled), the data written in the write test will be the data read durinng
+the read test. If read test is performed without a given input file, read test
+will perform after the write test, the file written during the write test is 
+used as input file. In such case, write test will always run even if it is not
+ enabled in options.
 
 The I/O kernel is implemented by using PnetCDF nonblocking varn APIs, which
 can aggregate multiple requests to a variable or across variables. In addition

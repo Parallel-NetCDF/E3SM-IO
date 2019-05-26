@@ -825,11 +825,11 @@ fn_exit:
 
 #define POST_VARN_RD(k, num, vid) \
     for (j=0; j<num; j++) { \
-        err = ncmpi_iget_varn(ncid, vid+j, nreqs[k-1], starts_D##k, \
+        err = ncmpi_iget_varn(ncid, vid+j, xnreqs[k-1], starts_D##k, \
                               counts_D##k, rec_buf_ptr, -1, REC_ITYPE, NULL); \
         ERR \
         rec_buf_ptr += nelems[k-1] + gap; \
-        my_nreqs += nreqs[k-1]; \
+        my_nreqs += xnreqs[k-1]; \
     }
 
 
@@ -1186,8 +1186,8 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
         free(starts_D2[0]);
         free(starts_D2);
     }
-    if (rec_buf != NULL) free(rec_buf);
-    if (dbl_buf != NULL) free(dbl_buf);
+    if (rec_bufp == NULL && rec_buf != NULL) free(rec_buf);
+    if (dbl_bufp == NULL && dbl_buf != NULL) free(dbl_buf);
     free(varids);
 
     total_timing = MPI_Wtime() - total_timing;
@@ -1317,7 +1317,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
     dbl_buflen = nelems[1] * 2 + nelems[0]
                + 3 * dims[2][0] + 3 * (dims[2][0]+1) + 8 + 2
                + 20 * gap;
-
+    
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
     if (dbl_bufp != NULL){
         *dbl_bufp = dbl_buf;
