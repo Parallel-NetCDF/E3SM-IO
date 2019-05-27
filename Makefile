@@ -1,12 +1,12 @@
 
 MPICC		= mpicc
-CFLAGS		= -O0 -ggdb
+CFLAGS		= -O2
 
-PnetCDF_prefix	= /home/khl7265/.local/ncmpi_1112
+PnetCDF_prefix	= ${HOME}/PnetCDF
 
 INCLUDES	= -I$(PnetCDF_prefix)/include -I.
-LDFLAGS		= -L$(PnetCDF_prefix)/lib -L${HOME}/.local/lib
-LIBS		= -lpnetcdf -lnetcdf -lhdf5 $(shell $(PnetCDF_prefix)/bin/pnetcdf-config --libs)
+LDFLAGS		= -L$(PnetCDF_prefix)/lib
+LIBS		= -lpnetcdf $(shell $(PnetCDF_prefix)/bin/pnetcdf-config --libs)
 
 .c.o:
 	$(MPICC) $(CFLAGS) $(INCLUDES) -c $<
