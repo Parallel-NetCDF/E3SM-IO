@@ -132,7 +132,8 @@
 
 /*----< run_varn_G_case() >--------------------------------------------------*/
 int
-run_varn_G_case(const char *out_dir,      /* output folder name */
+run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
                 int         nvars,        /* number of variables 51 */
                 int         num_recs,     /* number of records */
@@ -162,7 +163,6 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
     MPI_Offset **starts_D4, **counts_D4;
     MPI_Offset **starts_D5, **counts_D5;
     MPI_Offset **starts_D6, **counts_D6;
-    MPI_Comm comm=MPI_COMM_WORLD;
     MPI_Info info_used=MPI_INFO_NULL;
     int nD1_rec_2d_vars = 4;
     int D1_rec_2d_varids[4] = {0, 4, 7, 38};
@@ -185,7 +185,7 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
 
     for (i=0; i<6; i++) xnreqs[i] = nreqs[i];
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     total_timing = pre_timing = MPI_Wtime();
 
     open_timing = 0.0;
@@ -193,7 +193,7 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
     wait_timing = 0.0;
     close_timing = 0.0;
 
-    MPI_Comm_rank(comm, &rank);
+    MPI_Comm_rank(io_comm, &rank);
 
     /* number of variable elements from 6 decompositions */
     total_nreqs = max_nreqs = 0;
@@ -367,7 +367,7 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
 
     pre_timing = MPI_Wtime() - pre_timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     /* set output file name */
@@ -375,7 +375,7 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
 
     /* create a new CDF-5 file for writing */
     cmode = NC_CLOBBER | NC_64BIT_DATA;
-    err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
+    err = ncmpi_create(io_comm, outfname, cmode, info, &ncid); ERR
 
     MPI_Offset put_buffer_size_limit = 10485760;
     err = ncmpi_buffer_attach(ncid, put_buffer_size_limit); ERR
@@ -391,7 +391,7 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
     err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing += MPI_Wtime() - timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     /* write 7 fixed-size variables */
@@ -549,14 +549,14 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
 
     post_timing += MPI_Wtime() - timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
 
     wait_timing += MPI_Wtime() - timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     err = ncmpi_inq_put_size(ncid, &total_size); ERR
@@ -609,31 +609,31 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
 
     total_timing = MPI_Wtime() - total_timing;
 
-    MPI_Reduce(&total_nreqs,   &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, comm);
-    MPI_Reduce(&total_nreqs,   &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&total_nreqs,   &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, io_comm);
+    MPI_Reduce(&total_nreqs,   &tmp,        1, MPI_OFFSET, MPI_SUM, 0, io_comm);
     total_nreqs = tmp;
-    MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, io_comm);
     put_size = tmp;
-    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, io_comm);
     total_size = tmp;
-    MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     open_timing = max_timing;
-    MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     pre_timing = max_timing;
-    MPI_Reduce(&post_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&post_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     post_timing = max_timing;
-    MPI_Reduce(&wait_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&wait_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     wait_timing = max_timing;
-    MPI_Reduce(&close_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&close_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     close_timing = max_timing;
-    MPI_Reduce(&total_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&total_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     total_timing = max_timing;
 
     /* check if there is any PnetCDF internal malloc residue */
     MPI_Offset malloc_size, sum_size;
     err = ncmpi_inq_malloc_size(&malloc_size);
     if (err == NC_NOERR) {
-        MPI_Reduce(&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, comm);
+        MPI_Reduce(&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, io_comm);
         if (rank == 0 && sum_size > 0) {
             printf("-----------------------------------------------------------\n");
             printf("heap memory allocated by PnetCDF internally has %lld bytes yet to be freed\n",
@@ -642,7 +642,7 @@ run_varn_G_case(const char *out_dir,      /* output folder name */
     }
     MPI_Offset m_alloc=0, max_alloc;
     ncmpi_inq_malloc_max_size(&m_alloc);
-    MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
+    MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, io_comm);
     if (rank == 0) {
         printf("History output file                = %s\n", outfile);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
@@ -669,7 +669,7 @@ fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!keep_outfile) unlink(outfname);
     fflush(stdout);
-    MPI_Barrier(comm);
+    MPI_Barrier(io_comm);
     return nerrs;
 }
 

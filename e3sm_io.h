@@ -60,7 +60,7 @@ typedef float itype;   /* internal data type of buffer in memory */
 #endif
 
 extern int
-read_decomp(const char *infname, int *num_decomp, MPI_Offset dims[][2],
+read_decomp(MPI_Comm io_comm, const char *infname, int *num_decomp, MPI_Offset dims[][2],
             int contig_nreqs[3], int *disps[3], int *blocklens[3]);
 
 extern void
@@ -73,7 +73,8 @@ extern int
 def_F_case_h1(int ncid, const MPI_Offset dims[2], int nvars, int *varids);
 
 extern int
-run_vard_F_case(const char *out_dir,      /* output folder name */
+run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
@@ -85,7 +86,8 @@ run_vard_F_case(const char *out_dir,      /* output folder name */
                 int* const  blocklens[3]);/* request's block lengths */
 
 extern int
-run_varn_F_case(const char *out_dir,      /* output folder name */
+run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
@@ -108,7 +110,8 @@ def_G_case_h0(int               ncid,       /* file ID */
               int              *varids);    /* variable IDs */
 
 extern int
-run_varn_G_case(const char *out_dir,      /* output folder name */
+run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
                 int         nvars,        /* number of variables 51 */
                 int         num_recs,     /* number of records */
