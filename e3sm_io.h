@@ -60,7 +60,7 @@ typedef float itype;   /* internal data type of buffer in memory */
 #endif
 
 extern int
-read_decomp(const char *infname, int *num_decomp, MPI_Offset dims[][2],
+read_decomp(MPI_Comm io_comm, const char *infname, int *num_decomp, MPI_Offset dims[][2],
             int contig_nreqs[3], int *disps[3], int *blocklens[3]);
 
 extern void
@@ -79,8 +79,9 @@ extern int
 inq_F_case_h1(int ncid, const MPI_Offset dims[2], int nvars, int *varids);
 
 extern int
-run_vard_F_case(const char *out_prefix,   /* output file prefix */
-                const char *out_postfix,      /* output file postfix */
+run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                const char *out_prefix,   /* output file prefix */
+                const char *out_postfix,  /* output file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -91,8 +92,9 @@ run_vard_F_case(const char *out_prefix,   /* output file prefix */
                 int* const  blocklens[3]);/* request's block lengths */
 
 extern int
-run_varn_F_case(const char *out_prefix,   /* output file prefix */
-                const char *out_postfix,      /* output file postfix */
+run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                const char *out_prefix,   /* output file prefix */
+                const char *out_postfix,  /* output file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -105,18 +107,19 @@ run_varn_F_case(const char *out_prefix,   /* output file prefix */
                 double*, itype*, char*, int*);
 
 extern int
-run_varn_F_case_rd(const char *in_prefix, /* input file prefix */
-                const char *in_postfix,       /* input file postfix */
-                int         nvars,        /* number of variables 408 or 51 */
-                int         num_recs,     /* number of records */
-                int         noncontig_buf,/* whether to us noncontiguous buffer */
-                MPI_Info    info,
-                MPI_Offset  dims[3][2],   /* dimension lengths */
-                const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
-                int* const  disps[3],     /* request's displacements */
-                int* const  blocklens[3], /* request's block lengths */
-                int         format,
-                double**, itype**, char*, int*);
+run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                    const char *in_prefix,    /* input file prefix */
+                    const char *in_postfix,   /* input file postfix */
+                    int         nvars,        /* number of variables 408 or 51 */
+                    int         num_recs,     /* number of records */
+                    int         noncontig_buf,/* whether to us noncontiguous buffer */
+                    MPI_Info    info,
+                    MPI_Offset  dims[3][2],   /* dimension lengths */
+                    const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
+                    int* const  disps[3],     /* request's displacements */
+                    int* const  blocklens[3], /* request's block lengths */
+                    int         format,
+                    double**, itype**, char*, int*);
 
 extern int
 def_G_case_h0(int               ncid,       /* file ID */
@@ -141,8 +144,9 @@ inq_G_case_h0(int               ncid,       /* file ID */
               int              *varids);    /* variable IDs */
 
 extern int
-run_varn_G_case(const char *out_prefix,   /* output file prefix */
-                const char *out_postfix,      /* output file postfix */
+run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                const char *out_prefix,   /* output file prefix */
+                const char *out_postfix,  /* output file postfix */
                 int         nvars,        /* number of variables 51 */
                 int         num_recs,     /* number of records */
                 MPI_Info    info,
@@ -154,17 +158,18 @@ run_varn_G_case(const char *out_prefix,   /* output file prefix */
                 int*, int*, int*, int*, int*, double*, double*, double*, double*, double*, double*);
 
 extern int
-run_varn_G_case_rd(const char *in_prefix, /* input file prefix */
-                const char *in_postfix,       /* input file postfix */
-                int         nvars,        /* number of variables 51 */
-                int         num_recs,     /* number of records */
-                MPI_Info    info,
-                MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
-                const int   nreqs[6],     /* no. request in decomposition 1-6 */
-                int* const  disps[6],     /* request's displacements */
-                int* const  blocklens[6], /* request's block lengths */
-                int         format,
-                int**, int**, int**, int**, int**, double**, double**, double**, double**, double**, double**);
+run_varn_G_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                    const char *in_prefix,    /* input file prefix */
+                    const char *in_postfix,   /* input file postfix */
+                    int         nvars,        /* number of variables 51 */
+                    int         num_recs,     /* number of records */
+                    MPI_Info    info,
+                    MPI_Offset  dims[6][2],   /* dimension lengths decomposition 1-6 */
+                    const int   nreqs[6],     /* no. request in decomposition 1-6 */
+                    int* const  disps[6],     /* request's displacements */
+                    int* const  blocklens[6], /* request's block lengths */
+                    int         format,
+                    int**, int**, int**, int**, int**, double**, double**, double**, double**, double**, double**);
 
 #endif
 

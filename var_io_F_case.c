@@ -324,8 +324,9 @@ fn_exit:
 
 /*----< run_vard_F_case() >--------------------------------------------------*/
 int
-run_vard_F_case(const char *out_prefix,      /* output file prefix */
-                const char *out_postfix,      /* output file postfix */
+run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                const char *out_prefix,   /* output file prefix */
+                const char *out_postfix,  /* output file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -351,12 +352,11 @@ run_vard_F_case(const char *out_prefix,      /* output file prefix */
     MPI_Datatype *var_types, type[4], *filetype_rec, filetype_dbl;
     MPI_Datatype buftype_rec, buftype_dbl;
     MPI_Info info_used=MPI_INFO_NULL;
-    MPI_Comm comm=MPI_COMM_WORLD;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     total_timing = pre_timing = MPI_Wtime();
 
-    MPI_Comm_rank(comm, &rank);
+    MPI_Comm_rank(io_comm, &rank);
 
     if (noncontig_buf) gap = 10;
 
@@ -411,7 +411,7 @@ run_vard_F_case(const char *out_prefix,      /* output file prefix */
 
     pre_timing = MPI_Wtime() - pre_timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     open_timing = MPI_Wtime();
 
     /* set output file name */
@@ -419,7 +419,7 @@ run_vard_F_case(const char *out_prefix,      /* output file prefix */
 
     /* create a new CDF-5 file for writing */
     cmode = NC_CLOBBER | NC_64BIT_DATA;
-    err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
+    err = ncmpi_create(io_comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
     if (nvars == 408) {
@@ -439,7 +439,7 @@ run_vard_F_case(const char *out_prefix,      /* output file prefix */
     err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing = MPI_Wtime() - open_timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     /* the first 3 variables are of type NC_DOUBLE -------------------*/
@@ -580,7 +580,7 @@ run_vard_F_case(const char *out_prefix,      /* output file prefix */
 
     pre_timing += MPI_Wtime() - timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     io_timing = MPI_Wtime();
 
     if (noncontig_buf) fix_buflen = rec_buflen = 1;
@@ -621,7 +621,7 @@ run_vard_F_case(const char *out_prefix,      /* output file prefix */
     }
     io_timing = MPI_Wtime() - io_timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     close_timing = MPI_Wtime();
 
     err = ncmpi_inq_put_size(ncid, &total_size); ERR
@@ -645,28 +645,28 @@ run_vard_F_case(const char *out_prefix,      /* output file prefix */
     total_timing = MPI_Wtime() - total_timing;
 
     tmp = my_nreqs;
-    MPI_Reduce(&tmp,           &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, comm);
-    MPI_Reduce(&tmp,           &total_nreqs,1, MPI_OFFSET, MPI_MAX, 0, comm);
-    MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&tmp,           &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, io_comm);
+    MPI_Reduce(&tmp,           &total_nreqs,1, MPI_OFFSET, MPI_MAX, 0, io_comm);
+    MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, io_comm);
     put_size = tmp;
-    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, io_comm);
     total_size = tmp;
-    MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     open_timing = max_timing;
-    MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     pre_timing = max_timing;
-    MPI_Reduce(&io_timing,     &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&io_timing,     &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     io_timing = max_timing;
-    MPI_Reduce(&close_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&close_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     close_timing = max_timing;
-    MPI_Reduce(&total_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&total_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     total_timing = max_timing;
 
     /* check if there is any PnetCDF internal malloc residue */
     MPI_Offset malloc_size, sum_size;
     err = ncmpi_inq_malloc_size(&malloc_size);
     if (err == NC_NOERR) {
-        MPI_Reduce(&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, comm);
+        MPI_Reduce(&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, io_comm);
         if (rank == 0 && sum_size > 0) {
             printf("-----------------------------------------------------------\n");
             printf("heap memory allocated by PnetCDF internally has %lld bytes yet to be freed\n",
@@ -675,7 +675,7 @@ run_vard_F_case(const char *out_prefix,      /* output file prefix */
     }
     MPI_Offset m_alloc=0, max_alloc;
     ncmpi_inq_malloc_max_size(&m_alloc);
-    MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
+    MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, io_comm);
     if (rank == 0) {
         printf("History output file postfix        = %s\n", out_postfix);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
@@ -701,7 +701,7 @@ fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!keep_outfile) unlink(outfname);
     fflush(stdout);
-    MPI_Barrier(comm);
+    MPI_Barrier(io_comm);
     return nerrs;
 }
 
@@ -835,8 +835,9 @@ fn_exit:
 
 /*----< run_varn_F_case() >--------------------------------------------------*/
 int
-run_varn_F_case(const char *out_prefix,      /* output file prefix */
-                const char *out_postfix,      /* output file postfix */
+run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                const char *out_prefix,   /* output file prefix */
+                const char *out_postfix,  /* output file postfix */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -862,10 +863,9 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
     MPI_Offset tmp, metadata_size, put_size, total_size, max_nreqs, total_nreqs;
     MPI_Offset **starts_D2=NULL, **counts_D2=NULL;
     MPI_Offset **starts_D3=NULL, **counts_D3=NULL;
-    MPI_Comm comm=MPI_COMM_WORLD;
     MPI_Info info_used=MPI_INFO_NULL;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     total_timing = pre_timing = MPI_Wtime();
 
     open_timing = 0.0;
@@ -873,7 +873,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
     wait_timing = 0.0;
     close_timing = 0.0;
 
-    MPI_Comm_rank(comm, &rank);
+    MPI_Comm_rank(io_comm, &rank);
 
     if (noncontig_buf) gap = 10;
 
@@ -921,7 +921,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
 
     pre_timing = MPI_Wtime() - pre_timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     /* set output file name */
@@ -934,7 +934,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
     else{
         cmode = NC_CLOBBER | NC_64BIT_DATA;
     }
-    err = ncmpi_create(comm, outfname, cmode, info, &ncid); ERR
+    err = ncmpi_create(io_comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
     if (nvars == 408) {
@@ -954,7 +954,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
     err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing += MPI_Wtime() - timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     i = 0;
@@ -1010,7 +1010,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
     post_timing += MPI_Wtime() - timing;
 
     for (rec_no=0; rec_no<num_recs; rec_no++) {
-        MPI_Barrier(comm); /*-----------------------------------------*/
+        MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
         i=3;
@@ -1032,7 +1032,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
 
         post_timing += MPI_Wtime() - timing;
 
-        MPI_Barrier(comm); /*-----------------------------------------*/
+        MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
         /* flush fixed-size and small variables */
@@ -1040,7 +1040,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
 
         wait_timing += MPI_Wtime() - timing;
 
-        MPI_Barrier(comm); /*-----------------------------------------*/
+        MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
         rec_buf_ptr = rec_buf;
@@ -1162,7 +1162,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
 
         post_timing += MPI_Wtime() - timing;
 
-        MPI_Barrier(comm); /*-----------------------------------------*/
+        MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
         err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
@@ -1170,7 +1170,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
         wait_timing += MPI_Wtime() - timing;
     }
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     err = ncmpi_inq_put_size(ncid, &total_size); ERR
@@ -1193,30 +1193,30 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
     total_timing = MPI_Wtime() - total_timing;
 
     tmp = my_nreqs;
-    MPI_Reduce(&tmp,           &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, comm);
-    MPI_Reduce(&tmp,           &total_nreqs,1, MPI_OFFSET, MPI_SUM, 0, comm);
-    MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&tmp,           &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, io_comm);
+    MPI_Reduce(&tmp,           &total_nreqs,1, MPI_OFFSET, MPI_SUM, 0, io_comm);
+    MPI_Reduce(&put_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, io_comm);
     put_size = tmp;
-    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, io_comm);
     total_size = tmp;
-    MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     open_timing = max_timing;
-    MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     pre_timing = max_timing;
-    MPI_Reduce(&post_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&post_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     post_timing = max_timing;
-    MPI_Reduce(&wait_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&wait_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     wait_timing = max_timing;
-    MPI_Reduce(&close_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&close_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     close_timing = max_timing;
-    MPI_Reduce(&total_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&total_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     total_timing = max_timing;
 
     /* check if there is any PnetCDF internal malloc residue */
     MPI_Offset malloc_size, sum_size;
     err = ncmpi_inq_malloc_size(&malloc_size);
     if (err == NC_NOERR) {
-        MPI_Reduce(&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, comm);
+        MPI_Reduce(&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, io_comm);
         if (rank == 0 && sum_size > 0) {
             printf("-----------------------------------------------------------\n");
             printf("heap memory allocated by PnetCDF internally has %lld bytes yet to be freed\n",
@@ -1225,7 +1225,7 @@ run_varn_F_case(const char *out_prefix,      /* output file prefix */
     }
     MPI_Offset m_alloc=0, max_alloc;
     ncmpi_inq_malloc_max_size(&m_alloc);
-    MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
+    MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, io_comm);
     if (rank == 0) {
         printf("History output file postfix        = %s\n", out_postfix);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
@@ -1253,44 +1253,43 @@ fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!keep_outfile) unlink(outfname);
     fflush(stdout);
-    MPI_Barrier(comm);
+    MPI_Barrier(io_comm);
     return nerrs;
 }
 
-
 /*----< run_varn_F_case() >--------------------------------------------------*/
 int
-run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
-                const char *in_postfix,      /* input file postfix */
-                int         nvars,        /* number of variables 408 or 51 */
-                int         num_recs,     /* number of records */
-                int         noncontig_buf,/* whether to us noncontiguous buffer */
-                MPI_Info    info,
-                MPI_Offset  dims[3][2],   /* dimension lengths */
-                const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
-                int* const  disps[3],     /* request's displacements */
-                int* const  blocklens[3], /* request's block lengths */
-                int         format,
-                double     **dbl_bufp,
-                itype      **rec_bufp,
-                char       *txt_buf,
-                int        *int_buf)
+run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
+                    const char *in_prefix,   /* input file prefix */
+                    const char *in_postfix,  /* input file postfix */
+                    int         nvars,        /* number of variables 408 or 51 */
+                    int         num_recs,     /* number of records */
+                    int         noncontig_buf,/* whether to us noncontiguous buffer */
+                    MPI_Info    info,
+                    MPI_Offset  dims[3][2],   /* dimension lengths */
+                    const int   nreqs[3],     /* no. request in decompositions 1,2,3 */
+                    int* const  disps[3],     /* request's displacements */
+                    int* const  blocklens[3], /* request's block lengths */
+                    int         format,
+                    double     **dbl_bufp,
+                    itype      **rec_bufp,
+                    char       *txt_buf,
+                    int        *int_buf)
 {
     char infname[512], *txt_buf_ptr;
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nreqs_D3_merged;
+    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
     int rec_no, gap=0, my_nreqs, *int_buf_ptr, xnreqs[3];
     size_t dbl_buflen, rec_buflen, nelems[3];
-    itype *rec_buf, *rec_buf_ptr;
-    double *dbl_buf, *dbl_buf_ptr;
+    itype *rec_buf=NULL, *rec_buf_ptr;
+    double *dbl_buf=NULL, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing,  max_timing;
     MPI_Offset tmp, metadata_size, get_size, total_size, max_nreqs, total_nreqs;
     MPI_Offset **starts_D2=NULL, **counts_D2=NULL;
     MPI_Offset **starts_D3=NULL, **counts_D3=NULL;
-    MPI_Comm comm=MPI_COMM_WORLD;
     MPI_Info info_used=MPI_INFO_NULL;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     total_timing = pre_timing = MPI_Wtime();
 
     open_timing = 0.0;
@@ -1298,9 +1297,11 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
     wait_timing = 0.0;
     close_timing = 0.0;
 
-    MPI_Comm_rank(comm, &rank);
+    MPI_Comm_rank(io_comm, &rank);
 
     if (noncontig_buf) gap = 10;
+
+    varids = (int*) malloc(nvars * sizeof(int));
 
     for (i=0; i<3; i++) xnreqs[i] = nreqs[i];
 
@@ -1341,11 +1342,9 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
     for (i=0; i<10; i++) int_buf[i] = rank + i;
     for (i=0; i<16; i++) txt_buf[i] = 'a' + rank + i;
 
-    varids = (int*) malloc(nvars * sizeof(int));
-
     pre_timing = MPI_Wtime() - pre_timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     /* set input file name */
@@ -1358,7 +1357,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
     else{
         cmode = NC_64BIT_DATA;
     }
-    err = ncmpi_open(comm, infname, cmode, info, &ncid); ERR
+    err = ncmpi_open(io_comm, infname, cmode, info, &ncid); ERR
 
     /* inquery dimensions, variables, and attributes */
     if (nvars == 408) {
@@ -1375,7 +1374,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
     err = ncmpi_inq_file_info(ncid, &info_used); ERR
     open_timing += MPI_Wtime() - timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     i = 0;
@@ -1431,7 +1430,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
     post_timing += MPI_Wtime() - timing;
 
     for (rec_no=0; rec_no<num_recs; rec_no++) {
-        MPI_Barrier(comm); /*-----------------------------------------*/
+        MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
         i=3;
@@ -1439,7 +1438,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
         int_buf_ptr = int_buf;
         txt_buf_ptr = txt_buf;
 
-        /* next 27 small variables are written by rank 0 only */
+        /* next 27 small variables are read by rank 0 only */
         if (rank == 0) {
             my_nreqs += 27;
             /* post nonblocking requests using ncmpi_iget_varn() */
@@ -1453,7 +1452,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
 
         post_timing += MPI_Wtime() - timing;
 
-        MPI_Barrier(comm); /*-----------------------------------------*/
+        MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
         /* flush fixed-size and small variables */
@@ -1461,7 +1460,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
 
         wait_timing += MPI_Wtime() - timing;
 
-        MPI_Barrier(comm); /*-----------------------------------------*/
+        MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
         rec_buf_ptr = rec_buf;
@@ -1519,7 +1518,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
                 POST_VARN_RD(3,   3, 243)   /* WSUB ... aero_water */
                 POST_VARN_RD(3,   1, 278)   /* hstobie_linoz */
             } else {
-                /* read variables in the same order as they defined */
+                /* read variables in the same order as they inqueryd */
                 POST_VARN_RD(2,   1,  30)   /* AEROD_v */
                 POST_VARN_RD(3,   2,  31)   /* ANRAIN and ANSNOW */
                 POST_VARN_RD(2,  18,  33)   /* AODABS ... ANSNOW */
@@ -1574,7 +1573,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
                 POST_VARN_RD(2,  7, 44)   /* U250 ... Z500 */
                 POST_VARN_RD(3,  1, 43)   /* U */
             } else {
-                /* read variables in the same order as they defined */
+                /* read variables in the same order as they inqueryd */
                 POST_VARN_RD(2, 13, 30)   /* CLDHGH ... T5 */
                 POST_VARN_RD(3,  1, 43)   /* U */
                 POST_VARN_RD(2,  7, 44)   /* U250 ... Z500 */
@@ -1583,7 +1582,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
 
         post_timing += MPI_Wtime() - timing;
 
-        MPI_Barrier(comm); /*-----------------------------------------*/
+        MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
         err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
@@ -1591,7 +1590,7 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
         wait_timing += MPI_Wtime() - timing;
     }
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
     err = ncmpi_inq_get_size(ncid, &total_size); ERR
@@ -1607,41 +1606,37 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
         free(starts_D2[0]);
         free(starts_D2);
     }
-    if (rec_bufp == NULL){
-        free(rec_buf);
-    }
-    if (dbl_bufp == NULL){
-        free(dbl_buf);
-    }
+    if (rec_bufp == NULL && rec_buf != NULL) free(rec_buf);
+    if (dbl_bufp == NULL && dbl_buf != NULL) free(dbl_buf);
     free(varids);
 
     total_timing = MPI_Wtime() - total_timing;
 
     tmp = my_nreqs;
-    MPI_Reduce(&tmp,           &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, comm);
-    MPI_Reduce(&tmp,           &total_nreqs,1, MPI_OFFSET, MPI_SUM, 0, comm);
-    MPI_Reduce(&get_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&tmp,           &max_nreqs,  1, MPI_OFFSET, MPI_MAX, 0, io_comm);
+    MPI_Reduce(&tmp,           &total_nreqs,1, MPI_OFFSET, MPI_SUM, 0, io_comm);
+    MPI_Reduce(&get_size,      &tmp,        1, MPI_OFFSET, MPI_SUM, 0, io_comm);
     get_size = tmp;
-    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, comm);
+    MPI_Reduce(&total_size,    &tmp,        1, MPI_OFFSET, MPI_SUM, 0, io_comm);
     total_size = tmp;
-    MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&open_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     open_timing = max_timing;
-    MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&pre_timing,    &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     pre_timing = max_timing;
-    MPI_Reduce(&post_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&post_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     post_timing = max_timing;
-    MPI_Reduce(&wait_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&wait_timing,   &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     wait_timing = max_timing;
-    MPI_Reduce(&close_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&close_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     close_timing = max_timing;
-    MPI_Reduce(&total_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(&total_timing,  &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, io_comm);
     total_timing = max_timing;
 
     /* check if there is any PnetCDF internal malloc residue */
     MPI_Offset malloc_size, sum_size;
     err = ncmpi_inq_malloc_size(&malloc_size);
     if (err == NC_NOERR) {
-        MPI_Reduce(&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, comm);
+        MPI_Reduce(&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, io_comm);
         if (rank == 0 && sum_size > 0) {
             printf("-----------------------------------------------------------\n");
             printf("heap memory allocated by PnetCDF internally has %lld bytes yet to be freed\n",
@@ -1650,17 +1645,17 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
     }
     MPI_Offset m_alloc=0, max_alloc;
     ncmpi_inq_malloc_max_size(&m_alloc);
-    MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
+    MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, io_comm);
     if (rank == 0) {
-        printf("History input file postfix         = %s\n", in_postfix);
+        printf("History input file postfix        = %s\n", in_postfix);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
         printf("Total number of variables          = %d\n",nvars);
-        printf("Total read amount                  = %.2f MiB = %.2f GiB\n",
+        printf("Total read amount                 = %.2f MiB = %.2f GiB\n",
                (double)total_size/1048576,(double)total_size/1073741824);
         printf("Total number of requests           = %lld\n",total_nreqs);
         printf("Max number of requests             = %lld\n",max_nreqs);
-        printf("Max Time of open + metadata inq    = %.4f sec\n",open_timing);
+        printf("Max Time of open + metadata inquery = %.4f sec\n",open_timing);
         printf("Max Time of I/O preparing          = %.4f sec\n",pre_timing);
         printf("Max Time of ncmpi_iget_varn        = %.4f sec\n",post_timing);
         printf("Max Time of ncmpi_wait_all         = %.4f sec\n",wait_timing);
@@ -1673,10 +1668,10 @@ run_varn_F_case_rd(const char *in_prefix,      /* input file prefix */
         if (verbose) print_info(&info_used);
         printf("-----------------------------------------------------------\n");
     }
+
 fn_exit:
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     fflush(stdout);
-    MPI_Barrier(comm);
+    MPI_Barrier(io_comm);
     return nerrs;
 }
-
