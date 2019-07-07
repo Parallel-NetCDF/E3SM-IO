@@ -117,6 +117,8 @@ read_decomp(MPI_Comm io_comm,           /* MPI communicator that includes all th
     MPI_Comm_rank(io_comm, &rank);
     MPI_Comm_size(io_comm, &nprocs);
 
+    *num_decomp = 0;
+
     /* open input file that contains I/O decomposition information */
     err = ncmpi_open(io_comm, infname, NC_NOWRITE, MPI_INFO_NULL,
                      &ncid); ERR

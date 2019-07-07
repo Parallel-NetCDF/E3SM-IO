@@ -45,7 +45,7 @@ add_decomp(int         ncid,
     FILE *fd;
     int   rank, nprocs, ndims;
     int   i, j, dimid, varid[3], *nreqs, err, nerrs=0, *off, *len;
-    int   total_nreqs, max_nreqs, min_nreqs;
+    int   total_nreqs, max_nreqs, min_nreqs, maxlen, minlen;
     MPI_Offset k, gsize, *dims, *dims_C, start, count;
 
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -239,6 +239,10 @@ add_decomp(int         ncid,
     str = "Lengths of noncontiguous requests";
     err = ncmpi_put_att_text(ncid, varid[2], "description", strlen(str), str); ERR
 
+    maxlen = minlen = 0;
+    err = ncmpi_put_att_int(ncid, varid[2], "max", NC_INT, 1, &maxlen); ERR
+    err = ncmpi_put_att_int(ncid, varid[2], "min", NC_INT, 1, &minlen); ERR
+
     /* add attribute to describe dimensionality */
     sprintf(name, "D%d.ndims", label);
     err = ncmpi_put_att_int(ncid, NC_GLOBAL, name, NC_INT, 1, &ndims); ERR
@@ -327,6 +331,12 @@ add_decomp(int         ncid,
         }
         assert(prev+1 == ncontig);
 
+        if (rank == 0) maxlen = minlen = len[0];
+        for (j=0; j<ncontig; j++) {
+            maxlen = (len[j] > maxlen) ? len[j] : maxlen;
+            minlen = (len[j] < minlen) ? len[j] : minlen;
+        }
+
         /* write/append to variables offsets and lengths */
         count = ncontig;
         err = ncmpi_put_vara_int_all(ncid, varid[1], &start, &count, off); ERR
@@ -337,6 +347,9 @@ add_decomp(int         ncid,
         free(len);
     }
     free(dims);
+
+    err = ncmpi_put_att_int(ncid, varid[2], "max", NC_INT, 1, &maxlen); ERR
+    err = ncmpi_put_att_int(ncid, varid[2], "min", NC_INT, 1, &minlen); ERR
 
 fn_exit:
     fclose(fd);
