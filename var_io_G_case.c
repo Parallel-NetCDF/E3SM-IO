@@ -617,7 +617,7 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
-    err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
+    err = ncmpi_wait_all(ncid, NC_PUT_REQ_ALL, NULL, NULL); ERR
 
     wait_timing += MPI_Wtime() - timing;
 
@@ -1173,7 +1173,7 @@ run_varn_G_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes 
     MPI_Barrier(io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
-    err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
+    err = ncmpi_wait_all(ncid, NC_GET_REQ_ALL, NULL, NULL); ERR
 
     wait_timing += MPI_Wtime() - timing;
 

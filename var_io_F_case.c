@@ -613,7 +613,7 @@ run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
         }
         i += 27;
 
-        err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
+        err = ncmpi_wait_all(ncid, NC_PUT_REQ_ALL, NULL, NULL); ERR
 
         /* write remaining record variables in one vard call */
         err = ncmpi_put_vard_all(ncid, varids[30], filetype_rec[rec_no],
@@ -1036,7 +1036,7 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
         timing = MPI_Wtime();
 
         /* flush fixed-size and small variables */
-        err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
+        err = ncmpi_wait_all(ncid, NC_PUT_REQ_ALL, NULL, NULL); ERR
 
         wait_timing += MPI_Wtime() - timing;
 
@@ -1165,7 +1165,7 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
         MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
-        err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
+        err = ncmpi_wait_all(ncid, NC_PUT_REQ_ALL, NULL, NULL); ERR
 
         wait_timing += MPI_Wtime() - timing;
     }
@@ -1456,7 +1456,7 @@ run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes 
         timing = MPI_Wtime();
 
         /* flush fixed-size and small variables */
-        err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
+        err = ncmpi_wait_all(ncid, NC_GET_REQ_ALL, NULL, NULL); ERR
 
         wait_timing += MPI_Wtime() - timing;
 
@@ -1585,7 +1585,7 @@ run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes 
         MPI_Barrier(io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime();
 
-        err = ncmpi_wait_all(ncid, NC_REQ_ALL, NULL, NULL); ERR
+        err = ncmpi_wait_all(ncid, NC_GET_REQ_ALL, NULL, NULL); ERR
 
         wait_timing += MPI_Wtime() - timing;
     }
