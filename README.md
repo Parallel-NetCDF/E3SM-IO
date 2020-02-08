@@ -163,6 +163,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
            [-m] Run test using noncontiguous write buffer
            [-t] Write 2D variables followed by 3D variables
            [-r num] Number of records (default 1)
+           [-s num] Stride between IO tasks (default 1)
            [-o output_dir] Output directory name (default ./)
            FILE: Name of input netCDF file describing data decompositions
   ```

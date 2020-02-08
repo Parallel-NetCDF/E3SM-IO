@@ -47,8 +47,6 @@ usage(char *argv0)
     "Usage: %s [OPTION]... FILE\n"
     "       [-h] Print help\n"
     "       [-v] Verbose mode\n"
-    "       [-f] run the E3SM F case\n"
-    "       [-g] run the E3SM G case\n"
     "       [-k] Keep the output files when program exits\n"
     "       [-d] Run test that uses PnetCDF vard API\n"
     "       [-n] Run test that uses PnetCDF varn API\n"
@@ -67,14 +65,8 @@ int main(int argc, char** argv)
     extern int optind;
     char *infname, out_dir[1024], *outfname;
     int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, noncontig_buf=0;
-    int num_recs;
-    MPI_Comm io_comm = MPI_COMM_NULL;
-    MPI_Group group = MPI_GROUP_NULL;
-    MPI_Group iogroup = MPI_GROUP_NULL;
-    int io_stride = 1;
-    int num_iotasks = 1;
-    int *ioranks = NULL;
-    int ioproc = 0;
+    int num_recs, io_stride=1, num_iotasks, ioproc;
+    MPI_Comm io_comm;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -136,25 +128,40 @@ int main(int argc, char** argv)
     if (io_stride < 1)
         io_stride = 1;
 
-    /* assume that the IO root (rank of the first IO task) is 0 */
-    num_iotasks = (nprocs - 1) / io_stride + 1;
-
-    /* create an array that holds the ranks of the IO tasks */
-    ioranks = malloc(num_iotasks * sizeof(int));
-    for (i = 0; i < num_iotasks; i++) {
-        ioranks[i] = i * io_stride;
-        if (ioranks[i] == rank)
-            ioproc = 1;
+    if (io_stride == 1) {
+        num_iotasks = nprocs;
+        io_comm = MPI_COMM_WORLD;
+        ioproc = 1;
     }
+    else {
+        int *ioranks;
+        MPI_Group group, iogroup;
 
-    /* create a group for all MPI tasks */
-    MPI_Comm_group(MPI_COMM_WORLD, &group);
+        /* assume that the IO root (rank of the first IO task) is 0 */
+        num_iotasks = (nprocs - 1) / io_stride + 1;
 
-    /* create a sub-group for the IO tasks */
-    MPI_Group_incl(group, num_iotasks, ioranks, &iogroup);
+        /* create an array that holds the ranks of the IO tasks */
+        ioranks = malloc(num_iotasks * sizeof(int));
+        ioproc = 0;
+        for (i = 0; i < num_iotasks; i++) {
+            ioranks[i] = i * io_stride;
+            if (ioranks[i] == rank)
+                ioproc = 1;
+        }
 
-    /* create an MPI communicator for the IO tasks */
-    MPI_Comm_create(MPI_COMM_WORLD, iogroup, &io_comm);
+        /* create a group for all MPI tasks */
+        MPI_Comm_group(MPI_COMM_WORLD, &group);
+
+        /* create a sub-group for the IO tasks */
+        MPI_Group_incl(group, num_iotasks, ioranks, &iogroup);
+
+        /* create an MPI communicator for the IO tasks */
+        MPI_Comm_create(MPI_COMM_WORLD, iogroup, &io_comm);
+
+        MPI_Group_free(&iogroup);
+        MPI_Group_free(&group);
+        free(ioranks);
+    }
 
     /* only IO tasks call PnetCDF APIs */
     if (ioproc) {
@@ -169,7 +176,6 @@ int main(int argc, char** argv)
 
         /* set MPI-IO hints */
         MPI_Info_create(&info);
-        MPI_Info_set(info, "romio_ds_write", "disable"); /* MPI-IO data sieving */
         MPI_Info_set(info, "romio_cb_write", "enable");  /* collective write */
         MPI_Info_set(info, "romio_no_indep_rw", "true"); /* no independent MPI-IO */
 
@@ -318,16 +324,8 @@ fn_exit:
     /* Non-IO tasks wait for IO tasks to complete */
     MPI_Barrier(MPI_COMM_WORLD);
 
-    if (group != MPI_GROUP_NULL)
-        MPI_Group_free(&group);
-
-    if (iogroup != MPI_GROUP_NULL)
-        MPI_Group_free(&iogroup);
-
-    if (io_comm != MPI_COMM_NULL)
+    if (io_comm != MPI_COMM_WORLD && io_comm != MPI_COMM_NULL)
         MPI_Comm_free(&io_comm);
-
-    free(ioranks);
 
     MPI_Finalize();
     return (nerrs > 0);
