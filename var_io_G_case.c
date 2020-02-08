@@ -145,7 +145,7 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
 {
     char outfname[512];
     int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
-    int rec_no, my_nreqs;
+    int rec_no, my_nreqs, nvars_D[6];
     size_t rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf, *rec_buf_ptr;
     int *D1_fix_int_buf, *D2_fix_int_buf, *D3_fix_int_buf, *D4_fix_int_buf, *D5_fix_int_buf;
@@ -183,7 +183,10 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     char dummy_char_buf[64];
     int xnreqs[6]; /* number of requests after combination */
 
-    for (i=0; i<6; i++) xnreqs[i] = nreqs[i];
+    for (i=0; i<6; i++) {
+        xnreqs[i] = nreqs[i];
+        nvars_D[i] = 0;  /* number of variables using decomposition i */
+    }
 
     MPI_Barrier(io_comm); /*-----------------------------------------*/
     total_timing = pre_timing = MPI_Wtime();
@@ -400,36 +403,43 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     err = ncmpi_iput_varn(ncid, 8, xnreqs[1], fix_starts_D2, fix_counts_D2,
                           D2_fix_int_buf, nelems[1], MPI_INT, NULL); ERR
     my_nreqs += xnreqs[1];
+    nvars_D[1]++;
 
     /* int maxLevelEdgeBot(nEdges) */
     err = ncmpi_iput_varn(ncid, 37, xnreqs[1], fix_starts_D2, fix_counts_D2,
                           D2_fix_int_buf + nelems[1], nelems[1], MPI_INT, NULL); ERR
     my_nreqs += xnreqs[1];
+    nvars_D[1]++;
 
     /* int edgeMask(nEdges, nVertLevels) */
     err = ncmpi_iput_varn(ncid, 10, xnreqs[3], fix_starts_D4, fix_counts_D4,
                           D4_fix_int_buf, nelems[3], MPI_INT, NULL); ERR
     my_nreqs += xnreqs[3];
+    nvars_D[3]++;
 
     /* int cellMask(nCells, nVertLevels) */
     err = ncmpi_iput_varn(ncid, 11, xnreqs[2], fix_starts_D3, fix_counts_D3,
                           D3_fix_int_buf, nelems[2], MPI_INT, NULL); ERR
     my_nreqs += xnreqs[2];
+    nvars_D[2]++;
 
     /* int vertexMask(nVertices, nVertLevels) */
     err = ncmpi_iput_varn(ncid, 12, xnreqs[4], fix_starts_D5, fix_counts_D5,
                           D5_fix_int_buf, nelems[4], MPI_INT, NULL); ERR
     my_nreqs += xnreqs[4];
+    nvars_D[4]++;
 
     /* double bottomDepth(nCells)  */
     err = ncmpi_iput_varn(ncid, 35, xnreqs[0], fix_starts_D1, fix_counts_D1,
                           D1_fix_dbl_buf, nelems[0], MPI_DOUBLE, NULL); ERR
     my_nreqs += xnreqs[0];
+    nvars_D[0]++;
 
     /* int maxLevelCell(nCells) */
     err = ncmpi_iput_varn(ncid, 36, xnreqs[0], fix_starts_D1, fix_counts_D1,
                           D1_fix_int_buf, nelems[0], MPI_INT, NULL); ERR
     my_nreqs += xnreqs[0];
+    nvars_D[0]++;
 
     /* next 11 small variables are written by rank 0 only */
     if (rank == 0) {
@@ -491,6 +501,7 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                                   counts_D1, rec_buf_ptr, nelems[0], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[0];
             my_nreqs += xnreqs[0];
+            if (rec_no == 0) nvars_D[0]++;
         }
     }
 
@@ -504,6 +515,7 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                                   counts_D6, rec_buf_ptr, nelems[5], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[5];
             my_nreqs += xnreqs[5];
+            if (rec_no == 0) nvars_D[5]++;
         }
     }
 
@@ -517,6 +529,7 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                                   counts_D3, rec_buf_ptr, nelems[2], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[2];
             my_nreqs += xnreqs[2];
+            if (rec_no == 0) nvars_D[2]++;
         }
     }
 
@@ -530,6 +543,7 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                                   counts_D4, rec_buf_ptr, nelems[3], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[3];
             my_nreqs += xnreqs[3];
+            if (rec_no == 0) nvars_D[3]++;
         }
     }
 
@@ -543,6 +557,7 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                                   counts_D5, rec_buf_ptr, nelems[4], MPI_DOUBLE, NULL); ERR
             rec_buf_ptr += nelems[4];
             my_nreqs += xnreqs[4];
+            if (rec_no == 0) nvars_D[4]++;
         }
     }
     total_nreqs += my_nreqs;
@@ -644,10 +659,19 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, io_comm);
     if (rank == 0) {
+        int nvars_noD = nvars;
+        for (i=0; i<6; i++) nvars_noD -= nvars_D[i];
         printf("History output file                = %s\n", outfile);
+        printf("No. variables use no decomposition = %3d\n", nvars_noD);
+        printf("No. variables use decomposition D1 = %3d\n", nvars_D[0]);
+        printf("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
+        printf("No. variables use decomposition D3 = %3d\n", nvars_D[2]);
+        printf("No. variables use decomposition D4 = %3d\n", nvars_D[3]);
+        printf("No. variables use decomposition D5 = %3d\n", nvars_D[4]);
+        printf("No. variables use decomposition D6 = %3d\n", nvars_D[5]);
+        printf("Total number of variables          = %3d\n",nvars);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
-        printf("Total number of variables          = %d\n",nvars);
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)total_size/1048576,(double)total_size/1073741824);
         printf("Total number of requests           = %lld\n",total_nreqs);

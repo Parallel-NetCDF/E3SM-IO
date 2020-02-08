@@ -188,8 +188,12 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   Variable written order: same as variables are defined
 
   History output file                = f_case_h0_vard.nc
-  MAX heap memory allocated by PnetCDF internally is 2.22 MiB
+  No. variables use no decomposition =  26
+  No. variables use decomposition D1 =   2
+  No. variables use decomposition D2 = 317
+  No. variables use decomposition D3 =  63
   Total number of variables          = 408
+  MAX heap memory allocated by PnetCDF internally is 2.22 MiB
   Total write amount                 = 2699.36 MiB = 2.64 GiB
   Max number of requests             = 310598
   Max Time of open + metadata define = 0.0533 sec
@@ -201,8 +205,12 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   I/O bandwidth (write-only)         = 496.9981 MiB/sec
   -----------------------------------------------------------
   History output file                = f_case_h1_vard.nc
+  No. variables use no decomposition =  26
+  No. variables use decomposition D1 =   2
+  No. variables use decomposition D2 =  22
+  No. variables use decomposition D3 =   1
+  Total number of variables          =  51
   MAX heap memory allocated by PnetCDF internally is 2.22 MiB
-  Total number of variables          = 51
   Total write amount                 = 52.30 MiB = 0.05 GiB
   Max number of requests             = 6022
   Max Time of open + metadata define = 0.0338 sec
@@ -218,8 +226,12 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   Variable written order: same as variables are defined
 
   History output file                = f_case_h0_varn.nc
-  MAX heap memory allocated by PnetCDF internally is 35.07 MiB
+  No. variables use no decomposition =  26
+  No. variables use decomposition D1 =   2
+  No. variables use decomposition D2 = 317
+  No. variables use decomposition D3 =  63
   Total number of variables          = 408
+  MAX heap memory allocated by PnetCDF internally is 35.07 MiB
   Total write amount                 = 2699.36 MiB = 2.64 GiB
   Max number of requests             = 310464
   Max Time of open + metadata define = 0.0635 sec
@@ -232,8 +244,12 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   I/O bandwidth (write-only)         = 460.6144 MiB/sec
   -----------------------------------------------------------
   History output file                = f_case_h1_varn.nc
+  No. variables use no decomposition =  26
+  No. variables use decomposition D1 =   2
+  No. variables use decomposition D2 =  22
+  No. variables use decomposition D3 =   1
+  Total number of variables          =  51
   MAX heap memory allocated by PnetCDF internally is 35.07 MiB
-  Total number of variables          = 51
   Total write amount                 = 52.30 MiB = 0.05 GiB
   Max number of requests             = 5888
   Max Time of open + metadata define = 0.0370 sec

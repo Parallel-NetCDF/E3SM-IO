@@ -686,6 +686,7 @@ fn_exit:
         ERR \
         rec_buf_ptr += nelems[k-1] + gap; \
         my_nreqs += xnreqs[k-1]; \
+        if (rec_no == 0) nvars_D[k-1]++; \
     }
 
 
@@ -704,7 +705,7 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                 int* const  blocklens[3]) /* request's block lengths */
 {
     char outfname[512], txt_buf[16], *txt_buf_ptr;
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
+    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nvars_D[3];
     int rec_no, gap=0, my_nreqs, int_buf[10], *int_buf_ptr, xnreqs[3];
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf=NULL, *rec_buf_ptr;
@@ -730,7 +731,10 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
 
     varids = (int*) malloc(nvars * sizeof(int));
 
-    for (i=0; i<3; i++) xnreqs[i] = nreqs[i];
+    for (i=0; i<3; i++) {
+        xnreqs[i] = nreqs[i];
+        nvars_D[i] = 0;  /* number of variables using decomposition i */
+    }
 
     /* calculate number of variable elements from 3 decompositions */
     my_nreqs = 0;
@@ -810,12 +814,14 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                               dbl_buf_ptr, nelems[1], MPI_DOUBLE, NULL); ERR
         dbl_buf_ptr += nelems[1] + gap;
         my_nreqs += xnreqs[1];
+        nvars_D[1]++;
 
         /* lon */
         err = ncmpi_iput_varn(ncid, varids[i++], xnreqs[1], fix_starts_D2, fix_counts_D2,
                               dbl_buf_ptr, nelems[1], MPI_DOUBLE, NULL); ERR
         dbl_buf_ptr += nelems[1] + gap;
         my_nreqs += xnreqs[1];
+        nvars_D[1]++;
 
         free(fix_starts_D2[0]);
         free(fix_starts_D2);
@@ -828,11 +834,13 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
 
         /* construct varn API arguments starts[][] and counts[][] */
         FIX_1D_VAR_STARTS_COUNTS(fix_starts_D1, fix_counts_D1, xnreqs[0], disps[0], blocklens[0])
+        nvars_D[0]++;
 
         err = ncmpi_iput_varn(ncid, varids[i++], xnreqs[0], fix_starts_D1, fix_counts_D1,
                               dbl_buf_ptr, nelems[0], MPI_DOUBLE, NULL); ERR
         dbl_buf_ptr += nelems[0] + gap;
         my_nreqs += xnreqs[0];
+        nvars_D[0]++;
 
         free(fix_starts_D1[0]);
         free(fix_starts_D1);
@@ -1063,10 +1071,16 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     ncmpi_inq_malloc_max_size(&m_alloc);
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, io_comm);
     if (rank == 0) {
+        int nvars_noD = nvars;
+        for (i=0; i<3; i++) nvars_noD -= nvars_D[i];
         printf("History output file                = %s\n", outfile);
+        printf("No. variables use no decomposition = %3d\n", nvars_noD);
+        printf("No. variables use decomposition D1 = %3d\n", nvars_D[0]);
+        printf("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
+        printf("No. variables use decomposition D3 = %3d\n", nvars_D[2]);
+        printf("Total number of variables          = %3d\n",nvars);
         printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                (float)max_alloc/1048576);
-        printf("Total number of variables          = %d\n",nvars);
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)total_size/1048576,(double)total_size/1073741824);
         printf("Total number of requests           = %lld\n",total_nreqs);
