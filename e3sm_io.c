@@ -66,6 +66,11 @@ int main(int argc, char** argv)
     char *infname, out_dir[1024], *outfname;
     int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, noncontig_buf=0;
     int num_recs, io_stride=1, num_iotasks, ioproc;
+    int num_decomp, nvars, run_f_case, run_g_case;
+    int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
+    int *blocklens[MAX_NUM_DECOMP];
+    MPI_Offset dims[MAX_NUM_DECOMP][2], estimated_nc_ibuf_size;
+    MPI_Info info=MPI_INFO_NULL;
     MPI_Comm io_comm;
 
     MPI_Init(&argc, &argv);
@@ -164,162 +169,155 @@ int main(int argc, char** argv)
     }
 
     /* only IO tasks call PnetCDF APIs */
-    if (ioproc) {
-        int num_decomp, nvars, run_f_case, run_g_case;
-        int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
-        int *blocklens[MAX_NUM_DECOMP];
-        MPI_Offset dims[MAX_NUM_DECOMP][2], estimated_nc_ibuf_size;
-        MPI_Info info=MPI_INFO_NULL;
+    if (!ioproc) goto fn_exit;
 
-        run_f_case = 0;
-        run_g_case = 0;
+    /* set MPI-IO hints */
+    MPI_Info_create(&info);
+    MPI_Info_set(info, "romio_cb_write", "enable");  /* collective write */
+    MPI_Info_set(info, "romio_no_indep_rw", "true"); /* no independent MPI-IO */
 
-        /* set MPI-IO hints */
-        MPI_Info_create(&info);
-        MPI_Info_set(info, "romio_cb_write", "enable");  /* collective write */
-        MPI_Info_set(info, "romio_no_indep_rw", "true"); /* no independent MPI-IO */
+    /* set PnetCDF I/O hints */
+    MPI_Info_set(info, "nc_var_align_size", "1"); /* no gap between variables */
+    MPI_Info_set(info, "nc_in_place_swap", "enable"); /* in-place byte swap */
 
-        /* set PnetCDF I/O hints */
-        MPI_Info_set(info, "nc_var_align_size", "1"); /* no gap between variables */
-        MPI_Info_set(info, "nc_in_place_swap", "enable"); /* in-place byte swap */
+    /* read request information from decompositions 1, 2 and 3 */
+    err = read_decomp(io_comm, infname, &num_decomp, dims, contig_nreqs, disps, blocklens);
+    if (err) goto fn_exit;
 
-        /* read request information from decompositions 1, 2 and 3 */
-        err = read_decomp(io_comm, infname, &num_decomp, dims, contig_nreqs, disps, blocklens);
-        if (err) goto fn_exit;
+    /* F case has 3 decompositions, G case has 6 */
+    run_f_case = 0;
+    run_g_case = 0;
+    if (num_decomp == 3) run_f_case = 1;
+    else if (num_decomp == 6) run_g_case = 1;
 
-        /* F case has 3 decompositions, G case has 6 */
-        if (num_decomp == 3) run_f_case = 1;
-        else if (num_decomp == 6) run_g_case = 1;
+    /* use total write amount to estimate nc_ibuf_size */
+    estimated_nc_ibuf_size = dims[2][0] * dims[2][1] * sizeof(double) / num_iotasks;
+    estimated_nc_ibuf_size *= (run_f_case) ? 408 : 52;
+    if (estimated_nc_ibuf_size > 16777216) {
+        char nc_ibuf_size_str[16];
+        sprintf(nc_ibuf_size_str, "%lld", estimated_nc_ibuf_size);
+        MPI_Info_set(info, "nc_ibuf_size", nc_ibuf_size_str);
+    }
 
-        /* use total write amount to estimate nc_ibuf_size */
-        estimated_nc_ibuf_size = dims[2][0] * dims[2][1] * sizeof(double) / num_iotasks;
-        estimated_nc_ibuf_size *= (run_f_case) ? 408 : 52;
-        if (estimated_nc_ibuf_size > 16777216) {
-            char nc_ibuf_size_str[16];
-            sprintf(nc_ibuf_size_str, "%lld", estimated_nc_ibuf_size);
-            MPI_Info_set(info, "nc_ibuf_size", nc_ibuf_size_str);
+    if (run_f_case) {
+        if (verbose && rank==0) {
+            printf("number of requests for D1=%d D2=%d D3=%d\n",
+                   contig_nreqs[0], contig_nreqs[1], contig_nreqs[2]);
         }
 
-        if (run_f_case) {
-            if (verbose && rank==0) {
-                printf("number of requests for D1=%d D2=%d D3=%d\n",
-                       contig_nreqs[0], contig_nreqs[1], contig_nreqs[2]);
-            }
+        if (!rank) {
+            printf("Total number of MPI processes      = %d\n",nprocs);
+            printf("Number of IO processes             = %d\n",num_iotasks);
+            printf("Input decomposition file           = %s\n",infname);
+            printf("Number of decompositions           = %d\n",num_decomp);
+            printf("Output file directory              = %s\n",out_dir);
+            printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
+            printf("Write number of records (time dim) = %d\n",num_recs);
+            printf("Using noncontiguous write buffer   = %s\n",noncontig_buf?"yes":"no");
+        }
 
-            if (!rank) {
-                printf("Total number of MPI processes      = %d\n",nprocs);
-                printf("Number of IO processes             = %d\n",num_iotasks);
-                printf("Input decomposition file           = %s\n",infname);
-                printf("Number of decompositions           = %d\n",num_decomp);
-                printf("Output file directory              = %s\n",out_dir);
-                printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
-                printf("Write number of records (time dim) = %d\n",num_recs);
-                printf("Using noncontiguous write buffer   = %s\n",noncontig_buf?"yes":"no");
-            }
-
-            /* vard APIs require internal data type matches external one */
-            if (tst_vard) {
+        /* vard APIs require internal data type matches external one */
+        if (tst_vard) {
 #if REC_XTYPE != NC_FLOAT
-                if (!rank)
-                    printf("PnetCDF vard API requires internal and external data types match, skip\n");
+            if (!rank)
+                printf("PnetCDF vard API requires internal and external data types match, skip\n");
 #else
-                if (!rank) {
-                    printf("\n==== benchmarking F case using vard API ========================\n");
-                    printf("Variable written order: same as variables are defined\n\n");
-                }
-                fflush(stdout);
-                MPI_Barrier(io_comm);
-
-                nvars = 408;
-                outfname = "f_case_h0_vard.nc";
-                nerrs += run_vard_F_case(io_comm, out_dir, outfname, nvars, num_recs,
-                                         noncontig_buf, info, dims,
-                                         contig_nreqs, disps, blocklens);
-
-                MPI_Barrier(io_comm);
-
-                nvars = 51;
-                outfname = "f_case_h1_vard.nc";
-                nerrs += run_vard_F_case(io_comm, out_dir, outfname, nvars, num_recs,
-                                         noncontig_buf, info, dims,
-                                         contig_nreqs, disps, blocklens);
-#endif
-            }
-            if (tst_varn) {
-                if (!rank) {
-                    printf("\n==== benchmarking F case using varn API ========================\n");
-                    printf("Variable written order: ");
-                    if (two_buf)
-                        printf("2D variables then 3D variables\n\n");
-                    else
-                        printf("same as variables are defined\n\n");
-                }
-                fflush(stdout);
-                MPI_Barrier(io_comm);
-
-                /* There are two kinds of outputs for history variables.
-                 * Output 1st kind history variables.
-                 */
-                nvars = 408;
-                outfname = "f_case_h0_varn.nc";
-                nerrs += run_varn_F_case(io_comm, out_dir, outfname, nvars, num_recs,
-                                         noncontig_buf, info, dims,
-                                         contig_nreqs, disps, blocklens);
-
-                MPI_Barrier(io_comm);
-
-                /* Output 2nd kind history variables. */
-                nvars = 51;
-                outfname = "f_case_h1_varn.nc";
-                nerrs += run_varn_F_case(io_comm, out_dir, outfname, nvars, num_recs,
-                                         noncontig_buf, info, dims,
-                                         contig_nreqs, disps, blocklens);
-            }
-            for (i=0; i<3; i++) {
-                free(disps[i]);
-                free(blocklens[i]);
-            }
-        }
-
-        if (run_g_case) {
-            if (verbose && rank==0) {
-                printf("number of requests for D1=%d D2=%d D3=%d D4=%d D5=%d D6=%d\n",
-                       contig_nreqs[0], contig_nreqs[1], contig_nreqs[2],
-                       contig_nreqs[3], contig_nreqs[4], contig_nreqs[5]);
-            }
-
             if (!rank) {
-                printf("Total number of MPI processes      = %d\n",nprocs);
-                printf("Number of IO processes             = %d\n",num_iotasks);
-                printf("Input decomposition file           = %s\n",infname);
-                printf("Number of decompositions           = %d\n",num_decomp);
-                printf("Output file directory              = %s\n",out_dir);
-                printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
-                printf("Write number of records (time dim) = %d\n",num_recs);
-                printf("Using noncontiguous write buffer   = %s\n",noncontig_buf?"yes":"no");
+                printf("\n==== benchmarking F case using vard API ========================\n");
+                printf("Variable written order: same as variables are defined\n\n");
             }
+            fflush(stdout);
+            MPI_Barrier(io_comm);
 
-            if (tst_varn) {
-                if (!rank) {
-                    printf("\n==== benchmarking G case using varn API ========================\n");
-                }
-                fflush(stdout);
-                MPI_Barrier(io_comm);
+            nvars = 408;
+            outfname = "f_case_h0_vard.nc";
+            nerrs += run_vard_F_case(io_comm, out_dir, outfname, nvars, num_recs,
+                                     noncontig_buf, info, dims,
+                                     contig_nreqs, disps, blocklens);
 
-                nvars = 52;
-                outfname = "g_case_hist_varn.nc";
-                nerrs += run_varn_G_case(io_comm, out_dir, outfname, nvars, num_recs, info,
-                                         dims, contig_nreqs, disps, blocklens);
-            }
-            for (i=0; i<6; i++) {
-                free(disps[i]);
-                free(blocklens[i]);
-            }
+            MPI_Barrier(io_comm);
+
+            nvars = 51;
+            outfname = "f_case_h1_vard.nc";
+            nerrs += run_vard_F_case(io_comm, out_dir, outfname, nvars, num_recs,
+                                     noncontig_buf, info, dims,
+                                     contig_nreqs, disps, blocklens);
+#endif
         }
+        if (tst_varn) {
+            if (!rank) {
+                printf("\n==== benchmarking F case using varn API ========================\n");
+                printf("Variable written order: ");
+                if (two_buf)
+                    printf("2D variables then 3D variables\n\n");
+                else
+                    printf("same as variables are defined\n\n");
+            }
+            fflush(stdout);
+            MPI_Barrier(io_comm);
+
+            /* There are two kinds of outputs for history variables.
+             * Output 1st kind history variables.
+             */
+            nvars = 408;
+            outfname = "f_case_h0_varn.nc";
+            nerrs += run_varn_F_case(io_comm, out_dir, outfname, nvars, num_recs,
+                                     noncontig_buf, info, dims,
+                                     contig_nreqs, disps, blocklens);
+
+            MPI_Barrier(io_comm);
+
+            /* Output 2nd kind history variables. */
+            nvars = 51;
+            outfname = "f_case_h1_varn.nc";
+            nerrs += run_varn_F_case(io_comm, out_dir, outfname, nvars, num_recs,
+                                     noncontig_buf, info, dims,
+                                     contig_nreqs, disps, blocklens);
+        }
+        for (i=0; i<3; i++) {
+            free(disps[i]);
+            free(blocklens[i]);
+        }
+    }
+
+    if (run_g_case) {
+        if (verbose && rank==0) {
+            printf("number of requests for D1=%d D2=%d D3=%d D4=%d D5=%d D6=%d\n",
+                   contig_nreqs[0], contig_nreqs[1], contig_nreqs[2],
+                   contig_nreqs[3], contig_nreqs[4], contig_nreqs[5]);
+        }
+
+        if (!rank) {
+            printf("Total number of MPI processes      = %d\n",nprocs);
+            printf("Number of IO processes             = %d\n",num_iotasks);
+            printf("Input decomposition file           = %s\n",infname);
+            printf("Number of decompositions           = %d\n",num_decomp);
+            printf("Output file directory              = %s\n",out_dir);
+            printf("Variable dimensions (C order)      = %lld x %lld\n",dims[2][0],dims[2][1]);
+            printf("Write number of records (time dim) = %d\n",num_recs);
+            printf("Using noncontiguous write buffer   = %s\n",noncontig_buf?"yes":"no");
+        }
+
+        if (tst_varn) {
+            if (!rank) {
+                printf("\n==== benchmarking G case using varn API ========================\n");
+            }
+            fflush(stdout);
+            MPI_Barrier(io_comm);
+
+            nvars = 52;
+            outfname = "g_case_hist_varn.nc";
+            nerrs += run_varn_G_case(io_comm, out_dir, outfname, nvars, num_recs, info,
+                                     dims, contig_nreqs, disps, blocklens);
+        }
+        for (i=0; i<6; i++) {
+            free(disps[i]);
+            free(blocklens[i]);
+        }
+    }
 
 fn_exit:
-        if (info != MPI_INFO_NULL) MPI_Info_free(&info);
-    }
+    if (info != MPI_INFO_NULL) MPI_Info_free(&info);
 
     /* Non-IO tasks wait for IO tasks to complete */
     MPI_Barrier(MPI_COMM_WORLD);
