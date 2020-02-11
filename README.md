@@ -172,6 +172,10 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 * A median-size decomposition file `datasets/f_case_48602x72_512p.nc` contains
   the I/O pattern from a bigger problem size used in an E3SM experiment ran on
   512 MPI processes.
+* Two large decomposition files `f_case_72x777602_21632p.nc.gz` (60 MB) and
+  `g_case_11135652x80_9600p.nc.gz` (126 MB) from high-resolution simulations of
+  F and G cases running on 21632 and 9600 MPI processes respectively are
+  available upon request.
 
 ### Example outputs shown on screen
 ```
