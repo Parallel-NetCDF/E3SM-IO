@@ -63,8 +63,8 @@ usage(char *argv0)
 int main(int argc, char** argv)
 {
     extern int optind;
-    char *infname, out_dir[1024], *outfname;
-    int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, noncontig_buf=0;
+    char *infname, out_dir[1024], in_dir[1024], *outfname;
+    int i, rank, nprocs, err, nerrs=0, tst_vard=0, tst_varn=0, tst_wr=0, tst_rd=0, noncontig_buf=0;
     int num_recs, io_stride=1, num_iotasks, ioproc;
     int num_decomp, nvars, run_f_case, run_g_case;
     int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
@@ -77,13 +77,14 @@ int main(int argc, char** argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
     out_dir[0] = '\0';
+    in_dir[0] = '\0';
     verbose = 0;
     keep_outfile = 0;
     num_recs = 1;
     two_buf = 0;
 
     /* command-line arguments */
-    while ((i = getopt(argc, argv, "hkvdnmto:r:s:")) != EOF)
+    while ((i = getopt(argc, argv, "hkvdnmto:r:WR:s:")) != EOF)
         switch(i) {
             case 'v': verbose = 1;
                       break;
@@ -92,6 +93,11 @@ int main(int argc, char** argv)
             case 'r': num_recs = atoi(optarg);
                       break;
             case 's': io_stride = atoi(optarg);
+                      break;
+            case 'R': strcpy(in_dir, optarg);  
+                      tst_rd = 1;
+                      break;
+            case 'W': tst_wr = 1;
                       break;
             case 'd': tst_vard = 1;
                       break;
@@ -102,6 +108,8 @@ int main(int argc, char** argv)
             case 't': two_buf = 1;
                       break;
             case 'o': strcpy(out_dir, optarg);
+                      break;
+            case 'i': strcpy(in_dir, optarg);
                       break;
             case 'h':
             default:  if (rank==0) usage(argv[0]);
@@ -114,21 +122,35 @@ int main(int argc, char** argv)
         MPI_Finalize();
         return 1;
     }
-
-    if (tst_vard == 0 && tst_varn == 0)
-        /* neither command-line option -d or -n is used, run both */
-        tst_vard = tst_varn = 1;
-
     /* input file contains number of write requests and their file access
      * offsets (per array element) */
     infname = argv[optind];
     if (verbose && rank==0) printf("input file name =%s\n",infname);
 
+
+    if (tst_vard == 0 && tst_varn == 0)
+        /* neither command-line option -d or -n is used, run both */
+        tst_vard = tst_varn = 1;
+    
+    if (tst_wr == 0 && tst_rd == 0)
+        /* neither command-line option -R or -W is used, run write */
+        tst_wr = 1;
+
     /* set the output folder name */
-    if (out_dir[0] == '\0') {
-        strcpy(out_dir, ".");
+    if (tst_wr){
+        if (out_dir[0] == '\0') {
+            strcpy(out_dir, ".");
+        }
+        if (verbose && rank==0) printf("output folder name =%s\n",out_dir);
     }
-    if (verbose && rank==0) printf("output folder name =%s\n",out_dir);
+
+    /* set the input folder name */
+    if (tst_rd){
+        if (in_dir[0] == '\0') {
+            strcpy(in_dir, ".");
+        }
+        if (verbose && rank==0) printf("input folder name =%s\n",in_dir);
+    }
 
     if (io_stride < 1)
         io_stride = 1;
@@ -194,12 +216,17 @@ int main(int argc, char** argv)
     estimated_nc_ibuf_size = dims[2][0] * dims[2][1] * sizeof(double) / num_iotasks;
     estimated_nc_ibuf_size *= (run_f_case) ? 408 : 52;
     if (estimated_nc_ibuf_size > 16777216) {
-        char nc_ibuf_size_str[16];
+        char nc_ibuf_size_str[32];
         sprintf(nc_ibuf_size_str, "%lld", estimated_nc_ibuf_size);
         MPI_Info_set(info, "nc_ibuf_size", nc_ibuf_size_str);
     }
 
-    if (run_f_case) {
+if (run_f_case) {
+        double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
+        itype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
+        char txt_buf[2][16];
+        int int_buf[2][10];
+
         if (verbose && rank==0) {
             printf("number of requests for D1=%d D2=%d D3=%d\n",
                    contig_nreqs[0], contig_nreqs[1], contig_nreqs[2]);
@@ -221,62 +248,116 @@ int main(int argc, char** argv)
 #if REC_XTYPE != NC_FLOAT
             if (!rank)
                 printf("PnetCDF vard API requires internal and external data types match, skip\n");
-#else
-            if (!rank) {
-                printf("\n==== benchmarking F case using vard API ========================\n");
-                printf("Variable written order: same as variables are defined\n\n");
+#else  
+            if (tst_rd){
+                if (!rank)
+                    printf("Reading not supported for vard\n");
             }
-            fflush(stdout);
-            MPI_Barrier(io_comm);
+            
+            if (tst_wr){
+                if (!rank) {
+                    printf("\n==== benchmarking F case using vard API ========================\n");
+                    printf("Variable written order: same as variables are defined\n\n");
+                }
+                fflush(stdout);
+                MPI_Barrier(io_comm);
 
-            nvars = 408;
-            outfname = "f_case_h0_vard.nc";
-            nerrs += run_vard_F_case(io_comm, out_dir, outfname, nvars, num_recs,
-                                     noncontig_buf, info, dims,
-                                     contig_nreqs, disps, blocklens);
+                nvars = 408;
+                outfname = "f_case_h0_vard.nc";
+                nerrs += run_vard_F_case(io_comm, out_dir, outfname, nvars, num_recs,
+                                        noncontig_buf, info, dims,
+                                        contig_nreqs, disps, blocklens);
 
-            MPI_Barrier(io_comm);
+                MPI_Barrier(io_comm);
 
-            nvars = 51;
-            outfname = "f_case_h1_vard.nc";
-            nerrs += run_vard_F_case(io_comm, out_dir, outfname, nvars, num_recs,
-                                     noncontig_buf, info, dims,
-                                     contig_nreqs, disps, blocklens);
+                nvars = 51;
+                outfname = "f_case_h1_vard.nc";
+                nerrs += run_vard_F_case(io_comm, out_dir, outfname, nvars, num_recs,
+                                        noncontig_buf, info, dims,
+                                        contig_nreqs, disps, blocklens);
+            }
 #endif
         }
         if (tst_varn) {
-            if (!rank) {
-                printf("\n==== benchmarking F case using varn API ========================\n");
-                printf("Variable written order: ");
-                if (two_buf)
-                    printf("2D variables then 3D variables\n\n");
-                else
-                    printf("same as variables are defined\n\n");
+            if (tst_rd){        
+                if (!rank) {
+                    printf("\n==== benchmarking F case reading using varn API ========================\n");
+                    printf("Variable written order: ");
+                    if (two_buf)
+                        printf("2D variables then 3D variables\n\n");
+                    else
+                        printf("same as variables are defined\n\n");
+                }
+                fflush(stdout);
+                MPI_Barrier(MPI_COMM_WORLD);
+
+                /* There are two kinds of outputs for history variables.
+                * Output 1st kind history variables.
+                */
+                nvars = 408;
+                outfname = "f_case_h0_varn.nc";
+                nerrs += run_varn_F_case_rd(io_comm, in_dir, outfname, nvars, num_recs,
+                                        noncontig_buf, info, dims,
+                                        contig_nreqs, disps, blocklens, &dbl_buf_h0, &rec_buf_h0, txt_buf[0], int_buf[0]);
+
+                MPI_Barrier(MPI_COMM_WORLD);
+
+                /* Output 2nd kind history variables. */
+                nvars = 51;
+                outfname = "f_case_h1_varn.nc";
+                nerrs += run_varn_F_case_rd(io_comm, in_dir, outfname, nvars, num_recs,
+                                        noncontig_buf, info, dims,
+                                        contig_nreqs, disps, blocklens, &dbl_buf_h1, &rec_buf_h1, txt_buf[1], int_buf[1]);
             }
-            fflush(stdout);
-            MPI_Barrier(io_comm);
 
-            /* There are two kinds of outputs for history variables.
-             * Output 1st kind history variables.
-             */
-            nvars = 408;
-            outfname = "f_case_h0_varn.nc";
-            nerrs += run_varn_F_case(io_comm, out_dir, outfname, nvars, num_recs,
-                                     noncontig_buf, info, dims,
-                                     contig_nreqs, disps, blocklens);
+            if (tst_wr){
+                if (!rank) {
+                    printf("\n==== benchmarking F case writing using varn API ========================\n");
+                    printf("Variable written order: ");
+                    if (two_buf)
+                        printf("2D variables then 3D variables\n\n");
+                    else
+                        printf("same as variables are defined\n\n");
+                }
+                fflush(stdout);
 
-            MPI_Barrier(io_comm);
+                MPI_Barrier(io_comm);
 
-            /* Output 2nd kind history variables. */
-            nvars = 51;
-            outfname = "f_case_h1_varn.nc";
-            nerrs += run_varn_F_case(io_comm, out_dir, outfname, nvars, num_recs,
-                                     noncontig_buf, info, dims,
-                                     contig_nreqs, disps, blocklens);
+                /* There are two kinds of outputs for history variables.
+                * Output 1st kind history variables.
+                */
+                nvars = 408;
+                outfname = "f_case_h0_varn.nc";
+                nerrs += run_varn_F_case(io_comm, out_dir, outfname, nvars, num_recs,
+                                        noncontig_buf, info, dims,
+                                        contig_nreqs, disps, blocklens, dbl_buf_h0, rec_buf_h0, txt_buf[0], int_buf[0]);
+
+                MPI_Barrier(io_comm);
+
+                /* Output 2nd kind history variables. */
+                nvars = 51;
+                outfname = "f_case_h1_varn.nc";
+                nerrs += run_varn_F_case(io_comm, out_dir, outfname, nvars, num_recs,
+                                        noncontig_buf, info, dims,
+                                        contig_nreqs, disps, blocklens, dbl_buf_h1, rec_buf_h1, txt_buf[1], int_buf[1]);
+            }
         }
         for (i=0; i<3; i++) {
             free(disps[i]);
             free(blocklens[i]);
+        }
+
+        if (dbl_buf_h0 != NULL){
+            free(dbl_buf_h0);
+        }
+        if (dbl_buf_h1 != NULL){
+            free(dbl_buf_h1);
+        }
+        if (rec_buf_h0 != NULL){
+            free(rec_buf_h0);
+        }
+        if (rec_buf_h1 != NULL){
+            free(rec_buf_h1);
         }
     }
 
@@ -299,21 +380,77 @@ int main(int argc, char** argv)
         }
 
         if (tst_varn) {
-            if (!rank) {
-                printf("\n==== benchmarking G case using varn API ========================\n");
-            }
-            fflush(stdout);
-            MPI_Barrier(io_comm);
+            double *D1_rec_dbl_buf = NULL, *D3_rec_dbl_buf = NULL, *D4_rec_dbl_buf = NULL, *D5_rec_dbl_buf = NULL, *D6_rec_dbl_buf = NULL, *D1_fix_dbl_buf = NULL;
+            int *D1_fix_int_buf = NULL, *D2_fix_int_buf = NULL, *D3_fix_int_buf = NULL, *D4_fix_int_buf = NULL, *D5_fix_int_buf = NULL;
 
-            nvars = 52;
-            outfname = "g_case_hist_varn.nc";
-            nerrs += run_varn_G_case(io_comm, out_dir, outfname, nvars, num_recs, info,
-                                     dims, contig_nreqs, disps, blocklens);
+            if (tst_rd){
+                if (!rank) {
+                    printf("\n==== benchmarking G case reading using varn API ========================\n");
+                }
+                fflush(stdout);
+
+                MPI_Barrier(MPI_COMM_WORLD);
+
+                nvars = 52;
+                outfname = "g_case_hist_varn.nc";
+                nerrs += run_varn_G_case_rd(io_comm, in_dir, outfname, nvars, num_recs, info,
+                                       dims, contig_nreqs, disps, blocklens, &D1_fix_int_buf, &D2_fix_int_buf, &D3_fix_int_buf, &D4_fix_int_buf, &D5_fix_int_buf,
+                &D1_rec_dbl_buf, &D3_rec_dbl_buf, &D4_rec_dbl_buf, &D5_rec_dbl_buf, &D6_rec_dbl_buf, &D1_fix_dbl_buf);
+            }
+
+            if (tst_wr){
+                if (!rank) {
+                    printf("\n==== benchmarking G case writing using varn API ========================\n");
+                }
+                fflush(stdout);
+
+                MPI_Barrier(MPI_COMM_WORLD);
+
+                nvars = 52;
+                outfname = "g_case_hist_varn.nc";
+                nerrs += run_varn_G_case(io_comm, out_dir, outfname, nvars, num_recs, info,
+                                        dims, contig_nreqs, disps, blocklens, D1_fix_int_buf, D2_fix_int_buf, D3_fix_int_buf, D4_fix_int_buf, D5_fix_int_buf,
+                D1_rec_dbl_buf, D3_rec_dbl_buf, D4_rec_dbl_buf, D5_rec_dbl_buf, D6_rec_dbl_buf, D1_fix_dbl_buf);
+            }
+
+            if (D1_rec_dbl_buf != NULL){
+                free(D1_rec_dbl_buf);
+            }
+            if (D3_rec_dbl_buf != NULL){
+                free(D3_rec_dbl_buf);
+            }
+            if (D4_rec_dbl_buf != NULL){
+                free(D4_rec_dbl_buf);
+            }
+            if (D5_rec_dbl_buf != NULL){
+                free(D5_rec_dbl_buf);
+            }
+            if (D6_rec_dbl_buf != NULL){
+                free(D6_rec_dbl_buf);
+            }
+            if (D1_fix_dbl_buf != NULL){
+                free(D1_fix_dbl_buf);
+            }
+            if (D1_fix_int_buf != NULL){
+                free(D1_fix_int_buf);
+            }
+            if (D2_fix_int_buf != NULL){
+                free(D2_fix_int_buf);
+            }
+            if (D3_fix_int_buf != NULL){
+                free(D3_fix_int_buf);
+            }
+            if (D4_fix_int_buf != NULL){
+                free(D4_fix_int_buf);
+            }
+            if (D5_fix_int_buf != NULL){
+                free(D5_fix_int_buf);
+            }
         }
         for (i=0; i<6; i++) {
             free(disps[i]);
             free(blocklens[i]);
-        }
+        }       
     }
 
 fn_exit:
