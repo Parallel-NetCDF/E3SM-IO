@@ -86,7 +86,7 @@ extern int
 run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                 const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
-                int         nvars,        /* number of variables 408 or 51 */
+                int         nvars,        /* number of variables 414 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
                 MPI_Info    info,
@@ -99,7 +99,7 @@ extern int
 run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                 const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
-                int         nvars,        /* number of variables 408 or 51 */
+                int         nvars,        /* number of variables 414 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
                 MPI_Info    info,
@@ -115,7 +115,7 @@ extern int
 run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                     char       *out_dir,      /* output folder name */
                     char       *outfile,      /* output file name */
-                    int         nvars,        /* number of variables 408 or 51 */
+                    int         nvars,        /* number of variables 414 or 51 */
                     int         num_recs,     /* number of records */
                     int         noncontig_buf,/* whether to us noncontiguous buffer */
                     MPI_Info    info,

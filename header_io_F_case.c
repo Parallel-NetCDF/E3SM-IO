@@ -21,15 +21,15 @@ int def_F_case_h0(int               ncid,    /* file ID */
                   int               nvars,   /* number of variables */
                   int              *varids)  /* variable IDs */
 {
-    /* Total 408 variables */
+    /* Total 414 variables */
     int lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date,
         datesec, time_bnds, date_written, time_written, ndbase, nsbase, nbdate,
         nbsec, mdt, ndcur, nscur, co2vmr, ch4vmr, n2ovmr, f11vmr, f12vmr,
-        sol_tsi, nsteph, AEROD_v, ANRAIN, ANSNOW, AODABS, AODABSBC, AODBC,
+        sol_tsi, nsteph, AEROD_v, ANRAIN, ANSNOW, AODABS, AODABSBC, AODALL, AODBC,
         AODDUST, AODDUST1, AODDUST3, AODDUST4, AODMODE1, AODMODE2, AODMODE3,
         AODMODE4, AODNIR, AODPOM, AODSO4, AODSOA, AODSS, AODUV, AODVIS, AQRAIN,
         AQSNOW, AQ_DMS, AQ_H2O2, AQ_H2SO4, AQ_O3, AQ_SO2, AQ_SOAG, AREI, AREL,
-        AWNC, AWNI, CCN3, CDNUMC, CLDHGH, CLDICE, CLDLIQ, CLDLOW, CLDMED,
+        AWNC, AWNI, BURDEN1, BURDEN2, BURDEN3, BURDEN4, CCN3, CDNUMC, CLDHGH, CLDICE, CLDLIQ, CLDLOW, CLDMED,
         CLDTOT, CLOUD, CLOUDFRAC_CLUBB, CONCLD, DCQ, DF_DMS, DF_H2O2, DF_H2SO4,
         DF_O3, DF_SO2, DF_SOAG, DMS_SRF, DP_KCLDBASE, DP_MFUP_MAX, DP_WCLDBASE,
         DSTSFMBL, DTCOND, DTENDTH, DTENDTQ, EXTINCT, FICE, FLDS, FLNS, FLNSC,
@@ -37,7 +37,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
         FSNS, FSNSC, FSNT, FSNTC, FSNTOA, FSNTOAC, FSUTOA, FSUTOAC, F_eff,
         H2O2_SRF, H2SO4_SRF, H2SO4_sfgaex1, ICEFRAC, ICIMR, ICWMR, IWC,
         LANDFRAC, LHFLX, LINOZ_DO3, LINOZ_DO3_PSC, LINOZ_O3CLIM, LINOZ_O3COL,
-        LINOZ_SSO3, LINOZ_SZA, LND_MBL, LWCF, Mass_bc, Mass_dst, Mass_mom,
+        LINOZ_SFCSINK, LINOZ_SSO3, LINOZ_SZA, LND_MBL, LWCF, Mass_bc, Mass_dst, Mass_mom,
         Mass_ncl, Mass_pom, Mass_so4, Mass_soa, NUMICE, NUMLIQ, NUMRAI, NUMSNO,
         O3, O3_SRF, OCNFRAC, OMEGA, OMEGA500, OMEGAT, PBLH, PHIS, PRECC, PRECL,
         PRECSC, PRECSL, PS, PSL, Q, QFLX, QREFHT, QRL, QRS, RAINQM, RAM1,
@@ -325,6 +325,15 @@ int def_F_case_h0(int               ncid,    /* file ID */
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
+    err = ncmpi_def_var(ncid, "AODALL", NC_FLOAT, 2, dimids, &AODALL); ERR
+    err = ncmpi_put_att_float(ncid, AODALL, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = ncmpi_put_att_float(ncid, AODALL, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = ncmpi_put_att_text(ncid, AODALL, "long_name", 35, "AOD 550 nm for all time and species"); ERR
+    err = ncmpi_put_att_text(ncid, AODALL, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = AODALL;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
     err = ncmpi_def_var(ncid, "AODBC", NC_FLOAT, 2, dimids, &AODBC); ERR
     err = ncmpi_put_att_float(ncid, AODBC, _FillValue, NC_FLOAT, 1, &fillv); ERR
     err = ncmpi_put_att_float(ncid, AODBC, "missing_value", NC_FLOAT, 1, &missv); ERR
@@ -576,6 +585,46 @@ int def_F_case_h0(int               ncid,    /* file ID */
     varids[i++] = AWNI;
 
     dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = ncmpi_def_var(ncid, "BURDEN1", NC_FLOAT, 2, dimids, &BURDEN1); ERR
+    err = ncmpi_put_att_float(ncid, BURDEN1, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = ncmpi_put_att_float(ncid, BURDEN1, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN1, "units", 5, "kg/m2"); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN1, "long_name", 21, "Aerosol burden mode 1"); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN1, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = BURDEN1;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = ncmpi_def_var(ncid, "BURDEN2", NC_FLOAT, 2, dimids, &BURDEN2); ERR
+    err = ncmpi_put_att_float(ncid, BURDEN2, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = ncmpi_put_att_float(ncid, BURDEN2, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN2, "units", 5, "kg/m2"); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN2, "long_name", 21, "Aerosol burden mode 2"); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN2, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = BURDEN2;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = ncmpi_def_var(ncid, "BURDEN3", NC_FLOAT, 2, dimids, &BURDEN3); ERR
+    err = ncmpi_put_att_float(ncid, BURDEN3, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = ncmpi_put_att_float(ncid, BURDEN3, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN3, "units", 5, "kg/m2"); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN3, "long_name", 21, "Aerosol burden mode 3"); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN3, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = BURDEN3;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = ncmpi_def_var(ncid, "BURDEN4", NC_FLOAT, 2, dimids, &BURDEN4); ERR
+    err = ncmpi_put_att_float(ncid, BURDEN4, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = ncmpi_put_att_float(ncid, BURDEN4, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN4, "units", 5, "kg/m2"); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN4, "long_name", 21, "Aerosol burden mode 4"); ERR
+    err = ncmpi_put_att_text(ncid, BURDEN4, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = BURDEN4;
+
+    dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
     err = ncmpi_def_var(ncid, "CCN3", NC_FLOAT, 3, dimids, &CCN3); ERR
@@ -607,6 +656,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "CLDICE", NC_FLOAT, 3, dimids, &CLDICE); ERR
     err = ncmpi_put_att_int(ncid, CLDICE, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, CLDICE, "units", 5, "kg/kg"); ERR
+    err = ncmpi_put_att_text(ncid, CLDICE, "mixing_ratio", 3, "wet"); ERR
     err = ncmpi_put_att_text(ncid, CLDICE, "long_name", 34, "Grid box averaged cloud ice amount"); ERR
     err = ncmpi_put_att_text(ncid, CLDICE, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = CLDICE;
@@ -617,6 +667,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "CLDLIQ", NC_FLOAT, 3, dimids, &CLDLIQ); ERR
     err = ncmpi_put_att_int(ncid, CLDLIQ, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, CLDLIQ, "units", 5, "kg/kg"); ERR
+    err = ncmpi_put_att_text(ncid, CLDLIQ, "mixing_ratio", 3, "wet"); ERR
     err = ncmpi_put_att_text(ncid, CLDLIQ, "long_name", 37, "Grid box averaged cloud liquid amount"); ERR
     err = ncmpi_put_att_text(ncid, CLDLIQ, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = CLDLIQ;
@@ -1141,6 +1192,14 @@ int def_F_case_h0(int               ncid,    /* file ID */
     varids[i++] = LINOZ_O3COL;
 
     dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = ncmpi_def_var(ncid, "LINOZ_SFCSINK", NC_FLOAT, 2, dimids, &LINOZ_SFCSINK); ERR
+    err = ncmpi_put_att_text(ncid, LINOZ_SFCSINK, "units", 8, "Tg/yr/m2"); ERR
+    err = ncmpi_put_att_text(ncid, LINOZ_SFCSINK, "long_name", 64, "surface o3 sink in LINOZ with an e-fold to a fixed concentration"); ERR
+    err = ncmpi_put_att_text(ncid, LINOZ_SFCSINK, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = LINOZ_SFCSINK;
+
+    dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
     err = ncmpi_def_var(ncid, "LINOZ_SSO3", NC_FLOAT, 3, dimids, &LINOZ_SSO3); ERR
@@ -1251,6 +1310,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "NUMICE", NC_FLOAT, 3, dimids, &NUMICE); ERR
     err = ncmpi_put_att_int(ncid, NUMICE, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, NUMICE, "units", 4, "1/kg"); ERR
+    err = ncmpi_put_att_text(ncid, NUMICE, "mixing_ratio", 3, "wet"); ERR
     err = ncmpi_put_att_text(ncid, NUMICE, "long_name", 34, "Grid box averaged cloud ice number"); ERR
     err = ncmpi_put_att_text(ncid, NUMICE, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = NUMICE;
@@ -1261,6 +1321,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "NUMLIQ", NC_FLOAT, 3, dimids, &NUMLIQ); ERR
     err = ncmpi_put_att_int(ncid, NUMLIQ, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, NUMLIQ, "units", 4, "1/kg"); ERR
+    err = ncmpi_put_att_text(ncid, NUMLIQ, "mixing_ratio", 3, "wet"); ERR
     err = ncmpi_put_att_text(ncid, NUMLIQ, "long_name", 37, "Grid box averaged cloud liquid number"); ERR
     err = ncmpi_put_att_text(ncid, NUMLIQ, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = NUMLIQ;
@@ -1271,6 +1332,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "NUMRAI", NC_FLOAT, 3, dimids, &NUMRAI); ERR
     err = ncmpi_put_att_int(ncid, NUMRAI, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, NUMRAI, "units", 4, "1/kg"); ERR
+    err = ncmpi_put_att_text(ncid, NUMRAI, "mixing_ratio", 3, "wet"); ERR
     err = ncmpi_put_att_text(ncid, NUMRAI, "long_name", 29, "Grid box averaged rain number"); ERR
     err = ncmpi_put_att_text(ncid, NUMRAI, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = NUMRAI;
@@ -1281,6 +1343,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "NUMSNO", NC_FLOAT, 3, dimids, &NUMSNO); ERR
     err = ncmpi_put_att_int(ncid, NUMSNO, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, NUMSNO, "units", 4, "1/kg"); ERR
+    err = ncmpi_put_att_text(ncid, NUMSNO, "mixing_ratio", 3, "wet"); ERR
     err = ncmpi_put_att_text(ncid, NUMSNO, "long_name", 29, "Grid box averaged snow number"); ERR
     err = ncmpi_put_att_text(ncid, NUMSNO, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = NUMSNO;
@@ -1291,6 +1354,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "O3", NC_FLOAT, 3, dimids, &O3); ERR
     err = ncmpi_put_att_int(ncid, O3, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, O3, "units", 7, "mol/mol"); ERR
+    err = ncmpi_put_att_text(ncid, O3, "mixing_ratio", 3, "dry"); ERR
     err = ncmpi_put_att_text(ncid, O3, "long_name", 16, "O3 concentration"); ERR
     err = ncmpi_put_att_text(ncid, O3, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = O3;
@@ -1408,6 +1472,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "Q", NC_FLOAT, 3, dimids, &Q); ERR
     err = ncmpi_put_att_int(ncid, Q, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, Q, "units", 5, "kg/kg"); ERR
+    err = ncmpi_put_att_text(ncid, Q, "mixing_ratio", 3, "wet"); ERR
     err = ncmpi_put_att_text(ncid, Q, "long_name", 17, "Specific humidity"); ERR
     err = ncmpi_put_att_text(ncid, Q, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = Q;
@@ -1456,6 +1521,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "RAINQM", NC_FLOAT, 3, dimids, &RAINQM); ERR
     err = ncmpi_put_att_int(ncid, RAINQM, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, RAINQM, "units", 5, "kg/kg"); ERR
+    err = ncmpi_put_att_text(ncid, RAINQM, "mixing_ratio", 3, "wet"); ERR
     err = ncmpi_put_att_text(ncid, RAINQM, "long_name", 29, "Grid box averaged rain amount"); ERR
     err = ncmpi_put_att_text(ncid, RAINQM, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = RAINQM;
@@ -1780,6 +1846,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "SNOWQM", NC_FLOAT, 3, dimids, &SNOWQM); ERR
     err = ncmpi_put_att_int(ncid, SNOWQM, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, SNOWQM, "units", 5, "kg/kg"); ERR
+    err = ncmpi_put_att_text(ncid, SNOWQM, "mixing_ratio", 3, "wet"); ERR
     err = ncmpi_put_att_text(ncid, SNOWQM, "long_name", 29, "Grid box averaged snow amount"); ERR
     err = ncmpi_put_att_text(ncid, SNOWQM, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = SNOWQM;
@@ -1790,6 +1857,7 @@ int def_F_case_h0(int               ncid,    /* file ID */
     err = ncmpi_def_var(ncid, "SO2", NC_FLOAT, 3, dimids, &SO2); ERR
     err = ncmpi_put_att_int(ncid, SO2, "mdims", NC_INT, 1, &mdims); ERR
     err = ncmpi_put_att_text(ncid, SO2, "units", 7, "mol/mol"); ERR
+    err = ncmpi_put_att_text(ncid, SO2, "mixing_ratio", 3, "dry"); ERR
     err = ncmpi_put_att_text(ncid, SO2, "long_name", 17, "SO2 concentration"); ERR
     err = ncmpi_put_att_text(ncid, SO2, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = SO2;
@@ -3484,15 +3552,15 @@ int inq_F_case_h0(int         ncid,    /* file ID */
                   int         nvars,   /* number of variables */
                   int        *varids)  /* variable IDs */
 {
-    /* Total 408 variables */
+    /* Total 414 variables */
     int lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date,
         datesec, time_bnds, date_written, time_written, ndbase, nsbase, nbdate,
         nbsec, mdt, ndcur, nscur, co2vmr, ch4vmr, n2ovmr, f11vmr, f12vmr,
-        sol_tsi, nsteph, AEROD_v, ANRAIN, ANSNOW, AODABS, AODABSBC, AODBC,
+        sol_tsi, nsteph, AEROD_v, ANRAIN, ANSNOW, AODABS, AODABSBC, AODALL, AODBC,
         AODDUST, AODDUST1, AODDUST3, AODDUST4, AODMODE1, AODMODE2, AODMODE3,
         AODMODE4, AODNIR, AODPOM, AODSO4, AODSOA, AODSS, AODUV, AODVIS, AQRAIN,
         AQSNOW, AQ_DMS, AQ_H2O2, AQ_H2SO4, AQ_O3, AQ_SO2, AQ_SOAG, AREI, AREL,
-        AWNC, AWNI, CCN3, CDNUMC, CLDHGH, CLDICE, CLDLIQ, CLDLOW, CLDMED,
+        AWNC, AWNI, BURDEN1, BURDEN2, BURDEN3, BURDEN4, CCN3, CDNUMC, CLDHGH, CLDICE, CLDLIQ, CLDLOW, CLDMED,
         CLDTOT, CLOUD, CLOUDFRAC_CLUBB, CONCLD, DCQ, DF_DMS, DF_H2O2, DF_H2SO4,
         DF_O3, DF_SO2, DF_SOAG, DMS_SRF, DP_KCLDBASE, DP_MFUP_MAX, DP_WCLDBASE,
         DSTSFMBL, DTCOND, DTENDTH, DTENDTQ, EXTINCT, FICE, FLDS, FLNS, FLNSC,
@@ -3500,7 +3568,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
         FSNS, FSNSC, FSNT, FSNTC, FSNTOA, FSNTOAC, FSUTOA, FSUTOAC, F_eff,
         H2O2_SRF, H2SO4_SRF, H2SO4_sfgaex1, ICEFRAC, ICIMR, ICWMR, IWC,
         LANDFRAC, LHFLX, LINOZ_DO3, LINOZ_DO3_PSC, LINOZ_O3CLIM, LINOZ_O3COL,
-        LINOZ_SSO3, LINOZ_SZA, LND_MBL, LWCF, Mass_bc, Mass_dst, Mass_mom,
+        LINOZ_SFCSINK, LINOZ_SSO3, LINOZ_SZA, LND_MBL, LWCF, Mass_bc, Mass_dst, Mass_mom,
         Mass_ncl, Mass_pom, Mass_so4, Mass_soa, NUMICE, NUMLIQ, NUMRAI, NUMSNO,
         O3, O3_SRF, OCNFRAC, OMEGA, OMEGA500, OMEGAT, PBLH, PHIS, PRECC, PRECL,
         PRECSC, PRECSL, PS, PSL, Q, QFLX, QREFHT, QRL, QRS, RAINQM, RAM1,
@@ -3799,6 +3867,15 @@ int inq_F_case_h0(int         ncid,    /* file ID */
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
+    err = INQ_VID(ncid, "AODALL", NC_FLOAT, 2, dimids, &AODALL); ERR
+    err = NOP2(ncid, AODALL, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = NOP2(ncid, AODALL, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = NOP(ncid, AODALL, "long_name", 35, "AOD 550 nm for all time and species"); ERR
+    err = NOP(ncid, AODALL, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = AODALL;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
     err = INQ_VID(ncid, "AODBC", NC_FLOAT, 2, dimids, &AODBC); ERR
     err = NOP2(ncid, AODBC, _FillValue, NC_FLOAT, 1, &fillv); ERR
     err = NOP2(ncid, AODBC, "missing_value", NC_FLOAT, 1, &missv); ERR
@@ -4050,6 +4127,46 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     varids[i++] = AWNI;
 
     dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = INQ_VID(ncid, "BURDEN1", NC_FLOAT, 2, dimids, &BURDEN1); ERR
+    err = NOP2(ncid, BURDEN1, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = NOP2(ncid, BURDEN1, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = NOP(ncid, BURDEN1, "units", 5, "kg/m2"); ERR
+    err = NOP(ncid, BURDEN1, "long_name", 21, "Aerosol burden mode 1"); ERR
+    err = NOP(ncid, BURDEN1, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = BURDEN1;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = INQ_VID(ncid, "BURDEN2", NC_FLOAT, 2, dimids, &BURDEN2); ERR
+    err = NOP2(ncid, BURDEN2, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = NOP2(ncid, BURDEN2, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = NOP(ncid, BURDEN2, "units", 5, "kg/m2"); ERR
+    err = NOP(ncid, BURDEN2, "long_name", 21, "Aerosol burden mode 2"); ERR
+    err = NOP(ncid, BURDEN2, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = BURDEN2;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = INQ_VID(ncid, "BURDEN3", NC_FLOAT, 2, dimids, &BURDEN3); ERR
+    err = NOP2(ncid, BURDEN3, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = NOP2(ncid, BURDEN3, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = NOP(ncid, BURDEN3, "units", 5, "kg/m2"); ERR
+    err = NOP(ncid, BURDEN3, "long_name", 21, "Aerosol burden mode 3"); ERR
+    err = NOP(ncid, BURDEN3, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = BURDEN3;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = INQ_VID(ncid, "BURDEN4", NC_FLOAT, 2, dimids, &BURDEN4); ERR
+    err = NOP2(ncid, BURDEN4, _FillValue, NC_FLOAT, 1, &fillv); ERR
+    err = NOP2(ncid, BURDEN4, "missing_value", NC_FLOAT, 1, &missv); ERR
+    err = NOP(ncid, BURDEN4, "units", 5, "kg/m2"); ERR
+    err = NOP(ncid, BURDEN4, "long_name", 21, "Aerosol burden mode 4"); ERR
+    err = NOP(ncid, BURDEN4, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = BURDEN4;
+
+    dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
     err = INQ_VID(ncid, "CCN3", NC_FLOAT, 3, dimids, &CCN3); ERR
@@ -4081,6 +4198,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "CLDICE", NC_FLOAT, 3, dimids, &CLDICE); ERR
     err = NOP2(ncid, CLDICE, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, CLDICE, "units", 5, "kg/kg"); ERR
+    err = NOP(ncid, CLDICE, "mixing_ratio", 3, "wet"); ERR
     err = NOP(ncid, CLDICE, "long_name", 34, "Grid box averaged cloud ice amount"); ERR
     err = NOP(ncid, CLDICE, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = CLDICE;
@@ -4091,6 +4209,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "CLDLIQ", NC_FLOAT, 3, dimids, &CLDLIQ); ERR
     err = NOP2(ncid, CLDLIQ, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, CLDLIQ, "units", 5, "kg/kg"); ERR
+    err = NOP(ncid, CLDLIQ, "mixing_ratio", 3, "wet"); ERR
     err = NOP(ncid, CLDLIQ, "long_name", 37, "Grid box averaged cloud liquid amount"); ERR
     err = NOP(ncid, CLDLIQ, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = CLDLIQ;
@@ -4615,6 +4734,14 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     varids[i++] = LINOZ_O3COL;
 
     dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = INQ_VID(ncid, "LINOZ_SFCSINK", NC_FLOAT, 2, dimids, &LINOZ_SFCSINK); ERR
+    err = NOP(ncid, LINOZ_SFCSINK, "units", 8, "Tg/yr/m2"); ERR
+    err = NOP(ncid, LINOZ_SFCSINK, "long_name", 64, "surface o3 sink in LINOZ with an e-fold to a fixed concentration"); ERR
+    err = NOP(ncid, LINOZ_SFCSINK, "cell_methods", 10, "time: mean"); ERR
+    varids[i++] = LINOZ_SFCSINK;
+
+    dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
     err = INQ_VID(ncid, "LINOZ_SSO3", NC_FLOAT, 3, dimids, &LINOZ_SSO3); ERR
@@ -4725,6 +4852,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "NUMICE", NC_FLOAT, 3, dimids, &NUMICE); ERR
     err = NOP2(ncid, NUMICE, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, NUMICE, "units", 4, "1/kg"); ERR
+    err = NOP(ncid, NUMICE, "mixing_ratio", 3, "wet"); ERR
     err = NOP(ncid, NUMICE, "long_name", 34, "Grid box averaged cloud ice number"); ERR
     err = NOP(ncid, NUMICE, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = NUMICE;
@@ -4735,6 +4863,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "NUMLIQ", NC_FLOAT, 3, dimids, &NUMLIQ); ERR
     err = NOP2(ncid, NUMLIQ, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, NUMLIQ, "units", 4, "1/kg"); ERR
+    err = NOP(ncid, NUMLIQ, "mixing_ratio", 3, "wet"); ERR
     err = NOP(ncid, NUMLIQ, "long_name", 37, "Grid box averaged cloud liquid number"); ERR
     err = NOP(ncid, NUMLIQ, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = NUMLIQ;
@@ -4745,6 +4874,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "NUMRAI", NC_FLOAT, 3, dimids, &NUMRAI); ERR
     err = NOP2(ncid, NUMRAI, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, NUMRAI, "units", 4, "1/kg"); ERR
+    err = NOP(ncid, NUMRAI, "mixing_ratio", 3, "wet"); ERR
     err = NOP(ncid, NUMRAI, "long_name", 29, "Grid box averaged rain number"); ERR
     err = NOP(ncid, NUMRAI, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = NUMRAI;
@@ -4755,6 +4885,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "NUMSNO", NC_FLOAT, 3, dimids, &NUMSNO); ERR
     err = NOP2(ncid, NUMSNO, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, NUMSNO, "units", 4, "1/kg"); ERR
+    err = NOP(ncid, NUMSNO, "mixing_ratio", 3, "wet"); ERR
     err = NOP(ncid, NUMSNO, "long_name", 29, "Grid box averaged snow number"); ERR
     err = NOP(ncid, NUMSNO, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = NUMSNO;
@@ -4765,6 +4896,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "O3", NC_FLOAT, 3, dimids, &O3); ERR
     err = NOP2(ncid, O3, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, O3, "units", 7, "mol/mol"); ERR
+    err = NOP(ncid, O3, "mixing_ratio", 3, "dry"); ERR
     err = NOP(ncid, O3, "long_name", 16, "O3 concentration"); ERR
     err = NOP(ncid, O3, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = O3;
@@ -4882,6 +5014,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "Q", NC_FLOAT, 3, dimids, &Q); ERR
     err = NOP2(ncid, Q, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, Q, "units", 5, "kg/kg"); ERR
+    err = NOP(ncid, Q, "mixing_ratio", 3, "wet"); ERR
     err = NOP(ncid, Q, "long_name", 17, "Specific humidity"); ERR
     err = NOP(ncid, Q, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = Q;
@@ -4930,6 +5063,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "RAINQM", NC_FLOAT, 3, dimids, &RAINQM); ERR
     err = NOP2(ncid, RAINQM, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, RAINQM, "units", 5, "kg/kg"); ERR
+    err = NOP(ncid, RAINQM, "mixing_ratio", 3, "wet"); ERR
     err = NOP(ncid, RAINQM, "long_name", 29, "Grid box averaged rain amount"); ERR
     err = NOP(ncid, RAINQM, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = RAINQM;
@@ -5254,6 +5388,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "SNOWQM", NC_FLOAT, 3, dimids, &SNOWQM); ERR
     err = NOP2(ncid, SNOWQM, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, SNOWQM, "units", 5, "kg/kg"); ERR
+    err = NOP(ncid, SNOWQM, "mixing_ratio", 3, "wet"); ERR
     err = NOP(ncid, SNOWQM, "long_name", 29, "Grid box averaged snow amount"); ERR
     err = NOP(ncid, SNOWQM, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = SNOWQM;
@@ -5264,6 +5399,7 @@ int inq_F_case_h0(int         ncid,    /* file ID */
     err = INQ_VID(ncid, "SO2", NC_FLOAT, 3, dimids, &SO2); ERR
     err = NOP2(ncid, SO2, "mdims", NC_INT, 1, &mdims); ERR
     err = NOP(ncid, SO2, "units", 7, "mol/mol"); ERR
+    err = NOP(ncid, SO2, "mixing_ratio", 3, "dry"); ERR
     err = NOP(ncid, SO2, "long_name", 17, "SO2 concentration"); ERR
     err = NOP(ncid, SO2, "cell_methods", 10, "time: mean"); ERR
     varids[i++] = SO2;
