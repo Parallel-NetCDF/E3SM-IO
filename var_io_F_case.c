@@ -327,7 +327,7 @@ int
 run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                 const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
-                int         nvars,        /* number of variables 408 or 51 */
+                int         nvars,        /* number of variables 414 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
                 MPI_Info    info,
@@ -401,8 +401,8 @@ run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     for (i=0; i<16; i++) txt_buf[i] = 'a' + rank + i;
 
     /* allocate and initialize write buffer for large variables */
-    if (nvars == 408)
-        rec_buflen = nelems[1] * 315 + nelems[2] * 63 + (315+63) * gap;
+    if (nvars == 414)
+        rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321+63) * gap;
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20+1) * gap;
 
@@ -422,7 +422,7 @@ run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     err = ncmpi_create(io_comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
-    if (nvars == 408) {
+    if (nvars == 414) {
         /* for h0 file */
         err = def_F_case_h0(ncid, dims[2], nvars, varids); ERR
     }
@@ -497,13 +497,15 @@ run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     err = ncmpi_inq_recsize(ncid, &rec_size); ERR
     buf_disps[i] = 0;
 
-    if (nvars == 408) {
+    if (nvars == 414) {
         SET_TYPE(2)       /* AEROD_v */
         SET_TYPES(3, 2)   /* ANRAIN and ANSNOW */
-        SET_TYPES(2, 18)  /* AODABS ... ANSNOW */
+        SET_TYPES(2, 19)  /* AODABS ... AODVIS */
         SET_TYPES(3, 2)   /* AQRAIN and AQSNOW */
         SET_TYPES(2, 6)   /* AQ_DMS ... AQ_SOAG */
-        SET_TYPES(3, 5)   /* AREI ... CCN3 */
+        SET_TYPES(3, 4)   /* AREI ... AWNI */
+        SET_TYPES(2, 4)   /* BURDEN1 ... BURDEN4 */
+        SET_TYPE(3)       /* CCN3 */
         SET_TYPES(2, 2)   /* CDNUMC and CLDHGH */
         SET_TYPES(3, 2)   /* CLDICE and CLDLIQ */
         SET_TYPES(2, 3)   /* CLDLOW ... CLDTOT */
@@ -517,7 +519,9 @@ run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
         SET_TYPES(2, 15)  /* FSDS ... ICEFRAC */
         SET_TYPES(3, 3)   /* ICIMR ... IWC */
         SET_TYPES(2, 2)   /* LANDFRAC and LHFLX */
-        SET_TYPES(3, 5)   /* LINOZ_DO3 ... LINOZ_SSO3 */
+        SET_TYPES(3, 4)   /* LINOZ_DO3 ... LINOZ_O3COL */
+        SET_TYPE(2)       /* LINOZ_SFCSINK */
+        SET_TYPE(3)       /* LINOZ_SSO3 */
         SET_TYPES(2, 3)   /* LINOZ_SZA ... LWCF */
         SET_TYPES(3, 12)  /* Mass_bc ... O3 */
         SET_TYPES(2, 2)   /* O3_SRF and OCNFRAC */
@@ -585,8 +589,8 @@ run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
 
     if (noncontig_buf) fix_buflen = rec_buflen = 1;
     else {
-        if (nvars == 408)
-            rec_buflen = nelems[1] * 315 + nelems[2] * 63;
+        if (nvars == 414)
+            rec_buflen = nelems[1] * 321 + nelems[2] * 63;
         else
             rec_buflen = nelems[1] * 20 + nelems[2];
     }
@@ -830,7 +834,7 @@ int
 run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                 const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
-                int         nvars,        /* number of variables 408 or 51 */
+                int         nvars,        /* number of variables 414 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
                 MPI_Info    info,
@@ -897,8 +901,8 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     }
 
     /* allocate and initialize write buffer for large variables */
-    if (nvars == 408)
-        rec_buflen = nelems[1] * 315 + nelems[2] * 63 + (315+63) * gap;
+    if (nvars == 414)
+        rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321+63) * gap;
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20+1) * gap;
 
@@ -926,7 +930,7 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     err = ncmpi_create(io_comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
-    if (nvars == 408) {
+    if (nvars == 414) {
         /* for h0 file */
         err = def_F_case_h0(ncid, dims[2], nvars, varids); ERR
     }
@@ -1041,102 +1045,110 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
         for (j=0; j<xnreqs[1]; j++) starts_D2[j][0] = rec_no;
         for (j=0; j<xnreqs[2]; j++) starts_D3[j][0] = rec_no;
 
-        if (nvars == 408) {
+        if (nvars == 414) {
             if (two_buf) {
                 /* write 2D variables */
                 POST_VARN(2,   1,  30)   /* AEROD_v */
-                POST_VARN(2,  18,  33)   /* AODABS ... ANSNOW */
-                POST_VARN(2,   6,  53)   /* AQ_DMS ... AQ_SOAG */
-                POST_VARN(2,   2,  64)   /* CDNUMC and CLDHGH */
-                POST_VARN(2,   3,  68)   /* CLDLOW ... CLDTOT */
-                POST_VARN(2,  11,  75)   /* DF_DMS ... DSTSFMBL */
-                POST_VARN(2,   2,  87)   /* DTENDTH and DTENDTQ */
-                POST_VARN(2,   7,  91)   /* FLDS ... FLUTC */
-                POST_VARN(2,  15, 102)   /* FSDS ... ICEFRAC */
-                POST_VARN(2,   2, 120)   /* LANDFRAC and LHFLX */
-                POST_VARN(2,   3, 127)   /* LINOZ_SZA ... LWCF */
-                POST_VARN(2,   2, 142)   /* O3_SRF and OCNFRAC */
-                POST_VARN(2,   1, 145)   /* OMEGA500 */
-                POST_VARN(2,   8, 147)   /* PBLH ... PSL */
-                POST_VARN(2,   2, 156)   /* QFLX and QREFHT */
-                POST_VARN(2,   1, 161)   /* RAM1 */
-                POST_VARN(2,  37, 163)   /* SFDMS ... SNOWHLND */
-                POST_VARN(2,  10, 202)   /* SO2_CLXF ... SWCF */
-                POST_VARN(2,  19, 213)   /* TAUGWX ... TVQ */
-                POST_VARN(2,   1, 233)   /* U10 */
-                POST_VARN(2,   3, 240)   /* WD_H2O2 ... WD_SO2 */
-                POST_VARN(2,  32, 246)   /* airFV ... dst_c3SFWET */
-                POST_VARN(2, 129, 279)   /* mlip ... soa_c3SFWET */
+                POST_VARN(2,  19,  33)   /* AODABS ... AODVIS */
+                POST_VARN(2,   6,  54)   /* AQ_DMS ... AQ_SOAG */
+                POST_VARN(2,   4,  64)   /* BURDEN1 ... BURDEN4 */
+                POST_VARN(2,   2,  69)   /* CDNUMC and CLDHGH */
+                POST_VARN(2,   3,  73)   /* CLDLOW ... CLDTOT */
+                POST_VARN(2,  11,  80)   /* DF_DMS ... DSTSFMBL */
+                POST_VARN(2,   2,  92)   /* DTENDTH and DTENDTQ */
+                POST_VARN(2,   7,  96)   /* FLDS ... FLUTC */
+                POST_VARN(2,  15, 107)   /* FSDS ... ICEFRAC */
+                POST_VARN(2,   2, 125)   /* LANDFRAC and LHFLX */
+                POST_VARN(2,   1, 131)   /* LINOZ_SFCSINK */
+                POST_VARN(2,   3, 133)   /* LINOZ_SZA ... LWCF */
+                POST_VARN(2,   2, 148)   /* O3_SRF and OCNFRAC */
+                POST_VARN(2,   1, 151)   /* OMEGA500 */
+                POST_VARN(2,   8, 153)   /* PBLH ... PSL */
+                POST_VARN(2,   2, 162)   /* QFLX and QREFHT */
+                POST_VARN(2,   1, 167)   /* RAM1 */
+                POST_VARN(2,  37, 169)   /* SFDMS ... SNOWHLND */
+                POST_VARN(2,  10, 208)   /* SO2_CLXF ... SWCF */
+                POST_VARN(2,  19, 219)   /* TAUGWX ... TVQ */
+                POST_VARN(2,   1, 239)   /* U10 */
+                POST_VARN(2,   3, 246)   /* WD_H2O2 ... WD_SO2 */
+                POST_VARN(2,  32, 252)   /* airFV ... dst_c3SFWET */
+                POST_VARN(2, 129, 285)   /* mlip ... soa_c3SFWET */
                 /* write 3D variables */
                 POST_VARN(3,   2,  31)   /* ANRAIN and ANSNOW */
-                POST_VARN(3,   2,  51)   /* AQRAIN and AQSNOW */
-                POST_VARN(3,   5,  59)   /* AREI ... CCN3 */
-                POST_VARN(3,   2,  66)   /* CLDICE and CLDLIQ */
-                POST_VARN(3,   4,  71)   /* CLOUD ... DCQ */
-                POST_VARN(3,   1,  86)   /* DTCOND */
-                POST_VARN(3,   2,  89)   /* EXTINCT and FICE */
-                POST_VARN(3,   4,  98)   /* FREQI ... FREQS */
-                POST_VARN(3,   3, 117)   /* ICIMR ... IWC */
-                POST_VARN(3,   5, 122)   /* LINOZ_DO3 ... LINOZ_SSO3 */
-                POST_VARN(3,  12, 130)   /* Mass_bc ... O3 */
-                POST_VARN(3,   1, 144)   /* OMEGA */
-                POST_VARN(3,   1, 146)   /* OMEGAT */
-                POST_VARN(3,   1, 155)   /* Q */
-                POST_VARN(3,   3, 158)   /* QRL ... RAINQM */
-                POST_VARN(3,   1, 162)   /* RELHUM */
-                POST_VARN(3,   2, 200)   /* SNOWQM and SO2 */
-                POST_VARN(3,   1, 212)   /* T */
-                POST_VARN(3,   1, 232)   /* U */
-                POST_VARN(3,   6, 234)   /* UU ... VV */
-                POST_VARN(3,   3, 243)   /* WSUB ... aero_water */
-                POST_VARN(3,   1, 278)   /* hstobie_linoz */
+                POST_VARN(3,   2,  52)   /* AQRAIN and AQSNOW */
+                POST_VARN(3,   4,  60)   /* AREI ... AWNI */
+                POST_VARN(3,   1,  68)   /* CCN3 */
+                POST_VARN(3,   2,  71)   /* CLDICE and CLDLIQ */
+                POST_VARN(3,   4,  76)   /* CLOUD ... DCQ */
+                POST_VARN(3,   1,  91)   /* DTCOND */
+                POST_VARN(3,   2,  94)   /* EXTINCT and FICE */
+                POST_VARN(3,   4, 103)   /* FREQI ... FREQS */
+                POST_VARN(3,   3, 122)   /* ICIMR ... IWC */
+                POST_VARN(3,   4, 127)   /* LINOZ_DO3 ... LINOZ_O3COL */
+                POST_VARN(3,   1, 132)   /* LINOZ_SSO3 */
+                POST_VARN(3,  12, 136)   /* Mass_bc ... O3 */
+                POST_VARN(3,   1, 150)   /* OMEGA */
+                POST_VARN(3,   1, 152)   /* OMEGAT */
+                POST_VARN(3,   1, 161)   /* Q */
+                POST_VARN(3,   3, 164)   /* QRL ... RAINQM */
+                POST_VARN(3,   1, 168)   /* RELHUM */
+                POST_VARN(3,   2, 206)   /* SNOWQM and SO2 */
+                POST_VARN(3,   1, 218)   /* T */
+                POST_VARN(3,   1, 238)   /* U */
+                POST_VARN(3,   6, 240)   /* UU ... VV */
+                POST_VARN(3,   3, 249)   /* WSUB ... aero_water */
+                POST_VARN(3,   1, 284)   /* hstobie_linoz */
             } else {
                 /* write variables in the same order as they defined */
                 POST_VARN(2,   1,  30)   /* AEROD_v */
                 POST_VARN(3,   2,  31)   /* ANRAIN and ANSNOW */
-                POST_VARN(2,  18,  33)   /* AODABS ... ANSNOW */
-                POST_VARN(3,   2,  51)   /* AQRAIN and AQSNOW */
-                POST_VARN(2,   6,  53)   /* AQ_DMS ... AQ_SOAG */
-                POST_VARN(3,   5,  59)   /* AREI ... CCN3 */
-                POST_VARN(2,   2,  64)   /* CDNUMC and CLDHGH */
-                POST_VARN(3,   2,  66)   /* CLDICE and CLDLIQ */
-                POST_VARN(2,   3,  68)   /* CLDLOW ... CLDTOT */
-                POST_VARN(3,   4,  71)   /* CLOUD ... DCQ */
-                POST_VARN(2,  11,  75)   /* DF_DMS ... DSTSFMBL */
-                POST_VARN(3,   1,  86)   /* DTCOND */
-                POST_VARN(2,   2,  87)   /* DTENDTH and DTENDTQ */
-                POST_VARN(3,   2,  89)   /* EXTINCT and FICE */
-                POST_VARN(2,   7,  91)   /* FLDS ... FLUTC */
-                POST_VARN(3,   4,  98)   /* FREQI ... FREQS */
-                POST_VARN(2,  15, 102)   /* FSDS ... ICEFRAC */
-                POST_VARN(3,   3, 117)   /* ICIMR ... IWC */
-                POST_VARN(2,   2, 120)   /* LANDFRAC and LHFLX */
-                POST_VARN(3,   5, 122)   /* LINOZ_DO3 ... LINOZ_SSO3 */
-                POST_VARN(2,   3, 127)   /* LINOZ_SZA ... LWCF */
-                POST_VARN(3,  12, 130)   /* Mass_bc ... O3 */
-                POST_VARN(2,   2, 142)   /* O3_SRF and OCNFRAC */
-                POST_VARN(3,   1, 144)   /* OMEGA */
-                POST_VARN(2,   1, 145)   /* OMEGA500 */
-                POST_VARN(3,   1, 146)   /* OMEGAT */
-                POST_VARN(2,   8, 147)   /* PBLH ... PSL */
-                POST_VARN(3,   1, 155)   /* Q */
-                POST_VARN(2,   2, 156)   /* QFLX and QREFHT */
-                POST_VARN(3,   3, 158)   /* QRL ... RAINQM */
-                POST_VARN(2,   1, 161)   /* RAM1 */
-                POST_VARN(3,   1, 162)   /* RELHUM */
-                POST_VARN(2,  37, 163)   /* SFDMS ... SNOWHLND */
-                POST_VARN(3,   2, 200)   /* SNOWQM and SO2 */
-                POST_VARN(2,  10, 202)   /* SO2_CLXF ... SWCF */
-                POST_VARN(3,   1, 212)   /* T */
-                POST_VARN(2,  19, 213)   /* TAUGWX ... TVQ */
-                POST_VARN(3,   1, 232)   /* U */
-                POST_VARN(2,   1, 233)   /* U10 */
-                POST_VARN(3,   6, 234)   /* UU ... VV */
-                POST_VARN(2,   3, 240)   /* WD_H2O2 ... WD_SO2 */
-                POST_VARN(3,   3, 243)   /* WSUB ... aero_water */
-                POST_VARN(2,  32, 246)   /* airFV ... dst_c3SFWET */
-                POST_VARN(3,   1, 278)   /* hstobie_linoz */
-                POST_VARN(2, 129, 279)   /* mlip ... soa_c3SFWET */
+                POST_VARN(2,  19,  33)   /* AODABS ... AODVIS */
+                POST_VARN(3,   2,  52)   /* AQRAIN and AQSNOW */
+                POST_VARN(2,   6,  54)   /* AQ_DMS ... AQ_SOAG */
+                POST_VARN(3,   4,  60)   /* AREI ... AWNI */
+                POST_VARN(2,   4,  64)   /* BURDEN1 ... BURDEN4 */
+                POST_VARN(3,   1,  68)   /* CCN3 */
+                POST_VARN(2,   2,  69)   /* CDNUMC and CLDHGH */
+                POST_VARN(3,   2,  71)   /* CLDICE and CLDLIQ */
+                POST_VARN(2,   3,  73)   /* CLDLOW ... CLDTOT */
+                POST_VARN(3,   4,  76)   /* CLOUD ... DCQ */
+                POST_VARN(2,  11,  80)   /* DF_DMS ... DSTSFMBL */
+                POST_VARN(3,   1,  91)   /* DTCOND */
+                POST_VARN(2,   2,  92)   /* DTENDTH and DTENDTQ */
+                POST_VARN(3,   2,  94)   /* EXTINCT and FICE */
+                POST_VARN(2,   7,  96)   /* FLDS ... FLUTC */
+                POST_VARN(3,   4, 103)   /* FREQI ... FREQS */
+                POST_VARN(2,  15, 107)   /* FSDS ... ICEFRAC */
+                POST_VARN(3,   3, 122)   /* ICIMR ... IWC */
+                POST_VARN(2,   2, 125)   /* LANDFRAC and LHFLX */
+                POST_VARN(3,   4, 127)   /* LINOZ_DO3 ... LINOZ_O3COL */
+                POST_VARN(2,   1, 131)   /* LINOZ_SFCSINK */
+                POST_VARN(3,   1, 132)   /* LINOZ_SSO3 */
+                POST_VARN(2,   3, 133)   /* LINOZ_SZA ... LWCF */
+                POST_VARN(3,  12, 136)   /* Mass_bc ... O3 */
+                POST_VARN(2,   2, 148)   /* O3_SRF and OCNFRAC */
+                POST_VARN(3,   1, 150)   /* OMEGA */
+                POST_VARN(2,   1, 151)   /* OMEGA500 */
+                POST_VARN(3,   1, 152)   /* OMEGAT */
+                POST_VARN(2,   8, 153)   /* PBLH ... PSL */
+                POST_VARN(3,   1, 161)   /* Q */
+                POST_VARN(2,   2, 162)   /* QFLX and QREFHT */
+                POST_VARN(3,   3, 164)   /* QRL ... RAINQM */
+                POST_VARN(2,   1, 167)   /* RAM1 */
+                POST_VARN(3,   1, 168)   /* RELHUM */
+                POST_VARN(2,  37, 169)   /* SFDMS ... SNOWHLND */
+                POST_VARN(3,   2, 206)   /* SNOWQM and SO2 */
+                POST_VARN(2,  10, 208)   /* SO2_CLXF ... SWCF */
+                POST_VARN(3,   1, 218)   /* T */
+                POST_VARN(2,  19, 219)   /* TAUGWX ... TVQ */
+                POST_VARN(3,   1, 238)   /* U */
+                POST_VARN(2,   1, 239)   /* U10 */
+                POST_VARN(3,   6, 240)   /* UU ... VV */
+                POST_VARN(2,   3, 246)   /* WD_H2O2 ... WD_SO2 */
+                POST_VARN(3,   3, 249)   /* WSUB ... aero_water */
+                POST_VARN(2,  32, 252)   /* airFV ... dst_c3SFWET */
+                POST_VARN(3,   1, 284)   /* hstobie_linoz */
+                POST_VARN(2, 129, 285)   /* mlip ... soa_c3SFWET */
             }
         }
         else {
@@ -1270,7 +1282,7 @@ int
 run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                     char       *out_dir,      /* output folder name */
                     char       *outfile,      /* output file name */
-                    int         nvars,        /* number of variables 408 or 51 */
+                    int         nvars,        /* number of variables 414 or 51 */
                     int         num_recs,     /* number of records */
                     int         noncontig_buf,/* whether to us noncontiguous buffer */
                     MPI_Info    info,
@@ -1331,8 +1343,8 @@ run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes 
     for (i=0; i<dbl_buflen; i++) dbl_buf[i] = rank;
 
     /* allocate and initialize write buffer for large variables */
-    if (nvars == 408)
-        rec_buflen = nelems[1] * 315 + nelems[2] * 63 + (315+63) * gap;
+    if (nvars == 414)
+        rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321+63) * gap;
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20+1) * gap;
 
@@ -1362,7 +1374,7 @@ run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes 
     err = ncmpi_open(comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
-    if (nvars == 408) {
+    if (nvars == 414) {
         /* for h0 file */
         err = inq_F_case_h0(ncid, dims[2], nvars, varids); ERR
     }
@@ -1473,112 +1485,120 @@ run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes 
         for (j=0; j<nreqs[1]; j++) starts_D2[j][0] = rec_no;
         for (j=0; j<nreqs[2]; j++) starts_D3[j][0] = rec_no;
 
-        if (nvars == 408) {
+        if (nvars == 414) {
             if (two_buf) {
-                /* write 2D variables */
+                /* read 2D variables */
                 POST_VARN_RD(2,   1,  30)   /* AEROD_v */
-                POST_VARN_RD(2,  18,  33)   /* AODABS ... ANSNOW */
-                POST_VARN_RD(2,   6,  53)   /* AQ_DMS ... AQ_SOAG */
-                POST_VARN_RD(2,   2,  64)   /* CDNUMC and CLDHGH */
-                POST_VARN_RD(2,   3,  68)   /* CLDLOW ... CLDTOT */
-                POST_VARN_RD(2,  11,  75)   /* DF_DMS ... DSTSFMBL */
-                POST_VARN_RD(2,   2,  87)   /* DTENDTH and DTENDTQ */
-                POST_VARN_RD(2,   7,  91)   /* FLDS ... FLUTC */
-                POST_VARN_RD(2,  15, 102)   /* FSDS ... ICEFRAC */
-                POST_VARN_RD(2,   2, 120)   /* LANDFRAC and LHFLX */
-                POST_VARN_RD(2,   3, 127)   /* LINOZ_SZA ... LWCF */
-                POST_VARN_RD(2,   2, 142)   /* O3_SRF and OCNFRAC */
-                POST_VARN_RD(2,   1, 145)   /* OMEGA500 */
-                POST_VARN_RD(2,   8, 147)   /* PBLH ... PSL */
-                POST_VARN_RD(2,   2, 156)   /* QFLX and QREFHT */
-                POST_VARN_RD(2,   1, 161)   /* RAM1 */
-                POST_VARN_RD(2,  37, 163)   /* SFDMS ... SNOWHLND */
-                POST_VARN_RD(2,  10, 202)   /* SO2_CLXF ... SWCF */
-                POST_VARN_RD(2,  19, 213)   /* TAUGWX ... TVQ */
-                POST_VARN_RD(2,   1, 233)   /* U10 */
-                POST_VARN_RD(2,   3, 240)   /* WD_H2O2 ... WD_SO2 */
-                POST_VARN_RD(2,  32, 246)   /* airFV ... dst_c3SFWET */
-                POST_VARN_RD(2, 129, 279)   /* mlip ... soa_c3SFWET */
+                POST_VARN_RD(2,  19,  33)   /* AODABS ... AODVIS */
+                POST_VARN_RD(2,   6,  54)   /* AQ_DMS ... AQ_SOAG */
+                POST_VARN_RD(2,   4,  64)   /* BURDEN1 ... BURDEN4 */
+                POST_VARN_RD(2,   2,  69)   /* CDNUMC and CLDHGH */
+                POST_VARN_RD(2,   3,  73)   /* CLDLOW ... CLDTOT */
+                POST_VARN_RD(2,  11,  80)   /* DF_DMS ... DSTSFMBL */
+                POST_VARN_RD(2,   2,  92)   /* DTENDTH and DTENDTQ */
+                POST_VARN_RD(2,   7,  96)   /* FLDS ... FLUTC */
+                POST_VARN_RD(2,  15, 107)   /* FSDS ... ICEFRAC */
+                POST_VARN_RD(2,   2, 125)   /* LANDFRAC and LHFLX */
+                POST_VARN_RD(2,   1, 131)   /* LINOZ_SFCSINK */
+                POST_VARN_RD(2,   3, 133)   /* LINOZ_SZA ... LWCF */
+                POST_VARN_RD(2,   2, 148)   /* O3_SRF and OCNFRAC */
+                POST_VARN_RD(2,   1, 151)   /* OMEGA500 */
+                POST_VARN_RD(2,   8, 153)   /* PBLH ... PSL */
+                POST_VARN_RD(2,   2, 162)   /* QFLX and QREFHT */
+                POST_VARN_RD(2,   1, 167)   /* RAM1 */
+                POST_VARN_RD(2,  37, 169)   /* SFDMS ... SNOWHLND */
+                POST_VARN_RD(2,  10, 208)   /* SO2_CLXF ... SWCF */
+                POST_VARN_RD(2,  19, 219)   /* TAUGWX ... TVQ */
+                POST_VARN_RD(2,   1, 239)   /* U10 */
+                POST_VARN_RD(2,   3, 246)   /* WD_H2O2 ... WD_SO2 */
+                POST_VARN_RD(2,  32, 252)   /* airFV ... dst_c3SFWET */
+                POST_VARN_RD(2, 129, 285)   /* mlip ... soa_c3SFWET */
                 /* write 3D variables */
                 POST_VARN_RD(3,   2,  31)   /* ANRAIN and ANSNOW */
-                POST_VARN_RD(3,   2,  51)   /* AQRAIN and AQSNOW */
-                POST_VARN_RD(3,   5,  59)   /* AREI ... CCN3 */
-                POST_VARN_RD(3,   2,  66)   /* CLDICE and CLDLIQ */
-                POST_VARN_RD(3,   4,  71)   /* CLOUD ... DCQ */
-                POST_VARN_RD(3,   1,  86)   /* DTCOND */
-                POST_VARN_RD(3,   2,  89)   /* EXTINCT and FICE */
-                POST_VARN_RD(3,   4,  98)   /* FREQI ... FREQS */
-                POST_VARN_RD(3,   3, 117)   /* ICIMR ... IWC */
-                POST_VARN_RD(3,   5, 122)   /* LINOZ_DO3 ... LINOZ_SSO3 */
-                POST_VARN_RD(3,  12, 130)   /* Mass_bc ... O3 */
-                POST_VARN_RD(3,   1, 144)   /* OMEGA */
-                POST_VARN_RD(3,   1, 146)   /* OMEGAT */
-                POST_VARN_RD(3,   1, 155)   /* Q */
-                POST_VARN_RD(3,   3, 158)   /* QRL ... RAINQM */
-                POST_VARN_RD(3,   1, 162)   /* RELHUM */
-                POST_VARN_RD(3,   2, 200)   /* SNOWQM and SO2 */
-                POST_VARN_RD(3,   1, 212)   /* T */
-                POST_VARN_RD(3,   1, 232)   /* U */
-                POST_VARN_RD(3,   6, 234)   /* UU ... VV */
-                POST_VARN_RD(3,   3, 243)   /* WSUB ... aero_water */
-                POST_VARN_RD(3,   1, 278)   /* hstobie_linoz */
+                POST_VARN_RD(3,   2,  52)   /* AQRAIN and AQSNOW */
+                POST_VARN_RD(3,   4,  60)   /* AREI ... AWNI */
+                POST_VARN_RD(3,   1,  68)   /* CCN3 */
+                POST_VARN_RD(3,   2,  71)   /* CLDICE and CLDLIQ */
+                POST_VARN_RD(3,   4,  76)   /* CLOUD ... DCQ */
+                POST_VARN_RD(3,   1,  91)   /* DTCOND */
+                POST_VARN_RD(3,   2,  94)   /* EXTINCT and FICE */
+                POST_VARN_RD(3,   4, 103)   /* FREQI ... FREQS */
+                POST_VARN_RD(3,   3, 122)   /* ICIMR ... IWC */
+                POST_VARN_RD(3,   4, 127)   /* LINOZ_DO3 ... LINOZ_O3COL */
+                POST_VARN_RD(3,   1, 132)   /* LINOZ_SSO3 */
+                POST_VARN_RD(3,  12, 136)   /* Mass_bc ... O3 */
+                POST_VARN_RD(3,   1, 150)   /* OMEGA */
+                POST_VARN_RD(3,   1, 152)   /* OMEGAT */
+                POST_VARN_RD(3,   1, 161)   /* Q */
+                POST_VARN_RD(3,   3, 164)   /* QRL ... RAINQM */
+                POST_VARN_RD(3,   1, 168)   /* RELHUM */
+                POST_VARN_RD(3,   2, 206)   /* SNOWQM and SO2 */
+                POST_VARN_RD(3,   1, 218)   /* T */
+                POST_VARN_RD(3,   1, 238)   /* U */
+                POST_VARN_RD(3,   6, 240)   /* UU ... VV */
+                POST_VARN_RD(3,   3, 249)   /* WSUB ... aero_water */
+                POST_VARN_RD(3,   1, 284)   /* hstobie_linoz */
             } else {
-                /* write variables in the same order as they defined */
+                /* read variables in the same order as they defined */
                 POST_VARN_RD(2,   1,  30)   /* AEROD_v */
                 POST_VARN_RD(3,   2,  31)   /* ANRAIN and ANSNOW */
-                POST_VARN_RD(2,  18,  33)   /* AODABS ... ANSNOW */
-                POST_VARN_RD(3,   2,  51)   /* AQRAIN and AQSNOW */
-                POST_VARN_RD(2,   6,  53)   /* AQ_DMS ... AQ_SOAG */
-                POST_VARN_RD(3,   5,  59)   /* AREI ... CCN3 */
-                POST_VARN_RD(2,   2,  64)   /* CDNUMC and CLDHGH */
-                POST_VARN_RD(3,   2,  66)   /* CLDICE and CLDLIQ */
-                POST_VARN_RD(2,   3,  68)   /* CLDLOW ... CLDTOT */
-                POST_VARN_RD(3,   4,  71)   /* CLOUD ... DCQ */
-                POST_VARN_RD(2,  11,  75)   /* DF_DMS ... DSTSFMBL */
-                POST_VARN_RD(3,   1,  86)   /* DTCOND */
-                POST_VARN_RD(2,   2,  87)   /* DTENDTH and DTENDTQ */
-                POST_VARN_RD(3,   2,  89)   /* EXTINCT and FICE */
-                POST_VARN_RD(2,   7,  91)   /* FLDS ... FLUTC */
-                POST_VARN_RD(3,   4,  98)   /* FREQI ... FREQS */
-                POST_VARN_RD(2,  15, 102)   /* FSDS ... ICEFRAC */
-                POST_VARN_RD(3,   3, 117)   /* ICIMR ... IWC */
-                POST_VARN_RD(2,   2, 120)   /* LANDFRAC and LHFLX */
-                POST_VARN_RD(3,   5, 122)   /* LINOZ_DO3 ... LINOZ_SSO3 */
-                POST_VARN_RD(2,   3, 127)   /* LINOZ_SZA ... LWCF */
-                POST_VARN_RD(3,  12, 130)   /* Mass_bc ... O3 */
-                POST_VARN_RD(2,   2, 142)   /* O3_SRF and OCNFRAC */
-                POST_VARN_RD(3,   1, 144)   /* OMEGA */
-                POST_VARN_RD(2,   1, 145)   /* OMEGA500 */
-                POST_VARN_RD(3,   1, 146)   /* OMEGAT */
-                POST_VARN_RD(2,   8, 147)   /* PBLH ... PSL */
-                POST_VARN_RD(3,   1, 155)   /* Q */
-                POST_VARN_RD(2,   2, 156)   /* QFLX and QREFHT */
-                POST_VARN_RD(3,   3, 158)   /* QRL ... RAINQM */
-                POST_VARN_RD(2,   1, 161)   /* RAM1 */
-                POST_VARN_RD(3,   1, 162)   /* RELHUM */
-                POST_VARN_RD(2,  37, 163)   /* SFDMS ... SNOWHLND */
-                POST_VARN_RD(3,   2, 200)   /* SNOWQM and SO2 */
-                POST_VARN_RD(2,  10, 202)   /* SO2_CLXF ... SWCF */
-                POST_VARN_RD(3,   1, 212)   /* T */
-                POST_VARN_RD(2,  19, 213)   /* TAUGWX ... TVQ */
-                POST_VARN_RD(3,   1, 232)   /* U */
-                POST_VARN_RD(2,   1, 233)   /* U10 */
-                POST_VARN_RD(3,   6, 234)   /* UU ... VV */
-                POST_VARN_RD(2,   3, 240)   /* WD_H2O2 ... WD_SO2 */
-                POST_VARN_RD(3,   3, 243)   /* WSUB ... aero_water */
-                POST_VARN_RD(2,  32, 246)   /* airFV ... dst_c3SFWET */
-                POST_VARN_RD(3,   1, 278)   /* hstobie_linoz */
-                POST_VARN_RD(2, 129, 279)   /* mlip ... soa_c3SFWET */
+                POST_VARN_RD(2,  19,  33)   /* AODABS ... AODVIS */
+                POST_VARN_RD(3,   2,  52)   /* AQRAIN and AQSNOW */
+                POST_VARN_RD(2,   6,  54)   /* AQ_DMS ... AQ_SOAG */
+                POST_VARN_RD(3,   4,  60)   /* AREI ... AWNI */
+                POST_VARN_RD(2,   4,  64)   /* BURDEN1 ... BURDEN4 */
+                POST_VARN_RD(3,   1,  68)   /* CCN3 */
+                POST_VARN_RD(2,   2,  69)   /* CDNUMC and CLDHGH */
+                POST_VARN_RD(3,   2,  71)   /* CLDICE and CLDLIQ */
+                POST_VARN_RD(2,   3,  73)   /* CLDLOW ... CLDTOT */
+                POST_VARN_RD(3,   4,  76)   /* CLOUD ... DCQ */
+                POST_VARN_RD(2,  11,  80)   /* DF_DMS ... DSTSFMBL */
+                POST_VARN_RD(3,   1,  91)   /* DTCOND */
+                POST_VARN_RD(2,   2,  92)   /* DTENDTH and DTENDTQ */
+                POST_VARN_RD(3,   2,  94)   /* EXTINCT and FICE */
+                POST_VARN_RD(2,   7,  96)   /* FLDS ... FLUTC */
+                POST_VARN_RD(3,   4, 103)   /* FREQI ... FREQS */
+                POST_VARN_RD(2,  15, 107)   /* FSDS ... ICEFRAC */
+                POST_VARN_RD(3,   3, 122)   /* ICIMR ... IWC */
+                POST_VARN_RD(2,   2, 125)   /* LANDFRAC and LHFLX */
+                POST_VARN_RD(3,   4, 127)   /* LINOZ_DO3 ... LINOZ_O3COL */
+                POST_VARN_RD(2,   1, 131)   /* LINOZ_SFCSINK */
+                POST_VARN_RD(3,   1, 132)   /* LINOZ_SSO3 */
+                POST_VARN_RD(2,   3, 133)   /* LINOZ_SZA ... LWCF */
+                POST_VARN_RD(3,  12, 136)   /* Mass_bc ... O3 */
+                POST_VARN_RD(2,   2, 148)   /* O3_SRF and OCNFRAC */
+                POST_VARN_RD(3,   1, 150)   /* OMEGA */
+                POST_VARN_RD(2,   1, 151)   /* OMEGA500 */
+                POST_VARN_RD(3,   1, 152)   /* OMEGAT */
+                POST_VARN_RD(2,   8, 153)   /* PBLH ... PSL */
+                POST_VARN_RD(3,   1, 161)   /* Q */
+                POST_VARN_RD(2,   2, 162)   /* QFLX and QREFHT */
+                POST_VARN_RD(3,   3, 164)   /* QRL ... RAINQM */
+                POST_VARN_RD(2,   1, 167)   /* RAM1 */
+                POST_VARN_RD(3,   1, 168)   /* RELHUM */
+                POST_VARN_RD(2,  37, 169)   /* SFDMS ... SNOWHLND */
+                POST_VARN_RD(3,   2, 206)   /* SNOWQM and SO2 */
+                POST_VARN_RD(2,  10, 208)   /* SO2_CLXF ... SWCF */
+                POST_VARN_RD(3,   1, 218)   /* T */
+                POST_VARN_RD(2,  19, 219)   /* TAUGWX ... TVQ */
+                POST_VARN_RD(3,   1, 238)   /* U */
+                POST_VARN_RD(2,   1, 239)   /* U10 */
+                POST_VARN_RD(3,   6, 240)   /* UU ... VV */
+                POST_VARN_RD(2,   3, 246)   /* WD_H2O2 ... WD_SO2 */
+                POST_VARN_RD(3,   3, 249)   /* WSUB ... aero_water */
+                POST_VARN_RD(2,  32, 252)   /* airFV ... dst_c3SFWET */
+                POST_VARN_RD(3,   1, 284)   /* hstobie_linoz */
+                POST_VARN_RD(2, 129, 285)   /* mlip ... soa_c3SFWET */
             }
         }
         else {
             if (two_buf) {
-                /* write 2D variables followed by 3D variables */
+                /* read 2D variables followed by 3D variables */
                 POST_VARN_RD(2, 13, 30)   /* CLDHGH ... T5 */
                 POST_VARN_RD(2,  7, 44)   /* U250 ... Z500 */
                 POST_VARN_RD(3,  1, 43)   /* U */
             } else {
-                /* write variables in the same order as they defined */
+                /* read variables in the same order as they defined */
                 POST_VARN_RD(2, 13, 30)   /* CLDHGH ... T5 */
                 POST_VARN_RD(3,  1, 43)   /* U */
                 POST_VARN_RD(2,  7, 44)   /* U250 ... Z500 */
