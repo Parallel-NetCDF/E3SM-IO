@@ -138,6 +138,7 @@ int
 run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                 const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
+                int         cmode,        /* File creation mode */
                 int         nvars,        /* number of variables 51 */
                 int         num_recs,     /* number of records */
                 MPI_Info    info,
@@ -158,7 +159,7 @@ run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                 double *D1_fix_dbl_bufp)  /* D1 fix double buffer */
 {
     char outfname[512];
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
+    int i, j, k, err, nerrs=0, rank, ncid,  *varids;
     int rec_no, my_nreqs, nvars_D[6];
     size_t rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf, *rec_buf_ptr;
@@ -771,6 +772,7 @@ int
 run_varn_G_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                     char       *out_dir,      /* output folder name */
                     char       *outfile,      /* output file name */
+                    int         cmode,        /* File opening mode */
                     int         nvars,        /* number of variables 51 */
                     int         num_recs,     /* number of records */
                     MPI_Info    info,
@@ -791,7 +793,7 @@ run_varn_G_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes 
                     double **D1_fix_dbl_bufp)  /* D1 fix double buffer */
 {
     char outfname[512];
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
+    int i, j, k, err, nerrs=0, rank, ncid, *varids;
     int rec_no, my_nreqs;
     size_t rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf, *rec_buf_ptr;

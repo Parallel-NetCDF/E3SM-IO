@@ -337,7 +337,7 @@ run_vard_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                 int* const  blocklens[3]) /* request's block lengths */
 {
     char outfname[512], txt_buf[16], *txt_buf_ptr;
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids;
+    int i, j, k, err, nerrs=0, rank, ncid,cmode, *varids;
     int *var_blocklens, *buf_blocklens, my_nreqs, rec_no, gap=0;
     int int_buf[10], *int_buf_ptr, xnreqs[3];
     size_t fix_buflen, dbl_buflen, rec_buflen;
@@ -830,6 +830,7 @@ int
 run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                 const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
+                int         cmode,        /* File creation mode */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -844,7 +845,7 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
                 int        *int_buf)      /* buffer for int var */
 {
     char outfname[512], *txt_buf_ptr;
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nvars_D[3];
+    int i, j, k, err, nerrs=0, rank, ncid, *varids, nvars_D[3];
     int rec_no, gap=0, my_nreqs, *int_buf_ptr, xnreqs[3];
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf=NULL, *rec_buf_ptr;
@@ -922,7 +923,6 @@ run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all 
     sprintf(outfname, "%s/%s",out_dir, outfile);
 
     /* create a new CDF-5 file for writing */
-    cmode = NC_CLOBBER | NC_64BIT_DATA;
     err = ncmpi_create(io_comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */
@@ -1270,6 +1270,7 @@ int
 run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                     char       *out_dir,      /* output folder name */
                     char       *outfile,      /* output file name */
+                    int         cmode,        /* File opening mode */
                     int         nvars,        /* number of variables 408 or 51 */
                     int         num_recs,     /* number of records */
                     int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -1284,7 +1285,7 @@ run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes 
                     int        *int_buf)      /* buffer for int var */
 {
     char outfname[512], *txt_buf_ptr;
-    int i, j, k, err, nerrs=0, rank, ncid, cmode, *varids, nreqs_D3_merged;
+    int i, j, k, err, nerrs=0, rank, ncid, *varids, nreqs_D3_merged;
     int rec_no, gap=0, my_nreqs, *int_buf_ptr;
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf, *rec_buf_ptr;
@@ -1358,7 +1359,6 @@ run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes 
     sprintf(outfname, "%s/%s",out_dir, outfile);
 
     /* create a new CDF-5 file for writing */
-    cmode = NC_64BIT_DATA;
     err = ncmpi_open(comm, outfname, cmode, info, &ncid); ERR
 
     /* define dimensions, variables, and attributes */

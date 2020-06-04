@@ -20,6 +20,9 @@
 #error "PnetCDF 1.10.0 and later is required to build this program"
 #endif
 
+#define E3SM_API_CLASSIC 0
+#define E3SM_API_NC4 1
+
 #define MAX_NUM_DECOMP 6
 
 int verbose; /* verbose mode to print additional messages on screen */
@@ -99,6 +102,7 @@ extern int
 run_varn_F_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                 const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
+                int         cmode,        /* File creation mode */
                 int         nvars,        /* number of variables 408 or 51 */
                 int         num_recs,     /* number of records */
                 int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -115,6 +119,7 @@ extern int
 run_varn_F_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                     char       *out_dir,      /* output folder name */
                     char       *outfile,      /* output file name */
+                    int         cmode,        /* File opening mode */
                     int         nvars,        /* number of variables 408 or 51 */
                     int         num_recs,     /* number of records */
                     int         noncontig_buf,/* whether to us noncontiguous buffer */
@@ -153,6 +158,7 @@ extern int
 run_varn_G_case(MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                 const char *out_dir,      /* output folder name */
                 const char *outfile,      /* output file name */
+                int         cmode,        /* File creation mode */
                 int         nvars,        /* number of variables 51 */
                 int         num_recs,     /* number of records */
                 MPI_Info    info,
@@ -175,6 +181,7 @@ extern int
 run_varn_G_case_rd( MPI_Comm io_comm,         /* MPI communicator that includes all the tasks involved in IO */
                     char       *out_dir,      /* output folder name */
                     char       *outfile,      /* output file name */
+                    int         cmode,        /* File opening mode */
                     int         nvars,        /* number of variables 51 */
                     int         num_recs,     /* number of records */
                     MPI_Info    info,

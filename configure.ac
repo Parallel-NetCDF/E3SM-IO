@@ -54,6 +54,13 @@ dnl check sed command option -i and set SED_I (this requires RM defined)
 UD_PROG_SED_I
 AC_PROG_EGREP
 
+AC_DEFUN([UD_MSG_DEBUG],
+         [if test "x${pnc_ac_debug}" = xyes ; then
+             AC_MSG_NOTICE([DEBUG: $1])
+          fi
+         ]
+)
+
 MPI_INSTALL=
 AC_ARG_WITH(mpi,
    [AS_HELP_STRING([--with-mpi=/path/to/implementation],
@@ -239,41 +246,70 @@ if test "x${debug}" = xyes; then
    AC_DEFINE([E3SM_IO_DEBUG], [1], [Enable debug mode])
 fi
 
-# Check for pnc
+# PnetCDF install path
 AC_ARG_WITH([pnetcdf],
    [AS_HELP_STRING([--with-pnetcdf=/path/to/pnetcdf], [Specify PnetCDF installation path(s):
     --with-pnetcdf=INC,LIB for include directory and library directory separated by a comma
     --with-pnetcdf=DIR for directory containing include/ and lib/ subdirectories
    ])], [
+   if test "x${withval}" != xyes && test "x${withval}" != xno ; then
+      PNETCDF_INSTALL=${withval}
+   fi
    case $withval in
      *,*)
         pnc_inc="`echo $withval |cut -f1 -d,`"
         pnc_lib="`echo $withval |cut -f2 -d, -s`"
+        pnc_bindir="$pnc_inc/../bin"
         ;;
      *)
         if test -n "$withval"; then
           pnc_inc="$withval/include"
           pnc_lib="$withval/lib"
+          pnc_bindir="$PNETCDF_INSTALL/bin"
         fi
         ;;
    esac
-   if test "x$pnc_inc" != x ; then
-      if test "x$CPPFLAGS" = x ; then
-         CPPFLAGS="-I$pnc_inc"
-      elif ! echo "${CPPFLAGS}" | ${EGREP} -q -w -- "-I$pnc_inc" ; then
-         # append only if not already appear in CPPFLAGS
-         CPPFLAGS="$CPPFLAGS -I$pnc_inc"
-      fi
-   fi
-   if test "x$pnc_lib" != x ; then
-      if test "x$LDFLAGS" = x ; then
-         LDFLAGS="-L$pnc_lib"
-      elif ! echo "${LDFLAGS}" | ${EGREP} -q -w -- "-L$pnc_lib" ; then
-         # append only if not already appear in LDFLAGS
-         LDFLAGS="$LDFLAGS -L$pnc_lib"
-      fi
-   fi
 ])
+
+# Check availability of pnetcdf-config 
+pnc_config=
+if test "x$PNETCDF_INSTALL" != x ; then
+AC_MSG_NOTICE([check under ${pnc_bindir}])
+   AC_PATH_PROG([pnc_config],[pnetcdf-config],,[$pnc_bindir])
+else
+   AC_PATH_PROG([pnc_config],[pnetcdf-config])
+   AC_MSG_NOTICE([check under path])
+fi
+
+# use pnetcdf-config for arguments
+pnc_nc4=disabled
+if test "x$pnc_config" = x ; then   
+   UD_MSG_DEBUG([pnetcdf-config is not available under $PNETCDF_INSTALL/bin])
+else
+   pnc_inc=`$pnc_config --includedir`
+   pnc_lib=`$pnc_config --libdir`
+   pnc_nc4=`$pnc_config --netcdf4`
+fi
+
+# Set flags
+if test "x$pnc_inc" != x ; then
+   if test "x$CPPFLAGS" = x ; then
+      CPPFLAGS="-I$pnc_inc"
+   elif ! echo "${CPPFLAGS}" | ${EGREP} -q -w -- "-I$pnc_inc" ; then
+      # append only if not already appear in CPPFLAGS
+      CPPFLAGS="$CPPFLAGS -I$pnc_inc"
+   fi
+fi
+if test "x$pnc_lib" != x ; then
+   if test "x$LDFLAGS" = x ; then
+      LDFLAGS="-L$pnc_lib"
+   elif ! echo "${LDFLAGS}" | ${EGREP} -q -w -- "-L$pnc_lib" ; then
+      # append only if not already appear in LDFLAGS
+      LDFLAGS="$LDFLAGS -L$pnc_lib"
+   fi
+fi
+
+# Check for pnc
 AC_CHECK_HEADER([pnetcdf.h], [have_pnc=yes], [have_pnc=no])
 if test "x$have_pnc" = xno ; then
       AC_MSG_ERROR([
@@ -282,6 +318,26 @@ if test "x$have_pnc" = xno ; then
       configure command-line option --with-pnetcdf=/path/to/implementation
       to specify the location of PnetCDF installation. Abort.
       -----------------------------------------------------------------------])
+fi
+
+if test "x$pnc_nc4" = xenabled ; then   
+   pnc_ld=`$pnc_config --ldflags`
+   if test "x$LDFLAGS" = x ; then
+      LDFLAGS="$pnc_ld"
+   elif ! echo "${LDFLAGS}" | ${EGREP} -q -w -- "-L$pnc_ld" ; then
+      # append only if not already appear in LDFLAGS
+      LDFLAGS="$LDFLAGS $pnc_ld"
+   fi
+
+   pnc_libs=`$pnc_config --libs`
+   if test "x$LIBS" = x ; then
+      LIBS="$pnc_libs"
+   elif ! echo "${LIBS}" | ${EGREP} -q -w -- "-l$pnc_libs" ; then
+      # append only if not already appear in LIBS
+      LIBS="$LIBS $pnc_libs"
+   fi
+
+   AC_DEFINE([HAS_NC4], [1], [Enable netcdf4])
 fi
 
 if test "x$LIBS" = x ; then
