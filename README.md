@@ -26,8 +26,8 @@ A data decomposition file records the data access patterns at the array element
 level for each MPI process. The access offsets are stored in a text file,
 referred by PIO as the `decomposition file. This benchmark currently studies
 two cases from E3SM, namely F and G cases. The F case uses three unique data
-decomposition patterns shared by 382 2D and 3D variables (2 sharing
-Decomposition 1, 317 sharing Decomposition 2, and 63 sharing Decomposition 3).
+decomposition patterns shared by 388 2D and 3D variables (2 sharing
+Decomposition 1, 323 sharing Decomposition 2, and 63 sharing Decomposition 3).
 The G case uses 6 data decompositions shared by 52 variables (6 sharing
 Decomposition 1, 2 sharing Decomposition 2, 25 sharing Decomposition 3, 2
 sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
@@ -194,9 +194,9 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   History output file                = f_case_h0_vard.nc
   No. variables use no decomposition =  26
   No. variables use decomposition D1 =   2
-  No. variables use decomposition D2 = 317
+  No. variables use decomposition D2 = 323
   No. variables use decomposition D3 =  63
-  Total number of variables          = 408
+  Total number of variables          = 414
   MAX heap memory allocated by PnetCDF internally is 2.22 MiB
   Total write amount                 = 2699.36 MiB = 2.64 GiB
   Max number of requests             = 310598
@@ -232,9 +232,9 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   History output file                = f_case_h0_varn.nc
   No. variables use no decomposition =  26
   No. variables use decomposition D1 =   2
-  No. variables use decomposition D2 = 317
+  No. variables use decomposition D2 = 323
   No. variables use decomposition D3 =  63
-  Total number of variables          = 408
+  Total number of variables          = 414
   MAX heap memory allocated by PnetCDF internally is 35.07 MiB
   Total write amount                 = 2699.36 MiB = 2.64 GiB
   Max number of requests             = 310464
