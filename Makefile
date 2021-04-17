@@ -264,8 +264,8 @@ CXXFLAGS = -g  -O0
 CYGPATH_W = echo
 DEFS = -DHAVE_CONFIG_H
 DEPDIR = .deps
-E3SM_IO_RELEASE_DATE = April 12, 2021
-E3SM_IO_RELEASE_DATE_FULL = 2021-04-12
+E3SM_IO_RELEASE_DATE = April 13, 2021
+E3SM_IO_RELEASE_DATE_FULL = 2021-04-13
 E3SM_IO_VERSION = 1.0.0
 E3SM_IO_VERSION_MAJOR = 1
 E3SM_IO_VERSION_MINOR = 0
@@ -352,7 +352,8 @@ target_alias =
 top_build_prefix = 
 top_builddir = .
 top_srcdir = .
-AM_CPPFLAGS = -I$(top_srcdir)
+AM_CPPFLAGS = -I${top_srcdir} -I${top_srcdir}/drivers \
+	-I${top_srcdir}/cases
 e3sm_io_SOURCES = e3sm_io.cpp read_decomp.cpp e3sm_io.hpp
 e3sm_io_LDADD = drivers/libe3sm_io_drivers.a cases/libe3sm_io_cases.a \
 	-lpnetcdf $(am__append_1)

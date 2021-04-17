@@ -1,4 +1,6 @@
-AM_CPPFLAGS = -I$(top_srcdir)
+AM_CPPFLAGS  = -I${top_srcdir}
+AM_CPPFLAGS += -I${top_srcdir}/drivers
+AM_CPPFLAGS += -I${top_srcdir}/cases
 
 bin_PROGRAMS = e3sm_io
 

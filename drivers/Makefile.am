@@ -11,12 +11,12 @@ AM_CPPFLAGS += -I${top_srcdir}/cases
 
 noinst_LIBRARIES = libe3sm_io_drivers.a
 
-C_SRCS = e3sm_io_pnc.cpp
-H_SRCS = e3sm_io_pnc.hpp
+C_SRCS = e3sm_io_driver_pnc.cpp
+H_SRCS = e3sm_io_driver_pnc.hpp
 
 if ENABLE_HDF5
-C_SRCS += e3sm_io_hdf5.cpp
-H_SRCS += e3sm_io_hdf5.hpp
+C_SRCS += e3sm_io_driver_hdf5.cpp
+H_SRCS += e3sm_io_driver_hdf5.hpp
 endif
 
 

@@ -285,6 +285,22 @@ if test "x$have_pnc" = xno ; then
       to specify the location of PnetCDF installation. Abort.
       -----------------------------------------------------------------------])
 fi
+dnl Check if PnetCDF version is 1.10.0 or later
+AC_MSG_CHECKING([whether PnetCDF version is 1.10.0 or later])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <pnetcdf.h>
+#if (PNETCDF_VERSION_MAJOR*1000000 + PNETCDF_VERSION_MINOR*1000 + PNETCDF_VERSION_PATCH < 1010000)
+#error PnetCDF version is older than 1.10.0
+#endif
+]])], [pnc_ge_1_10_0=yes], [pnc_ge_1_10_0=no])
+AC_MSG_RESULT([$pnc_ge_1_10_0])
+
+if test x$pnc_ge_1_10_0 = xno; then
+      AC_MSG_ERROR([
+      -----------------------------------------------------------------------
+      PnetCDF version too old. Abort.
+      -----------------------------------------------------------------------])
+fi
 
 # Check for HDF5
 AC_ARG_WITH([hdf5],
