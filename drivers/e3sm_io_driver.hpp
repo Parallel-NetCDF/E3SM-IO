@@ -2,7 +2,7 @@
 
 #include "e3sm_io.hpp"
 
-typedef enum e3sm_io_op_mode { coll, indep, nb,nbe } e3sm_io_op_mode;
+typedef enum e3sm_io_op_mode { coll, indep, nb, nbe } e3sm_io_op_mode;
 
 class e3sm_io_driver {
    public:
@@ -27,8 +27,7 @@ class e3sm_io_driver {
     virtual int wait (int fid)                                                         = 0;
     virtual int put_att (
         int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) = 0;
-            virtual int get_att (
-        int fid, int vid, std::string name, void *buf) = 0;
+    virtual int get_att (int fid, int vid, std::string name, void *buf)                    = 0;
     virtual int put_vara (int fid,
                           int vid,
                           MPI_Datatype type,

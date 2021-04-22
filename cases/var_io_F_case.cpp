@@ -549,7 +549,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    /* the first 3 variables are of type NC_DOUBLE -------------------*/
+    /* the first 3 variables are of type MPI_DOUBLE -------------------*/
     i        = 0;
     my_nreqs = 0;
 
@@ -702,7 +702,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
             rec_buflen = nelems[1] * 20 + nelems[2];
     }
 
-    /* write first 3 NC_DOUBLE fixed-size variables in one vard call */
+    /* write first 3 MPI_DOUBLE fixed-size variables in one vard call */
     err = PUT_VARD_ALL (ncid, varids[0], filetype_dbl, dbl_buf, fix_buflen, buftype_dbl);
     CHECK_ERR
 

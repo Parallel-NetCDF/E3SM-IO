@@ -89,9 +89,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     /* global attributes: */
     iattr = 4;
 
-    err = driver.put_att (ncid, NC_GLOBAL, "ne", NC_INT, 1, &iattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = driver.put_att (ncid, NC_GLOBAL, "np", NC_INT, 1, &iattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "Conventions", 6, "CF-1.0");
     CHECK_ERR
@@ -138,7 +138,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     /* define variables */
     dimids[0] = dim_ncol;
-    err       = driver.def_var (ncid, "lat", NC_DOUBLE, 1, dimids, &lat);
+    err       = driver.def_var (ncid, "lat", MPI_DOUBLE, 1, dimids, &lat);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lat, "long_name", 8, "latitude");
     CHECK_ERR
@@ -147,7 +147,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = lat;
 
     dimids[0] = dim_ncol;
-    err       = driver.def_var (ncid, "lon", NC_DOUBLE, 1, dimids, &lon);
+    err       = driver.def_var (ncid, "lon", MPI_DOUBLE, 1, dimids, &lon);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lon, "long_name", 9, "longitude");
     CHECK_ERR
@@ -156,14 +156,14 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = lon;
 
     dimids[0] = dim_ncol;
-    err       = driver.def_var (ncid, "area", NC_DOUBLE, 1, dimids, &area);
+    err       = driver.def_var (ncid, "area", MPI_DOUBLE, 1, dimids, &area);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, area, "long_name", 14, "gll grid areas");
     CHECK_ERR
     varids[i++] = area;
 
     dimids[0] = dim_lev;
-    err       = driver.def_var (ncid, "lev", NC_DOUBLE, 1, dimids, &lev);
+    err       = driver.def_var (ncid, "lev", MPI_DOUBLE, 1, dimids, &lev);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lev, "long_name", 38, "hybrid level at midpoints (1000*(A+B))");
     CHECK_ERR
@@ -179,21 +179,21 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = lev;
 
     dimids[0] = dim_lev;
-    err       = driver.def_var (ncid, "hyam", NC_DOUBLE, 1, dimids, &hyam);
+    err       = driver.def_var (ncid, "hyam", MPI_DOUBLE, 1, dimids, &hyam);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hyam, "long_name", 39, "hybrid A coefficient at layer midpoints");
     CHECK_ERR
     varids[i++] = hyam;
 
     dimids[0] = dim_lev;
-    err       = driver.def_var (ncid, "hybm", NC_DOUBLE, 1, dimids, &hybm);
+    err       = driver.def_var (ncid, "hybm", MPI_DOUBLE, 1, dimids, &hybm);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hybm, "long_name", 39, "hybrid B coefficient at layer midpoints");
     CHECK_ERR
     varids[i++] = hybm;
 
     dimids[0] = dim_lev;
-    err       = driver.def_var (ncid, "P0", NC_DOUBLE, 0, NULL, &P0);
+    err       = driver.def_var (ncid, "P0", MPI_DOUBLE, 0, NULL, &P0);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, P0, "long_name", 18, "reference pressure");
     CHECK_ERR
@@ -202,7 +202,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = P0;
 
     dimids[0] = dim_ilev;
-    err       = driver.def_var (ncid, "ilev", NC_DOUBLE, 1, dimids, &ilev);
+    err       = driver.def_var (ncid, "ilev", MPI_DOUBLE, 1, dimids, &ilev);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ilev, "long_name", 39, "hybrid level at interfaces (1000*(A+B))");
     CHECK_ERR
@@ -218,21 +218,21 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = ilev;
 
     dimids[0] = dim_ilev;
-    err       = driver.def_var (ncid, "hyai", NC_DOUBLE, 1, dimids, &hyai);
+    err       = driver.def_var (ncid, "hyai", MPI_DOUBLE, 1, dimids, &hyai);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hyai, "long_name", 40, "hybrid A coefficient at layer interfaces");
     CHECK_ERR
     varids[i++] = hyai;
 
     dimids[0] = dim_ilev;
-    err       = driver.def_var (ncid, "hybi", NC_DOUBLE, 1, dimids, &hybi);
+    err       = driver.def_var (ncid, "hybi", MPI_DOUBLE, 1, dimids, &hybi);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hybi, "long_name", 40, "hybrid B coefficient at layer interfaces");
     CHECK_ERR
     varids[i++] = hybi;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "time", NC_DOUBLE, 1, dimids, &time);
+    err       = driver.def_var (ncid, "time", MPI_DOUBLE, 1, dimids, &time);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, time, "long_name", 4, "time");
     CHECK_ERR
@@ -245,14 +245,14 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = time;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "date", NC_INT, 1, dimids, &date);
+    err       = driver.def_var (ncid, "date", MPI_INT, 1, dimids, &date);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, date, "long_name", 23, "current date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = date;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "datesec", NC_INT, 1, dimids, &datesec);
+    err       = driver.def_var (ncid, "datesec", MPI_INT, 1, dimids, &datesec);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, datesec, "long_name", 31, "current seconds of current date");
     CHECK_ERR
@@ -260,7 +260,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_nbnd;
-    err       = driver.def_var (ncid, "time_bnds", NC_DOUBLE, 2, dimids, &time_bnds);
+    err       = driver.def_var (ncid, "time_bnds", MPI_DOUBLE, 2, dimids, &time_bnds);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, time_bnds, "long_name", 23, "time interval endpoints");
     CHECK_ERR
@@ -268,40 +268,40 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = driver.def_var (ncid, "date_written", NC_CHAR, 2, dimids, &date_written);
+    err       = driver.def_var (ncid, "date_written", MPI_CHAR, 2, dimids, &date_written);
     CHECK_ERR
     varids[i++] = date_written;
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = driver.def_var (ncid, "time_written", NC_CHAR, 2, dimids, &time_written);
+    err       = driver.def_var (ncid, "time_written", MPI_CHAR, 2, dimids, &time_written);
     CHECK_ERR
     varids[i++] = time_written;
 
-    err = driver.def_var (ncid, "ndbase", NC_INT, 0, NULL, &ndbase);
+    err = driver.def_var (ncid, "ndbase", MPI_INT, 0, NULL, &ndbase);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ndbase, "long_name", 8, "base day");
     CHECK_ERR
     varids[i++] = ndbase;
-    err         = driver.def_var (ncid, "nsbase", NC_INT, 0, NULL, &nsbase);
+    err         = driver.def_var (ncid, "nsbase", MPI_INT, 0, NULL, &nsbase);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nsbase, "long_name", 19, "seconds of base day");
     CHECK_ERR
     varids[i++] = nsbase;
 
-    err = driver.def_var (ncid, "nbdate", NC_INT, 0, NULL, &nbdate);
+    err = driver.def_var (ncid, "nbdate", MPI_INT, 0, NULL, &nbdate);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nbdate, "long_name", 20, "base date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = nbdate;
 
-    err = driver.def_var (ncid, "nbsec", NC_INT, 0, NULL, &nbsec);
+    err = driver.def_var (ncid, "nbsec", MPI_INT, 0, NULL, &nbsec);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nbsec, "long_name", 20, "seconds of base date");
     CHECK_ERR
     varids[i++] = nbsec;
 
-    err = driver.def_var (ncid, "mdt", NC_INT, 0, NULL, &mdt);
+    err = driver.def_var (ncid, "mdt", MPI_INT, 0, NULL, &mdt);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mdt, "long_name", 8, "timestep");
     CHECK_ERR
@@ -310,56 +310,56 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = mdt;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "ndcur", NC_INT, 1, dimids, &ndcur);
+    err       = driver.def_var (ncid, "ndcur", MPI_INT, 1, dimids, &ndcur);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ndcur, "long_name", 27, "current day (from base day)");
     CHECK_ERR
     varids[i++] = ndcur;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "nscur", NC_INT, 1, dimids, &nscur);
+    err       = driver.def_var (ncid, "nscur", MPI_INT, 1, dimids, &nscur);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nscur, "long_name", 30, "current seconds of current day");
     CHECK_ERR
     varids[i++] = nscur;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "co2vmr", NC_DOUBLE, 1, dimids, &co2vmr);
+    err       = driver.def_var (ncid, "co2vmr", MPI_DOUBLE, 1, dimids, &co2vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, co2vmr, "long_name", 23, "co2 volume mixing ratio");
     CHECK_ERR
     varids[i++] = co2vmr;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "ch4vmr", NC_DOUBLE, 1, dimids, &ch4vmr);
+    err       = driver.def_var (ncid, "ch4vmr", MPI_DOUBLE, 1, dimids, &ch4vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ch4vmr, "long_name", 23, "ch4 volume mixing ratio");
     CHECK_ERR
     varids[i++] = ch4vmr;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "n2ovmr", NC_DOUBLE, 1, dimids, &n2ovmr);
+    err       = driver.def_var (ncid, "n2ovmr", MPI_DOUBLE, 1, dimids, &n2ovmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, n2ovmr, "long_name", 23, "n2o volume mixing ratio");
     CHECK_ERR
     varids[i++] = n2ovmr;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "f11vmr", NC_DOUBLE, 1, dimids, &f11vmr);
+    err       = driver.def_var (ncid, "f11vmr", MPI_DOUBLE, 1, dimids, &f11vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, f11vmr, "long_name", 23, "f11 volume mixing ratio");
     CHECK_ERR
     varids[i++] = f11vmr;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "f12vmr", NC_DOUBLE, 1, dimids, &f12vmr);
+    err       = driver.def_var (ncid, "f12vmr", MPI_DOUBLE, 1, dimids, &f12vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, f12vmr, "long_name", 23, "f12 volume mixing ratio");
     CHECK_ERR
     varids[i++] = f12vmr;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "sol_tsi", NC_DOUBLE, 1, dimids, &sol_tsi);
+    err       = driver.def_var (ncid, "sol_tsi", MPI_DOUBLE, 1, dimids, &sol_tsi);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, sol_tsi, "long_name", 22, "total solar irradiance");
     CHECK_ERR
@@ -368,7 +368,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = sol_tsi;
 
     dimids[0] = dim_time;
-    err       = driver.def_var (ncid, "nsteph", NC_INT, 1, dimids, &nsteph);
+    err       = driver.def_var (ncid, "nsteph", MPI_INT, 1, dimids, &nsteph);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nsteph, "long_name", 16, "current timestep");
     CHECK_ERR
@@ -376,11 +376,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AEROD_v", NC_FLOAT, 2, dimids, &AEROD_v);
+    err       = driver.def_var (ncid, "AEROD_v", MPI_FLOAT, 2, dimids, &AEROD_v);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AEROD_v, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AEROD_v, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AEROD_v, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AEROD_v, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AEROD_v, "units", 1, "1");
     CHECK_ERR
@@ -394,9 +394,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "ANRAIN", NC_FLOAT, 3, dimids, &ANRAIN);
+    err       = driver.def_var (ncid, "ANRAIN", MPI_FLOAT, 3, dimids, &ANRAIN);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, ANRAIN, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, ANRAIN, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ANRAIN, "units", 3, "m-3");
     CHECK_ERR
@@ -409,9 +409,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "ANSNOW", NC_FLOAT, 3, dimids, &ANSNOW);
+    err       = driver.def_var (ncid, "ANSNOW", MPI_FLOAT, 3, dimids, &ANSNOW);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, ANSNOW, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, ANSNOW, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ANSNOW, "units", 3, "m-3");
     CHECK_ERR
@@ -423,11 +423,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODABS", NC_FLOAT, 2, dimids, &AODABS);
+    err       = driver.def_var (ncid, "AODABS", MPI_FLOAT, 2, dimids, &AODABS);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODABS, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODABS, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODABS, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODABS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODABS, "long_name", 39, "Aerosol absorption optical depth 550 nm");
     CHECK_ERR
@@ -437,11 +437,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODABSBC", NC_FLOAT, 2, dimids, &AODABSBC);
+    err       = driver.def_var (ncid, "AODABSBC", MPI_FLOAT, 2, dimids, &AODABSBC);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODABSBC, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODABSBC, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODABSBC, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODABSBC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODABSBC, "long_name", 47,
                         "Aerosol absorption optical depth 550 nm from BC");
@@ -452,11 +452,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODALL", NC_FLOAT, 2, dimids, &AODALL);
+    err       = driver.def_var (ncid, "AODALL", MPI_FLOAT, 2, dimids, &AODALL);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODALL, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODALL, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODALL, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODALL, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODALL, "long_name", 35, "AOD 550 nm for all time and species");
     CHECK_ERR
@@ -466,11 +466,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODBC", NC_FLOAT, 2, dimids, &AODBC);
+    err       = driver.def_var (ncid, "AODBC", MPI_FLOAT, 2, dimids, &AODBC);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODBC, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODBC, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODBC, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODBC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODBC, "long_name", 36, "Aerosol optical depth 550 nm from BC");
     CHECK_ERR
@@ -480,11 +480,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODDUST", NC_FLOAT, 2, dimids, &AODDUST);
+    err       = driver.def_var (ncid, "AODDUST", MPI_FLOAT, 2, dimids, &AODDUST);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODDUST, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODDUST, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODDUST, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODDUST, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODDUST, "long_name", 38, "Aerosol optical depth 550 nm from dust");
     CHECK_ERR
@@ -494,11 +494,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODDUST1", NC_FLOAT, 2, dimids, &AODDUST1);
+    err       = driver.def_var (ncid, "AODDUST1", MPI_FLOAT, 2, dimids, &AODDUST1);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODDUST1, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODDUST1, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODDUST1, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODDUST1, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODDUST1, "long_name", 46,
                         "Aerosol optical depth 550 nm model 1 from dust");
@@ -509,11 +509,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODDUST3", NC_FLOAT, 2, dimids, &AODDUST3);
+    err       = driver.def_var (ncid, "AODDUST3", MPI_FLOAT, 2, dimids, &AODDUST3);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODDUST3, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODDUST3, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODDUST3, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODDUST3, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODDUST3, "long_name", 46,
                         "Aerosol optical depth 550 nm model 3 from dust");
@@ -524,11 +524,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODDUST4", NC_FLOAT, 2, dimids, &AODDUST4);
+    err       = driver.def_var (ncid, "AODDUST4", MPI_FLOAT, 2, dimids, &AODDUST4);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODDUST4, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODDUST4, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODDUST4, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODDUST4, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODDUST4, "long_name", 46,
                         "Aerosol optical depth 550 nm model 4 from dust");
@@ -539,11 +539,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODMODE1", NC_FLOAT, 2, dimids, &AODMODE1);
+    err       = driver.def_var (ncid, "AODMODE1", MPI_FLOAT, 2, dimids, &AODMODE1);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODMODE1, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODMODE1, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODMODE1, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODMODE1, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODMODE1, "long_name", 35, "Aerosol optical depth 550 nm mode 1");
     CHECK_ERR
@@ -553,11 +553,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODMODE2", NC_FLOAT, 2, dimids, &AODMODE2);
+    err       = driver.def_var (ncid, "AODMODE2", MPI_FLOAT, 2, dimids, &AODMODE2);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODMODE2, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODMODE2, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODMODE2, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODMODE2, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODMODE2, "long_name", 35, "Aerosol optical depth 550 nm mode 2");
     CHECK_ERR
@@ -567,11 +567,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODMODE3", NC_FLOAT, 2, dimids, &AODMODE3);
+    err       = driver.def_var (ncid, "AODMODE3", MPI_FLOAT, 2, dimids, &AODMODE3);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODMODE3, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODMODE3, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODMODE3, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODMODE3, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODMODE3, "long_name", 35, "Aerosol optical depth 550 nm mode 3");
     CHECK_ERR
@@ -581,11 +581,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODMODE4", NC_FLOAT, 2, dimids, &AODMODE4);
+    err       = driver.def_var (ncid, "AODMODE4", MPI_FLOAT, 2, dimids, &AODMODE4);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODMODE4, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODMODE4, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODMODE4, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODMODE4, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODMODE4, "long_name", 35, "Aerosol optical depth 550 nm mode 4");
     CHECK_ERR
@@ -595,11 +595,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODNIR", NC_FLOAT, 2, dimids, &AODNIR);
+    err       = driver.def_var (ncid, "AODNIR", MPI_FLOAT, 2, dimids, &AODNIR);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODNIR, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODNIR, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODNIR, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODNIR, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODNIR, "long_name", 28, "Aerosol optical depth 850 nm");
     CHECK_ERR
@@ -609,11 +609,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODPOM", NC_FLOAT, 2, dimids, &AODPOM);
+    err       = driver.def_var (ncid, "AODPOM", MPI_FLOAT, 2, dimids, &AODPOM);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODPOM, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODPOM, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODPOM, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODPOM, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODPOM, "long_name", 37, "Aerosol optical depth 550 nm from POM");
     CHECK_ERR
@@ -623,11 +623,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODSO4", NC_FLOAT, 2, dimids, &AODSO4);
+    err       = driver.def_var (ncid, "AODSO4", MPI_FLOAT, 2, dimids, &AODSO4);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODSO4, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODSO4, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODSO4, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODSO4, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODSO4, "long_name", 37, "Aerosol optical depth 550 nm from SO4");
     CHECK_ERR
@@ -637,11 +637,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODSOA", NC_FLOAT, 2, dimids, &AODSOA);
+    err       = driver.def_var (ncid, "AODSOA", MPI_FLOAT, 2, dimids, &AODSOA);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODSOA, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODSOA, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODSOA, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODSOA, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODSOA, "long_name", 37, "Aerosol optical depth 550 nm from SOA");
     CHECK_ERR
@@ -651,11 +651,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODSS", NC_FLOAT, 2, dimids, &AODSS);
+    err       = driver.def_var (ncid, "AODSS", MPI_FLOAT, 2, dimids, &AODSS);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODSS, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODSS, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODSS, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODSS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODSS, "long_name", 41, "Aerosol optical depth 550 nm from seasalt");
     CHECK_ERR
@@ -665,11 +665,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODUV", NC_FLOAT, 2, dimids, &AODUV);
+    err       = driver.def_var (ncid, "AODUV", MPI_FLOAT, 2, dimids, &AODUV);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODUV, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODUV, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODUV, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODUV, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODUV, "long_name", 28, "Aerosol optical depth 350 nm");
     CHECK_ERR
@@ -679,11 +679,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AODVIS", NC_FLOAT, 2, dimids, &AODVIS);
+    err       = driver.def_var (ncid, "AODVIS", MPI_FLOAT, 2, dimids, &AODVIS);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODVIS, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, AODVIS, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, AODVIS, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, AODVIS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODVIS, "long_name", 28, "Aerosol optical depth 550 nm");
     CHECK_ERR
@@ -694,9 +694,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "AQRAIN", NC_FLOAT, 3, dimids, &AQRAIN);
+    err       = driver.def_var (ncid, "AQRAIN", MPI_FLOAT, 3, dimids, &AQRAIN);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, AQRAIN, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, AQRAIN, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQRAIN, "units", 5, "kg/kg");
     CHECK_ERR
@@ -709,9 +709,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "AQSNOW", NC_FLOAT, 3, dimids, &AQSNOW);
+    err       = driver.def_var (ncid, "AQSNOW", MPI_FLOAT, 3, dimids, &AQSNOW);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, AQSNOW, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, AQSNOW, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQSNOW, "units", 5, "kg/kg");
     CHECK_ERR
@@ -723,7 +723,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AQ_DMS", NC_FLOAT, 2, dimids, &AQ_DMS);
+    err       = driver.def_var (ncid, "AQ_DMS", MPI_FLOAT, 2, dimids, &AQ_DMS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_DMS, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -735,7 +735,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AQ_H2O2", NC_FLOAT, 2, dimids, &AQ_H2O2);
+    err       = driver.def_var (ncid, "AQ_H2O2", MPI_FLOAT, 2, dimids, &AQ_H2O2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_H2O2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -747,7 +747,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AQ_H2SO4", NC_FLOAT, 2, dimids, &AQ_H2SO4);
+    err       = driver.def_var (ncid, "AQ_H2SO4", MPI_FLOAT, 2, dimids, &AQ_H2SO4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_H2SO4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -760,7 +760,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AQ_O3", NC_FLOAT, 2, dimids, &AQ_O3);
+    err       = driver.def_var (ncid, "AQ_O3", MPI_FLOAT, 2, dimids, &AQ_O3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_O3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -772,7 +772,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AQ_SO2", NC_FLOAT, 2, dimids, &AQ_SO2);
+    err       = driver.def_var (ncid, "AQ_SO2", MPI_FLOAT, 2, dimids, &AQ_SO2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_SO2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -784,7 +784,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "AQ_SOAG", NC_FLOAT, 2, dimids, &AQ_SOAG);
+    err       = driver.def_var (ncid, "AQ_SOAG", MPI_FLOAT, 2, dimids, &AQ_SOAG);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_SOAG, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -797,9 +797,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "AREI", NC_FLOAT, 3, dimids, &AREI);
+    err       = driver.def_var (ncid, "AREI", MPI_FLOAT, 3, dimids, &AREI);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, AREI, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, AREI, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AREI, "units", 6, "Micron");
     CHECK_ERR
@@ -812,9 +812,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "AREL", NC_FLOAT, 3, dimids, &AREL);
+    err       = driver.def_var (ncid, "AREL", MPI_FLOAT, 3, dimids, &AREL);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, AREL, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, AREL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AREL, "units", 6, "Micron");
     CHECK_ERR
@@ -827,9 +827,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "AWNC", NC_FLOAT, 3, dimids, &AWNC);
+    err       = driver.def_var (ncid, "AWNC", MPI_FLOAT, 3, dimids, &AWNC);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, AWNC, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, AWNC, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AWNC, "units", 3, "m-3");
     CHECK_ERR
@@ -842,9 +842,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "AWNI", NC_FLOAT, 3, dimids, &AWNI);
+    err       = driver.def_var (ncid, "AWNI", MPI_FLOAT, 3, dimids, &AWNI);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, AWNI, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, AWNI, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AWNI, "units", 3, "m-3");
     CHECK_ERR
@@ -856,11 +856,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "BURDEN1", NC_FLOAT, 2, dimids, &BURDEN1);
+    err       = driver.def_var (ncid, "BURDEN1", MPI_FLOAT, 2, dimids, &BURDEN1);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, BURDEN1, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, BURDEN1, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, BURDEN1, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, BURDEN1, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, BURDEN1, "units", 5, "kg/m2");
     CHECK_ERR
@@ -872,11 +872,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "BURDEN2", NC_FLOAT, 2, dimids, &BURDEN2);
+    err       = driver.def_var (ncid, "BURDEN2", MPI_FLOAT, 2, dimids, &BURDEN2);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, BURDEN2, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, BURDEN2, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, BURDEN2, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, BURDEN2, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, BURDEN2, "units", 5, "kg/m2");
     CHECK_ERR
@@ -888,11 +888,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "BURDEN3", NC_FLOAT, 2, dimids, &BURDEN3);
+    err       = driver.def_var (ncid, "BURDEN3", MPI_FLOAT, 2, dimids, &BURDEN3);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, BURDEN3, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, BURDEN3, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, BURDEN3, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, BURDEN3, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, BURDEN3, "units", 5, "kg/m2");
     CHECK_ERR
@@ -904,11 +904,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "BURDEN4", NC_FLOAT, 2, dimids, &BURDEN4);
+    err       = driver.def_var (ncid, "BURDEN4", MPI_FLOAT, 2, dimids, &BURDEN4);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, BURDEN4, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, BURDEN4, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, BURDEN4, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, BURDEN4, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, BURDEN4, "units", 5, "kg/m2");
     CHECK_ERR
@@ -921,9 +921,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "CCN3", NC_FLOAT, 3, dimids, &CCN3);
+    err       = driver.def_var (ncid, "CCN3", MPI_FLOAT, 3, dimids, &CCN3);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, CCN3, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, CCN3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CCN3, "units", 5, "#/cm3");
     CHECK_ERR
@@ -935,7 +935,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "CDNUMC", NC_FLOAT, 2, dimids, &CDNUMC);
+    err       = driver.def_var (ncid, "CDNUMC", MPI_FLOAT, 2, dimids, &CDNUMC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CDNUMC, "units", 4, "1/m2");
     CHECK_ERR
@@ -948,7 +948,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "CLDHGH", NC_FLOAT, 2, dimids, &CLDHGH);
+    err       = driver.def_var (ncid, "CLDHGH", MPI_FLOAT, 2, dimids, &CLDHGH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDHGH, "units", 8, "fraction");
     CHECK_ERR
@@ -961,9 +961,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "CLDICE", NC_FLOAT, 3, dimids, &CLDICE);
+    err       = driver.def_var (ncid, "CLDICE", MPI_FLOAT, 3, dimids, &CLDICE);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, CLDICE, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, CLDICE, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDICE, "units", 5, "kg/kg");
     CHECK_ERR
@@ -978,9 +978,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "CLDLIQ", NC_FLOAT, 3, dimids, &CLDLIQ);
+    err       = driver.def_var (ncid, "CLDLIQ", MPI_FLOAT, 3, dimids, &CLDLIQ);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, CLDLIQ, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, CLDLIQ, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDLIQ, "units", 5, "kg/kg");
     CHECK_ERR
@@ -994,7 +994,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "CLDLOW", NC_FLOAT, 2, dimids, &CLDLOW);
+    err       = driver.def_var (ncid, "CLDLOW", MPI_FLOAT, 2, dimids, &CLDLOW);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDLOW, "units", 8, "fraction");
     CHECK_ERR
@@ -1006,7 +1006,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "CLDMED", NC_FLOAT, 2, dimids, &CLDMED);
+    err       = driver.def_var (ncid, "CLDMED", MPI_FLOAT, 2, dimids, &CLDMED);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDMED, "units", 8, "fraction");
     CHECK_ERR
@@ -1018,7 +1018,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "CLDTOT", NC_FLOAT, 2, dimids, &CLDTOT);
+    err       = driver.def_var (ncid, "CLDTOT", MPI_FLOAT, 2, dimids, &CLDTOT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDTOT, "units", 8, "fraction");
     CHECK_ERR
@@ -1031,9 +1031,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "CLOUD", NC_FLOAT, 3, dimids, &CLOUD);
+    err       = driver.def_var (ncid, "CLOUD", MPI_FLOAT, 3, dimids, &CLOUD);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, CLOUD, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, CLOUD, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLOUD, "units", 8, "fraction");
     CHECK_ERR
@@ -1046,9 +1046,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "CLOUDFRAC_CLUBB", NC_FLOAT, 3, dimids, &CLOUDFRAC_CLUBB);
+    err       = driver.def_var (ncid, "CLOUDFRAC_CLUBB", MPI_FLOAT, 3, dimids, &CLOUDFRAC_CLUBB);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, CLOUDFRAC_CLUBB, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, CLOUDFRAC_CLUBB, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLOUDFRAC_CLUBB, "units", 8, "fraction");
     CHECK_ERR
@@ -1061,9 +1061,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "CONCLD", NC_FLOAT, 3, dimids, &CONCLD);
+    err       = driver.def_var (ncid, "CONCLD", MPI_FLOAT, 3, dimids, &CONCLD);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, CONCLD, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, CONCLD, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CONCLD, "units", 8, "fraction");
     CHECK_ERR
@@ -1076,9 +1076,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "DCQ", NC_FLOAT, 3, dimids, &DCQ);
+    err       = driver.def_var (ncid, "DCQ", MPI_FLOAT, 3, dimids, &DCQ);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, DCQ, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, DCQ, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DCQ, "units", 7, "kg/kg/s");
     CHECK_ERR
@@ -1090,7 +1090,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DF_DMS", NC_FLOAT, 2, dimids, &DF_DMS);
+    err       = driver.def_var (ncid, "DF_DMS", MPI_FLOAT, 2, dimids, &DF_DMS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_DMS, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -1102,7 +1102,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DF_H2O2", NC_FLOAT, 2, dimids, &DF_H2O2);
+    err       = driver.def_var (ncid, "DF_H2O2", MPI_FLOAT, 2, dimids, &DF_H2O2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_H2O2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -1114,7 +1114,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DF_H2SO4", NC_FLOAT, 2, dimids, &DF_H2SO4);
+    err       = driver.def_var (ncid, "DF_H2SO4", MPI_FLOAT, 2, dimids, &DF_H2SO4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_H2SO4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -1126,7 +1126,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DF_O3", NC_FLOAT, 2, dimids, &DF_O3);
+    err       = driver.def_var (ncid, "DF_O3", MPI_FLOAT, 2, dimids, &DF_O3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_O3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -1138,7 +1138,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DF_SO2", NC_FLOAT, 2, dimids, &DF_SO2);
+    err       = driver.def_var (ncid, "DF_SO2", MPI_FLOAT, 2, dimids, &DF_SO2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_SO2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -1150,7 +1150,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DF_SOAG", NC_FLOAT, 2, dimids, &DF_SOAG);
+    err       = driver.def_var (ncid, "DF_SOAG", MPI_FLOAT, 2, dimids, &DF_SOAG);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_SOAG, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -1162,7 +1162,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DMS_SRF", NC_FLOAT, 2, dimids, &DMS_SRF);
+    err       = driver.def_var (ncid, "DMS_SRF", MPI_FLOAT, 2, dimids, &DMS_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DMS_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -1174,7 +1174,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DP_KCLDBASE", NC_FLOAT, 2, dimids, &DP_KCLDBASE);
+    err       = driver.def_var (ncid, "DP_KCLDBASE", MPI_FLOAT, 2, dimids, &DP_KCLDBASE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DP_KCLDBASE, "units", 1, "1");
     CHECK_ERR
@@ -1186,7 +1186,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DP_MFUP_MAX", NC_FLOAT, 2, dimids, &DP_MFUP_MAX);
+    err       = driver.def_var (ncid, "DP_MFUP_MAX", MPI_FLOAT, 2, dimids, &DP_MFUP_MAX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DP_MFUP_MAX, "units", 5, "kg/m2");
     CHECK_ERR
@@ -1199,7 +1199,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DP_WCLDBASE", NC_FLOAT, 2, dimids, &DP_WCLDBASE);
+    err       = driver.def_var (ncid, "DP_WCLDBASE", MPI_FLOAT, 2, dimids, &DP_WCLDBASE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DP_WCLDBASE, "units", 3, "m/s");
     CHECK_ERR
@@ -1212,7 +1212,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DSTSFMBL", NC_FLOAT, 2, dimids, &DSTSFMBL);
+    err       = driver.def_var (ncid, "DSTSFMBL", MPI_FLOAT, 2, dimids, &DSTSFMBL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DSTSFMBL, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -1225,9 +1225,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "DTCOND", NC_FLOAT, 3, dimids, &DTCOND);
+    err       = driver.def_var (ncid, "DTCOND", MPI_FLOAT, 3, dimids, &DTCOND);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, DTCOND, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, DTCOND, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DTCOND, "units", 3, "K/s");
     CHECK_ERR
@@ -1239,7 +1239,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DTENDTH", NC_FLOAT, 2, dimids, &DTENDTH);
+    err       = driver.def_var (ncid, "DTENDTH", MPI_FLOAT, 2, dimids, &DTENDTH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DTENDTH, "units", 4, "W/m2");
     CHECK_ERR
@@ -1252,7 +1252,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "DTENDTQ", NC_FLOAT, 2, dimids, &DTENDTQ);
+    err       = driver.def_var (ncid, "DTENDTQ", MPI_FLOAT, 2, dimids, &DTENDTQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DTENDTQ, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -1266,13 +1266,13 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "EXTINCT", NC_FLOAT, 3, dimids, &EXTINCT);
+    err       = driver.def_var (ncid, "EXTINCT", MPI_FLOAT, 3, dimids, &EXTINCT);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, EXTINCT, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, EXTINCT, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, EXTINCT, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, EXTINCT, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, EXTINCT, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, EXTINCT, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, EXTINCT, "units", 2, "/m");
     CHECK_ERR
@@ -1285,9 +1285,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "FICE", NC_FLOAT, 3, dimids, &FICE);
+    err       = driver.def_var (ncid, "FICE", MPI_FLOAT, 3, dimids, &FICE);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, FICE, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, FICE, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FICE, "units", 8, "fraction");
     CHECK_ERR
@@ -1299,7 +1299,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FLDS", NC_FLOAT, 2, dimids, &FLDS);
+    err       = driver.def_var (ncid, "FLDS", MPI_FLOAT, 2, dimids, &FLDS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1313,7 +1313,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FLNS", NC_FLOAT, 2, dimids, &FLNS);
+    err       = driver.def_var (ncid, "FLNS", MPI_FLOAT, 2, dimids, &FLNS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1327,7 +1327,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FLNSC", NC_FLOAT, 2, dimids, &FLNSC);
+    err       = driver.def_var (ncid, "FLNSC", MPI_FLOAT, 2, dimids, &FLNSC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1341,7 +1341,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FLNT", NC_FLOAT, 2, dimids, &FLNT);
+    err       = driver.def_var (ncid, "FLNT", MPI_FLOAT, 2, dimids, &FLNT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1355,7 +1355,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FLNTC", NC_FLOAT, 2, dimids, &FLNTC);
+    err       = driver.def_var (ncid, "FLNTC", MPI_FLOAT, 2, dimids, &FLNTC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1369,7 +1369,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FLUT", NC_FLOAT, 2, dimids, &FLUT);
+    err       = driver.def_var (ncid, "FLUT", MPI_FLOAT, 2, dimids, &FLUT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1383,7 +1383,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FLUTC", NC_FLOAT, 2, dimids, &FLUTC);
+    err       = driver.def_var (ncid, "FLUTC", MPI_FLOAT, 2, dimids, &FLUTC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1399,9 +1399,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "FREQI", NC_FLOAT, 3, dimids, &FREQI);
+    err       = driver.def_var (ncid, "FREQI", MPI_FLOAT, 3, dimids, &FREQI);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, FREQI, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, FREQI, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FREQI, "units", 8, "fraction");
     CHECK_ERR
@@ -1414,9 +1414,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "FREQL", NC_FLOAT, 3, dimids, &FREQL);
+    err       = driver.def_var (ncid, "FREQL", MPI_FLOAT, 3, dimids, &FREQL);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, FREQL, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, FREQL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FREQL, "units", 8, "fraction");
     CHECK_ERR
@@ -1429,9 +1429,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "FREQR", NC_FLOAT, 3, dimids, &FREQR);
+    err       = driver.def_var (ncid, "FREQR", MPI_FLOAT, 3, dimids, &FREQR);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, FREQR, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, FREQR, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FREQR, "units", 8, "fraction");
     CHECK_ERR
@@ -1444,9 +1444,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "FREQS", NC_FLOAT, 3, dimids, &FREQS);
+    err       = driver.def_var (ncid, "FREQS", MPI_FLOAT, 3, dimids, &FREQS);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, FREQS, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, FREQS, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FREQS, "units", 8, "fraction");
     CHECK_ERR
@@ -1458,7 +1458,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSDS", NC_FLOAT, 2, dimids, &FSDS);
+    err       = driver.def_var (ncid, "FSDS", MPI_FLOAT, 2, dimids, &FSDS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1472,7 +1472,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSDSC", NC_FLOAT, 2, dimids, &FSDSC);
+    err       = driver.def_var (ncid, "FSDSC", MPI_FLOAT, 2, dimids, &FSDSC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1486,7 +1486,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSNS", NC_FLOAT, 2, dimids, &FSNS);
+    err       = driver.def_var (ncid, "FSNS", MPI_FLOAT, 2, dimids, &FSNS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1500,7 +1500,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSNSC", NC_FLOAT, 2, dimids, &FSNSC);
+    err       = driver.def_var (ncid, "FSNSC", MPI_FLOAT, 2, dimids, &FSNSC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1514,7 +1514,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSNT", NC_FLOAT, 2, dimids, &FSNT);
+    err       = driver.def_var (ncid, "FSNT", MPI_FLOAT, 2, dimids, &FSNT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1528,7 +1528,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSNTC", NC_FLOAT, 2, dimids, &FSNTC);
+    err       = driver.def_var (ncid, "FSNTC", MPI_FLOAT, 2, dimids, &FSNTC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1542,7 +1542,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSNTOA", NC_FLOAT, 2, dimids, &FSNTOA);
+    err       = driver.def_var (ncid, "FSNTOA", MPI_FLOAT, 2, dimids, &FSNTOA);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOA, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1556,7 +1556,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSNTOAC", NC_FLOAT, 2, dimids, &FSNTOAC);
+    err       = driver.def_var (ncid, "FSNTOAC", MPI_FLOAT, 2, dimids, &FSNTOAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOAC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1571,7 +1571,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSUTOA", NC_FLOAT, 2, dimids, &FSUTOA);
+    err       = driver.def_var (ncid, "FSUTOA", MPI_FLOAT, 2, dimids, &FSUTOA);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSUTOA, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1585,7 +1585,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "FSUTOAC", NC_FLOAT, 2, dimids, &FSUTOAC);
+    err       = driver.def_var (ncid, "FSUTOAC", MPI_FLOAT, 2, dimids, &FSUTOAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSUTOAC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1600,7 +1600,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "F_eff", NC_FLOAT, 2, dimids, &F_eff);
+    err       = driver.def_var (ncid, "F_eff", MPI_FLOAT, 2, dimids, &F_eff);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, F_eff, "units", 1, "1");
     CHECK_ERR
@@ -1613,7 +1613,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "H2O2_SRF", NC_FLOAT, 2, dimids, &H2O2_SRF);
+    err       = driver.def_var (ncid, "H2O2_SRF", MPI_FLOAT, 2, dimids, &H2O2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, H2O2_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -1625,7 +1625,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "H2SO4_SRF", NC_FLOAT, 2, dimids, &H2SO4_SRF);
+    err       = driver.def_var (ncid, "H2SO4_SRF", MPI_FLOAT, 2, dimids, &H2SO4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, H2SO4_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -1637,7 +1637,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "H2SO4_sfgaex1", NC_FLOAT, 2, dimids, &H2SO4_sfgaex1);
+    err       = driver.def_var (ncid, "H2SO4_sfgaex1", MPI_FLOAT, 2, dimids, &H2SO4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, H2SO4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -1650,7 +1650,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ICEFRAC", NC_FLOAT, 2, dimids, &ICEFRAC);
+    err       = driver.def_var (ncid, "ICEFRAC", MPI_FLOAT, 2, dimids, &ICEFRAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ICEFRAC, "units", 8, "fraction");
     CHECK_ERR
@@ -1663,9 +1663,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "ICIMR", NC_FLOAT, 3, dimids, &ICIMR);
+    err       = driver.def_var (ncid, "ICIMR", MPI_FLOAT, 3, dimids, &ICIMR);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, ICIMR, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, ICIMR, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ICIMR, "units", 5, "kg/kg");
     CHECK_ERR
@@ -1678,9 +1678,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "ICWMR", NC_FLOAT, 3, dimids, &ICWMR);
+    err       = driver.def_var (ncid, "ICWMR", MPI_FLOAT, 3, dimids, &ICWMR);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, ICWMR, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, ICWMR, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ICWMR, "units", 5, "kg/kg");
     CHECK_ERR
@@ -1693,9 +1693,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "IWC", NC_FLOAT, 3, dimids, &IWC);
+    err       = driver.def_var (ncid, "IWC", MPI_FLOAT, 3, dimids, &IWC);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, IWC, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, IWC, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, IWC, "units", 5, "kg/m3");
     CHECK_ERR
@@ -1707,7 +1707,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "LANDFRAC", NC_FLOAT, 2, dimids, &LANDFRAC);
+    err       = driver.def_var (ncid, "LANDFRAC", MPI_FLOAT, 2, dimids, &LANDFRAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LANDFRAC, "units", 8, "fraction");
     CHECK_ERR
@@ -1719,7 +1719,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "LHFLX", NC_FLOAT, 2, dimids, &LHFLX);
+    err       = driver.def_var (ncid, "LHFLX", MPI_FLOAT, 2, dimids, &LHFLX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LHFLX, "units", 4, "W/m2");
     CHECK_ERR
@@ -1732,9 +1732,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "LINOZ_DO3", NC_FLOAT, 3, dimids, &LINOZ_DO3);
+    err       = driver.def_var (ncid, "LINOZ_DO3", MPI_FLOAT, 3, dimids, &LINOZ_DO3);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, LINOZ_DO3, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, LINOZ_DO3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LINOZ_DO3, "units", 2, "/s");
     CHECK_ERR
@@ -1748,9 +1748,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "LINOZ_DO3_PSC", NC_FLOAT, 3, dimids, &LINOZ_DO3_PSC);
+    err       = driver.def_var (ncid, "LINOZ_DO3_PSC", MPI_FLOAT, 3, dimids, &LINOZ_DO3_PSC);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, LINOZ_DO3_PSC, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, LINOZ_DO3_PSC, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LINOZ_DO3_PSC, "units", 2, "/s");
     CHECK_ERR
@@ -1764,9 +1764,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "LINOZ_O3CLIM", NC_FLOAT, 3, dimids, &LINOZ_O3CLIM);
+    err       = driver.def_var (ncid, "LINOZ_O3CLIM", MPI_FLOAT, 3, dimids, &LINOZ_O3CLIM);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, LINOZ_O3CLIM, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, LINOZ_O3CLIM, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LINOZ_O3CLIM, "units", 7, "mol/mol");
     CHECK_ERR
@@ -1779,9 +1779,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "LINOZ_O3COL", NC_FLOAT, 3, dimids, &LINOZ_O3COL);
+    err       = driver.def_var (ncid, "LINOZ_O3COL", MPI_FLOAT, 3, dimids, &LINOZ_O3COL);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, LINOZ_O3COL, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, LINOZ_O3COL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LINOZ_O3COL, "units", 2, "DU");
     CHECK_ERR
@@ -1793,7 +1793,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "LINOZ_SFCSINK", NC_FLOAT, 2, dimids, &LINOZ_SFCSINK);
+    err       = driver.def_var (ncid, "LINOZ_SFCSINK", MPI_FLOAT, 2, dimids, &LINOZ_SFCSINK);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LINOZ_SFCSINK, "units", 8, "Tg/yr/m2");
     CHECK_ERR
@@ -1807,9 +1807,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "LINOZ_SSO3", NC_FLOAT, 3, dimids, &LINOZ_SSO3);
+    err       = driver.def_var (ncid, "LINOZ_SSO3", MPI_FLOAT, 3, dimids, &LINOZ_SSO3);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, LINOZ_SSO3, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, LINOZ_SSO3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LINOZ_SSO3, "units", 2, "kg");
     CHECK_ERR
@@ -1821,7 +1821,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "LINOZ_SZA", NC_FLOAT, 2, dimids, &LINOZ_SZA);
+    err       = driver.def_var (ncid, "LINOZ_SZA", MPI_FLOAT, 2, dimids, &LINOZ_SZA);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LINOZ_SZA, "units", 7, "degrees");
     CHECK_ERR
@@ -1833,7 +1833,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "LND_MBL", NC_FLOAT, 2, dimids, &LND_MBL);
+    err       = driver.def_var (ncid, "LND_MBL", MPI_FLOAT, 2, dimids, &LND_MBL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LND_MBL, "units", 4, "frac");
     CHECK_ERR
@@ -1845,7 +1845,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "LWCF", NC_FLOAT, 2, dimids, &LWCF);
+    err       = driver.def_var (ncid, "LWCF", MPI_FLOAT, 2, dimids, &LWCF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1860,9 +1860,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "Mass_bc", NC_FLOAT, 3, dimids, &Mass_bc);
+    err       = driver.def_var (ncid, "Mass_bc", MPI_FLOAT, 3, dimids, &Mass_bc);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, Mass_bc, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, Mass_bc, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Mass_bc, "units", 5, "kg/kg");
     CHECK_ERR
@@ -1876,9 +1876,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "Mass_dst", NC_FLOAT, 3, dimids, &Mass_dst);
+    err       = driver.def_var (ncid, "Mass_dst", MPI_FLOAT, 3, dimids, &Mass_dst);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, Mass_dst, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, Mass_dst, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Mass_dst, "units", 5, "kg/kg");
     CHECK_ERR
@@ -1892,9 +1892,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "Mass_mom", NC_FLOAT, 3, dimids, &Mass_mom);
+    err       = driver.def_var (ncid, "Mass_mom", MPI_FLOAT, 3, dimids, &Mass_mom);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, Mass_mom, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, Mass_mom, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Mass_mom, "units", 5, "kg/kg");
     CHECK_ERR
@@ -1909,9 +1909,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "Mass_ncl", NC_FLOAT, 3, dimids, &Mass_ncl);
+    err       = driver.def_var (ncid, "Mass_ncl", MPI_FLOAT, 3, dimids, &Mass_ncl);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, Mass_ncl, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, Mass_ncl, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Mass_ncl, "units", 5, "kg/kg");
     CHECK_ERR
@@ -1925,9 +1925,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "Mass_pom", NC_FLOAT, 3, dimids, &Mass_pom);
+    err       = driver.def_var (ncid, "Mass_pom", MPI_FLOAT, 3, dimids, &Mass_pom);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, Mass_pom, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, Mass_pom, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Mass_pom, "units", 5, "kg/kg");
     CHECK_ERR
@@ -1941,9 +1941,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "Mass_so4", NC_FLOAT, 3, dimids, &Mass_so4);
+    err       = driver.def_var (ncid, "Mass_so4", MPI_FLOAT, 3, dimids, &Mass_so4);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, Mass_so4, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, Mass_so4, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Mass_so4, "units", 5, "kg/kg");
     CHECK_ERR
@@ -1957,9 +1957,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "Mass_soa", NC_FLOAT, 3, dimids, &Mass_soa);
+    err       = driver.def_var (ncid, "Mass_soa", MPI_FLOAT, 3, dimids, &Mass_soa);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, Mass_soa, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, Mass_soa, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Mass_soa, "units", 5, "kg/kg");
     CHECK_ERR
@@ -1973,9 +1973,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "NUMICE", NC_FLOAT, 3, dimids, &NUMICE);
+    err       = driver.def_var (ncid, "NUMICE", MPI_FLOAT, 3, dimids, &NUMICE);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, NUMICE, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, NUMICE, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NUMICE, "units", 4, "1/kg");
     CHECK_ERR
@@ -1990,9 +1990,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "NUMLIQ", NC_FLOAT, 3, dimids, &NUMLIQ);
+    err       = driver.def_var (ncid, "NUMLIQ", MPI_FLOAT, 3, dimids, &NUMLIQ);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, NUMLIQ, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, NUMLIQ, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NUMLIQ, "units", 4, "1/kg");
     CHECK_ERR
@@ -2007,9 +2007,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "NUMRAI", NC_FLOAT, 3, dimids, &NUMRAI);
+    err       = driver.def_var (ncid, "NUMRAI", MPI_FLOAT, 3, dimids, &NUMRAI);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, NUMRAI, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, NUMRAI, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NUMRAI, "units", 4, "1/kg");
     CHECK_ERR
@@ -2024,9 +2024,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "NUMSNO", NC_FLOAT, 3, dimids, &NUMSNO);
+    err       = driver.def_var (ncid, "NUMSNO", MPI_FLOAT, 3, dimids, &NUMSNO);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, NUMSNO, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, NUMSNO, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NUMSNO, "units", 4, "1/kg");
     CHECK_ERR
@@ -2041,9 +2041,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "O3", NC_FLOAT, 3, dimids, &O3);
+    err       = driver.def_var (ncid, "O3", MPI_FLOAT, 3, dimids, &O3);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, O3, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, O3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, O3, "units", 7, "mol/mol");
     CHECK_ERR
@@ -2057,7 +2057,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "O3_SRF", NC_FLOAT, 2, dimids, &O3_SRF);
+    err       = driver.def_var (ncid, "O3_SRF", MPI_FLOAT, 2, dimids, &O3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, O3_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -2069,7 +2069,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "OCNFRAC", NC_FLOAT, 2, dimids, &OCNFRAC);
+    err       = driver.def_var (ncid, "OCNFRAC", MPI_FLOAT, 2, dimids, &OCNFRAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OCNFRAC, "units", 8, "fraction");
     CHECK_ERR
@@ -2082,9 +2082,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "OMEGA", NC_FLOAT, 3, dimids, &OMEGA);
+    err       = driver.def_var (ncid, "OMEGA", MPI_FLOAT, 3, dimids, &OMEGA);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, OMEGA, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, OMEGA, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OMEGA, "units", 4, "Pa/s");
     CHECK_ERR
@@ -2096,7 +2096,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "OMEGA500", NC_FLOAT, 2, dimids, &OMEGA500);
+    err       = driver.def_var (ncid, "OMEGA500", MPI_FLOAT, 2, dimids, &OMEGA500);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OMEGA500, "units", 4, "Pa/s");
     CHECK_ERR
@@ -2110,9 +2110,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "OMEGAT", NC_FLOAT, 3, dimids, &OMEGAT);
+    err       = driver.def_var (ncid, "OMEGAT", MPI_FLOAT, 3, dimids, &OMEGAT);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, OMEGAT, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, OMEGAT, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OMEGAT, "units", 6, "K Pa/s");
     CHECK_ERR
@@ -2124,7 +2124,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "PBLH", NC_FLOAT, 2, dimids, &PBLH);
+    err       = driver.def_var (ncid, "PBLH", MPI_FLOAT, 2, dimids, &PBLH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PBLH, "units", 1, "m");
     CHECK_ERR
@@ -2136,7 +2136,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "PHIS", NC_FLOAT, 2, dimids, &PHIS);
+    err       = driver.def_var (ncid, "PHIS", MPI_FLOAT, 2, dimids, &PHIS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PHIS, "units", 5, "m2/s2");
     CHECK_ERR
@@ -2146,7 +2146,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "PRECC", NC_FLOAT, 2, dimids, &PRECC);
+    err       = driver.def_var (ncid, "PRECC", MPI_FLOAT, 2, dimids, &PRECC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECC, "units", 3, "m/s");
     CHECK_ERR
@@ -2158,7 +2158,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "PRECL", NC_FLOAT, 2, dimids, &PRECL);
+    err       = driver.def_var (ncid, "PRECL", MPI_FLOAT, 2, dimids, &PRECL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECL, "units", 3, "m/s");
     CHECK_ERR
@@ -2171,7 +2171,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "PRECSC", NC_FLOAT, 2, dimids, &PRECSC);
+    err       = driver.def_var (ncid, "PRECSC", MPI_FLOAT, 2, dimids, &PRECSC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECSC, "units", 3, "m/s");
     CHECK_ERR
@@ -2183,7 +2183,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "PRECSL", NC_FLOAT, 2, dimids, &PRECSL);
+    err       = driver.def_var (ncid, "PRECSL", MPI_FLOAT, 2, dimids, &PRECSL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECSL, "units", 3, "m/s");
     CHECK_ERR
@@ -2196,7 +2196,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "PS", NC_FLOAT, 2, dimids, &PS);
+    err       = driver.def_var (ncid, "PS", MPI_FLOAT, 2, dimids, &PS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PS, "units", 2, "Pa");
     CHECK_ERR
@@ -2208,7 +2208,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "PSL", NC_FLOAT, 2, dimids, &PSL);
+    err       = driver.def_var (ncid, "PSL", MPI_FLOAT, 2, dimids, &PSL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PSL, "units", 2, "Pa");
     CHECK_ERR
@@ -2221,9 +2221,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "Q", NC_FLOAT, 3, dimids, &Q);
+    err       = driver.def_var (ncid, "Q", MPI_FLOAT, 3, dimids, &Q);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, Q, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, Q, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Q, "units", 5, "kg/kg");
     CHECK_ERR
@@ -2237,7 +2237,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "QFLX", NC_FLOAT, 2, dimids, &QFLX);
+    err       = driver.def_var (ncid, "QFLX", MPI_FLOAT, 2, dimids, &QFLX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QFLX, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2249,7 +2249,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "QREFHT", NC_FLOAT, 2, dimids, &QREFHT);
+    err       = driver.def_var (ncid, "QREFHT", MPI_FLOAT, 2, dimids, &QREFHT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QREFHT, "units", 5, "kg/kg");
     CHECK_ERR
@@ -2262,9 +2262,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "QRL", NC_FLOAT, 3, dimids, &QRL);
+    err       = driver.def_var (ncid, "QRL", MPI_FLOAT, 3, dimids, &QRL);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, QRL, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, QRL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QRL, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -2279,9 +2279,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "QRS", NC_FLOAT, 3, dimids, &QRS);
+    err       = driver.def_var (ncid, "QRS", MPI_FLOAT, 3, dimids, &QRS);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, QRS, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, QRS, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QRS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -2296,9 +2296,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "RAINQM", NC_FLOAT, 3, dimids, &RAINQM);
+    err       = driver.def_var (ncid, "RAINQM", MPI_FLOAT, 3, dimids, &RAINQM);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, RAINQM, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, RAINQM, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, RAINQM, "units", 5, "kg/kg");
     CHECK_ERR
@@ -2312,7 +2312,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "RAM1", NC_FLOAT, 2, dimids, &RAM1);
+    err       = driver.def_var (ncid, "RAM1", MPI_FLOAT, 2, dimids, &RAM1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, RAM1, "units", 4, "frac");
     CHECK_ERR
@@ -2325,9 +2325,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "RELHUM", NC_FLOAT, 3, dimids, &RELHUM);
+    err       = driver.def_var (ncid, "RELHUM", MPI_FLOAT, 3, dimids, &RELHUM);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, RELHUM, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, RELHUM, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, RELHUM, "units", 7, "percent");
     CHECK_ERR
@@ -2339,7 +2339,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFDMS", NC_FLOAT, 2, dimids, &SFDMS);
+    err       = driver.def_var (ncid, "SFDMS", MPI_FLOAT, 2, dimids, &SFDMS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFDMS, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2351,7 +2351,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFH2O2", NC_FLOAT, 2, dimids, &SFH2O2);
+    err       = driver.def_var (ncid, "SFH2O2", MPI_FLOAT, 2, dimids, &SFH2O2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFH2O2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2363,7 +2363,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFH2SO4", NC_FLOAT, 2, dimids, &SFH2SO4);
+    err       = driver.def_var (ncid, "SFH2SO4", MPI_FLOAT, 2, dimids, &SFH2SO4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFH2SO4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2375,7 +2375,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFO3", NC_FLOAT, 2, dimids, &SFO3);
+    err       = driver.def_var (ncid, "SFO3", MPI_FLOAT, 2, dimids, &SFO3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFO3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2387,7 +2387,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFSO2", NC_FLOAT, 2, dimids, &SFSO2);
+    err       = driver.def_var (ncid, "SFSO2", MPI_FLOAT, 2, dimids, &SFSO2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFSO2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2399,7 +2399,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFSOAG", NC_FLOAT, 2, dimids, &SFSOAG);
+    err       = driver.def_var (ncid, "SFSOAG", MPI_FLOAT, 2, dimids, &SFSOAG);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFSOAG, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2411,7 +2411,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFbc_a1", NC_FLOAT, 2, dimids, &SFbc_a1);
+    err       = driver.def_var (ncid, "SFbc_a1", MPI_FLOAT, 2, dimids, &SFbc_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFbc_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2423,7 +2423,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFbc_a3", NC_FLOAT, 2, dimids, &SFbc_a3);
+    err       = driver.def_var (ncid, "SFbc_a3", MPI_FLOAT, 2, dimids, &SFbc_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFbc_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2435,7 +2435,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFbc_a4", NC_FLOAT, 2, dimids, &SFbc_a4);
+    err       = driver.def_var (ncid, "SFbc_a4", MPI_FLOAT, 2, dimids, &SFbc_a4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFbc_a4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2447,7 +2447,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFdst_a1", NC_FLOAT, 2, dimids, &SFdst_a1);
+    err       = driver.def_var (ncid, "SFdst_a1", MPI_FLOAT, 2, dimids, &SFdst_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFdst_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2459,7 +2459,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFdst_a3", NC_FLOAT, 2, dimids, &SFdst_a3);
+    err       = driver.def_var (ncid, "SFdst_a3", MPI_FLOAT, 2, dimids, &SFdst_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFdst_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2471,7 +2471,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFmom_a1", NC_FLOAT, 2, dimids, &SFmom_a1);
+    err       = driver.def_var (ncid, "SFmom_a1", MPI_FLOAT, 2, dimids, &SFmom_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFmom_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2483,7 +2483,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFmom_a2", NC_FLOAT, 2, dimids, &SFmom_a2);
+    err       = driver.def_var (ncid, "SFmom_a2", MPI_FLOAT, 2, dimids, &SFmom_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFmom_a2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2495,7 +2495,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFmom_a3", NC_FLOAT, 2, dimids, &SFmom_a3);
+    err       = driver.def_var (ncid, "SFmom_a3", MPI_FLOAT, 2, dimids, &SFmom_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFmom_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2507,7 +2507,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFmom_a4", NC_FLOAT, 2, dimids, &SFmom_a4);
+    err       = driver.def_var (ncid, "SFmom_a4", MPI_FLOAT, 2, dimids, &SFmom_a4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFmom_a4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2519,7 +2519,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFncl_a1", NC_FLOAT, 2, dimids, &SFncl_a1);
+    err       = driver.def_var (ncid, "SFncl_a1", MPI_FLOAT, 2, dimids, &SFncl_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFncl_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2531,7 +2531,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFncl_a2", NC_FLOAT, 2, dimids, &SFncl_a2);
+    err       = driver.def_var (ncid, "SFncl_a2", MPI_FLOAT, 2, dimids, &SFncl_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFncl_a2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2543,7 +2543,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFncl_a3", NC_FLOAT, 2, dimids, &SFncl_a3);
+    err       = driver.def_var (ncid, "SFncl_a3", MPI_FLOAT, 2, dimids, &SFncl_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFncl_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2555,7 +2555,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFnum_a1", NC_FLOAT, 2, dimids, &SFnum_a1);
+    err       = driver.def_var (ncid, "SFnum_a1", MPI_FLOAT, 2, dimids, &SFnum_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFnum_a1, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -2567,7 +2567,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFnum_a2", NC_FLOAT, 2, dimids, &SFnum_a2);
+    err       = driver.def_var (ncid, "SFnum_a2", MPI_FLOAT, 2, dimids, &SFnum_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFnum_a2, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -2579,7 +2579,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFnum_a3", NC_FLOAT, 2, dimids, &SFnum_a3);
+    err       = driver.def_var (ncid, "SFnum_a3", MPI_FLOAT, 2, dimids, &SFnum_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFnum_a3, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -2591,7 +2591,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFnum_a4", NC_FLOAT, 2, dimids, &SFnum_a4);
+    err       = driver.def_var (ncid, "SFnum_a4", MPI_FLOAT, 2, dimids, &SFnum_a4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFnum_a4, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -2603,7 +2603,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFpom_a1", NC_FLOAT, 2, dimids, &SFpom_a1);
+    err       = driver.def_var (ncid, "SFpom_a1", MPI_FLOAT, 2, dimids, &SFpom_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFpom_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2615,7 +2615,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFpom_a3", NC_FLOAT, 2, dimids, &SFpom_a3);
+    err       = driver.def_var (ncid, "SFpom_a3", MPI_FLOAT, 2, dimids, &SFpom_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFpom_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2627,7 +2627,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFpom_a4", NC_FLOAT, 2, dimids, &SFpom_a4);
+    err       = driver.def_var (ncid, "SFpom_a4", MPI_FLOAT, 2, dimids, &SFpom_a4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFpom_a4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2639,7 +2639,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFso4_a1", NC_FLOAT, 2, dimids, &SFso4_a1);
+    err       = driver.def_var (ncid, "SFso4_a1", MPI_FLOAT, 2, dimids, &SFso4_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFso4_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2651,7 +2651,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFso4_a2", NC_FLOAT, 2, dimids, &SFso4_a2);
+    err       = driver.def_var (ncid, "SFso4_a2", MPI_FLOAT, 2, dimids, &SFso4_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFso4_a2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2663,7 +2663,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFso4_a3", NC_FLOAT, 2, dimids, &SFso4_a3);
+    err       = driver.def_var (ncid, "SFso4_a3", MPI_FLOAT, 2, dimids, &SFso4_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFso4_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2675,7 +2675,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFsoa_a1", NC_FLOAT, 2, dimids, &SFsoa_a1);
+    err       = driver.def_var (ncid, "SFsoa_a1", MPI_FLOAT, 2, dimids, &SFsoa_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFsoa_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2687,7 +2687,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFsoa_a2", NC_FLOAT, 2, dimids, &SFsoa_a2);
+    err       = driver.def_var (ncid, "SFsoa_a2", MPI_FLOAT, 2, dimids, &SFsoa_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFsoa_a2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2699,7 +2699,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SFsoa_a3", NC_FLOAT, 2, dimids, &SFsoa_a3);
+    err       = driver.def_var (ncid, "SFsoa_a3", MPI_FLOAT, 2, dimids, &SFsoa_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFsoa_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2711,7 +2711,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SHFLX", NC_FLOAT, 2, dimids, &SHFLX);
+    err       = driver.def_var (ncid, "SHFLX", MPI_FLOAT, 2, dimids, &SHFLX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SHFLX, "units", 4, "W/m2");
     CHECK_ERR
@@ -2723,7 +2723,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SH_KCLDBASE", NC_FLOAT, 2, dimids, &SH_KCLDBASE);
+    err       = driver.def_var (ncid, "SH_KCLDBASE", MPI_FLOAT, 2, dimids, &SH_KCLDBASE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SH_KCLDBASE, "units", 1, "1");
     CHECK_ERR
@@ -2735,7 +2735,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SH_MFUP_MAX", NC_FLOAT, 2, dimids, &SH_MFUP_MAX);
+    err       = driver.def_var (ncid, "SH_MFUP_MAX", MPI_FLOAT, 2, dimids, &SH_MFUP_MAX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SH_MFUP_MAX, "units", 5, "kg/m2");
     CHECK_ERR
@@ -2748,7 +2748,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SH_WCLDBASE", NC_FLOAT, 2, dimids, &SH_WCLDBASE);
+    err       = driver.def_var (ncid, "SH_WCLDBASE", MPI_FLOAT, 2, dimids, &SH_WCLDBASE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SH_WCLDBASE, "units", 3, "m/s");
     CHECK_ERR
@@ -2761,7 +2761,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SNOWHICE", NC_FLOAT, 2, dimids, &SNOWHICE);
+    err       = driver.def_var (ncid, "SNOWHICE", MPI_FLOAT, 2, dimids, &SNOWHICE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SNOWHICE, "units", 1, "m");
     CHECK_ERR
@@ -2773,7 +2773,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SNOWHLND", NC_FLOAT, 2, dimids, &SNOWHLND);
+    err       = driver.def_var (ncid, "SNOWHLND", MPI_FLOAT, 2, dimids, &SNOWHLND);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SNOWHLND, "units", 1, "m");
     CHECK_ERR
@@ -2786,9 +2786,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "SNOWQM", NC_FLOAT, 3, dimids, &SNOWQM);
+    err       = driver.def_var (ncid, "SNOWQM", MPI_FLOAT, 3, dimids, &SNOWQM);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, SNOWQM, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, SNOWQM, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SNOWQM, "units", 5, "kg/kg");
     CHECK_ERR
@@ -2803,9 +2803,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "SO2", NC_FLOAT, 3, dimids, &SO2);
+    err       = driver.def_var (ncid, "SO2", MPI_FLOAT, 3, dimids, &SO2);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, SO2, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, SO2, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SO2, "units", 7, "mol/mol");
     CHECK_ERR
@@ -2819,7 +2819,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SO2_CLXF", NC_FLOAT, 2, dimids, &SO2_CLXF);
+    err       = driver.def_var (ncid, "SO2_CLXF", MPI_FLOAT, 2, dimids, &SO2_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SO2_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -2832,7 +2832,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SO2_SRF", NC_FLOAT, 2, dimids, &SO2_SRF);
+    err       = driver.def_var (ncid, "SO2_SRF", MPI_FLOAT, 2, dimids, &SO2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SO2_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -2844,7 +2844,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SOAG_CLXF", NC_FLOAT, 2, dimids, &SOAG_CLXF);
+    err       = driver.def_var (ncid, "SOAG_CLXF", MPI_FLOAT, 2, dimids, &SOAG_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOAG_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -2857,7 +2857,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SOAG_SRF", NC_FLOAT, 2, dimids, &SOAG_SRF);
+    err       = driver.def_var (ncid, "SOAG_SRF", MPI_FLOAT, 2, dimids, &SOAG_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOAG_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -2869,7 +2869,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SOAG_sfgaex1", NC_FLOAT, 2, dimids, &SOAG_sfgaex1);
+    err       = driver.def_var (ncid, "SOAG_sfgaex1", MPI_FLOAT, 2, dimids, &SOAG_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOAG_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2882,7 +2882,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SOLIN", NC_FLOAT, 2, dimids, &SOLIN);
+    err       = driver.def_var (ncid, "SOLIN", MPI_FLOAT, 2, dimids, &SOLIN);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOLIN, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -2896,11 +2896,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SSAVIS", NC_FLOAT, 2, dimids, &SSAVIS);
+    err       = driver.def_var (ncid, "SSAVIS", MPI_FLOAT, 2, dimids, &SSAVIS);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, SSAVIS, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, SSAVIS, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, SSAVIS, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, SSAVIS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SSAVIS, "long_name", 29, "Aerosol singel-scatter albedo");
     CHECK_ERR
@@ -2910,7 +2910,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SSTSFMBL", NC_FLOAT, 2, dimids, &SSTSFMBL);
+    err       = driver.def_var (ncid, "SSTSFMBL", MPI_FLOAT, 2, dimids, &SSTSFMBL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SSTSFMBL, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2922,7 +2922,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SSTSFMBL_OM", NC_FLOAT, 2, dimids, &SSTSFMBL_OM);
+    err       = driver.def_var (ncid, "SSTSFMBL_OM", MPI_FLOAT, 2, dimids, &SSTSFMBL_OM);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SSTSFMBL_OM, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -2935,7 +2935,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "SWCF", NC_FLOAT, 2, dimids, &SWCF);
+    err       = driver.def_var (ncid, "SWCF", MPI_FLOAT, 2, dimids, &SWCF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -2950,9 +2950,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "T", NC_FLOAT, 3, dimids, &T);
+    err       = driver.def_var (ncid, "T", MPI_FLOAT, 3, dimids, &T);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, T, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, T, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, T, "units", 1, "K");
     CHECK_ERR
@@ -2964,7 +2964,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TAUGWX", NC_FLOAT, 2, dimids, &TAUGWX);
+    err       = driver.def_var (ncid, "TAUGWX", MPI_FLOAT, 2, dimids, &TAUGWX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TAUGWX, "units", 4, "N/m2");
     CHECK_ERR
@@ -2976,7 +2976,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TAUGWY", NC_FLOAT, 2, dimids, &TAUGWY);
+    err       = driver.def_var (ncid, "TAUGWY", MPI_FLOAT, 2, dimids, &TAUGWY);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TAUGWY, "units", 4, "N/m2");
     CHECK_ERR
@@ -2988,7 +2988,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TAUX", NC_FLOAT, 2, dimids, &TAUX);
+    err       = driver.def_var (ncid, "TAUX", MPI_FLOAT, 2, dimids, &TAUX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TAUX, "units", 4, "N/m2");
     CHECK_ERR
@@ -3000,7 +3000,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TAUY", NC_FLOAT, 2, dimids, &TAUY);
+    err       = driver.def_var (ncid, "TAUY", MPI_FLOAT, 2, dimids, &TAUY);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TAUY, "units", 4, "N/m2");
     CHECK_ERR
@@ -3012,7 +3012,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TGCLDCWP", NC_FLOAT, 2, dimids, &TGCLDCWP);
+    err       = driver.def_var (ncid, "TGCLDCWP", MPI_FLOAT, 2, dimids, &TGCLDCWP);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TGCLDCWP, "units", 5, "kg/m2");
     CHECK_ERR
@@ -3025,7 +3025,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TGCLDIWP", NC_FLOAT, 2, dimids, &TGCLDIWP);
+    err       = driver.def_var (ncid, "TGCLDIWP", MPI_FLOAT, 2, dimids, &TGCLDIWP);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TGCLDIWP, "units", 5, "kg/m2");
     CHECK_ERR
@@ -3037,7 +3037,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TGCLDLWP", NC_FLOAT, 2, dimids, &TGCLDLWP);
+    err       = driver.def_var (ncid, "TGCLDLWP", MPI_FLOAT, 2, dimids, &TGCLDLWP);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TGCLDLWP, "units", 5, "kg/m2");
     CHECK_ERR
@@ -3049,7 +3049,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TH7001000", NC_FLOAT, 2, dimids, &TH7001000);
+    err       = driver.def_var (ncid, "TH7001000", MPI_FLOAT, 2, dimids, &TH7001000);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TH7001000, "units", 1, "K");
     CHECK_ERR
@@ -3061,7 +3061,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TMQ", NC_FLOAT, 2, dimids, &TMQ);
+    err       = driver.def_var (ncid, "TMQ", MPI_FLOAT, 2, dimids, &TMQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TMQ, "units", 5, "kg/m2");
     CHECK_ERR
@@ -3074,7 +3074,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TREFHT", NC_FLOAT, 2, dimids, &TREFHT);
+    err       = driver.def_var (ncid, "TREFHT", MPI_FLOAT, 2, dimids, &TREFHT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TREFHT, "units", 1, "K");
     CHECK_ERR
@@ -3086,11 +3086,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TROP_P", NC_FLOAT, 2, dimids, &TROP_P);
+    err       = driver.def_var (ncid, "TROP_P", MPI_FLOAT, 2, dimids, &TROP_P);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, TROP_P, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, TROP_P, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, TROP_P, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, TROP_P, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TROP_P, "units", 2, "Pa");
     CHECK_ERR
@@ -3102,11 +3102,11 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TROP_T", NC_FLOAT, 2, dimids, &TROP_T);
+    err       = driver.def_var (ncid, "TROP_T", MPI_FLOAT, 2, dimids, &TROP_T);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, TROP_T, _FillValue, NC_FLOAT, 1, &fillv);
+    err = PUT_ATT_FLOAT (ncid, TROP_T, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = PUT_ATT_FLOAT (ncid, TROP_T, "missing_value", NC_FLOAT, 1, &missv);
+    err = PUT_ATT_FLOAT (ncid, TROP_T, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TROP_T, "units", 1, "K");
     CHECK_ERR
@@ -3118,7 +3118,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TS", NC_FLOAT, 2, dimids, &TS);
+    err       = driver.def_var (ncid, "TS", MPI_FLOAT, 2, dimids, &TS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TS, "units", 1, "K");
     CHECK_ERR
@@ -3130,7 +3130,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TSMN", NC_FLOAT, 2, dimids, &TSMN);
+    err       = driver.def_var (ncid, "TSMN", MPI_FLOAT, 2, dimids, &TSMN);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TSMN, "units", 1, "K");
     CHECK_ERR
@@ -3143,7 +3143,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TSMX", NC_FLOAT, 2, dimids, &TSMX);
+    err       = driver.def_var (ncid, "TSMX", MPI_FLOAT, 2, dimids, &TSMX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TSMX, "units", 1, "K");
     CHECK_ERR
@@ -3156,7 +3156,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TUH", NC_FLOAT, 2, dimids, &TUH);
+    err       = driver.def_var (ncid, "TUH", MPI_FLOAT, 2, dimids, &TUH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TUH, "units", 3, "W/m");
     CHECK_ERR
@@ -3168,7 +3168,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TUQ", NC_FLOAT, 2, dimids, &TUQ);
+    err       = driver.def_var (ncid, "TUQ", MPI_FLOAT, 2, dimids, &TUQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TUQ, "units", 6, "kg/m/s");
     CHECK_ERR
@@ -3181,7 +3181,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TVH", NC_FLOAT, 2, dimids, &TVH);
+    err       = driver.def_var (ncid, "TVH", MPI_FLOAT, 2, dimids, &TVH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TVH, "units", 3, "W/m");
     CHECK_ERR
@@ -3194,7 +3194,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "TVQ", NC_FLOAT, 2, dimids, &TVQ);
+    err       = driver.def_var (ncid, "TVQ", MPI_FLOAT, 2, dimids, &TVQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TVQ, "units", 6, "kg/m/s");
     CHECK_ERR
@@ -3208,9 +3208,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "U", NC_FLOAT, 3, dimids, &U);
+    err       = driver.def_var (ncid, "U", MPI_FLOAT, 3, dimids, &U);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, U, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, U, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U, "units", 3, "m/s");
     CHECK_ERR
@@ -3222,7 +3222,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "U10", NC_FLOAT, 2, dimids, &U10);
+    err       = driver.def_var (ncid, "U10", MPI_FLOAT, 2, dimids, &U10);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U10, "units", 3, "m/s");
     CHECK_ERR
@@ -3235,9 +3235,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "UU", NC_FLOAT, 3, dimids, &UU);
+    err       = driver.def_var (ncid, "UU", MPI_FLOAT, 3, dimids, &UU);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, UU, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, UU, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, UU, "units", 5, "m2/s2");
     CHECK_ERR
@@ -3250,9 +3250,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "V", NC_FLOAT, 3, dimids, &V);
+    err       = driver.def_var (ncid, "V", MPI_FLOAT, 3, dimids, &V);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, V, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, V, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, V, "units", 3, "m/s");
     CHECK_ERR
@@ -3265,9 +3265,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "VQ", NC_FLOAT, 3, dimids, &VQ);
+    err       = driver.def_var (ncid, "VQ", MPI_FLOAT, 3, dimids, &VQ);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, VQ, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, VQ, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, VQ, "units", 8, "m/skg/kg");
     CHECK_ERR
@@ -3280,9 +3280,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "VT", NC_FLOAT, 3, dimids, &VT);
+    err       = driver.def_var (ncid, "VT", MPI_FLOAT, 3, dimids, &VT);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, VT, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, VT, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, VT, "units", 5, "K m/s");
     CHECK_ERR
@@ -3295,9 +3295,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "VU", NC_FLOAT, 3, dimids, &VU);
+    err       = driver.def_var (ncid, "VU", MPI_FLOAT, 3, dimids, &VU);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, VU, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, VU, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, VU, "units", 5, "m2/s2");
     CHECK_ERR
@@ -3310,9 +3310,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "VV", NC_FLOAT, 3, dimids, &VV);
+    err       = driver.def_var (ncid, "VV", MPI_FLOAT, 3, dimids, &VV);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, VV, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, VV, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, VV, "units", 5, "m2/s2");
     CHECK_ERR
@@ -3324,7 +3324,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "WD_H2O2", NC_FLOAT, 2, dimids, &WD_H2O2);
+    err       = driver.def_var (ncid, "WD_H2O2", MPI_FLOAT, 2, dimids, &WD_H2O2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, WD_H2O2, "units", 4, "kg/s");
     CHECK_ERR
@@ -3336,7 +3336,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "WD_H2SO4", NC_FLOAT, 2, dimids, &WD_H2SO4);
+    err       = driver.def_var (ncid, "WD_H2SO4", MPI_FLOAT, 2, dimids, &WD_H2SO4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, WD_H2SO4, "units", 4, "kg/s");
     CHECK_ERR
@@ -3348,7 +3348,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "WD_SO2", NC_FLOAT, 2, dimids, &WD_SO2);
+    err       = driver.def_var (ncid, "WD_SO2", MPI_FLOAT, 2, dimids, &WD_SO2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, WD_SO2, "units", 4, "kg/s");
     CHECK_ERR
@@ -3361,9 +3361,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "WSUB", NC_FLOAT, 3, dimids, &WSUB);
+    err       = driver.def_var (ncid, "WSUB", MPI_FLOAT, 3, dimids, &WSUB);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, WSUB, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, WSUB, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, WSUB, "units", 3, "m/s");
     CHECK_ERR
@@ -3376,9 +3376,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "Z3", NC_FLOAT, 3, dimids, &Z3);
+    err       = driver.def_var (ncid, "Z3", MPI_FLOAT, 3, dimids, &Z3);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, Z3, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, Z3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Z3, "units", 1, "m");
     CHECK_ERR
@@ -3391,9 +3391,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "aero_water", NC_FLOAT, 3, dimids, &aero_water);
+    err       = driver.def_var (ncid, "aero_water", MPI_FLOAT, 3, dimids, &aero_water);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, aero_water, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, aero_water, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, aero_water, "units", 1, "m");
     CHECK_ERR
@@ -3406,7 +3406,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "airFV", NC_FLOAT, 2, dimids, &airFV);
+    err       = driver.def_var (ncid, "airFV", MPI_FLOAT, 2, dimids, &airFV);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, airFV, "units", 4, "frac");
     CHECK_ERR
@@ -3418,7 +3418,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a1DDF", NC_FLOAT, 2, dimids, &bc_a1DDF);
+    err       = driver.def_var (ncid, "bc_a1DDF", MPI_FLOAT, 2, dimids, &bc_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3431,7 +3431,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a1SFWET", NC_FLOAT, 2, dimids, &bc_a1SFWET);
+    err       = driver.def_var (ncid, "bc_a1SFWET", MPI_FLOAT, 2, dimids, &bc_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3443,7 +3443,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a1_SRF", NC_FLOAT, 2, dimids, &bc_a1_SRF);
+    err       = driver.def_var (ncid, "bc_a1_SRF", MPI_FLOAT, 2, dimids, &bc_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -3455,7 +3455,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a1_sfgaex1", NC_FLOAT, 2, dimids, &bc_a1_sfgaex1);
+    err       = driver.def_var (ncid, "bc_a1_sfgaex1", MPI_FLOAT, 2, dimids, &bc_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3468,7 +3468,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a3DDF", NC_FLOAT, 2, dimids, &bc_a3DDF);
+    err       = driver.def_var (ncid, "bc_a3DDF", MPI_FLOAT, 2, dimids, &bc_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3481,7 +3481,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a3SFWET", NC_FLOAT, 2, dimids, &bc_a3SFWET);
+    err       = driver.def_var (ncid, "bc_a3SFWET", MPI_FLOAT, 2, dimids, &bc_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3493,7 +3493,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a3_SRF", NC_FLOAT, 2, dimids, &bc_a3_SRF);
+    err       = driver.def_var (ncid, "bc_a3_SRF", MPI_FLOAT, 2, dimids, &bc_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -3505,7 +3505,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a4DDF", NC_FLOAT, 2, dimids, &bc_a4DDF);
+    err       = driver.def_var (ncid, "bc_a4DDF", MPI_FLOAT, 2, dimids, &bc_a4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3518,7 +3518,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a4SFWET", NC_FLOAT, 2, dimids, &bc_a4SFWET);
+    err       = driver.def_var (ncid, "bc_a4SFWET", MPI_FLOAT, 2, dimids, &bc_a4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3530,7 +3530,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a4_CLXF", NC_FLOAT, 2, dimids, &bc_a4_CLXF);
+    err       = driver.def_var (ncid, "bc_a4_CLXF", MPI_FLOAT, 2, dimids, &bc_a4_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -3543,7 +3543,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a4_SRF", NC_FLOAT, 2, dimids, &bc_a4_SRF);
+    err       = driver.def_var (ncid, "bc_a4_SRF", MPI_FLOAT, 2, dimids, &bc_a4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -3555,7 +3555,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_a4_sfgaex1", NC_FLOAT, 2, dimids, &bc_a4_sfgaex1);
+    err       = driver.def_var (ncid, "bc_a4_sfgaex1", MPI_FLOAT, 2, dimids, &bc_a4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3568,7 +3568,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_c1DDF", NC_FLOAT, 2, dimids, &bc_c1DDF);
+    err       = driver.def_var (ncid, "bc_c1DDF", MPI_FLOAT, 2, dimids, &bc_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3581,7 +3581,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_c1SFWET", NC_FLOAT, 2, dimids, &bc_c1SFWET);
+    err       = driver.def_var (ncid, "bc_c1SFWET", MPI_FLOAT, 2, dimids, &bc_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3593,7 +3593,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_c3DDF", NC_FLOAT, 2, dimids, &bc_c3DDF);
+    err       = driver.def_var (ncid, "bc_c3DDF", MPI_FLOAT, 2, dimids, &bc_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3606,7 +3606,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_c3SFWET", NC_FLOAT, 2, dimids, &bc_c3SFWET);
+    err       = driver.def_var (ncid, "bc_c3SFWET", MPI_FLOAT, 2, dimids, &bc_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3618,7 +3618,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_c4DDF", NC_FLOAT, 2, dimids, &bc_c4DDF);
+    err       = driver.def_var (ncid, "bc_c4DDF", MPI_FLOAT, 2, dimids, &bc_c4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3631,7 +3631,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "bc_c4SFWET", NC_FLOAT, 2, dimids, &bc_c4SFWET);
+    err       = driver.def_var (ncid, "bc_c4SFWET", MPI_FLOAT, 2, dimids, &bc_c4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3643,7 +3643,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "chla", NC_FLOAT, 2, dimids, &chla);
+    err       = driver.def_var (ncid, "chla", MPI_FLOAT, 2, dimids, &chla);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, chla, "units", 6, "mg L-1");
     CHECK_ERR
@@ -3655,7 +3655,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_a1DDF", NC_FLOAT, 2, dimids, &dst_a1DDF);
+    err       = driver.def_var (ncid, "dst_a1DDF", MPI_FLOAT, 2, dimids, &dst_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3668,7 +3668,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_a1SF", NC_FLOAT, 2, dimids, &dst_a1SF);
+    err       = driver.def_var (ncid, "dst_a1SF", MPI_FLOAT, 2, dimids, &dst_a1SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a1SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3680,7 +3680,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_a1SFWET", NC_FLOAT, 2, dimids, &dst_a1SFWET);
+    err       = driver.def_var (ncid, "dst_a1SFWET", MPI_FLOAT, 2, dimids, &dst_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3692,7 +3692,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_a1_SRF", NC_FLOAT, 2, dimids, &dst_a1_SRF);
+    err       = driver.def_var (ncid, "dst_a1_SRF", MPI_FLOAT, 2, dimids, &dst_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -3704,7 +3704,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_a3DDF", NC_FLOAT, 2, dimids, &dst_a3DDF);
+    err       = driver.def_var (ncid, "dst_a3DDF", MPI_FLOAT, 2, dimids, &dst_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3717,7 +3717,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_a3SF", NC_FLOAT, 2, dimids, &dst_a3SF);
+    err       = driver.def_var (ncid, "dst_a3SF", MPI_FLOAT, 2, dimids, &dst_a3SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a3SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3729,7 +3729,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_a3SFWET", NC_FLOAT, 2, dimids, &dst_a3SFWET);
+    err       = driver.def_var (ncid, "dst_a3SFWET", MPI_FLOAT, 2, dimids, &dst_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3741,7 +3741,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_a3_SRF", NC_FLOAT, 2, dimids, &dst_a3_SRF);
+    err       = driver.def_var (ncid, "dst_a3_SRF", MPI_FLOAT, 2, dimids, &dst_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -3753,7 +3753,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_c1DDF", NC_FLOAT, 2, dimids, &dst_c1DDF);
+    err       = driver.def_var (ncid, "dst_c1DDF", MPI_FLOAT, 2, dimids, &dst_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3766,7 +3766,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_c1SFWET", NC_FLOAT, 2, dimids, &dst_c1SFWET);
+    err       = driver.def_var (ncid, "dst_c1SFWET", MPI_FLOAT, 2, dimids, &dst_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3779,7 +3779,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_c3DDF", NC_FLOAT, 2, dimids, &dst_c3DDF);
+    err       = driver.def_var (ncid, "dst_c3DDF", MPI_FLOAT, 2, dimids, &dst_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3792,7 +3792,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "dst_c3SFWET", NC_FLOAT, 2, dimids, &dst_c3SFWET);
+    err       = driver.def_var (ncid, "dst_c3SFWET", MPI_FLOAT, 2, dimids, &dst_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3806,9 +3806,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = driver.def_var (ncid, "hstobie_linoz", NC_FLOAT, 3, dimids, &hstobie_linoz);
+    err       = driver.def_var (ncid, "hstobie_linoz", MPI_FLOAT, 3, dimids, &hstobie_linoz);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, hstobie_linoz, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, hstobie_linoz, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hstobie_linoz, "units", 22, "fraction of model time");
     CHECK_ERR
@@ -3818,7 +3818,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mlip", NC_FLOAT, 2, dimids, &mlip);
+    err       = driver.def_var (ncid, "mlip", MPI_FLOAT, 2, dimids, &mlip);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mlip, "units", 4, "uM C");
     CHECK_ERR
@@ -3830,7 +3830,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a1DDF", NC_FLOAT, 2, dimids, &mom_a1DDF);
+    err       = driver.def_var (ncid, "mom_a1DDF", MPI_FLOAT, 2, dimids, &mom_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3843,7 +3843,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a1SF", NC_FLOAT, 2, dimids, &mom_a1SF);
+    err       = driver.def_var (ncid, "mom_a1SF", MPI_FLOAT, 2, dimids, &mom_a1SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3855,7 +3855,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a1SFWET", NC_FLOAT, 2, dimids, &mom_a1SFWET);
+    err       = driver.def_var (ncid, "mom_a1SFWET", MPI_FLOAT, 2, dimids, &mom_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3867,7 +3867,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a1_SRF", NC_FLOAT, 2, dimids, &mom_a1_SRF);
+    err       = driver.def_var (ncid, "mom_a1_SRF", MPI_FLOAT, 2, dimids, &mom_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -3879,7 +3879,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a1_sfgaex1", NC_FLOAT, 2, dimids, &mom_a1_sfgaex1);
+    err       = driver.def_var (ncid, "mom_a1_sfgaex1", MPI_FLOAT, 2, dimids, &mom_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3892,7 +3892,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a2DDF", NC_FLOAT, 2, dimids, &mom_a2DDF);
+    err       = driver.def_var (ncid, "mom_a2DDF", MPI_FLOAT, 2, dimids, &mom_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3905,7 +3905,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a2SF", NC_FLOAT, 2, dimids, &mom_a2SF);
+    err       = driver.def_var (ncid, "mom_a2SF", MPI_FLOAT, 2, dimids, &mom_a2SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a2SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3917,7 +3917,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a2SFWET", NC_FLOAT, 2, dimids, &mom_a2SFWET);
+    err       = driver.def_var (ncid, "mom_a2SFWET", MPI_FLOAT, 2, dimids, &mom_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3929,7 +3929,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a2_SRF", NC_FLOAT, 2, dimids, &mom_a2_SRF);
+    err       = driver.def_var (ncid, "mom_a2_SRF", MPI_FLOAT, 2, dimids, &mom_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a2_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -3941,7 +3941,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a3DDF", NC_FLOAT, 2, dimids, &mom_a3DDF);
+    err       = driver.def_var (ncid, "mom_a3DDF", MPI_FLOAT, 2, dimids, &mom_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3954,7 +3954,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a3SFWET", NC_FLOAT, 2, dimids, &mom_a3SFWET);
+    err       = driver.def_var (ncid, "mom_a3SFWET", MPI_FLOAT, 2, dimids, &mom_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3966,7 +3966,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a3_SRF", NC_FLOAT, 2, dimids, &mom_a3_SRF);
+    err       = driver.def_var (ncid, "mom_a3_SRF", MPI_FLOAT, 2, dimids, &mom_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -3978,7 +3978,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a4DDF", NC_FLOAT, 2, dimids, &mom_a4DDF);
+    err       = driver.def_var (ncid, "mom_a4DDF", MPI_FLOAT, 2, dimids, &mom_a4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -3991,7 +3991,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a4SF", NC_FLOAT, 2, dimids, &mom_a4SF);
+    err       = driver.def_var (ncid, "mom_a4SF", MPI_FLOAT, 2, dimids, &mom_a4SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4003,7 +4003,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a4SFWET", NC_FLOAT, 2, dimids, &mom_a4SFWET);
+    err       = driver.def_var (ncid, "mom_a4SFWET", MPI_FLOAT, 2, dimids, &mom_a4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4015,7 +4015,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a4_SRF", NC_FLOAT, 2, dimids, &mom_a4_SRF);
+    err       = driver.def_var (ncid, "mom_a4_SRF", MPI_FLOAT, 2, dimids, &mom_a4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -4027,7 +4027,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_a4_sfgaex1", NC_FLOAT, 2, dimids, &mom_a4_sfgaex1);
+    err       = driver.def_var (ncid, "mom_a4_sfgaex1", MPI_FLOAT, 2, dimids, &mom_a4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4040,7 +4040,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_c1DDF", NC_FLOAT, 2, dimids, &mom_c1DDF);
+    err       = driver.def_var (ncid, "mom_c1DDF", MPI_FLOAT, 2, dimids, &mom_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4053,7 +4053,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_c1SFWET", NC_FLOAT, 2, dimids, &mom_c1SFWET);
+    err       = driver.def_var (ncid, "mom_c1SFWET", MPI_FLOAT, 2, dimids, &mom_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4066,7 +4066,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_c2DDF", NC_FLOAT, 2, dimids, &mom_c2DDF);
+    err       = driver.def_var (ncid, "mom_c2DDF", MPI_FLOAT, 2, dimids, &mom_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4079,7 +4079,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_c2SFWET", NC_FLOAT, 2, dimids, &mom_c2SFWET);
+    err       = driver.def_var (ncid, "mom_c2SFWET", MPI_FLOAT, 2, dimids, &mom_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4092,7 +4092,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_c3DDF", NC_FLOAT, 2, dimids, &mom_c3DDF);
+    err       = driver.def_var (ncid, "mom_c3DDF", MPI_FLOAT, 2, dimids, &mom_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4105,7 +4105,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_c3SFWET", NC_FLOAT, 2, dimids, &mom_c3SFWET);
+    err       = driver.def_var (ncid, "mom_c3SFWET", MPI_FLOAT, 2, dimids, &mom_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4118,7 +4118,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_c4DDF", NC_FLOAT, 2, dimids, &mom_c4DDF);
+    err       = driver.def_var (ncid, "mom_c4DDF", MPI_FLOAT, 2, dimids, &mom_c4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4131,7 +4131,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mom_c4SFWET", NC_FLOAT, 2, dimids, &mom_c4SFWET);
+    err       = driver.def_var (ncid, "mom_c4SFWET", MPI_FLOAT, 2, dimids, &mom_c4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4144,7 +4144,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mpoly", NC_FLOAT, 2, dimids, &mpoly);
+    err       = driver.def_var (ncid, "mpoly", MPI_FLOAT, 2, dimids, &mpoly);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mpoly, "units", 4, "uM C");
     CHECK_ERR
@@ -4156,7 +4156,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "mprot", NC_FLOAT, 2, dimids, &mprot);
+    err       = driver.def_var (ncid, "mprot", MPI_FLOAT, 2, dimids, &mprot);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mprot, "units", 4, "uM C");
     CHECK_ERR
@@ -4168,7 +4168,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a1DDF", NC_FLOAT, 2, dimids, &ncl_a1DDF);
+    err       = driver.def_var (ncid, "ncl_a1DDF", MPI_FLOAT, 2, dimids, &ncl_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4181,7 +4181,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a1SF", NC_FLOAT, 2, dimids, &ncl_a1SF);
+    err       = driver.def_var (ncid, "ncl_a1SF", MPI_FLOAT, 2, dimids, &ncl_a1SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a1SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4193,7 +4193,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a1SFWET", NC_FLOAT, 2, dimids, &ncl_a1SFWET);
+    err       = driver.def_var (ncid, "ncl_a1SFWET", MPI_FLOAT, 2, dimids, &ncl_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4205,7 +4205,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a1_SRF", NC_FLOAT, 2, dimids, &ncl_a1_SRF);
+    err       = driver.def_var (ncid, "ncl_a1_SRF", MPI_FLOAT, 2, dimids, &ncl_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -4217,7 +4217,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a2DDF", NC_FLOAT, 2, dimids, &ncl_a2DDF);
+    err       = driver.def_var (ncid, "ncl_a2DDF", MPI_FLOAT, 2, dimids, &ncl_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4230,7 +4230,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a2SF", NC_FLOAT, 2, dimids, &ncl_a2SF);
+    err       = driver.def_var (ncid, "ncl_a2SF", MPI_FLOAT, 2, dimids, &ncl_a2SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a2SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4242,7 +4242,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a2SFWET", NC_FLOAT, 2, dimids, &ncl_a2SFWET);
+    err       = driver.def_var (ncid, "ncl_a2SFWET", MPI_FLOAT, 2, dimids, &ncl_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4254,7 +4254,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a2_SRF", NC_FLOAT, 2, dimids, &ncl_a2_SRF);
+    err       = driver.def_var (ncid, "ncl_a2_SRF", MPI_FLOAT, 2, dimids, &ncl_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a2_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -4266,7 +4266,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a3DDF", NC_FLOAT, 2, dimids, &ncl_a3DDF);
+    err       = driver.def_var (ncid, "ncl_a3DDF", MPI_FLOAT, 2, dimids, &ncl_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4279,7 +4279,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a3SF", NC_FLOAT, 2, dimids, &ncl_a3SF);
+    err       = driver.def_var (ncid, "ncl_a3SF", MPI_FLOAT, 2, dimids, &ncl_a3SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a3SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4291,7 +4291,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a3SFWET", NC_FLOAT, 2, dimids, &ncl_a3SFWET);
+    err       = driver.def_var (ncid, "ncl_a3SFWET", MPI_FLOAT, 2, dimids, &ncl_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4303,7 +4303,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_a3_SRF", NC_FLOAT, 2, dimids, &ncl_a3_SRF);
+    err       = driver.def_var (ncid, "ncl_a3_SRF", MPI_FLOAT, 2, dimids, &ncl_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -4315,7 +4315,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_c1DDF", NC_FLOAT, 2, dimids, &ncl_c1DDF);
+    err       = driver.def_var (ncid, "ncl_c1DDF", MPI_FLOAT, 2, dimids, &ncl_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4328,7 +4328,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_c1SFWET", NC_FLOAT, 2, dimids, &ncl_c1SFWET);
+    err       = driver.def_var (ncid, "ncl_c1SFWET", MPI_FLOAT, 2, dimids, &ncl_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4341,7 +4341,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_c2DDF", NC_FLOAT, 2, dimids, &ncl_c2DDF);
+    err       = driver.def_var (ncid, "ncl_c2DDF", MPI_FLOAT, 2, dimids, &ncl_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4354,7 +4354,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_c2SFWET", NC_FLOAT, 2, dimids, &ncl_c2SFWET);
+    err       = driver.def_var (ncid, "ncl_c2SFWET", MPI_FLOAT, 2, dimids, &ncl_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4367,7 +4367,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_c3DDF", NC_FLOAT, 2, dimids, &ncl_c3DDF);
+    err       = driver.def_var (ncid, "ncl_c3DDF", MPI_FLOAT, 2, dimids, &ncl_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4380,7 +4380,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "ncl_c3SFWET", NC_FLOAT, 2, dimids, &ncl_c3SFWET);
+    err       = driver.def_var (ncid, "ncl_c3SFWET", MPI_FLOAT, 2, dimids, &ncl_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4393,7 +4393,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a1DDF", NC_FLOAT, 2, dimids, &num_a1DDF);
+    err       = driver.def_var (ncid, "num_a1DDF", MPI_FLOAT, 2, dimids, &num_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4406,7 +4406,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a1SF", NC_FLOAT, 2, dimids, &num_a1SF);
+    err       = driver.def_var (ncid, "num_a1SF", MPI_FLOAT, 2, dimids, &num_a1SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4418,7 +4418,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a1SFWET", NC_FLOAT, 2, dimids, &num_a1SFWET);
+    err       = driver.def_var (ncid, "num_a1SFWET", MPI_FLOAT, 2, dimids, &num_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4430,7 +4430,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a1_CLXF", NC_FLOAT, 2, dimids, &num_a1_CLXF);
+    err       = driver.def_var (ncid, "num_a1_CLXF", MPI_FLOAT, 2, dimids, &num_a1_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -4443,7 +4443,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a1_SRF", NC_FLOAT, 2, dimids, &num_a1_SRF);
+    err       = driver.def_var (ncid, "num_a1_SRF", MPI_FLOAT, 2, dimids, &num_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1_SRF, "units", 5, " 1/kg");
     CHECK_ERR
@@ -4455,7 +4455,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a1_sfgaex1", NC_FLOAT, 2, dimids, &num_a1_sfgaex1);
+    err       = driver.def_var (ncid, "num_a1_sfgaex1", MPI_FLOAT, 2, dimids, &num_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4468,7 +4468,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a2DDF", NC_FLOAT, 2, dimids, &num_a2DDF);
+    err       = driver.def_var (ncid, "num_a2DDF", MPI_FLOAT, 2, dimids, &num_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a2DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4481,7 +4481,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a2SFWET", NC_FLOAT, 2, dimids, &num_a2SFWET);
+    err       = driver.def_var (ncid, "num_a2SFWET", MPI_FLOAT, 2, dimids, &num_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a2SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4493,7 +4493,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a2_CLXF", NC_FLOAT, 2, dimids, &num_a2_CLXF);
+    err       = driver.def_var (ncid, "num_a2_CLXF", MPI_FLOAT, 2, dimids, &num_a2_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a2_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -4506,7 +4506,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a2_SRF", NC_FLOAT, 2, dimids, &num_a2_SRF);
+    err       = driver.def_var (ncid, "num_a2_SRF", MPI_FLOAT, 2, dimids, &num_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a2_SRF, "units", 5, " 1/kg");
     CHECK_ERR
@@ -4518,7 +4518,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a3DDF", NC_FLOAT, 2, dimids, &num_a3DDF);
+    err       = driver.def_var (ncid, "num_a3DDF", MPI_FLOAT, 2, dimids, &num_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a3DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4531,7 +4531,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a3SF", NC_FLOAT, 2, dimids, &num_a3SF);
+    err       = driver.def_var (ncid, "num_a3SF", MPI_FLOAT, 2, dimids, &num_a3SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a3SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4543,7 +4543,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a3SFWET", NC_FLOAT, 2, dimids, &num_a3SFWET);
+    err       = driver.def_var (ncid, "num_a3SFWET", MPI_FLOAT, 2, dimids, &num_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a3SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4555,7 +4555,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a3_SRF", NC_FLOAT, 2, dimids, &num_a3_SRF);
+    err       = driver.def_var (ncid, "num_a3_SRF", MPI_FLOAT, 2, dimids, &num_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a3_SRF, "units", 5, " 1/kg");
     CHECK_ERR
@@ -4567,7 +4567,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a4DDF", NC_FLOAT, 2, dimids, &num_a4DDF);
+    err       = driver.def_var (ncid, "num_a4DDF", MPI_FLOAT, 2, dimids, &num_a4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4580,7 +4580,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a4SFWET", NC_FLOAT, 2, dimids, &num_a4SFWET);
+    err       = driver.def_var (ncid, "num_a4SFWET", MPI_FLOAT, 2, dimids, &num_a4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4592,7 +4592,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a4_CLXF", NC_FLOAT, 2, dimids, &num_a4_CLXF);
+    err       = driver.def_var (ncid, "num_a4_CLXF", MPI_FLOAT, 2, dimids, &num_a4_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -4605,7 +4605,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a4_SRF", NC_FLOAT, 2, dimids, &num_a4_SRF);
+    err       = driver.def_var (ncid, "num_a4_SRF", MPI_FLOAT, 2, dimids, &num_a4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4_SRF, "units", 5, " 1/kg");
     CHECK_ERR
@@ -4617,7 +4617,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_a4_sfgaex1", NC_FLOAT, 2, dimids, &num_a4_sfgaex1);
+    err       = driver.def_var (ncid, "num_a4_sfgaex1", MPI_FLOAT, 2, dimids, &num_a4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4630,7 +4630,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_c1DDF", NC_FLOAT, 2, dimids, &num_c1DDF);
+    err       = driver.def_var (ncid, "num_c1DDF", MPI_FLOAT, 2, dimids, &num_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c1DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4643,7 +4643,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_c1SFWET", NC_FLOAT, 2, dimids, &num_c1SFWET);
+    err       = driver.def_var (ncid, "num_c1SFWET", MPI_FLOAT, 2, dimids, &num_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c1SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4656,7 +4656,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_c2DDF", NC_FLOAT, 2, dimids, &num_c2DDF);
+    err       = driver.def_var (ncid, "num_c2DDF", MPI_FLOAT, 2, dimids, &num_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c2DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4669,7 +4669,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_c2SFWET", NC_FLOAT, 2, dimids, &num_c2SFWET);
+    err       = driver.def_var (ncid, "num_c2SFWET", MPI_FLOAT, 2, dimids, &num_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c2SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4682,7 +4682,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_c3DDF", NC_FLOAT, 2, dimids, &num_c3DDF);
+    err       = driver.def_var (ncid, "num_c3DDF", MPI_FLOAT, 2, dimids, &num_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c3DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4695,7 +4695,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_c3SFWET", NC_FLOAT, 2, dimids, &num_c3SFWET);
+    err       = driver.def_var (ncid, "num_c3SFWET", MPI_FLOAT, 2, dimids, &num_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c3SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4708,7 +4708,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_c4DDF", NC_FLOAT, 2, dimids, &num_c4DDF);
+    err       = driver.def_var (ncid, "num_c4DDF", MPI_FLOAT, 2, dimids, &num_c4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c4DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4721,7 +4721,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "num_c4SFWET", NC_FLOAT, 2, dimids, &num_c4SFWET);
+    err       = driver.def_var (ncid, "num_c4SFWET", MPI_FLOAT, 2, dimids, &num_c4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c4SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -4734,7 +4734,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a1DDF", NC_FLOAT, 2, dimids, &pom_a1DDF);
+    err       = driver.def_var (ncid, "pom_a1DDF", MPI_FLOAT, 2, dimids, &pom_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4747,7 +4747,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a1SFWET", NC_FLOAT, 2, dimids, &pom_a1SFWET);
+    err       = driver.def_var (ncid, "pom_a1SFWET", MPI_FLOAT, 2, dimids, &pom_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4759,7 +4759,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a1_SRF", NC_FLOAT, 2, dimids, &pom_a1_SRF);
+    err       = driver.def_var (ncid, "pom_a1_SRF", MPI_FLOAT, 2, dimids, &pom_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -4771,7 +4771,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a1_sfgaex1", NC_FLOAT, 2, dimids, &pom_a1_sfgaex1);
+    err       = driver.def_var (ncid, "pom_a1_sfgaex1", MPI_FLOAT, 2, dimids, &pom_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4784,7 +4784,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a3DDF", NC_FLOAT, 2, dimids, &pom_a3DDF);
+    err       = driver.def_var (ncid, "pom_a3DDF", MPI_FLOAT, 2, dimids, &pom_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4797,7 +4797,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a3SFWET", NC_FLOAT, 2, dimids, &pom_a3SFWET);
+    err       = driver.def_var (ncid, "pom_a3SFWET", MPI_FLOAT, 2, dimids, &pom_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4809,7 +4809,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a3_SRF", NC_FLOAT, 2, dimids, &pom_a3_SRF);
+    err       = driver.def_var (ncid, "pom_a3_SRF", MPI_FLOAT, 2, dimids, &pom_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -4821,7 +4821,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a4DDF", NC_FLOAT, 2, dimids, &pom_a4DDF);
+    err       = driver.def_var (ncid, "pom_a4DDF", MPI_FLOAT, 2, dimids, &pom_a4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4834,7 +4834,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a4SFWET", NC_FLOAT, 2, dimids, &pom_a4SFWET);
+    err       = driver.def_var (ncid, "pom_a4SFWET", MPI_FLOAT, 2, dimids, &pom_a4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4846,7 +4846,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a4_CLXF", NC_FLOAT, 2, dimids, &pom_a4_CLXF);
+    err       = driver.def_var (ncid, "pom_a4_CLXF", MPI_FLOAT, 2, dimids, &pom_a4_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -4859,7 +4859,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a4_SRF", NC_FLOAT, 2, dimids, &pom_a4_SRF);
+    err       = driver.def_var (ncid, "pom_a4_SRF", MPI_FLOAT, 2, dimids, &pom_a4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -4871,7 +4871,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_a4_sfgaex1", NC_FLOAT, 2, dimids, &pom_a4_sfgaex1);
+    err       = driver.def_var (ncid, "pom_a4_sfgaex1", MPI_FLOAT, 2, dimids, &pom_a4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4884,7 +4884,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_c1DDF", NC_FLOAT, 2, dimids, &pom_c1DDF);
+    err       = driver.def_var (ncid, "pom_c1DDF", MPI_FLOAT, 2, dimids, &pom_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4897,7 +4897,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_c1SFWET", NC_FLOAT, 2, dimids, &pom_c1SFWET);
+    err       = driver.def_var (ncid, "pom_c1SFWET", MPI_FLOAT, 2, dimids, &pom_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4910,7 +4910,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_c3DDF", NC_FLOAT, 2, dimids, &pom_c3DDF);
+    err       = driver.def_var (ncid, "pom_c3DDF", MPI_FLOAT, 2, dimids, &pom_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4923,7 +4923,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_c3SFWET", NC_FLOAT, 2, dimids, &pom_c3SFWET);
+    err       = driver.def_var (ncid, "pom_c3SFWET", MPI_FLOAT, 2, dimids, &pom_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4936,7 +4936,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_c4DDF", NC_FLOAT, 2, dimids, &pom_c4DDF);
+    err       = driver.def_var (ncid, "pom_c4DDF", MPI_FLOAT, 2, dimids, &pom_c4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4949,7 +4949,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "pom_c4SFWET", NC_FLOAT, 2, dimids, &pom_c4SFWET);
+    err       = driver.def_var (ncid, "pom_c4SFWET", MPI_FLOAT, 2, dimids, &pom_c4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4962,7 +4962,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a1DDF", NC_FLOAT, 2, dimids, &so4_a1DDF);
+    err       = driver.def_var (ncid, "so4_a1DDF", MPI_FLOAT, 2, dimids, &so4_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4975,7 +4975,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a1SFWET", NC_FLOAT, 2, dimids, &so4_a1SFWET);
+    err       = driver.def_var (ncid, "so4_a1SFWET", MPI_FLOAT, 2, dimids, &so4_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -4987,7 +4987,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a1_CLXF", NC_FLOAT, 2, dimids, &so4_a1_CLXF);
+    err       = driver.def_var (ncid, "so4_a1_CLXF", MPI_FLOAT, 2, dimids, &so4_a1_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -5000,7 +5000,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a1_SRF", NC_FLOAT, 2, dimids, &so4_a1_SRF);
+    err       = driver.def_var (ncid, "so4_a1_SRF", MPI_FLOAT, 2, dimids, &so4_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -5012,7 +5012,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a1_sfgaex1", NC_FLOAT, 2, dimids, &so4_a1_sfgaex1);
+    err       = driver.def_var (ncid, "so4_a1_sfgaex1", MPI_FLOAT, 2, dimids, &so4_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5025,7 +5025,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a2DDF", NC_FLOAT, 2, dimids, &so4_a2DDF);
+    err       = driver.def_var (ncid, "so4_a2DDF", MPI_FLOAT, 2, dimids, &so4_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5038,7 +5038,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a2SFWET", NC_FLOAT, 2, dimids, &so4_a2SFWET);
+    err       = driver.def_var (ncid, "so4_a2SFWET", MPI_FLOAT, 2, dimids, &so4_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5050,7 +5050,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a2_CLXF", NC_FLOAT, 2, dimids, &so4_a2_CLXF);
+    err       = driver.def_var (ncid, "so4_a2_CLXF", MPI_FLOAT, 2, dimids, &so4_a2_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -5063,7 +5063,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a2_SRF", NC_FLOAT, 2, dimids, &so4_a2_SRF);
+    err       = driver.def_var (ncid, "so4_a2_SRF", MPI_FLOAT, 2, dimids, &so4_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -5075,7 +5075,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a2_sfgaex1", NC_FLOAT, 2, dimids, &so4_a2_sfgaex1);
+    err       = driver.def_var (ncid, "so4_a2_sfgaex1", MPI_FLOAT, 2, dimids, &so4_a2_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5088,7 +5088,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a3DDF", NC_FLOAT, 2, dimids, &so4_a3DDF);
+    err       = driver.def_var (ncid, "so4_a3DDF", MPI_FLOAT, 2, dimids, &so4_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5101,7 +5101,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a3SFWET", NC_FLOAT, 2, dimids, &so4_a3SFWET);
+    err       = driver.def_var (ncid, "so4_a3SFWET", MPI_FLOAT, 2, dimids, &so4_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5113,7 +5113,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a3_SRF", NC_FLOAT, 2, dimids, &so4_a3_SRF);
+    err       = driver.def_var (ncid, "so4_a3_SRF", MPI_FLOAT, 2, dimids, &so4_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -5125,7 +5125,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_a3_sfgaex1", NC_FLOAT, 2, dimids, &so4_a3_sfgaex1);
+    err       = driver.def_var (ncid, "so4_a3_sfgaex1", MPI_FLOAT, 2, dimids, &so4_a3_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a3_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5138,7 +5138,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_c1DDF", NC_FLOAT, 2, dimids, &so4_c1DDF);
+    err       = driver.def_var (ncid, "so4_c1DDF", MPI_FLOAT, 2, dimids, &so4_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5151,7 +5151,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_c1SFWET", NC_FLOAT, 2, dimids, &so4_c1SFWET);
+    err       = driver.def_var (ncid, "so4_c1SFWET", MPI_FLOAT, 2, dimids, &so4_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5164,7 +5164,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_c2DDF", NC_FLOAT, 2, dimids, &so4_c2DDF);
+    err       = driver.def_var (ncid, "so4_c2DDF", MPI_FLOAT, 2, dimids, &so4_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5177,7 +5177,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_c2SFWET", NC_FLOAT, 2, dimids, &so4_c2SFWET);
+    err       = driver.def_var (ncid, "so4_c2SFWET", MPI_FLOAT, 2, dimids, &so4_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5190,7 +5190,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_c3DDF", NC_FLOAT, 2, dimids, &so4_c3DDF);
+    err       = driver.def_var (ncid, "so4_c3DDF", MPI_FLOAT, 2, dimids, &so4_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5203,7 +5203,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "so4_c3SFWET", NC_FLOAT, 2, dimids, &so4_c3SFWET);
+    err       = driver.def_var (ncid, "so4_c3SFWET", MPI_FLOAT, 2, dimids, &so4_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5216,7 +5216,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a1DDF", NC_FLOAT, 2, dimids, &soa_a1DDF);
+    err       = driver.def_var (ncid, "soa_a1DDF", MPI_FLOAT, 2, dimids, &soa_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5229,7 +5229,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a1SFWET", NC_FLOAT, 2, dimids, &soa_a1SFWET);
+    err       = driver.def_var (ncid, "soa_a1SFWET", MPI_FLOAT, 2, dimids, &soa_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5241,7 +5241,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a1_SRF", NC_FLOAT, 2, dimids, &soa_a1_SRF);
+    err       = driver.def_var (ncid, "soa_a1_SRF", MPI_FLOAT, 2, dimids, &soa_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -5253,7 +5253,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a1_sfgaex1", NC_FLOAT, 2, dimids, &soa_a1_sfgaex1);
+    err       = driver.def_var (ncid, "soa_a1_sfgaex1", MPI_FLOAT, 2, dimids, &soa_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5266,7 +5266,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a2DDF", NC_FLOAT, 2, dimids, &soa_a2DDF);
+    err       = driver.def_var (ncid, "soa_a2DDF", MPI_FLOAT, 2, dimids, &soa_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5279,7 +5279,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a2SFWET", NC_FLOAT, 2, dimids, &soa_a2SFWET);
+    err       = driver.def_var (ncid, "soa_a2SFWET", MPI_FLOAT, 2, dimids, &soa_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5291,7 +5291,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a2_SRF", NC_FLOAT, 2, dimids, &soa_a2_SRF);
+    err       = driver.def_var (ncid, "soa_a2_SRF", MPI_FLOAT, 2, dimids, &soa_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a2_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -5303,7 +5303,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a2_sfgaex1", NC_FLOAT, 2, dimids, &soa_a2_sfgaex1);
+    err       = driver.def_var (ncid, "soa_a2_sfgaex1", MPI_FLOAT, 2, dimids, &soa_a2_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a2_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5316,7 +5316,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a3DDF", NC_FLOAT, 2, dimids, &soa_a3DDF);
+    err       = driver.def_var (ncid, "soa_a3DDF", MPI_FLOAT, 2, dimids, &soa_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5329,7 +5329,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a3SFWET", NC_FLOAT, 2, dimids, &soa_a3SFWET);
+    err       = driver.def_var (ncid, "soa_a3SFWET", MPI_FLOAT, 2, dimids, &soa_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5341,7 +5341,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a3_SRF", NC_FLOAT, 2, dimids, &soa_a3_SRF);
+    err       = driver.def_var (ncid, "soa_a3_SRF", MPI_FLOAT, 2, dimids, &soa_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -5353,7 +5353,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_a3_sfgaex1", NC_FLOAT, 2, dimids, &soa_a3_sfgaex1);
+    err       = driver.def_var (ncid, "soa_a3_sfgaex1", MPI_FLOAT, 2, dimids, &soa_a3_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a3_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5366,7 +5366,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_c1DDF", NC_FLOAT, 2, dimids, &soa_c1DDF);
+    err       = driver.def_var (ncid, "soa_c1DDF", MPI_FLOAT, 2, dimids, &soa_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5379,7 +5379,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_c1SFWET", NC_FLOAT, 2, dimids, &soa_c1SFWET);
+    err       = driver.def_var (ncid, "soa_c1SFWET", MPI_FLOAT, 2, dimids, &soa_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5392,7 +5392,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_c2DDF", NC_FLOAT, 2, dimids, &soa_c2DDF);
+    err       = driver.def_var (ncid, "soa_c2DDF", MPI_FLOAT, 2, dimids, &soa_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5405,7 +5405,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_c2SFWET", NC_FLOAT, 2, dimids, &soa_c2SFWET);
+    err       = driver.def_var (ncid, "soa_c2SFWET", MPI_FLOAT, 2, dimids, &soa_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5418,7 +5418,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_c3DDF", NC_FLOAT, 2, dimids, &soa_c3DDF);
+    err       = driver.def_var (ncid, "soa_c3DDF", MPI_FLOAT, 2, dimids, &soa_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5431,7 +5431,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = driver.def_var (ncid, "soa_c3SFWET", NC_FLOAT, 2, dimids, &soa_c3SFWET);
+    err       = driver.def_var (ncid, "soa_c3SFWET", MPI_FLOAT, 2, dimids, &soa_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -5509,9 +5509,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     /* global attributes: */
     iattr = 4;
-    err   = GET_ATT (ncid, NC_GLOBAL, "ne", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = GET_ATT (ncid, NC_GLOBAL, "np", NC_INT, 1, &iattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "Conventions", 6, "CF-1.0");
     CHECK_ERR
@@ -5567,7 +5567,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     /* define variables */
     dimids[0] = dim_ncol;
-    err       = INQ_VID (ncid, "lat", NC_DOUBLE, 1, dimids, &lat);
+    err       = INQ_VID (ncid, "lat", MPI_DOUBLE, 1, dimids, &lat);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, lat, "long_name", 8, "latitude");
     CHECK_ERR
@@ -5576,7 +5576,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = lat;
 
     dimids[0] = dim_ncol;
-    err       = INQ_VID (ncid, "lon", NC_DOUBLE, 1, dimids, &lon);
+    err       = INQ_VID (ncid, "lon", MPI_DOUBLE, 1, dimids, &lon);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, lon, "long_name", 9, "longitude");
     CHECK_ERR
@@ -5585,14 +5585,14 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = lon;
 
     dimids[0] = dim_ncol;
-    err       = INQ_VID (ncid, "area", NC_DOUBLE, 1, dimids, &area);
+    err       = INQ_VID (ncid, "area", MPI_DOUBLE, 1, dimids, &area);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, area, "long_name", 14, "gll grid areas");
     CHECK_ERR
     varids[i++] = area;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "lev", NC_DOUBLE, 1, dimids, &lev);
+    err       = INQ_VID (ncid, "lev", MPI_DOUBLE, 1, dimids, &lev);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, lev, "long_name", 38, "hybrid level at midpoints (1000*(A+B))");
     CHECK_ERR
@@ -5608,21 +5608,21 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = lev;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "hyam", NC_DOUBLE, 1, dimids, &hyam);
+    err       = INQ_VID (ncid, "hyam", MPI_DOUBLE, 1, dimids, &hyam);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, hyam, "long_name", 39, "hybrid A coefficient at layer midpoints");
     CHECK_ERR
     varids[i++] = hyam;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "hybm", NC_DOUBLE, 1, dimids, &hybm);
+    err       = INQ_VID (ncid, "hybm", MPI_DOUBLE, 1, dimids, &hybm);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, hybm, "long_name", 39, "hybrid B coefficient at layer midpoints");
     CHECK_ERR
     varids[i++] = hybm;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "P0", NC_DOUBLE, 0, NULL, &P0);
+    err       = INQ_VID (ncid, "P0", MPI_DOUBLE, 0, NULL, &P0);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, P0, "long_name", 18, "reference pressure");
     CHECK_ERR
@@ -5631,7 +5631,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = P0;
 
     dimids[0] = dim_ilev;
-    err       = INQ_VID (ncid, "ilev", NC_DOUBLE, 1, dimids, &ilev);
+    err       = INQ_VID (ncid, "ilev", MPI_DOUBLE, 1, dimids, &ilev);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ilev, "long_name", 39, "hybrid level at interfaces (1000*(A+B))");
     CHECK_ERR
@@ -5647,21 +5647,21 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = ilev;
 
     dimids[0] = dim_ilev;
-    err       = INQ_VID (ncid, "hyai", NC_DOUBLE, 1, dimids, &hyai);
+    err       = INQ_VID (ncid, "hyai", MPI_DOUBLE, 1, dimids, &hyai);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, hyai, "long_name", 40, "hybrid A coefficient at layer interfaces");
     CHECK_ERR
     varids[i++] = hyai;
 
     dimids[0] = dim_ilev;
-    err       = INQ_VID (ncid, "hybi", NC_DOUBLE, 1, dimids, &hybi);
+    err       = INQ_VID (ncid, "hybi", MPI_DOUBLE, 1, dimids, &hybi);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, hybi, "long_name", 40, "hybrid B coefficient at layer interfaces");
     CHECK_ERR
     varids[i++] = hybi;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "time", NC_DOUBLE, 1, dimids, &time);
+    err       = INQ_VID (ncid, "time", MPI_DOUBLE, 1, dimids, &time);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, time, "long_name", 4, "time");
     CHECK_ERR
@@ -5674,14 +5674,14 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = time;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "date", NC_INT, 1, dimids, &date);
+    err       = INQ_VID (ncid, "date", MPI_INT, 1, dimids, &date);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, date, "long_name", 23, "current date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = date;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "datesec", NC_INT, 1, dimids, &datesec);
+    err       = INQ_VID (ncid, "datesec", MPI_INT, 1, dimids, &datesec);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, datesec, "long_name", 31, "current seconds of current date");
     CHECK_ERR
@@ -5689,7 +5689,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_nbnd;
-    err       = INQ_VID (ncid, "time_bnds", NC_DOUBLE, 2, dimids, &time_bnds);
+    err       = INQ_VID (ncid, "time_bnds", MPI_DOUBLE, 2, dimids, &time_bnds);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, time_bnds, "long_name", 23, "time interval endpoints");
     CHECK_ERR
@@ -5697,40 +5697,40 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = INQ_VID (ncid, "date_written", NC_CHAR, 2, dimids, &date_written);
+    err       = INQ_VID (ncid, "date_written", MPI_CHAR, 2, dimids, &date_written);
     CHECK_ERR
     varids[i++] = date_written;
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = INQ_VID (ncid, "time_written", NC_CHAR, 2, dimids, &time_written);
+    err       = INQ_VID (ncid, "time_written", MPI_CHAR, 2, dimids, &time_written);
     CHECK_ERR
     varids[i++] = time_written;
 
-    err = INQ_VID (ncid, "ndbase", NC_INT, 0, NULL, &ndbase);
+    err = INQ_VID (ncid, "ndbase", MPI_INT, 0, NULL, &ndbase);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ndbase, "long_name", 8, "base day");
     CHECK_ERR
     varids[i++] = ndbase;
-    err         = INQ_VID (ncid, "nsbase", NC_INT, 0, NULL, &nsbase);
+    err         = INQ_VID (ncid, "nsbase", MPI_INT, 0, NULL, &nsbase);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nsbase, "long_name", 19, "seconds of base day");
     CHECK_ERR
     varids[i++] = nsbase;
 
-    err = INQ_VID (ncid, "nbdate", NC_INT, 0, NULL, &nbdate);
+    err = INQ_VID (ncid, "nbdate", MPI_INT, 0, NULL, &nbdate);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nbdate, "long_name", 20, "base date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = nbdate;
 
-    err = INQ_VID (ncid, "nbsec", NC_INT, 0, NULL, &nbsec);
+    err = INQ_VID (ncid, "nbsec", MPI_INT, 0, NULL, &nbsec);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nbsec, "long_name", 20, "seconds of base date");
     CHECK_ERR
     varids[i++] = nbsec;
 
-    err = INQ_VID (ncid, "mdt", NC_INT, 0, NULL, &mdt);
+    err = INQ_VID (ncid, "mdt", MPI_INT, 0, NULL, &mdt);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mdt, "long_name", 8, "timestep");
     CHECK_ERR
@@ -5739,56 +5739,56 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = mdt;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "ndcur", NC_INT, 1, dimids, &ndcur);
+    err       = INQ_VID (ncid, "ndcur", MPI_INT, 1, dimids, &ndcur);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ndcur, "long_name", 27, "current day (from base day)");
     CHECK_ERR
     varids[i++] = ndcur;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "nscur", NC_INT, 1, dimids, &nscur);
+    err       = INQ_VID (ncid, "nscur", MPI_INT, 1, dimids, &nscur);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nscur, "long_name", 30, "current seconds of current day");
     CHECK_ERR
     varids[i++] = nscur;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "co2vmr", NC_DOUBLE, 1, dimids, &co2vmr);
+    err       = INQ_VID (ncid, "co2vmr", MPI_DOUBLE, 1, dimids, &co2vmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, co2vmr, "long_name", 23, "co2 volume mixing ratio");
     CHECK_ERR
     varids[i++] = co2vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "ch4vmr", NC_DOUBLE, 1, dimids, &ch4vmr);
+    err       = INQ_VID (ncid, "ch4vmr", MPI_DOUBLE, 1, dimids, &ch4vmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ch4vmr, "long_name", 23, "ch4 volume mixing ratio");
     CHECK_ERR
     varids[i++] = ch4vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "n2ovmr", NC_DOUBLE, 1, dimids, &n2ovmr);
+    err       = INQ_VID (ncid, "n2ovmr", MPI_DOUBLE, 1, dimids, &n2ovmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, n2ovmr, "long_name", 23, "n2o volume mixing ratio");
     CHECK_ERR
     varids[i++] = n2ovmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "f11vmr", NC_DOUBLE, 1, dimids, &f11vmr);
+    err       = INQ_VID (ncid, "f11vmr", MPI_DOUBLE, 1, dimids, &f11vmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, f11vmr, "long_name", 23, "f11 volume mixing ratio");
     CHECK_ERR
     varids[i++] = f11vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "f12vmr", NC_DOUBLE, 1, dimids, &f12vmr);
+    err       = INQ_VID (ncid, "f12vmr", MPI_DOUBLE, 1, dimids, &f12vmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, f12vmr, "long_name", 23, "f12 volume mixing ratio");
     CHECK_ERR
     varids[i++] = f12vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "sol_tsi", NC_DOUBLE, 1, dimids, &sol_tsi);
+    err       = INQ_VID (ncid, "sol_tsi", MPI_DOUBLE, 1, dimids, &sol_tsi);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, sol_tsi, "long_name", 22, "total solar irradiance");
     CHECK_ERR
@@ -5797,7 +5797,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     varids[i++] = sol_tsi;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "nsteph", NC_INT, 1, dimids, &nsteph);
+    err       = INQ_VID (ncid, "nsteph", MPI_INT, 1, dimids, &nsteph);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nsteph, "long_name", 16, "current timestep");
     CHECK_ERR
@@ -5805,11 +5805,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AEROD_v", NC_FLOAT, 2, dimids, &AEROD_v);
+    err       = INQ_VID (ncid, "AEROD_v", MPI_FLOAT, 2, dimids, &AEROD_v);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AEROD_v, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AEROD_v, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AEROD_v, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AEROD_v, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AEROD_v, "units", 1, "1");
     CHECK_ERR
@@ -5823,9 +5823,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "ANRAIN", NC_FLOAT, 3, dimids, &ANRAIN);
+    err       = INQ_VID (ncid, "ANRAIN", MPI_FLOAT, 3, dimids, &ANRAIN);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, ANRAIN, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, ANRAIN, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ANRAIN, "units", 3, "m-3");
     CHECK_ERR
@@ -5838,9 +5838,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "ANSNOW", NC_FLOAT, 3, dimids, &ANSNOW);
+    err       = INQ_VID (ncid, "ANSNOW", MPI_FLOAT, 3, dimids, &ANSNOW);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, ANSNOW, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, ANSNOW, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ANSNOW, "units", 3, "m-3");
     CHECK_ERR
@@ -5852,11 +5852,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODABS", NC_FLOAT, 2, dimids, &AODABS);
+    err       = INQ_VID (ncid, "AODABS", MPI_FLOAT, 2, dimids, &AODABS);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODABS, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODABS, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODABS, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODABS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODABS, "long_name", 39, "Aerosol absorption optical depth 550 nm");
     CHECK_ERR
@@ -5866,11 +5866,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODABSBC", NC_FLOAT, 2, dimids, &AODABSBC);
+    err       = INQ_VID (ncid, "AODABSBC", MPI_FLOAT, 2, dimids, &AODABSBC);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODABSBC, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODABSBC, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODABSBC, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODABSBC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODABSBC, "long_name", 47,
                         "Aerosol absorption optical depth 550 nm from BC");
@@ -5881,11 +5881,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODALL", NC_FLOAT, 2, dimids, &AODALL);
+    err       = INQ_VID (ncid, "AODALL", MPI_FLOAT, 2, dimids, &AODALL);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODALL, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODALL, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODALL, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODALL, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODALL, "long_name", 35, "AOD 550 nm for all time and species");
     CHECK_ERR
@@ -5895,11 +5895,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODBC", NC_FLOAT, 2, dimids, &AODBC);
+    err       = INQ_VID (ncid, "AODBC", MPI_FLOAT, 2, dimids, &AODBC);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODBC, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODBC, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODBC, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODBC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODBC, "long_name", 36, "Aerosol optical depth 550 nm from BC");
     CHECK_ERR
@@ -5909,11 +5909,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODDUST", NC_FLOAT, 2, dimids, &AODDUST);
+    err       = INQ_VID (ncid, "AODDUST", MPI_FLOAT, 2, dimids, &AODDUST);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODDUST, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODDUST, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODDUST, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODDUST, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODDUST, "long_name", 38, "Aerosol optical depth 550 nm from dust");
     CHECK_ERR
@@ -5923,11 +5923,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODDUST1", NC_FLOAT, 2, dimids, &AODDUST1);
+    err       = INQ_VID (ncid, "AODDUST1", MPI_FLOAT, 2, dimids, &AODDUST1);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODDUST1, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODDUST1, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODDUST1, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODDUST1, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODDUST1, "long_name", 46,
                         "Aerosol optical depth 550 nm model 1 from dust");
@@ -5938,11 +5938,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODDUST3", NC_FLOAT, 2, dimids, &AODDUST3);
+    err       = INQ_VID (ncid, "AODDUST3", MPI_FLOAT, 2, dimids, &AODDUST3);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODDUST3, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODDUST3, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODDUST3, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODDUST3, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODDUST3, "long_name", 46,
                         "Aerosol optical depth 550 nm model 3 from dust");
@@ -5953,11 +5953,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODDUST4", NC_FLOAT, 2, dimids, &AODDUST4);
+    err       = INQ_VID (ncid, "AODDUST4", MPI_FLOAT, 2, dimids, &AODDUST4);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODDUST4, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODDUST4, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODDUST4, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODDUST4, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODDUST4, "long_name", 46,
                         "Aerosol optical depth 550 nm model 4 from dust");
@@ -5968,11 +5968,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODMODE1", NC_FLOAT, 2, dimids, &AODMODE1);
+    err       = INQ_VID (ncid, "AODMODE1", MPI_FLOAT, 2, dimids, &AODMODE1);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODMODE1, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODMODE1, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODMODE1, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODMODE1, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODMODE1, "long_name", 35, "Aerosol optical depth 550 nm mode 1");
     CHECK_ERR
@@ -5982,11 +5982,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODMODE2", NC_FLOAT, 2, dimids, &AODMODE2);
+    err       = INQ_VID (ncid, "AODMODE2", MPI_FLOAT, 2, dimids, &AODMODE2);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODMODE2, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODMODE2, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODMODE2, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODMODE2, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODMODE2, "long_name", 35, "Aerosol optical depth 550 nm mode 2");
     CHECK_ERR
@@ -5996,11 +5996,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODMODE3", NC_FLOAT, 2, dimids, &AODMODE3);
+    err       = INQ_VID (ncid, "AODMODE3", MPI_FLOAT, 2, dimids, &AODMODE3);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODMODE3, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODMODE3, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODMODE3, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODMODE3, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODMODE3, "long_name", 35, "Aerosol optical depth 550 nm mode 3");
     CHECK_ERR
@@ -6010,11 +6010,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODMODE4", NC_FLOAT, 2, dimids, &AODMODE4);
+    err       = INQ_VID (ncid, "AODMODE4", MPI_FLOAT, 2, dimids, &AODMODE4);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODMODE4, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODMODE4, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODMODE4, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODMODE4, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODMODE4, "long_name", 35, "Aerosol optical depth 550 nm mode 4");
     CHECK_ERR
@@ -6024,11 +6024,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODNIR", NC_FLOAT, 2, dimids, &AODNIR);
+    err       = INQ_VID (ncid, "AODNIR", MPI_FLOAT, 2, dimids, &AODNIR);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODNIR, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODNIR, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODNIR, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODNIR, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODNIR, "long_name", 28, "Aerosol optical depth 850 nm");
     CHECK_ERR
@@ -6038,11 +6038,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODPOM", NC_FLOAT, 2, dimids, &AODPOM);
+    err       = INQ_VID (ncid, "AODPOM", MPI_FLOAT, 2, dimids, &AODPOM);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODPOM, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODPOM, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODPOM, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODPOM, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODPOM, "long_name", 37, "Aerosol optical depth 550 nm from POM");
     CHECK_ERR
@@ -6052,11 +6052,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODSO4", NC_FLOAT, 2, dimids, &AODSO4);
+    err       = INQ_VID (ncid, "AODSO4", MPI_FLOAT, 2, dimids, &AODSO4);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODSO4, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODSO4, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODSO4, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODSO4, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODSO4, "long_name", 37, "Aerosol optical depth 550 nm from SO4");
     CHECK_ERR
@@ -6066,11 +6066,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODSOA", NC_FLOAT, 2, dimids, &AODSOA);
+    err       = INQ_VID (ncid, "AODSOA", MPI_FLOAT, 2, dimids, &AODSOA);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODSOA, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODSOA, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODSOA, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODSOA, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODSOA, "long_name", 37, "Aerosol optical depth 550 nm from SOA");
     CHECK_ERR
@@ -6080,11 +6080,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODSS", NC_FLOAT, 2, dimids, &AODSS);
+    err       = INQ_VID (ncid, "AODSS", MPI_FLOAT, 2, dimids, &AODSS);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODSS, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODSS, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODSS, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODSS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODSS, "long_name", 41, "Aerosol optical depth 550 nm from seasalt");
     CHECK_ERR
@@ -6094,11 +6094,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODUV", NC_FLOAT, 2, dimids, &AODUV);
+    err       = INQ_VID (ncid, "AODUV", MPI_FLOAT, 2, dimids, &AODUV);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODUV, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODUV, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODUV, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODUV, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODUV, "long_name", 28, "Aerosol optical depth 350 nm");
     CHECK_ERR
@@ -6108,11 +6108,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AODVIS", NC_FLOAT, 2, dimids, &AODVIS);
+    err       = INQ_VID (ncid, "AODVIS", MPI_FLOAT, 2, dimids, &AODVIS);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODVIS, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, AODVIS, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, AODVIS, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, AODVIS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODVIS, "long_name", 28, "Aerosol optical depth 550 nm");
     CHECK_ERR
@@ -6123,9 +6123,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "AQRAIN", NC_FLOAT, 3, dimids, &AQRAIN);
+    err       = INQ_VID (ncid, "AQRAIN", MPI_FLOAT, 3, dimids, &AQRAIN);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, AQRAIN, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, AQRAIN, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AQRAIN, "units", 5, "kg/kg");
     CHECK_ERR
@@ -6138,9 +6138,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "AQSNOW", NC_FLOAT, 3, dimids, &AQSNOW);
+    err       = INQ_VID (ncid, "AQSNOW", MPI_FLOAT, 3, dimids, &AQSNOW);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, AQSNOW, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, AQSNOW, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AQSNOW, "units", 5, "kg/kg");
     CHECK_ERR
@@ -6152,7 +6152,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AQ_DMS", NC_FLOAT, 2, dimids, &AQ_DMS);
+    err       = INQ_VID (ncid, "AQ_DMS", MPI_FLOAT, 2, dimids, &AQ_DMS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AQ_DMS, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6164,7 +6164,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AQ_H2O2", NC_FLOAT, 2, dimids, &AQ_H2O2);
+    err       = INQ_VID (ncid, "AQ_H2O2", MPI_FLOAT, 2, dimids, &AQ_H2O2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AQ_H2O2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6176,7 +6176,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AQ_H2SO4", NC_FLOAT, 2, dimids, &AQ_H2SO4);
+    err       = INQ_VID (ncid, "AQ_H2SO4", MPI_FLOAT, 2, dimids, &AQ_H2SO4);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AQ_H2SO4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6189,7 +6189,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AQ_O3", NC_FLOAT, 2, dimids, &AQ_O3);
+    err       = INQ_VID (ncid, "AQ_O3", MPI_FLOAT, 2, dimids, &AQ_O3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AQ_O3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6201,7 +6201,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AQ_SO2", NC_FLOAT, 2, dimids, &AQ_SO2);
+    err       = INQ_VID (ncid, "AQ_SO2", MPI_FLOAT, 2, dimids, &AQ_SO2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AQ_SO2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6213,7 +6213,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "AQ_SOAG", NC_FLOAT, 2, dimids, &AQ_SOAG);
+    err       = INQ_VID (ncid, "AQ_SOAG", MPI_FLOAT, 2, dimids, &AQ_SOAG);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AQ_SOAG, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6226,9 +6226,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "AREI", NC_FLOAT, 3, dimids, &AREI);
+    err       = INQ_VID (ncid, "AREI", MPI_FLOAT, 3, dimids, &AREI);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, AREI, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, AREI, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AREI, "units", 6, "Micron");
     CHECK_ERR
@@ -6241,9 +6241,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "AREL", NC_FLOAT, 3, dimids, &AREL);
+    err       = INQ_VID (ncid, "AREL", MPI_FLOAT, 3, dimids, &AREL);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, AREL, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, AREL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AREL, "units", 6, "Micron");
     CHECK_ERR
@@ -6256,9 +6256,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "AWNC", NC_FLOAT, 3, dimids, &AWNC);
+    err       = INQ_VID (ncid, "AWNC", MPI_FLOAT, 3, dimids, &AWNC);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, AWNC, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, AWNC, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AWNC, "units", 3, "m-3");
     CHECK_ERR
@@ -6271,9 +6271,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "AWNI", NC_FLOAT, 3, dimids, &AWNI);
+    err       = INQ_VID (ncid, "AWNI", MPI_FLOAT, 3, dimids, &AWNI);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, AWNI, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, AWNI, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AWNI, "units", 3, "m-3");
     CHECK_ERR
@@ -6285,11 +6285,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "BURDEN1", NC_FLOAT, 2, dimids, &BURDEN1);
+    err       = INQ_VID (ncid, "BURDEN1", MPI_FLOAT, 2, dimids, &BURDEN1);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, BURDEN1, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, BURDEN1, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, BURDEN1, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, BURDEN1, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, BURDEN1, "units", 5, "kg/m2");
     CHECK_ERR
@@ -6301,11 +6301,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "BURDEN2", NC_FLOAT, 2, dimids, &BURDEN2);
+    err       = INQ_VID (ncid, "BURDEN2", MPI_FLOAT, 2, dimids, &BURDEN2);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, BURDEN2, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, BURDEN2, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, BURDEN2, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, BURDEN2, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, BURDEN2, "units", 5, "kg/m2");
     CHECK_ERR
@@ -6317,11 +6317,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "BURDEN3", NC_FLOAT, 2, dimids, &BURDEN3);
+    err       = INQ_VID (ncid, "BURDEN3", MPI_FLOAT, 2, dimids, &BURDEN3);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, BURDEN3, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, BURDEN3, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, BURDEN3, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, BURDEN3, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, BURDEN3, "units", 5, "kg/m2");
     CHECK_ERR
@@ -6333,11 +6333,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "BURDEN4", NC_FLOAT, 2, dimids, &BURDEN4);
+    err       = INQ_VID (ncid, "BURDEN4", MPI_FLOAT, 2, dimids, &BURDEN4);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, BURDEN4, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, BURDEN4, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, BURDEN4, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, BURDEN4, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, BURDEN4, "units", 5, "kg/m2");
     CHECK_ERR
@@ -6350,9 +6350,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "CCN3", NC_FLOAT, 3, dimids, &CCN3);
+    err       = INQ_VID (ncid, "CCN3", MPI_FLOAT, 3, dimids, &CCN3);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, CCN3, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, CCN3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CCN3, "units", 5, "#/cm3");
     CHECK_ERR
@@ -6364,7 +6364,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CDNUMC", NC_FLOAT, 2, dimids, &CDNUMC);
+    err       = INQ_VID (ncid, "CDNUMC", MPI_FLOAT, 2, dimids, &CDNUMC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CDNUMC, "units", 4, "1/m2");
     CHECK_ERR
@@ -6377,7 +6377,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDHGH", NC_FLOAT, 2, dimids, &CLDHGH);
+    err       = INQ_VID (ncid, "CLDHGH", MPI_FLOAT, 2, dimids, &CLDHGH);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLDHGH, "units", 8, "fraction");
     CHECK_ERR
@@ -6390,9 +6390,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDICE", NC_FLOAT, 3, dimids, &CLDICE);
+    err       = INQ_VID (ncid, "CLDICE", MPI_FLOAT, 3, dimids, &CLDICE);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, CLDICE, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, CLDICE, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLDICE, "units", 5, "kg/kg");
     CHECK_ERR
@@ -6407,9 +6407,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDLIQ", NC_FLOAT, 3, dimids, &CLDLIQ);
+    err       = INQ_VID (ncid, "CLDLIQ", MPI_FLOAT, 3, dimids, &CLDLIQ);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, CLDLIQ, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, CLDLIQ, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLDLIQ, "units", 5, "kg/kg");
     CHECK_ERR
@@ -6423,7 +6423,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDLOW", NC_FLOAT, 2, dimids, &CLDLOW);
+    err       = INQ_VID (ncid, "CLDLOW", MPI_FLOAT, 2, dimids, &CLDLOW);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLDLOW, "units", 8, "fraction");
     CHECK_ERR
@@ -6435,7 +6435,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDMED", NC_FLOAT, 2, dimids, &CLDMED);
+    err       = INQ_VID (ncid, "CLDMED", MPI_FLOAT, 2, dimids, &CLDMED);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLDMED, "units", 8, "fraction");
     CHECK_ERR
@@ -6447,7 +6447,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDTOT", NC_FLOAT, 2, dimids, &CLDTOT);
+    err       = INQ_VID (ncid, "CLDTOT", MPI_FLOAT, 2, dimids, &CLDTOT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLDTOT, "units", 8, "fraction");
     CHECK_ERR
@@ -6460,9 +6460,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "CLOUD", NC_FLOAT, 3, dimids, &CLOUD);
+    err       = INQ_VID (ncid, "CLOUD", MPI_FLOAT, 3, dimids, &CLOUD);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, CLOUD, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, CLOUD, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLOUD, "units", 8, "fraction");
     CHECK_ERR
@@ -6475,9 +6475,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "CLOUDFRAC_CLUBB", NC_FLOAT, 3, dimids, &CLOUDFRAC_CLUBB);
+    err       = INQ_VID (ncid, "CLOUDFRAC_CLUBB", MPI_FLOAT, 3, dimids, &CLOUDFRAC_CLUBB);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, CLOUDFRAC_CLUBB, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, CLOUDFRAC_CLUBB, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLOUDFRAC_CLUBB, "units", 8, "fraction");
     CHECK_ERR
@@ -6490,9 +6490,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "CONCLD", NC_FLOAT, 3, dimids, &CONCLD);
+    err       = INQ_VID (ncid, "CONCLD", MPI_FLOAT, 3, dimids, &CONCLD);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, CONCLD, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, CONCLD, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CONCLD, "units", 8, "fraction");
     CHECK_ERR
@@ -6505,9 +6505,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "DCQ", NC_FLOAT, 3, dimids, &DCQ);
+    err       = INQ_VID (ncid, "DCQ", MPI_FLOAT, 3, dimids, &DCQ);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, DCQ, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, DCQ, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DCQ, "units", 7, "kg/kg/s");
     CHECK_ERR
@@ -6519,7 +6519,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DF_DMS", NC_FLOAT, 2, dimids, &DF_DMS);
+    err       = INQ_VID (ncid, "DF_DMS", MPI_FLOAT, 2, dimids, &DF_DMS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DF_DMS, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6531,7 +6531,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DF_H2O2", NC_FLOAT, 2, dimids, &DF_H2O2);
+    err       = INQ_VID (ncid, "DF_H2O2", MPI_FLOAT, 2, dimids, &DF_H2O2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DF_H2O2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6543,7 +6543,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DF_H2SO4", NC_FLOAT, 2, dimids, &DF_H2SO4);
+    err       = INQ_VID (ncid, "DF_H2SO4", MPI_FLOAT, 2, dimids, &DF_H2SO4);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DF_H2SO4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6555,7 +6555,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DF_O3", NC_FLOAT, 2, dimids, &DF_O3);
+    err       = INQ_VID (ncid, "DF_O3", MPI_FLOAT, 2, dimids, &DF_O3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DF_O3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6567,7 +6567,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DF_SO2", NC_FLOAT, 2, dimids, &DF_SO2);
+    err       = INQ_VID (ncid, "DF_SO2", MPI_FLOAT, 2, dimids, &DF_SO2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DF_SO2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6579,7 +6579,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DF_SOAG", NC_FLOAT, 2, dimids, &DF_SOAG);
+    err       = INQ_VID (ncid, "DF_SOAG", MPI_FLOAT, 2, dimids, &DF_SOAG);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DF_SOAG, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6591,7 +6591,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DMS_SRF", NC_FLOAT, 2, dimids, &DMS_SRF);
+    err       = INQ_VID (ncid, "DMS_SRF", MPI_FLOAT, 2, dimids, &DMS_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DMS_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -6603,7 +6603,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DP_KCLDBASE", NC_FLOAT, 2, dimids, &DP_KCLDBASE);
+    err       = INQ_VID (ncid, "DP_KCLDBASE", MPI_FLOAT, 2, dimids, &DP_KCLDBASE);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DP_KCLDBASE, "units", 1, "1");
     CHECK_ERR
@@ -6615,7 +6615,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DP_MFUP_MAX", NC_FLOAT, 2, dimids, &DP_MFUP_MAX);
+    err       = INQ_VID (ncid, "DP_MFUP_MAX", MPI_FLOAT, 2, dimids, &DP_MFUP_MAX);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DP_MFUP_MAX, "units", 5, "kg/m2");
     CHECK_ERR
@@ -6628,7 +6628,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DP_WCLDBASE", NC_FLOAT, 2, dimids, &DP_WCLDBASE);
+    err       = INQ_VID (ncid, "DP_WCLDBASE", MPI_FLOAT, 2, dimids, &DP_WCLDBASE);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DP_WCLDBASE, "units", 3, "m/s");
     CHECK_ERR
@@ -6641,7 +6641,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DSTSFMBL", NC_FLOAT, 2, dimids, &DSTSFMBL);
+    err       = INQ_VID (ncid, "DSTSFMBL", MPI_FLOAT, 2, dimids, &DSTSFMBL);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DSTSFMBL, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6654,9 +6654,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "DTCOND", NC_FLOAT, 3, dimids, &DTCOND);
+    err       = INQ_VID (ncid, "DTCOND", MPI_FLOAT, 3, dimids, &DTCOND);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, DTCOND, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, DTCOND, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DTCOND, "units", 3, "K/s");
     CHECK_ERR
@@ -6668,7 +6668,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DTENDTH", NC_FLOAT, 2, dimids, &DTENDTH);
+    err       = INQ_VID (ncid, "DTENDTH", MPI_FLOAT, 2, dimids, &DTENDTH);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DTENDTH, "units", 4, "W/m2");
     CHECK_ERR
@@ -6681,7 +6681,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "DTENDTQ", NC_FLOAT, 2, dimids, &DTENDTQ);
+    err       = INQ_VID (ncid, "DTENDTQ", MPI_FLOAT, 2, dimids, &DTENDTQ);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, DTENDTQ, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -6695,13 +6695,13 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "EXTINCT", NC_FLOAT, 3, dimids, &EXTINCT);
+    err       = INQ_VID (ncid, "EXTINCT", MPI_FLOAT, 3, dimids, &EXTINCT);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, EXTINCT, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, EXTINCT, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, EXTINCT, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, EXTINCT, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, EXTINCT, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, EXTINCT, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, EXTINCT, "units", 2, "/m");
     CHECK_ERR
@@ -6714,9 +6714,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "FICE", NC_FLOAT, 3, dimids, &FICE);
+    err       = INQ_VID (ncid, "FICE", MPI_FLOAT, 3, dimids, &FICE);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, FICE, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, FICE, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FICE, "units", 8, "fraction");
     CHECK_ERR
@@ -6728,7 +6728,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FLDS", NC_FLOAT, 2, dimids, &FLDS);
+    err       = INQ_VID (ncid, "FLDS", MPI_FLOAT, 2, dimids, &FLDS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6742,7 +6742,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FLNS", NC_FLOAT, 2, dimids, &FLNS);
+    err       = INQ_VID (ncid, "FLNS", MPI_FLOAT, 2, dimids, &FLNS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6756,7 +6756,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FLNSC", NC_FLOAT, 2, dimids, &FLNSC);
+    err       = INQ_VID (ncid, "FLNSC", MPI_FLOAT, 2, dimids, &FLNSC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6770,7 +6770,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FLNT", NC_FLOAT, 2, dimids, &FLNT);
+    err       = INQ_VID (ncid, "FLNT", MPI_FLOAT, 2, dimids, &FLNT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6784,7 +6784,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FLNTC", NC_FLOAT, 2, dimids, &FLNTC);
+    err       = INQ_VID (ncid, "FLNTC", MPI_FLOAT, 2, dimids, &FLNTC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6798,7 +6798,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FLUT", NC_FLOAT, 2, dimids, &FLUT);
+    err       = INQ_VID (ncid, "FLUT", MPI_FLOAT, 2, dimids, &FLUT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLUT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6812,7 +6812,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FLUTC", NC_FLOAT, 2, dimids, &FLUTC);
+    err       = INQ_VID (ncid, "FLUTC", MPI_FLOAT, 2, dimids, &FLUTC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLUTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6828,9 +6828,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "FREQI", NC_FLOAT, 3, dimids, &FREQI);
+    err       = INQ_VID (ncid, "FREQI", MPI_FLOAT, 3, dimids, &FREQI);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, FREQI, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, FREQI, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FREQI, "units", 8, "fraction");
     CHECK_ERR
@@ -6843,9 +6843,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "FREQL", NC_FLOAT, 3, dimids, &FREQL);
+    err       = INQ_VID (ncid, "FREQL", MPI_FLOAT, 3, dimids, &FREQL);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, FREQL, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, FREQL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FREQL, "units", 8, "fraction");
     CHECK_ERR
@@ -6858,9 +6858,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "FREQR", NC_FLOAT, 3, dimids, &FREQR);
+    err       = INQ_VID (ncid, "FREQR", MPI_FLOAT, 3, dimids, &FREQR);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, FREQR, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, FREQR, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FREQR, "units", 8, "fraction");
     CHECK_ERR
@@ -6873,9 +6873,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "FREQS", NC_FLOAT, 3, dimids, &FREQS);
+    err       = INQ_VID (ncid, "FREQS", MPI_FLOAT, 3, dimids, &FREQS);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, FREQS, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, FREQS, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FREQS, "units", 8, "fraction");
     CHECK_ERR
@@ -6887,7 +6887,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSDS", NC_FLOAT, 2, dimids, &FSDS);
+    err       = INQ_VID (ncid, "FSDS", MPI_FLOAT, 2, dimids, &FSDS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6901,7 +6901,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSDSC", NC_FLOAT, 2, dimids, &FSDSC);
+    err       = INQ_VID (ncid, "FSDSC", MPI_FLOAT, 2, dimids, &FSDSC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSDSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6915,7 +6915,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSNS", NC_FLOAT, 2, dimids, &FSNS);
+    err       = INQ_VID (ncid, "FSNS", MPI_FLOAT, 2, dimids, &FSNS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6929,7 +6929,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSNSC", NC_FLOAT, 2, dimids, &FSNSC);
+    err       = INQ_VID (ncid, "FSNSC", MPI_FLOAT, 2, dimids, &FSNSC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6943,7 +6943,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSNT", NC_FLOAT, 2, dimids, &FSNT);
+    err       = INQ_VID (ncid, "FSNT", MPI_FLOAT, 2, dimids, &FSNT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6957,7 +6957,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSNTC", NC_FLOAT, 2, dimids, &FSNTC);
+    err       = INQ_VID (ncid, "FSNTC", MPI_FLOAT, 2, dimids, &FSNTC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6971,7 +6971,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSNTOA", NC_FLOAT, 2, dimids, &FSNTOA);
+    err       = INQ_VID (ncid, "FSNTOA", MPI_FLOAT, 2, dimids, &FSNTOA);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNTOA, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6985,7 +6985,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSNTOAC", NC_FLOAT, 2, dimids, &FSNTOAC);
+    err       = INQ_VID (ncid, "FSNTOAC", MPI_FLOAT, 2, dimids, &FSNTOAC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNTOAC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -7000,7 +7000,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSUTOA", NC_FLOAT, 2, dimids, &FSUTOA);
+    err       = INQ_VID (ncid, "FSUTOA", MPI_FLOAT, 2, dimids, &FSUTOA);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSUTOA, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -7014,7 +7014,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FSUTOAC", NC_FLOAT, 2, dimids, &FSUTOAC);
+    err       = INQ_VID (ncid, "FSUTOAC", MPI_FLOAT, 2, dimids, &FSUTOAC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSUTOAC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -7029,7 +7029,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "F_eff", NC_FLOAT, 2, dimids, &F_eff);
+    err       = INQ_VID (ncid, "F_eff", MPI_FLOAT, 2, dimids, &F_eff);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, F_eff, "units", 1, "1");
     CHECK_ERR
@@ -7042,7 +7042,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "H2O2_SRF", NC_FLOAT, 2, dimids, &H2O2_SRF);
+    err       = INQ_VID (ncid, "H2O2_SRF", MPI_FLOAT, 2, dimids, &H2O2_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, H2O2_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -7054,7 +7054,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "H2SO4_SRF", NC_FLOAT, 2, dimids, &H2SO4_SRF);
+    err       = INQ_VID (ncid, "H2SO4_SRF", MPI_FLOAT, 2, dimids, &H2SO4_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, H2SO4_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -7066,7 +7066,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "H2SO4_sfgaex1", NC_FLOAT, 2, dimids, &H2SO4_sfgaex1);
+    err       = INQ_VID (ncid, "H2SO4_sfgaex1", MPI_FLOAT, 2, dimids, &H2SO4_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, H2SO4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7079,7 +7079,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ICEFRAC", NC_FLOAT, 2, dimids, &ICEFRAC);
+    err       = INQ_VID (ncid, "ICEFRAC", MPI_FLOAT, 2, dimids, &ICEFRAC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ICEFRAC, "units", 8, "fraction");
     CHECK_ERR
@@ -7092,9 +7092,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "ICIMR", NC_FLOAT, 3, dimids, &ICIMR);
+    err       = INQ_VID (ncid, "ICIMR", MPI_FLOAT, 3, dimids, &ICIMR);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, ICIMR, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, ICIMR, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ICIMR, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7107,9 +7107,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "ICWMR", NC_FLOAT, 3, dimids, &ICWMR);
+    err       = INQ_VID (ncid, "ICWMR", MPI_FLOAT, 3, dimids, &ICWMR);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, ICWMR, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, ICWMR, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ICWMR, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7122,9 +7122,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "IWC", NC_FLOAT, 3, dimids, &IWC);
+    err       = INQ_VID (ncid, "IWC", MPI_FLOAT, 3, dimids, &IWC);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, IWC, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, IWC, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, IWC, "units", 5, "kg/m3");
     CHECK_ERR
@@ -7136,7 +7136,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "LANDFRAC", NC_FLOAT, 2, dimids, &LANDFRAC);
+    err       = INQ_VID (ncid, "LANDFRAC", MPI_FLOAT, 2, dimids, &LANDFRAC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LANDFRAC, "units", 8, "fraction");
     CHECK_ERR
@@ -7148,7 +7148,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "LHFLX", NC_FLOAT, 2, dimids, &LHFLX);
+    err       = INQ_VID (ncid, "LHFLX", MPI_FLOAT, 2, dimids, &LHFLX);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LHFLX, "units", 4, "W/m2");
     CHECK_ERR
@@ -7161,9 +7161,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "LINOZ_DO3", NC_FLOAT, 3, dimids, &LINOZ_DO3);
+    err       = INQ_VID (ncid, "LINOZ_DO3", MPI_FLOAT, 3, dimids, &LINOZ_DO3);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, LINOZ_DO3, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, LINOZ_DO3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LINOZ_DO3, "units", 2, "/s");
     CHECK_ERR
@@ -7177,9 +7177,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "LINOZ_DO3_PSC", NC_FLOAT, 3, dimids, &LINOZ_DO3_PSC);
+    err       = INQ_VID (ncid, "LINOZ_DO3_PSC", MPI_FLOAT, 3, dimids, &LINOZ_DO3_PSC);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, LINOZ_DO3_PSC, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, LINOZ_DO3_PSC, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LINOZ_DO3_PSC, "units", 2, "/s");
     CHECK_ERR
@@ -7193,9 +7193,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "LINOZ_O3CLIM", NC_FLOAT, 3, dimids, &LINOZ_O3CLIM);
+    err       = INQ_VID (ncid, "LINOZ_O3CLIM", MPI_FLOAT, 3, dimids, &LINOZ_O3CLIM);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, LINOZ_O3CLIM, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, LINOZ_O3CLIM, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LINOZ_O3CLIM, "units", 7, "mol/mol");
     CHECK_ERR
@@ -7208,9 +7208,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "LINOZ_O3COL", NC_FLOAT, 3, dimids, &LINOZ_O3COL);
+    err       = INQ_VID (ncid, "LINOZ_O3COL", MPI_FLOAT, 3, dimids, &LINOZ_O3COL);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, LINOZ_O3COL, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, LINOZ_O3COL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LINOZ_O3COL, "units", 2, "DU");
     CHECK_ERR
@@ -7222,7 +7222,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "LINOZ_SFCSINK", NC_FLOAT, 2, dimids, &LINOZ_SFCSINK);
+    err       = INQ_VID (ncid, "LINOZ_SFCSINK", MPI_FLOAT, 2, dimids, &LINOZ_SFCSINK);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LINOZ_SFCSINK, "units", 8, "Tg/yr/m2");
     CHECK_ERR
@@ -7236,9 +7236,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "LINOZ_SSO3", NC_FLOAT, 3, dimids, &LINOZ_SSO3);
+    err       = INQ_VID (ncid, "LINOZ_SSO3", MPI_FLOAT, 3, dimids, &LINOZ_SSO3);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, LINOZ_SSO3, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, LINOZ_SSO3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LINOZ_SSO3, "units", 2, "kg");
     CHECK_ERR
@@ -7250,7 +7250,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "LINOZ_SZA", NC_FLOAT, 2, dimids, &LINOZ_SZA);
+    err       = INQ_VID (ncid, "LINOZ_SZA", MPI_FLOAT, 2, dimids, &LINOZ_SZA);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LINOZ_SZA, "units", 7, "degrees");
     CHECK_ERR
@@ -7262,7 +7262,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "LND_MBL", NC_FLOAT, 2, dimids, &LND_MBL);
+    err       = INQ_VID (ncid, "LND_MBL", MPI_FLOAT, 2, dimids, &LND_MBL);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LND_MBL, "units", 4, "frac");
     CHECK_ERR
@@ -7274,7 +7274,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "LWCF", NC_FLOAT, 2, dimids, &LWCF);
+    err       = INQ_VID (ncid, "LWCF", MPI_FLOAT, 2, dimids, &LWCF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -7289,9 +7289,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "Mass_bc", NC_FLOAT, 3, dimids, &Mass_bc);
+    err       = INQ_VID (ncid, "Mass_bc", MPI_FLOAT, 3, dimids, &Mass_bc);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, Mass_bc, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, Mass_bc, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Mass_bc, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7305,9 +7305,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "Mass_dst", NC_FLOAT, 3, dimids, &Mass_dst);
+    err       = INQ_VID (ncid, "Mass_dst", MPI_FLOAT, 3, dimids, &Mass_dst);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, Mass_dst, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, Mass_dst, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Mass_dst, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7321,9 +7321,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "Mass_mom", NC_FLOAT, 3, dimids, &Mass_mom);
+    err       = INQ_VID (ncid, "Mass_mom", MPI_FLOAT, 3, dimids, &Mass_mom);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, Mass_mom, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, Mass_mom, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Mass_mom, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7338,9 +7338,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "Mass_ncl", NC_FLOAT, 3, dimids, &Mass_ncl);
+    err       = INQ_VID (ncid, "Mass_ncl", MPI_FLOAT, 3, dimids, &Mass_ncl);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, Mass_ncl, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, Mass_ncl, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Mass_ncl, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7354,9 +7354,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "Mass_pom", NC_FLOAT, 3, dimids, &Mass_pom);
+    err       = INQ_VID (ncid, "Mass_pom", MPI_FLOAT, 3, dimids, &Mass_pom);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, Mass_pom, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, Mass_pom, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Mass_pom, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7370,9 +7370,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "Mass_so4", NC_FLOAT, 3, dimids, &Mass_so4);
+    err       = INQ_VID (ncid, "Mass_so4", MPI_FLOAT, 3, dimids, &Mass_so4);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, Mass_so4, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, Mass_so4, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Mass_so4, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7386,9 +7386,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "Mass_soa", NC_FLOAT, 3, dimids, &Mass_soa);
+    err       = INQ_VID (ncid, "Mass_soa", MPI_FLOAT, 3, dimids, &Mass_soa);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, Mass_soa, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, Mass_soa, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Mass_soa, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7402,9 +7402,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "NUMICE", NC_FLOAT, 3, dimids, &NUMICE);
+    err       = INQ_VID (ncid, "NUMICE", MPI_FLOAT, 3, dimids, &NUMICE);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, NUMICE, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, NUMICE, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NUMICE, "units", 4, "1/kg");
     CHECK_ERR
@@ -7419,9 +7419,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "NUMLIQ", NC_FLOAT, 3, dimids, &NUMLIQ);
+    err       = INQ_VID (ncid, "NUMLIQ", MPI_FLOAT, 3, dimids, &NUMLIQ);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, NUMLIQ, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, NUMLIQ, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NUMLIQ, "units", 4, "1/kg");
     CHECK_ERR
@@ -7436,9 +7436,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "NUMRAI", NC_FLOAT, 3, dimids, &NUMRAI);
+    err       = INQ_VID (ncid, "NUMRAI", MPI_FLOAT, 3, dimids, &NUMRAI);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, NUMRAI, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, NUMRAI, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NUMRAI, "units", 4, "1/kg");
     CHECK_ERR
@@ -7453,9 +7453,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "NUMSNO", NC_FLOAT, 3, dimids, &NUMSNO);
+    err       = INQ_VID (ncid, "NUMSNO", MPI_FLOAT, 3, dimids, &NUMSNO);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, NUMSNO, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, NUMSNO, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NUMSNO, "units", 4, "1/kg");
     CHECK_ERR
@@ -7470,9 +7470,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "O3", NC_FLOAT, 3, dimids, &O3);
+    err       = INQ_VID (ncid, "O3", MPI_FLOAT, 3, dimids, &O3);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, O3, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, O3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, O3, "units", 7, "mol/mol");
     CHECK_ERR
@@ -7486,7 +7486,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "O3_SRF", NC_FLOAT, 2, dimids, &O3_SRF);
+    err       = INQ_VID (ncid, "O3_SRF", MPI_FLOAT, 2, dimids, &O3_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, O3_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -7498,7 +7498,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "OCNFRAC", NC_FLOAT, 2, dimids, &OCNFRAC);
+    err       = INQ_VID (ncid, "OCNFRAC", MPI_FLOAT, 2, dimids, &OCNFRAC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, OCNFRAC, "units", 8, "fraction");
     CHECK_ERR
@@ -7511,9 +7511,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "OMEGA", NC_FLOAT, 3, dimids, &OMEGA);
+    err       = INQ_VID (ncid, "OMEGA", MPI_FLOAT, 3, dimids, &OMEGA);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, OMEGA, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, OMEGA, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, OMEGA, "units", 4, "Pa/s");
     CHECK_ERR
@@ -7525,7 +7525,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "OMEGA500", NC_FLOAT, 2, dimids, &OMEGA500);
+    err       = INQ_VID (ncid, "OMEGA500", MPI_FLOAT, 2, dimids, &OMEGA500);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, OMEGA500, "units", 4, "Pa/s");
     CHECK_ERR
@@ -7539,9 +7539,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "OMEGAT", NC_FLOAT, 3, dimids, &OMEGAT);
+    err       = INQ_VID (ncid, "OMEGAT", MPI_FLOAT, 3, dimids, &OMEGAT);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, OMEGAT, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, OMEGAT, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, OMEGAT, "units", 6, "K Pa/s");
     CHECK_ERR
@@ -7553,7 +7553,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PBLH", NC_FLOAT, 2, dimids, &PBLH);
+    err       = INQ_VID (ncid, "PBLH", MPI_FLOAT, 2, dimids, &PBLH);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PBLH, "units", 1, "m");
     CHECK_ERR
@@ -7565,7 +7565,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PHIS", NC_FLOAT, 2, dimids, &PHIS);
+    err       = INQ_VID (ncid, "PHIS", MPI_FLOAT, 2, dimids, &PHIS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PHIS, "units", 5, "m2/s2");
     CHECK_ERR
@@ -7575,7 +7575,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PRECC", NC_FLOAT, 2, dimids, &PRECC);
+    err       = INQ_VID (ncid, "PRECC", MPI_FLOAT, 2, dimids, &PRECC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PRECC, "units", 3, "m/s");
     CHECK_ERR
@@ -7587,7 +7587,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PRECL", NC_FLOAT, 2, dimids, &PRECL);
+    err       = INQ_VID (ncid, "PRECL", MPI_FLOAT, 2, dimids, &PRECL);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PRECL, "units", 3, "m/s");
     CHECK_ERR
@@ -7600,7 +7600,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PRECSC", NC_FLOAT, 2, dimids, &PRECSC);
+    err       = INQ_VID (ncid, "PRECSC", MPI_FLOAT, 2, dimids, &PRECSC);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PRECSC, "units", 3, "m/s");
     CHECK_ERR
@@ -7612,7 +7612,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PRECSL", NC_FLOAT, 2, dimids, &PRECSL);
+    err       = INQ_VID (ncid, "PRECSL", MPI_FLOAT, 2, dimids, &PRECSL);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PRECSL, "units", 3, "m/s");
     CHECK_ERR
@@ -7625,7 +7625,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PS", NC_FLOAT, 2, dimids, &PS);
+    err       = INQ_VID (ncid, "PS", MPI_FLOAT, 2, dimids, &PS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PS, "units", 2, "Pa");
     CHECK_ERR
@@ -7637,7 +7637,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PSL", NC_FLOAT, 2, dimids, &PSL);
+    err       = INQ_VID (ncid, "PSL", MPI_FLOAT, 2, dimids, &PSL);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PSL, "units", 2, "Pa");
     CHECK_ERR
@@ -7650,9 +7650,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "Q", NC_FLOAT, 3, dimids, &Q);
+    err       = INQ_VID (ncid, "Q", MPI_FLOAT, 3, dimids, &Q);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, Q, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, Q, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Q, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7666,7 +7666,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "QFLX", NC_FLOAT, 2, dimids, &QFLX);
+    err       = INQ_VID (ncid, "QFLX", MPI_FLOAT, 2, dimids, &QFLX);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, QFLX, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7678,7 +7678,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "QREFHT", NC_FLOAT, 2, dimids, &QREFHT);
+    err       = INQ_VID (ncid, "QREFHT", MPI_FLOAT, 2, dimids, &QREFHT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, QREFHT, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7691,9 +7691,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "QRL", NC_FLOAT, 3, dimids, &QRL);
+    err       = INQ_VID (ncid, "QRL", MPI_FLOAT, 3, dimids, &QRL);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, QRL, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, QRL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, QRL, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -7708,9 +7708,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "QRS", NC_FLOAT, 3, dimids, &QRS);
+    err       = INQ_VID (ncid, "QRS", MPI_FLOAT, 3, dimids, &QRS);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, QRS, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, QRS, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, QRS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -7725,9 +7725,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "RAINQM", NC_FLOAT, 3, dimids, &RAINQM);
+    err       = INQ_VID (ncid, "RAINQM", MPI_FLOAT, 3, dimids, &RAINQM);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, RAINQM, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, RAINQM, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, RAINQM, "units", 5, "kg/kg");
     CHECK_ERR
@@ -7741,7 +7741,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "RAM1", NC_FLOAT, 2, dimids, &RAM1);
+    err       = INQ_VID (ncid, "RAM1", MPI_FLOAT, 2, dimids, &RAM1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, RAM1, "units", 4, "frac");
     CHECK_ERR
@@ -7754,9 +7754,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "RELHUM", NC_FLOAT, 3, dimids, &RELHUM);
+    err       = INQ_VID (ncid, "RELHUM", MPI_FLOAT, 3, dimids, &RELHUM);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, RELHUM, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, RELHUM, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, RELHUM, "units", 7, "percent");
     CHECK_ERR
@@ -7768,7 +7768,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFDMS", NC_FLOAT, 2, dimids, &SFDMS);
+    err       = INQ_VID (ncid, "SFDMS", MPI_FLOAT, 2, dimids, &SFDMS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFDMS, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7780,7 +7780,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFH2O2", NC_FLOAT, 2, dimids, &SFH2O2);
+    err       = INQ_VID (ncid, "SFH2O2", MPI_FLOAT, 2, dimids, &SFH2O2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFH2O2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7792,7 +7792,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFH2SO4", NC_FLOAT, 2, dimids, &SFH2SO4);
+    err       = INQ_VID (ncid, "SFH2SO4", MPI_FLOAT, 2, dimids, &SFH2SO4);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFH2SO4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7804,7 +7804,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFO3", NC_FLOAT, 2, dimids, &SFO3);
+    err       = INQ_VID (ncid, "SFO3", MPI_FLOAT, 2, dimids, &SFO3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFO3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7816,7 +7816,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFSO2", NC_FLOAT, 2, dimids, &SFSO2);
+    err       = INQ_VID (ncid, "SFSO2", MPI_FLOAT, 2, dimids, &SFSO2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFSO2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7828,7 +7828,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFSOAG", NC_FLOAT, 2, dimids, &SFSOAG);
+    err       = INQ_VID (ncid, "SFSOAG", MPI_FLOAT, 2, dimids, &SFSOAG);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFSOAG, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7840,7 +7840,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFbc_a1", NC_FLOAT, 2, dimids, &SFbc_a1);
+    err       = INQ_VID (ncid, "SFbc_a1", MPI_FLOAT, 2, dimids, &SFbc_a1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFbc_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7852,7 +7852,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFbc_a3", NC_FLOAT, 2, dimids, &SFbc_a3);
+    err       = INQ_VID (ncid, "SFbc_a3", MPI_FLOAT, 2, dimids, &SFbc_a3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFbc_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7864,7 +7864,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFbc_a4", NC_FLOAT, 2, dimids, &SFbc_a4);
+    err       = INQ_VID (ncid, "SFbc_a4", MPI_FLOAT, 2, dimids, &SFbc_a4);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFbc_a4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7876,7 +7876,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFdst_a1", NC_FLOAT, 2, dimids, &SFdst_a1);
+    err       = INQ_VID (ncid, "SFdst_a1", MPI_FLOAT, 2, dimids, &SFdst_a1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFdst_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7888,7 +7888,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFdst_a3", NC_FLOAT, 2, dimids, &SFdst_a3);
+    err       = INQ_VID (ncid, "SFdst_a3", MPI_FLOAT, 2, dimids, &SFdst_a3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFdst_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7900,7 +7900,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFmom_a1", NC_FLOAT, 2, dimids, &SFmom_a1);
+    err       = INQ_VID (ncid, "SFmom_a1", MPI_FLOAT, 2, dimids, &SFmom_a1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFmom_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7912,7 +7912,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFmom_a2", NC_FLOAT, 2, dimids, &SFmom_a2);
+    err       = INQ_VID (ncid, "SFmom_a2", MPI_FLOAT, 2, dimids, &SFmom_a2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFmom_a2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7924,7 +7924,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFmom_a3", NC_FLOAT, 2, dimids, &SFmom_a3);
+    err       = INQ_VID (ncid, "SFmom_a3", MPI_FLOAT, 2, dimids, &SFmom_a3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFmom_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7936,7 +7936,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFmom_a4", NC_FLOAT, 2, dimids, &SFmom_a4);
+    err       = INQ_VID (ncid, "SFmom_a4", MPI_FLOAT, 2, dimids, &SFmom_a4);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFmom_a4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7948,7 +7948,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFncl_a1", NC_FLOAT, 2, dimids, &SFncl_a1);
+    err       = INQ_VID (ncid, "SFncl_a1", MPI_FLOAT, 2, dimids, &SFncl_a1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFncl_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7960,7 +7960,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFncl_a2", NC_FLOAT, 2, dimids, &SFncl_a2);
+    err       = INQ_VID (ncid, "SFncl_a2", MPI_FLOAT, 2, dimids, &SFncl_a2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFncl_a2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7972,7 +7972,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFncl_a3", NC_FLOAT, 2, dimids, &SFncl_a3);
+    err       = INQ_VID (ncid, "SFncl_a3", MPI_FLOAT, 2, dimids, &SFncl_a3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFncl_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -7984,7 +7984,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFnum_a1", NC_FLOAT, 2, dimids, &SFnum_a1);
+    err       = INQ_VID (ncid, "SFnum_a1", MPI_FLOAT, 2, dimids, &SFnum_a1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFnum_a1, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -7996,7 +7996,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFnum_a2", NC_FLOAT, 2, dimids, &SFnum_a2);
+    err       = INQ_VID (ncid, "SFnum_a2", MPI_FLOAT, 2, dimids, &SFnum_a2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFnum_a2, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -8008,7 +8008,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFnum_a3", NC_FLOAT, 2, dimids, &SFnum_a3);
+    err       = INQ_VID (ncid, "SFnum_a3", MPI_FLOAT, 2, dimids, &SFnum_a3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFnum_a3, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -8020,7 +8020,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFnum_a4", NC_FLOAT, 2, dimids, &SFnum_a4);
+    err       = INQ_VID (ncid, "SFnum_a4", MPI_FLOAT, 2, dimids, &SFnum_a4);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFnum_a4, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -8032,7 +8032,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFpom_a1", NC_FLOAT, 2, dimids, &SFpom_a1);
+    err       = INQ_VID (ncid, "SFpom_a1", MPI_FLOAT, 2, dimids, &SFpom_a1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFpom_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8044,7 +8044,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFpom_a3", NC_FLOAT, 2, dimids, &SFpom_a3);
+    err       = INQ_VID (ncid, "SFpom_a3", MPI_FLOAT, 2, dimids, &SFpom_a3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFpom_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8056,7 +8056,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFpom_a4", NC_FLOAT, 2, dimids, &SFpom_a4);
+    err       = INQ_VID (ncid, "SFpom_a4", MPI_FLOAT, 2, dimids, &SFpom_a4);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFpom_a4, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8068,7 +8068,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFso4_a1", NC_FLOAT, 2, dimids, &SFso4_a1);
+    err       = INQ_VID (ncid, "SFso4_a1", MPI_FLOAT, 2, dimids, &SFso4_a1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFso4_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8080,7 +8080,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFso4_a2", NC_FLOAT, 2, dimids, &SFso4_a2);
+    err       = INQ_VID (ncid, "SFso4_a2", MPI_FLOAT, 2, dimids, &SFso4_a2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFso4_a2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8092,7 +8092,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFso4_a3", NC_FLOAT, 2, dimids, &SFso4_a3);
+    err       = INQ_VID (ncid, "SFso4_a3", MPI_FLOAT, 2, dimids, &SFso4_a3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFso4_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8104,7 +8104,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFsoa_a1", NC_FLOAT, 2, dimids, &SFsoa_a1);
+    err       = INQ_VID (ncid, "SFsoa_a1", MPI_FLOAT, 2, dimids, &SFsoa_a1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFsoa_a1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8116,7 +8116,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFsoa_a2", NC_FLOAT, 2, dimids, &SFsoa_a2);
+    err       = INQ_VID (ncid, "SFsoa_a2", MPI_FLOAT, 2, dimids, &SFsoa_a2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFsoa_a2, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8128,7 +8128,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SFsoa_a3", NC_FLOAT, 2, dimids, &SFsoa_a3);
+    err       = INQ_VID (ncid, "SFsoa_a3", MPI_FLOAT, 2, dimids, &SFsoa_a3);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SFsoa_a3, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8140,7 +8140,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SHFLX", NC_FLOAT, 2, dimids, &SHFLX);
+    err       = INQ_VID (ncid, "SHFLX", MPI_FLOAT, 2, dimids, &SHFLX);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SHFLX, "units", 4, "W/m2");
     CHECK_ERR
@@ -8152,7 +8152,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SH_KCLDBASE", NC_FLOAT, 2, dimids, &SH_KCLDBASE);
+    err       = INQ_VID (ncid, "SH_KCLDBASE", MPI_FLOAT, 2, dimids, &SH_KCLDBASE);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SH_KCLDBASE, "units", 1, "1");
     CHECK_ERR
@@ -8164,7 +8164,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SH_MFUP_MAX", NC_FLOAT, 2, dimids, &SH_MFUP_MAX);
+    err       = INQ_VID (ncid, "SH_MFUP_MAX", MPI_FLOAT, 2, dimids, &SH_MFUP_MAX);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SH_MFUP_MAX, "units", 5, "kg/m2");
     CHECK_ERR
@@ -8177,7 +8177,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SH_WCLDBASE", NC_FLOAT, 2, dimids, &SH_WCLDBASE);
+    err       = INQ_VID (ncid, "SH_WCLDBASE", MPI_FLOAT, 2, dimids, &SH_WCLDBASE);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SH_WCLDBASE, "units", 3, "m/s");
     CHECK_ERR
@@ -8190,7 +8190,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SNOWHICE", NC_FLOAT, 2, dimids, &SNOWHICE);
+    err       = INQ_VID (ncid, "SNOWHICE", MPI_FLOAT, 2, dimids, &SNOWHICE);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SNOWHICE, "units", 1, "m");
     CHECK_ERR
@@ -8202,7 +8202,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SNOWHLND", NC_FLOAT, 2, dimids, &SNOWHLND);
+    err       = INQ_VID (ncid, "SNOWHLND", MPI_FLOAT, 2, dimids, &SNOWHLND);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SNOWHLND, "units", 1, "m");
     CHECK_ERR
@@ -8215,9 +8215,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "SNOWQM", NC_FLOAT, 3, dimids, &SNOWQM);
+    err       = INQ_VID (ncid, "SNOWQM", MPI_FLOAT, 3, dimids, &SNOWQM);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, SNOWQM, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, SNOWQM, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SNOWQM, "units", 5, "kg/kg");
     CHECK_ERR
@@ -8232,9 +8232,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "SO2", NC_FLOAT, 3, dimids, &SO2);
+    err       = INQ_VID (ncid, "SO2", MPI_FLOAT, 3, dimids, &SO2);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, SO2, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, SO2, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SO2, "units", 7, "mol/mol");
     CHECK_ERR
@@ -8248,7 +8248,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SO2_CLXF", NC_FLOAT, 2, dimids, &SO2_CLXF);
+    err       = INQ_VID (ncid, "SO2_CLXF", MPI_FLOAT, 2, dimids, &SO2_CLXF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SO2_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -8261,7 +8261,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SO2_SRF", NC_FLOAT, 2, dimids, &SO2_SRF);
+    err       = INQ_VID (ncid, "SO2_SRF", MPI_FLOAT, 2, dimids, &SO2_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SO2_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -8273,7 +8273,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SOAG_CLXF", NC_FLOAT, 2, dimids, &SOAG_CLXF);
+    err       = INQ_VID (ncid, "SOAG_CLXF", MPI_FLOAT, 2, dimids, &SOAG_CLXF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SOAG_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -8286,7 +8286,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SOAG_SRF", NC_FLOAT, 2, dimids, &SOAG_SRF);
+    err       = INQ_VID (ncid, "SOAG_SRF", MPI_FLOAT, 2, dimids, &SOAG_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SOAG_SRF, "units", 7, "mol/mol");
     CHECK_ERR
@@ -8298,7 +8298,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SOAG_sfgaex1", NC_FLOAT, 2, dimids, &SOAG_sfgaex1);
+    err       = INQ_VID (ncid, "SOAG_sfgaex1", MPI_FLOAT, 2, dimids, &SOAG_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SOAG_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8311,7 +8311,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SOLIN", NC_FLOAT, 2, dimids, &SOLIN);
+    err       = INQ_VID (ncid, "SOLIN", MPI_FLOAT, 2, dimids, &SOLIN);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SOLIN, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -8325,11 +8325,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SSAVIS", NC_FLOAT, 2, dimids, &SSAVIS);
+    err       = INQ_VID (ncid, "SSAVIS", MPI_FLOAT, 2, dimids, &SSAVIS);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, SSAVIS, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, SSAVIS, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, SSAVIS, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, SSAVIS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SSAVIS, "long_name", 29, "Aerosol singel-scatter albedo");
     CHECK_ERR
@@ -8339,7 +8339,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SSTSFMBL", NC_FLOAT, 2, dimids, &SSTSFMBL);
+    err       = INQ_VID (ncid, "SSTSFMBL", MPI_FLOAT, 2, dimids, &SSTSFMBL);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SSTSFMBL, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8351,7 +8351,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SSTSFMBL_OM", NC_FLOAT, 2, dimids, &SSTSFMBL_OM);
+    err       = INQ_VID (ncid, "SSTSFMBL_OM", MPI_FLOAT, 2, dimids, &SSTSFMBL_OM);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SSTSFMBL_OM, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8364,7 +8364,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SWCF", NC_FLOAT, 2, dimids, &SWCF);
+    err       = INQ_VID (ncid, "SWCF", MPI_FLOAT, 2, dimids, &SWCF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -8379,9 +8379,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "T", NC_FLOAT, 3, dimids, &T);
+    err       = INQ_VID (ncid, "T", MPI_FLOAT, 3, dimids, &T);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, T, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, T, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, T, "units", 1, "K");
     CHECK_ERR
@@ -8393,7 +8393,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TAUGWX", NC_FLOAT, 2, dimids, &TAUGWX);
+    err       = INQ_VID (ncid, "TAUGWX", MPI_FLOAT, 2, dimids, &TAUGWX);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TAUGWX, "units", 4, "N/m2");
     CHECK_ERR
@@ -8405,7 +8405,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TAUGWY", NC_FLOAT, 2, dimids, &TAUGWY);
+    err       = INQ_VID (ncid, "TAUGWY", MPI_FLOAT, 2, dimids, &TAUGWY);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TAUGWY, "units", 4, "N/m2");
     CHECK_ERR
@@ -8417,7 +8417,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TAUX", NC_FLOAT, 2, dimids, &TAUX);
+    err       = INQ_VID (ncid, "TAUX", MPI_FLOAT, 2, dimids, &TAUX);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TAUX, "units", 4, "N/m2");
     CHECK_ERR
@@ -8429,7 +8429,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TAUY", NC_FLOAT, 2, dimids, &TAUY);
+    err       = INQ_VID (ncid, "TAUY", MPI_FLOAT, 2, dimids, &TAUY);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TAUY, "units", 4, "N/m2");
     CHECK_ERR
@@ -8441,7 +8441,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TGCLDCWP", NC_FLOAT, 2, dimids, &TGCLDCWP);
+    err       = INQ_VID (ncid, "TGCLDCWP", MPI_FLOAT, 2, dimids, &TGCLDCWP);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TGCLDCWP, "units", 5, "kg/m2");
     CHECK_ERR
@@ -8454,7 +8454,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TGCLDIWP", NC_FLOAT, 2, dimids, &TGCLDIWP);
+    err       = INQ_VID (ncid, "TGCLDIWP", MPI_FLOAT, 2, dimids, &TGCLDIWP);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TGCLDIWP, "units", 5, "kg/m2");
     CHECK_ERR
@@ -8466,7 +8466,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TGCLDLWP", NC_FLOAT, 2, dimids, &TGCLDLWP);
+    err       = INQ_VID (ncid, "TGCLDLWP", MPI_FLOAT, 2, dimids, &TGCLDLWP);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TGCLDLWP, "units", 5, "kg/m2");
     CHECK_ERR
@@ -8478,7 +8478,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TH7001000", NC_FLOAT, 2, dimids, &TH7001000);
+    err       = INQ_VID (ncid, "TH7001000", MPI_FLOAT, 2, dimids, &TH7001000);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TH7001000, "units", 1, "K");
     CHECK_ERR
@@ -8490,7 +8490,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TMQ", NC_FLOAT, 2, dimids, &TMQ);
+    err       = INQ_VID (ncid, "TMQ", MPI_FLOAT, 2, dimids, &TMQ);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TMQ, "units", 5, "kg/m2");
     CHECK_ERR
@@ -8503,7 +8503,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TREFHT", NC_FLOAT, 2, dimids, &TREFHT);
+    err       = INQ_VID (ncid, "TREFHT", MPI_FLOAT, 2, dimids, &TREFHT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TREFHT, "units", 1, "K");
     CHECK_ERR
@@ -8515,11 +8515,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TROP_P", NC_FLOAT, 2, dimids, &TROP_P);
+    err       = INQ_VID (ncid, "TROP_P", MPI_FLOAT, 2, dimids, &TROP_P);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, TROP_P, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, TROP_P, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, TROP_P, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, TROP_P, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TROP_P, "units", 2, "Pa");
     CHECK_ERR
@@ -8531,11 +8531,11 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TROP_T", NC_FLOAT, 2, dimids, &TROP_T);
+    err       = INQ_VID (ncid, "TROP_T", MPI_FLOAT, 2, dimids, &TROP_T);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, TROP_T, _FillValue, NC_FLOAT, 1, &fillv);
+    err = GET_ATT_FLOAT (ncid, TROP_T, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
-    err = GET_ATT_FLOAT (ncid, TROP_T, "missing_value", NC_FLOAT, 1, &missv);
+    err = GET_ATT_FLOAT (ncid, TROP_T, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TROP_T, "units", 1, "K");
     CHECK_ERR
@@ -8547,7 +8547,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TS", NC_FLOAT, 2, dimids, &TS);
+    err       = INQ_VID (ncid, "TS", MPI_FLOAT, 2, dimids, &TS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TS, "units", 1, "K");
     CHECK_ERR
@@ -8559,7 +8559,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TSMN", NC_FLOAT, 2, dimids, &TSMN);
+    err       = INQ_VID (ncid, "TSMN", MPI_FLOAT, 2, dimids, &TSMN);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TSMN, "units", 1, "K");
     CHECK_ERR
@@ -8572,7 +8572,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TSMX", NC_FLOAT, 2, dimids, &TSMX);
+    err       = INQ_VID (ncid, "TSMX", MPI_FLOAT, 2, dimids, &TSMX);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TSMX, "units", 1, "K");
     CHECK_ERR
@@ -8585,7 +8585,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TUH", NC_FLOAT, 2, dimids, &TUH);
+    err       = INQ_VID (ncid, "TUH", MPI_FLOAT, 2, dimids, &TUH);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TUH, "units", 3, "W/m");
     CHECK_ERR
@@ -8597,7 +8597,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TUQ", NC_FLOAT, 2, dimids, &TUQ);
+    err       = INQ_VID (ncid, "TUQ", MPI_FLOAT, 2, dimids, &TUQ);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TUQ, "units", 6, "kg/m/s");
     CHECK_ERR
@@ -8610,7 +8610,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TVH", NC_FLOAT, 2, dimids, &TVH);
+    err       = INQ_VID (ncid, "TVH", MPI_FLOAT, 2, dimids, &TVH);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TVH, "units", 3, "W/m");
     CHECK_ERR
@@ -8623,7 +8623,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TVQ", NC_FLOAT, 2, dimids, &TVQ);
+    err       = INQ_VID (ncid, "TVQ", MPI_FLOAT, 2, dimids, &TVQ);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TVQ, "units", 6, "kg/m/s");
     CHECK_ERR
@@ -8637,9 +8637,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "U", NC_FLOAT, 3, dimids, &U);
+    err       = INQ_VID (ncid, "U", MPI_FLOAT, 3, dimids, &U);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, U, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, U, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, U, "units", 3, "m/s");
     CHECK_ERR
@@ -8651,7 +8651,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "U10", NC_FLOAT, 2, dimids, &U10);
+    err       = INQ_VID (ncid, "U10", MPI_FLOAT, 2, dimids, &U10);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, U10, "units", 3, "m/s");
     CHECK_ERR
@@ -8664,9 +8664,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "UU", NC_FLOAT, 3, dimids, &UU);
+    err       = INQ_VID (ncid, "UU", MPI_FLOAT, 3, dimids, &UU);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, UU, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, UU, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, UU, "units", 5, "m2/s2");
     CHECK_ERR
@@ -8679,9 +8679,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "V", NC_FLOAT, 3, dimids, &V);
+    err       = INQ_VID (ncid, "V", MPI_FLOAT, 3, dimids, &V);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, V, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, V, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, V, "units", 3, "m/s");
     CHECK_ERR
@@ -8694,9 +8694,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "VQ", NC_FLOAT, 3, dimids, &VQ);
+    err       = INQ_VID (ncid, "VQ", MPI_FLOAT, 3, dimids, &VQ);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, VQ, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, VQ, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, VQ, "units", 8, "m/skg/kg");
     CHECK_ERR
@@ -8709,9 +8709,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "VT", NC_FLOAT, 3, dimids, &VT);
+    err       = INQ_VID (ncid, "VT", MPI_FLOAT, 3, dimids, &VT);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, VT, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, VT, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, VT, "units", 5, "K m/s");
     CHECK_ERR
@@ -8724,9 +8724,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "VU", NC_FLOAT, 3, dimids, &VU);
+    err       = INQ_VID (ncid, "VU", MPI_FLOAT, 3, dimids, &VU);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, VU, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, VU, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, VU, "units", 5, "m2/s2");
     CHECK_ERR
@@ -8739,9 +8739,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "VV", NC_FLOAT, 3, dimids, &VV);
+    err       = INQ_VID (ncid, "VV", MPI_FLOAT, 3, dimids, &VV);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, VV, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, VV, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, VV, "units", 5, "m2/s2");
     CHECK_ERR
@@ -8753,7 +8753,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "WD_H2O2", NC_FLOAT, 2, dimids, &WD_H2O2);
+    err       = INQ_VID (ncid, "WD_H2O2", MPI_FLOAT, 2, dimids, &WD_H2O2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, WD_H2O2, "units", 4, "kg/s");
     CHECK_ERR
@@ -8765,7 +8765,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "WD_H2SO4", NC_FLOAT, 2, dimids, &WD_H2SO4);
+    err       = INQ_VID (ncid, "WD_H2SO4", MPI_FLOAT, 2, dimids, &WD_H2SO4);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, WD_H2SO4, "units", 4, "kg/s");
     CHECK_ERR
@@ -8777,7 +8777,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "WD_SO2", NC_FLOAT, 2, dimids, &WD_SO2);
+    err       = INQ_VID (ncid, "WD_SO2", MPI_FLOAT, 2, dimids, &WD_SO2);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, WD_SO2, "units", 4, "kg/s");
     CHECK_ERR
@@ -8790,9 +8790,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "WSUB", NC_FLOAT, 3, dimids, &WSUB);
+    err       = INQ_VID (ncid, "WSUB", MPI_FLOAT, 3, dimids, &WSUB);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, WSUB, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, WSUB, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, WSUB, "units", 3, "m/s");
     CHECK_ERR
@@ -8805,9 +8805,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "Z3", NC_FLOAT, 3, dimids, &Z3);
+    err       = INQ_VID (ncid, "Z3", MPI_FLOAT, 3, dimids, &Z3);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, Z3, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, Z3, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Z3, "units", 1, "m");
     CHECK_ERR
@@ -8820,9 +8820,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "aero_water", NC_FLOAT, 3, dimids, &aero_water);
+    err       = INQ_VID (ncid, "aero_water", MPI_FLOAT, 3, dimids, &aero_water);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, aero_water, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, aero_water, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, aero_water, "units", 1, "m");
     CHECK_ERR
@@ -8835,7 +8835,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "airFV", NC_FLOAT, 2, dimids, &airFV);
+    err       = INQ_VID (ncid, "airFV", MPI_FLOAT, 2, dimids, &airFV);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, airFV, "units", 4, "frac");
     CHECK_ERR
@@ -8847,7 +8847,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a1DDF", NC_FLOAT, 2, dimids, &bc_a1DDF);
+    err       = INQ_VID (ncid, "bc_a1DDF", MPI_FLOAT, 2, dimids, &bc_a1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8860,7 +8860,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a1SFWET", NC_FLOAT, 2, dimids, &bc_a1SFWET);
+    err       = INQ_VID (ncid, "bc_a1SFWET", MPI_FLOAT, 2, dimids, &bc_a1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8872,7 +8872,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a1_SRF", NC_FLOAT, 2, dimids, &bc_a1_SRF);
+    err       = INQ_VID (ncid, "bc_a1_SRF", MPI_FLOAT, 2, dimids, &bc_a1_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -8884,7 +8884,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a1_sfgaex1", NC_FLOAT, 2, dimids, &bc_a1_sfgaex1);
+    err       = INQ_VID (ncid, "bc_a1_sfgaex1", MPI_FLOAT, 2, dimids, &bc_a1_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8897,7 +8897,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a3DDF", NC_FLOAT, 2, dimids, &bc_a3DDF);
+    err       = INQ_VID (ncid, "bc_a3DDF", MPI_FLOAT, 2, dimids, &bc_a3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8910,7 +8910,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a3SFWET", NC_FLOAT, 2, dimids, &bc_a3SFWET);
+    err       = INQ_VID (ncid, "bc_a3SFWET", MPI_FLOAT, 2, dimids, &bc_a3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8922,7 +8922,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a3_SRF", NC_FLOAT, 2, dimids, &bc_a3_SRF);
+    err       = INQ_VID (ncid, "bc_a3_SRF", MPI_FLOAT, 2, dimids, &bc_a3_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -8934,7 +8934,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a4DDF", NC_FLOAT, 2, dimids, &bc_a4DDF);
+    err       = INQ_VID (ncid, "bc_a4DDF", MPI_FLOAT, 2, dimids, &bc_a4DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8947,7 +8947,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a4SFWET", NC_FLOAT, 2, dimids, &bc_a4SFWET);
+    err       = INQ_VID (ncid, "bc_a4SFWET", MPI_FLOAT, 2, dimids, &bc_a4SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8959,7 +8959,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a4_CLXF", NC_FLOAT, 2, dimids, &bc_a4_CLXF);
+    err       = INQ_VID (ncid, "bc_a4_CLXF", MPI_FLOAT, 2, dimids, &bc_a4_CLXF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a4_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -8972,7 +8972,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a4_SRF", NC_FLOAT, 2, dimids, &bc_a4_SRF);
+    err       = INQ_VID (ncid, "bc_a4_SRF", MPI_FLOAT, 2, dimids, &bc_a4_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a4_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -8984,7 +8984,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_a4_sfgaex1", NC_FLOAT, 2, dimids, &bc_a4_sfgaex1);
+    err       = INQ_VID (ncid, "bc_a4_sfgaex1", MPI_FLOAT, 2, dimids, &bc_a4_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -8997,7 +8997,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_c1DDF", NC_FLOAT, 2, dimids, &bc_c1DDF);
+    err       = INQ_VID (ncid, "bc_c1DDF", MPI_FLOAT, 2, dimids, &bc_c1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9010,7 +9010,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_c1SFWET", NC_FLOAT, 2, dimids, &bc_c1SFWET);
+    err       = INQ_VID (ncid, "bc_c1SFWET", MPI_FLOAT, 2, dimids, &bc_c1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9022,7 +9022,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_c3DDF", NC_FLOAT, 2, dimids, &bc_c3DDF);
+    err       = INQ_VID (ncid, "bc_c3DDF", MPI_FLOAT, 2, dimids, &bc_c3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9035,7 +9035,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_c3SFWET", NC_FLOAT, 2, dimids, &bc_c3SFWET);
+    err       = INQ_VID (ncid, "bc_c3SFWET", MPI_FLOAT, 2, dimids, &bc_c3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9047,7 +9047,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_c4DDF", NC_FLOAT, 2, dimids, &bc_c4DDF);
+    err       = INQ_VID (ncid, "bc_c4DDF", MPI_FLOAT, 2, dimids, &bc_c4DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_c4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9060,7 +9060,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "bc_c4SFWET", NC_FLOAT, 2, dimids, &bc_c4SFWET);
+    err       = INQ_VID (ncid, "bc_c4SFWET", MPI_FLOAT, 2, dimids, &bc_c4SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_c4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9072,7 +9072,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "chla", NC_FLOAT, 2, dimids, &chla);
+    err       = INQ_VID (ncid, "chla", MPI_FLOAT, 2, dimids, &chla);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, chla, "units", 6, "mg L-1");
     CHECK_ERR
@@ -9084,7 +9084,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_a1DDF", NC_FLOAT, 2, dimids, &dst_a1DDF);
+    err       = INQ_VID (ncid, "dst_a1DDF", MPI_FLOAT, 2, dimids, &dst_a1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9097,7 +9097,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_a1SF", NC_FLOAT, 2, dimids, &dst_a1SF);
+    err       = INQ_VID (ncid, "dst_a1SF", MPI_FLOAT, 2, dimids, &dst_a1SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_a1SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9109,7 +9109,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_a1SFWET", NC_FLOAT, 2, dimids, &dst_a1SFWET);
+    err       = INQ_VID (ncid, "dst_a1SFWET", MPI_FLOAT, 2, dimids, &dst_a1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9121,7 +9121,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_a1_SRF", NC_FLOAT, 2, dimids, &dst_a1_SRF);
+    err       = INQ_VID (ncid, "dst_a1_SRF", MPI_FLOAT, 2, dimids, &dst_a1_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -9133,7 +9133,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_a3DDF", NC_FLOAT, 2, dimids, &dst_a3DDF);
+    err       = INQ_VID (ncid, "dst_a3DDF", MPI_FLOAT, 2, dimids, &dst_a3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9146,7 +9146,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_a3SF", NC_FLOAT, 2, dimids, &dst_a3SF);
+    err       = INQ_VID (ncid, "dst_a3SF", MPI_FLOAT, 2, dimids, &dst_a3SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_a3SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9158,7 +9158,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_a3SFWET", NC_FLOAT, 2, dimids, &dst_a3SFWET);
+    err       = INQ_VID (ncid, "dst_a3SFWET", MPI_FLOAT, 2, dimids, &dst_a3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9170,7 +9170,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_a3_SRF", NC_FLOAT, 2, dimids, &dst_a3_SRF);
+    err       = INQ_VID (ncid, "dst_a3_SRF", MPI_FLOAT, 2, dimids, &dst_a3_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -9182,7 +9182,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_c1DDF", NC_FLOAT, 2, dimids, &dst_c1DDF);
+    err       = INQ_VID (ncid, "dst_c1DDF", MPI_FLOAT, 2, dimids, &dst_c1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9195,7 +9195,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_c1SFWET", NC_FLOAT, 2, dimids, &dst_c1SFWET);
+    err       = INQ_VID (ncid, "dst_c1SFWET", MPI_FLOAT, 2, dimids, &dst_c1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9208,7 +9208,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_c3DDF", NC_FLOAT, 2, dimids, &dst_c3DDF);
+    err       = INQ_VID (ncid, "dst_c3DDF", MPI_FLOAT, 2, dimids, &dst_c3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9221,7 +9221,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "dst_c3SFWET", NC_FLOAT, 2, dimids, &dst_c3SFWET);
+    err       = INQ_VID (ncid, "dst_c3SFWET", MPI_FLOAT, 2, dimids, &dst_c3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, dst_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9235,9 +9235,9 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "hstobie_linoz", NC_FLOAT, 3, dimids, &hstobie_linoz);
+    err       = INQ_VID (ncid, "hstobie_linoz", MPI_FLOAT, 3, dimids, &hstobie_linoz);
     CHECK_ERR
-    err = GET_ATT_INT (ncid, hstobie_linoz, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT_INT (ncid, hstobie_linoz, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, hstobie_linoz, "units", 22, "fraction of model time");
     CHECK_ERR
@@ -9247,7 +9247,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mlip", NC_FLOAT, 2, dimids, &mlip);
+    err       = INQ_VID (ncid, "mlip", MPI_FLOAT, 2, dimids, &mlip);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mlip, "units", 4, "uM C");
     CHECK_ERR
@@ -9259,7 +9259,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a1DDF", NC_FLOAT, 2, dimids, &mom_a1DDF);
+    err       = INQ_VID (ncid, "mom_a1DDF", MPI_FLOAT, 2, dimids, &mom_a1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9272,7 +9272,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a1SF", NC_FLOAT, 2, dimids, &mom_a1SF);
+    err       = INQ_VID (ncid, "mom_a1SF", MPI_FLOAT, 2, dimids, &mom_a1SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a1SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9284,7 +9284,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a1SFWET", NC_FLOAT, 2, dimids, &mom_a1SFWET);
+    err       = INQ_VID (ncid, "mom_a1SFWET", MPI_FLOAT, 2, dimids, &mom_a1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9296,7 +9296,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a1_SRF", NC_FLOAT, 2, dimids, &mom_a1_SRF);
+    err       = INQ_VID (ncid, "mom_a1_SRF", MPI_FLOAT, 2, dimids, &mom_a1_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -9308,7 +9308,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a1_sfgaex1", NC_FLOAT, 2, dimids, &mom_a1_sfgaex1);
+    err       = INQ_VID (ncid, "mom_a1_sfgaex1", MPI_FLOAT, 2, dimids, &mom_a1_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9321,7 +9321,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a2DDF", NC_FLOAT, 2, dimids, &mom_a2DDF);
+    err       = INQ_VID (ncid, "mom_a2DDF", MPI_FLOAT, 2, dimids, &mom_a2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9334,7 +9334,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a2SF", NC_FLOAT, 2, dimids, &mom_a2SF);
+    err       = INQ_VID (ncid, "mom_a2SF", MPI_FLOAT, 2, dimids, &mom_a2SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a2SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9346,7 +9346,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a2SFWET", NC_FLOAT, 2, dimids, &mom_a2SFWET);
+    err       = INQ_VID (ncid, "mom_a2SFWET", MPI_FLOAT, 2, dimids, &mom_a2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9358,7 +9358,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a2_SRF", NC_FLOAT, 2, dimids, &mom_a2_SRF);
+    err       = INQ_VID (ncid, "mom_a2_SRF", MPI_FLOAT, 2, dimids, &mom_a2_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a2_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -9370,7 +9370,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a3DDF", NC_FLOAT, 2, dimids, &mom_a3DDF);
+    err       = INQ_VID (ncid, "mom_a3DDF", MPI_FLOAT, 2, dimids, &mom_a3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9383,7 +9383,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a3SFWET", NC_FLOAT, 2, dimids, &mom_a3SFWET);
+    err       = INQ_VID (ncid, "mom_a3SFWET", MPI_FLOAT, 2, dimids, &mom_a3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9395,7 +9395,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a3_SRF", NC_FLOAT, 2, dimids, &mom_a3_SRF);
+    err       = INQ_VID (ncid, "mom_a3_SRF", MPI_FLOAT, 2, dimids, &mom_a3_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -9407,7 +9407,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a4DDF", NC_FLOAT, 2, dimids, &mom_a4DDF);
+    err       = INQ_VID (ncid, "mom_a4DDF", MPI_FLOAT, 2, dimids, &mom_a4DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9420,7 +9420,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a4SF", NC_FLOAT, 2, dimids, &mom_a4SF);
+    err       = INQ_VID (ncid, "mom_a4SF", MPI_FLOAT, 2, dimids, &mom_a4SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a4SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9432,7 +9432,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a4SFWET", NC_FLOAT, 2, dimids, &mom_a4SFWET);
+    err       = INQ_VID (ncid, "mom_a4SFWET", MPI_FLOAT, 2, dimids, &mom_a4SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9444,7 +9444,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a4_SRF", NC_FLOAT, 2, dimids, &mom_a4_SRF);
+    err       = INQ_VID (ncid, "mom_a4_SRF", MPI_FLOAT, 2, dimids, &mom_a4_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a4_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -9456,7 +9456,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_a4_sfgaex1", NC_FLOAT, 2, dimids, &mom_a4_sfgaex1);
+    err       = INQ_VID (ncid, "mom_a4_sfgaex1", MPI_FLOAT, 2, dimids, &mom_a4_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_a4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9469,7 +9469,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_c1DDF", NC_FLOAT, 2, dimids, &mom_c1DDF);
+    err       = INQ_VID (ncid, "mom_c1DDF", MPI_FLOAT, 2, dimids, &mom_c1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9482,7 +9482,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_c1SFWET", NC_FLOAT, 2, dimids, &mom_c1SFWET);
+    err       = INQ_VID (ncid, "mom_c1SFWET", MPI_FLOAT, 2, dimids, &mom_c1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9495,7 +9495,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_c2DDF", NC_FLOAT, 2, dimids, &mom_c2DDF);
+    err       = INQ_VID (ncid, "mom_c2DDF", MPI_FLOAT, 2, dimids, &mom_c2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_c2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9508,7 +9508,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_c2SFWET", NC_FLOAT, 2, dimids, &mom_c2SFWET);
+    err       = INQ_VID (ncid, "mom_c2SFWET", MPI_FLOAT, 2, dimids, &mom_c2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_c2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9521,7 +9521,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_c3DDF", NC_FLOAT, 2, dimids, &mom_c3DDF);
+    err       = INQ_VID (ncid, "mom_c3DDF", MPI_FLOAT, 2, dimids, &mom_c3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9534,7 +9534,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_c3SFWET", NC_FLOAT, 2, dimids, &mom_c3SFWET);
+    err       = INQ_VID (ncid, "mom_c3SFWET", MPI_FLOAT, 2, dimids, &mom_c3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9547,7 +9547,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_c4DDF", NC_FLOAT, 2, dimids, &mom_c4DDF);
+    err       = INQ_VID (ncid, "mom_c4DDF", MPI_FLOAT, 2, dimids, &mom_c4DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_c4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9560,7 +9560,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mom_c4SFWET", NC_FLOAT, 2, dimids, &mom_c4SFWET);
+    err       = INQ_VID (ncid, "mom_c4SFWET", MPI_FLOAT, 2, dimids, &mom_c4SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mom_c4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9573,7 +9573,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mpoly", NC_FLOAT, 2, dimids, &mpoly);
+    err       = INQ_VID (ncid, "mpoly", MPI_FLOAT, 2, dimids, &mpoly);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mpoly, "units", 4, "uM C");
     CHECK_ERR
@@ -9585,7 +9585,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "mprot", NC_FLOAT, 2, dimids, &mprot);
+    err       = INQ_VID (ncid, "mprot", MPI_FLOAT, 2, dimids, &mprot);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mprot, "units", 4, "uM C");
     CHECK_ERR
@@ -9597,7 +9597,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a1DDF", NC_FLOAT, 2, dimids, &ncl_a1DDF);
+    err       = INQ_VID (ncid, "ncl_a1DDF", MPI_FLOAT, 2, dimids, &ncl_a1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9610,7 +9610,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a1SF", NC_FLOAT, 2, dimids, &ncl_a1SF);
+    err       = INQ_VID (ncid, "ncl_a1SF", MPI_FLOAT, 2, dimids, &ncl_a1SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a1SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9622,7 +9622,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a1SFWET", NC_FLOAT, 2, dimids, &ncl_a1SFWET);
+    err       = INQ_VID (ncid, "ncl_a1SFWET", MPI_FLOAT, 2, dimids, &ncl_a1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9634,7 +9634,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a1_SRF", NC_FLOAT, 2, dimids, &ncl_a1_SRF);
+    err       = INQ_VID (ncid, "ncl_a1_SRF", MPI_FLOAT, 2, dimids, &ncl_a1_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -9646,7 +9646,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a2DDF", NC_FLOAT, 2, dimids, &ncl_a2DDF);
+    err       = INQ_VID (ncid, "ncl_a2DDF", MPI_FLOAT, 2, dimids, &ncl_a2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9659,7 +9659,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a2SF", NC_FLOAT, 2, dimids, &ncl_a2SF);
+    err       = INQ_VID (ncid, "ncl_a2SF", MPI_FLOAT, 2, dimids, &ncl_a2SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a2SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9671,7 +9671,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a2SFWET", NC_FLOAT, 2, dimids, &ncl_a2SFWET);
+    err       = INQ_VID (ncid, "ncl_a2SFWET", MPI_FLOAT, 2, dimids, &ncl_a2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9683,7 +9683,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a2_SRF", NC_FLOAT, 2, dimids, &ncl_a2_SRF);
+    err       = INQ_VID (ncid, "ncl_a2_SRF", MPI_FLOAT, 2, dimids, &ncl_a2_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a2_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -9695,7 +9695,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a3DDF", NC_FLOAT, 2, dimids, &ncl_a3DDF);
+    err       = INQ_VID (ncid, "ncl_a3DDF", MPI_FLOAT, 2, dimids, &ncl_a3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9708,7 +9708,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a3SF", NC_FLOAT, 2, dimids, &ncl_a3SF);
+    err       = INQ_VID (ncid, "ncl_a3SF", MPI_FLOAT, 2, dimids, &ncl_a3SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a3SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9720,7 +9720,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a3SFWET", NC_FLOAT, 2, dimids, &ncl_a3SFWET);
+    err       = INQ_VID (ncid, "ncl_a3SFWET", MPI_FLOAT, 2, dimids, &ncl_a3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9732,7 +9732,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_a3_SRF", NC_FLOAT, 2, dimids, &ncl_a3_SRF);
+    err       = INQ_VID (ncid, "ncl_a3_SRF", MPI_FLOAT, 2, dimids, &ncl_a3_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -9744,7 +9744,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_c1DDF", NC_FLOAT, 2, dimids, &ncl_c1DDF);
+    err       = INQ_VID (ncid, "ncl_c1DDF", MPI_FLOAT, 2, dimids, &ncl_c1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9757,7 +9757,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_c1SFWET", NC_FLOAT, 2, dimids, &ncl_c1SFWET);
+    err       = INQ_VID (ncid, "ncl_c1SFWET", MPI_FLOAT, 2, dimids, &ncl_c1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9770,7 +9770,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_c2DDF", NC_FLOAT, 2, dimids, &ncl_c2DDF);
+    err       = INQ_VID (ncid, "ncl_c2DDF", MPI_FLOAT, 2, dimids, &ncl_c2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_c2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9783,7 +9783,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_c2SFWET", NC_FLOAT, 2, dimids, &ncl_c2SFWET);
+    err       = INQ_VID (ncid, "ncl_c2SFWET", MPI_FLOAT, 2, dimids, &ncl_c2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_c2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9796,7 +9796,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_c3DDF", NC_FLOAT, 2, dimids, &ncl_c3DDF);
+    err       = INQ_VID (ncid, "ncl_c3DDF", MPI_FLOAT, 2, dimids, &ncl_c3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9809,7 +9809,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "ncl_c3SFWET", NC_FLOAT, 2, dimids, &ncl_c3SFWET);
+    err       = INQ_VID (ncid, "ncl_c3SFWET", MPI_FLOAT, 2, dimids, &ncl_c3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ncl_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9822,7 +9822,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a1DDF", NC_FLOAT, 2, dimids, &num_a1DDF);
+    err       = INQ_VID (ncid, "num_a1DDF", MPI_FLOAT, 2, dimids, &num_a1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a1DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -9835,7 +9835,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a1SF", NC_FLOAT, 2, dimids, &num_a1SF);
+    err       = INQ_VID (ncid, "num_a1SF", MPI_FLOAT, 2, dimids, &num_a1SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a1SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9847,7 +9847,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a1SFWET", NC_FLOAT, 2, dimids, &num_a1SFWET);
+    err       = INQ_VID (ncid, "num_a1SFWET", MPI_FLOAT, 2, dimids, &num_a1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a1SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -9859,7 +9859,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a1_CLXF", NC_FLOAT, 2, dimids, &num_a1_CLXF);
+    err       = INQ_VID (ncid, "num_a1_CLXF", MPI_FLOAT, 2, dimids, &num_a1_CLXF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a1_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -9872,7 +9872,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a1_SRF", NC_FLOAT, 2, dimids, &num_a1_SRF);
+    err       = INQ_VID (ncid, "num_a1_SRF", MPI_FLOAT, 2, dimids, &num_a1_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a1_SRF, "units", 5, " 1/kg");
     CHECK_ERR
@@ -9884,7 +9884,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a1_sfgaex1", NC_FLOAT, 2, dimids, &num_a1_sfgaex1);
+    err       = INQ_VID (ncid, "num_a1_sfgaex1", MPI_FLOAT, 2, dimids, &num_a1_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9897,7 +9897,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a2DDF", NC_FLOAT, 2, dimids, &num_a2DDF);
+    err       = INQ_VID (ncid, "num_a2DDF", MPI_FLOAT, 2, dimids, &num_a2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a2DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -9910,7 +9910,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a2SFWET", NC_FLOAT, 2, dimids, &num_a2SFWET);
+    err       = INQ_VID (ncid, "num_a2SFWET", MPI_FLOAT, 2, dimids, &num_a2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a2SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -9922,7 +9922,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a2_CLXF", NC_FLOAT, 2, dimids, &num_a2_CLXF);
+    err       = INQ_VID (ncid, "num_a2_CLXF", MPI_FLOAT, 2, dimids, &num_a2_CLXF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a2_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -9935,7 +9935,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a2_SRF", NC_FLOAT, 2, dimids, &num_a2_SRF);
+    err       = INQ_VID (ncid, "num_a2_SRF", MPI_FLOAT, 2, dimids, &num_a2_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a2_SRF, "units", 5, " 1/kg");
     CHECK_ERR
@@ -9947,7 +9947,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a3DDF", NC_FLOAT, 2, dimids, &num_a3DDF);
+    err       = INQ_VID (ncid, "num_a3DDF", MPI_FLOAT, 2, dimids, &num_a3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a3DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -9960,7 +9960,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a3SF", NC_FLOAT, 2, dimids, &num_a3SF);
+    err       = INQ_VID (ncid, "num_a3SF", MPI_FLOAT, 2, dimids, &num_a3SF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a3SF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -9972,7 +9972,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a3SFWET", NC_FLOAT, 2, dimids, &num_a3SFWET);
+    err       = INQ_VID (ncid, "num_a3SFWET", MPI_FLOAT, 2, dimids, &num_a3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a3SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -9984,7 +9984,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a3_SRF", NC_FLOAT, 2, dimids, &num_a3_SRF);
+    err       = INQ_VID (ncid, "num_a3_SRF", MPI_FLOAT, 2, dimids, &num_a3_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a3_SRF, "units", 5, " 1/kg");
     CHECK_ERR
@@ -9996,7 +9996,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a4DDF", NC_FLOAT, 2, dimids, &num_a4DDF);
+    err       = INQ_VID (ncid, "num_a4DDF", MPI_FLOAT, 2, dimids, &num_a4DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a4DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10009,7 +10009,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a4SFWET", NC_FLOAT, 2, dimids, &num_a4SFWET);
+    err       = INQ_VID (ncid, "num_a4SFWET", MPI_FLOAT, 2, dimids, &num_a4SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a4SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10021,7 +10021,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a4_CLXF", NC_FLOAT, 2, dimids, &num_a4_CLXF);
+    err       = INQ_VID (ncid, "num_a4_CLXF", MPI_FLOAT, 2, dimids, &num_a4_CLXF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a4_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -10034,7 +10034,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a4_SRF", NC_FLOAT, 2, dimids, &num_a4_SRF);
+    err       = INQ_VID (ncid, "num_a4_SRF", MPI_FLOAT, 2, dimids, &num_a4_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a4_SRF, "units", 5, " 1/kg");
     CHECK_ERR
@@ -10046,7 +10046,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_a4_sfgaex1", NC_FLOAT, 2, dimids, &num_a4_sfgaex1);
+    err       = INQ_VID (ncid, "num_a4_sfgaex1", MPI_FLOAT, 2, dimids, &num_a4_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_a4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10059,7 +10059,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_c1DDF", NC_FLOAT, 2, dimids, &num_c1DDF);
+    err       = INQ_VID (ncid, "num_c1DDF", MPI_FLOAT, 2, dimids, &num_c1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_c1DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10072,7 +10072,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_c1SFWET", NC_FLOAT, 2, dimids, &num_c1SFWET);
+    err       = INQ_VID (ncid, "num_c1SFWET", MPI_FLOAT, 2, dimids, &num_c1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_c1SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10085,7 +10085,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_c2DDF", NC_FLOAT, 2, dimids, &num_c2DDF);
+    err       = INQ_VID (ncid, "num_c2DDF", MPI_FLOAT, 2, dimids, &num_c2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_c2DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10098,7 +10098,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_c2SFWET", NC_FLOAT, 2, dimids, &num_c2SFWET);
+    err       = INQ_VID (ncid, "num_c2SFWET", MPI_FLOAT, 2, dimids, &num_c2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_c2SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10111,7 +10111,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_c3DDF", NC_FLOAT, 2, dimids, &num_c3DDF);
+    err       = INQ_VID (ncid, "num_c3DDF", MPI_FLOAT, 2, dimids, &num_c3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_c3DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10124,7 +10124,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_c3SFWET", NC_FLOAT, 2, dimids, &num_c3SFWET);
+    err       = INQ_VID (ncid, "num_c3SFWET", MPI_FLOAT, 2, dimids, &num_c3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_c3SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10137,7 +10137,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_c4DDF", NC_FLOAT, 2, dimids, &num_c4DDF);
+    err       = INQ_VID (ncid, "num_c4DDF", MPI_FLOAT, 2, dimids, &num_c4DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_c4DDF, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10150,7 +10150,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "num_c4SFWET", NC_FLOAT, 2, dimids, &num_c4SFWET);
+    err       = INQ_VID (ncid, "num_c4SFWET", MPI_FLOAT, 2, dimids, &num_c4SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, num_c4SFWET, "units", 7, " 1/m2/s");
     CHECK_ERR
@@ -10163,7 +10163,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a1DDF", NC_FLOAT, 2, dimids, &pom_a1DDF);
+    err       = INQ_VID (ncid, "pom_a1DDF", MPI_FLOAT, 2, dimids, &pom_a1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10176,7 +10176,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a1SFWET", NC_FLOAT, 2, dimids, &pom_a1SFWET);
+    err       = INQ_VID (ncid, "pom_a1SFWET", MPI_FLOAT, 2, dimids, &pom_a1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10188,7 +10188,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a1_SRF", NC_FLOAT, 2, dimids, &pom_a1_SRF);
+    err       = INQ_VID (ncid, "pom_a1_SRF", MPI_FLOAT, 2, dimids, &pom_a1_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -10200,7 +10200,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a1_sfgaex1", NC_FLOAT, 2, dimids, &pom_a1_sfgaex1);
+    err       = INQ_VID (ncid, "pom_a1_sfgaex1", MPI_FLOAT, 2, dimids, &pom_a1_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10213,7 +10213,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a3DDF", NC_FLOAT, 2, dimids, &pom_a3DDF);
+    err       = INQ_VID (ncid, "pom_a3DDF", MPI_FLOAT, 2, dimids, &pom_a3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10226,7 +10226,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a3SFWET", NC_FLOAT, 2, dimids, &pom_a3SFWET);
+    err       = INQ_VID (ncid, "pom_a3SFWET", MPI_FLOAT, 2, dimids, &pom_a3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10238,7 +10238,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a3_SRF", NC_FLOAT, 2, dimids, &pom_a3_SRF);
+    err       = INQ_VID (ncid, "pom_a3_SRF", MPI_FLOAT, 2, dimids, &pom_a3_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -10250,7 +10250,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a4DDF", NC_FLOAT, 2, dimids, &pom_a4DDF);
+    err       = INQ_VID (ncid, "pom_a4DDF", MPI_FLOAT, 2, dimids, &pom_a4DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10263,7 +10263,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a4SFWET", NC_FLOAT, 2, dimids, &pom_a4SFWET);
+    err       = INQ_VID (ncid, "pom_a4SFWET", MPI_FLOAT, 2, dimids, &pom_a4SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10275,7 +10275,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a4_CLXF", NC_FLOAT, 2, dimids, &pom_a4_CLXF);
+    err       = INQ_VID (ncid, "pom_a4_CLXF", MPI_FLOAT, 2, dimids, &pom_a4_CLXF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a4_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -10288,7 +10288,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a4_SRF", NC_FLOAT, 2, dimids, &pom_a4_SRF);
+    err       = INQ_VID (ncid, "pom_a4_SRF", MPI_FLOAT, 2, dimids, &pom_a4_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a4_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -10300,7 +10300,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_a4_sfgaex1", NC_FLOAT, 2, dimids, &pom_a4_sfgaex1);
+    err       = INQ_VID (ncid, "pom_a4_sfgaex1", MPI_FLOAT, 2, dimids, &pom_a4_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_a4_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10313,7 +10313,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_c1DDF", NC_FLOAT, 2, dimids, &pom_c1DDF);
+    err       = INQ_VID (ncid, "pom_c1DDF", MPI_FLOAT, 2, dimids, &pom_c1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10326,7 +10326,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_c1SFWET", NC_FLOAT, 2, dimids, &pom_c1SFWET);
+    err       = INQ_VID (ncid, "pom_c1SFWET", MPI_FLOAT, 2, dimids, &pom_c1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10339,7 +10339,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_c3DDF", NC_FLOAT, 2, dimids, &pom_c3DDF);
+    err       = INQ_VID (ncid, "pom_c3DDF", MPI_FLOAT, 2, dimids, &pom_c3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10352,7 +10352,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_c3SFWET", NC_FLOAT, 2, dimids, &pom_c3SFWET);
+    err       = INQ_VID (ncid, "pom_c3SFWET", MPI_FLOAT, 2, dimids, &pom_c3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10365,7 +10365,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_c4DDF", NC_FLOAT, 2, dimids, &pom_c4DDF);
+    err       = INQ_VID (ncid, "pom_c4DDF", MPI_FLOAT, 2, dimids, &pom_c4DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_c4DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10378,7 +10378,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "pom_c4SFWET", NC_FLOAT, 2, dimids, &pom_c4SFWET);
+    err       = INQ_VID (ncid, "pom_c4SFWET", MPI_FLOAT, 2, dimids, &pom_c4SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pom_c4SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10391,7 +10391,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a1DDF", NC_FLOAT, 2, dimids, &so4_a1DDF);
+    err       = INQ_VID (ncid, "so4_a1DDF", MPI_FLOAT, 2, dimids, &so4_a1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10404,7 +10404,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a1SFWET", NC_FLOAT, 2, dimids, &so4_a1SFWET);
+    err       = INQ_VID (ncid, "so4_a1SFWET", MPI_FLOAT, 2, dimids, &so4_a1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10416,7 +10416,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a1_CLXF", NC_FLOAT, 2, dimids, &so4_a1_CLXF);
+    err       = INQ_VID (ncid, "so4_a1_CLXF", MPI_FLOAT, 2, dimids, &so4_a1_CLXF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a1_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -10429,7 +10429,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a1_SRF", NC_FLOAT, 2, dimids, &so4_a1_SRF);
+    err       = INQ_VID (ncid, "so4_a1_SRF", MPI_FLOAT, 2, dimids, &so4_a1_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -10441,7 +10441,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a1_sfgaex1", NC_FLOAT, 2, dimids, &so4_a1_sfgaex1);
+    err       = INQ_VID (ncid, "so4_a1_sfgaex1", MPI_FLOAT, 2, dimids, &so4_a1_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10454,7 +10454,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a2DDF", NC_FLOAT, 2, dimids, &so4_a2DDF);
+    err       = INQ_VID (ncid, "so4_a2DDF", MPI_FLOAT, 2, dimids, &so4_a2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10467,7 +10467,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a2SFWET", NC_FLOAT, 2, dimids, &so4_a2SFWET);
+    err       = INQ_VID (ncid, "so4_a2SFWET", MPI_FLOAT, 2, dimids, &so4_a2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10479,7 +10479,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a2_CLXF", NC_FLOAT, 2, dimids, &so4_a2_CLXF);
+    err       = INQ_VID (ncid, "so4_a2_CLXF", MPI_FLOAT, 2, dimids, &so4_a2_CLXF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a2_CLXF, "units", 11, "molec/cm2/s");
     CHECK_ERR
@@ -10492,7 +10492,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a2_SRF", NC_FLOAT, 2, dimids, &so4_a2_SRF);
+    err       = INQ_VID (ncid, "so4_a2_SRF", MPI_FLOAT, 2, dimids, &so4_a2_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a2_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -10504,7 +10504,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a2_sfgaex1", NC_FLOAT, 2, dimids, &so4_a2_sfgaex1);
+    err       = INQ_VID (ncid, "so4_a2_sfgaex1", MPI_FLOAT, 2, dimids, &so4_a2_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a2_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10517,7 +10517,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a3DDF", NC_FLOAT, 2, dimids, &so4_a3DDF);
+    err       = INQ_VID (ncid, "so4_a3DDF", MPI_FLOAT, 2, dimids, &so4_a3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10530,7 +10530,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a3SFWET", NC_FLOAT, 2, dimids, &so4_a3SFWET);
+    err       = INQ_VID (ncid, "so4_a3SFWET", MPI_FLOAT, 2, dimids, &so4_a3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10542,7 +10542,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a3_SRF", NC_FLOAT, 2, dimids, &so4_a3_SRF);
+    err       = INQ_VID (ncid, "so4_a3_SRF", MPI_FLOAT, 2, dimids, &so4_a3_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -10554,7 +10554,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_a3_sfgaex1", NC_FLOAT, 2, dimids, &so4_a3_sfgaex1);
+    err       = INQ_VID (ncid, "so4_a3_sfgaex1", MPI_FLOAT, 2, dimids, &so4_a3_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_a3_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10567,7 +10567,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_c1DDF", NC_FLOAT, 2, dimids, &so4_c1DDF);
+    err       = INQ_VID (ncid, "so4_c1DDF", MPI_FLOAT, 2, dimids, &so4_c1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10580,7 +10580,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_c1SFWET", NC_FLOAT, 2, dimids, &so4_c1SFWET);
+    err       = INQ_VID (ncid, "so4_c1SFWET", MPI_FLOAT, 2, dimids, &so4_c1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10593,7 +10593,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_c2DDF", NC_FLOAT, 2, dimids, &so4_c2DDF);
+    err       = INQ_VID (ncid, "so4_c2DDF", MPI_FLOAT, 2, dimids, &so4_c2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_c2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10606,7 +10606,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_c2SFWET", NC_FLOAT, 2, dimids, &so4_c2SFWET);
+    err       = INQ_VID (ncid, "so4_c2SFWET", MPI_FLOAT, 2, dimids, &so4_c2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_c2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10619,7 +10619,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_c3DDF", NC_FLOAT, 2, dimids, &so4_c3DDF);
+    err       = INQ_VID (ncid, "so4_c3DDF", MPI_FLOAT, 2, dimids, &so4_c3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10632,7 +10632,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "so4_c3SFWET", NC_FLOAT, 2, dimids, &so4_c3SFWET);
+    err       = INQ_VID (ncid, "so4_c3SFWET", MPI_FLOAT, 2, dimids, &so4_c3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, so4_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10645,7 +10645,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a1DDF", NC_FLOAT, 2, dimids, &soa_a1DDF);
+    err       = INQ_VID (ncid, "soa_a1DDF", MPI_FLOAT, 2, dimids, &soa_a1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10658,7 +10658,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a1SFWET", NC_FLOAT, 2, dimids, &soa_a1SFWET);
+    err       = INQ_VID (ncid, "soa_a1SFWET", MPI_FLOAT, 2, dimids, &soa_a1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10670,7 +10670,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a1_SRF", NC_FLOAT, 2, dimids, &soa_a1_SRF);
+    err       = INQ_VID (ncid, "soa_a1_SRF", MPI_FLOAT, 2, dimids, &soa_a1_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a1_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -10682,7 +10682,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a1_sfgaex1", NC_FLOAT, 2, dimids, &soa_a1_sfgaex1);
+    err       = INQ_VID (ncid, "soa_a1_sfgaex1", MPI_FLOAT, 2, dimids, &soa_a1_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10695,7 +10695,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a2DDF", NC_FLOAT, 2, dimids, &soa_a2DDF);
+    err       = INQ_VID (ncid, "soa_a2DDF", MPI_FLOAT, 2, dimids, &soa_a2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10708,7 +10708,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a2SFWET", NC_FLOAT, 2, dimids, &soa_a2SFWET);
+    err       = INQ_VID (ncid, "soa_a2SFWET", MPI_FLOAT, 2, dimids, &soa_a2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10720,7 +10720,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a2_SRF", NC_FLOAT, 2, dimids, &soa_a2_SRF);
+    err       = INQ_VID (ncid, "soa_a2_SRF", MPI_FLOAT, 2, dimids, &soa_a2_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a2_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -10732,7 +10732,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a2_sfgaex1", NC_FLOAT, 2, dimids, &soa_a2_sfgaex1);
+    err       = INQ_VID (ncid, "soa_a2_sfgaex1", MPI_FLOAT, 2, dimids, &soa_a2_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a2_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10745,7 +10745,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a3DDF", NC_FLOAT, 2, dimids, &soa_a3DDF);
+    err       = INQ_VID (ncid, "soa_a3DDF", MPI_FLOAT, 2, dimids, &soa_a3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10758,7 +10758,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a3SFWET", NC_FLOAT, 2, dimids, &soa_a3SFWET);
+    err       = INQ_VID (ncid, "soa_a3SFWET", MPI_FLOAT, 2, dimids, &soa_a3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10770,7 +10770,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a3_SRF", NC_FLOAT, 2, dimids, &soa_a3_SRF);
+    err       = INQ_VID (ncid, "soa_a3_SRF", MPI_FLOAT, 2, dimids, &soa_a3_SRF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a3_SRF, "units", 5, "kg/kg");
     CHECK_ERR
@@ -10782,7 +10782,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_a3_sfgaex1", NC_FLOAT, 2, dimids, &soa_a3_sfgaex1);
+    err       = INQ_VID (ncid, "soa_a3_sfgaex1", MPI_FLOAT, 2, dimids, &soa_a3_sfgaex1);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_a3_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10795,7 +10795,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_c1DDF", NC_FLOAT, 2, dimids, &soa_c1DDF);
+    err       = INQ_VID (ncid, "soa_c1DDF", MPI_FLOAT, 2, dimids, &soa_c1DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_c1DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10808,7 +10808,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_c1SFWET", NC_FLOAT, 2, dimids, &soa_c1SFWET);
+    err       = INQ_VID (ncid, "soa_c1SFWET", MPI_FLOAT, 2, dimids, &soa_c1SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_c1SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10821,7 +10821,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_c2DDF", NC_FLOAT, 2, dimids, &soa_c2DDF);
+    err       = INQ_VID (ncid, "soa_c2DDF", MPI_FLOAT, 2, dimids, &soa_c2DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_c2DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10834,7 +10834,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_c2SFWET", NC_FLOAT, 2, dimids, &soa_c2SFWET);
+    err       = INQ_VID (ncid, "soa_c2SFWET", MPI_FLOAT, 2, dimids, &soa_c2SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_c2SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10847,7 +10847,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_c3DDF", NC_FLOAT, 2, dimids, &soa_c3DDF);
+    err       = INQ_VID (ncid, "soa_c3DDF", MPI_FLOAT, 2, dimids, &soa_c3DDF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_c3DDF, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10860,7 +10860,7 @@ int inq_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "soa_c3SFWET", NC_FLOAT, 2, dimids, &soa_c3SFWET);
+    err       = INQ_VID (ncid, "soa_c3SFWET", MPI_FLOAT, 2, dimids, &soa_c3SFWET);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, soa_c3SFWET, "units", 7, "kg/m2/s");
     CHECK_ERR
@@ -10896,9 +10896,9 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     /* global attributes: */
     iattr = 4;
-    err   = driver.put_att (ncid, NC_GLOBAL, "ne", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = driver.put_att (ncid, NC_GLOBAL, "np", NC_INT, 1, &iattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "Conventions", 6, "CF-1.0");
     CHECK_ERR
@@ -10945,7 +10945,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     /* define variables */
     dimids[0] = dim_ncol;
-    err       = INQ_VID (ncid, "lat", NC_DOUBLE, 1, dimids, &lat);
+    err       = driver.def_var (ncid, "lat", MPI_DOUBLE, 1, dimids, &lat);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lat, "long_name", 8, "latitude");
     CHECK_ERR
@@ -10954,7 +10954,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = lat;
 
     dimids[0] = dim_ncol;
-    err       = INQ_VID (ncid, "lon", NC_DOUBLE, 1, dimids, &lon);
+    err       = driver.def_var (ncid, "lon", MPI_DOUBLE, 1, dimids, &lon);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lon, "long_name", 9, "longitude");
     CHECK_ERR
@@ -10963,14 +10963,14 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = lon;
 
     dimids[0] = dim_ncol;
-    err       = INQ_VID (ncid, "area", NC_DOUBLE, 1, dimids, &area);
+    err       = driver.def_var (ncid, "area", MPI_DOUBLE, 1, dimids, &area);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, area, "long_name", 14, "gll grid areas");
     CHECK_ERR
     varids[i++] = area;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "lev", NC_DOUBLE, 1, dimids, &lev);
+    err       = driver.def_var (ncid, "lev", MPI_DOUBLE, 1, dimids, &lev);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lev, "long_name", 38, "hybrid level at midpoints (1000*(A+B))");
     CHECK_ERR
@@ -10986,21 +10986,21 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = lev;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "hyam", NC_DOUBLE, 1, dimids, &hyam);
+    err       = driver.def_var (ncid, "hyam", MPI_DOUBLE, 1, dimids, &hyam);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hyam, "long_name", 39, "hybrid A coefficient at layer midpoints");
     CHECK_ERR
     varids[i++] = hyam;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "hybm", NC_DOUBLE, 1, dimids, &hybm);
+    err       = driver.def_var (ncid, "hybm", MPI_DOUBLE, 1, dimids, &hybm);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hybm, "long_name", 39, "hybrid B coefficient at layer midpoints");
     CHECK_ERR
     varids[i++] = hybm;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "P0", NC_DOUBLE, 0, NULL, &P0);
+    err       = driver.def_var (ncid, "P0", MPI_DOUBLE, 0, NULL, &P0);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, P0, "long_name", 18, "reference pressure");
     CHECK_ERR
@@ -11009,7 +11009,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = P0;
 
     dimids[0] = dim_ilev;
-    err       = INQ_VID (ncid, "ilev", NC_DOUBLE, 1, dimids, &ilev);
+    err       = driver.def_var (ncid, "ilev", MPI_DOUBLE, 1, dimids, &ilev);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ilev, "long_name", 39, "hybrid level at interfaces (1000*(A+B))");
     CHECK_ERR
@@ -11025,21 +11025,21 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = ilev;
 
     dimids[0] = dim_ilev;
-    err       = INQ_VID (ncid, "hyai", NC_DOUBLE, 1, dimids, &hyai);
+    err       = driver.def_var (ncid, "hyai", MPI_DOUBLE, 1, dimids, &hyai);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hyai, "long_name", 40, "hybrid A coefficient at layer interfaces");
     CHECK_ERR
     varids[i++] = hyai;
 
     dimids[0] = dim_ilev;
-    err       = INQ_VID (ncid, "hybi", NC_DOUBLE, 1, dimids, &hybi);
+    err       = driver.def_var (ncid, "hybi", MPI_DOUBLE, 1, dimids, &hybi);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hybi, "long_name", 40, "hybrid B coefficient at layer interfaces");
     CHECK_ERR
     varids[i++] = hybi;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "time", NC_DOUBLE, 1, dimids, &time);
+    err       = driver.def_var (ncid, "time", MPI_DOUBLE, 1, dimids, &time);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, time, "long_name", 4, "time");
     CHECK_ERR
@@ -11052,14 +11052,14 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = time;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "date", NC_INT, 1, dimids, &date);
+    err       = driver.def_var (ncid, "date", MPI_INT, 1, dimids, &date);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, date, "long_name", 23, "current date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = date;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "datesec", NC_INT, 1, dimids, &datesec);
+    err       = driver.def_var (ncid, "datesec", MPI_INT, 1, dimids, &datesec);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, datesec, "long_name", 31, "current seconds of current date");
     CHECK_ERR
@@ -11067,7 +11067,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_nbnd;
-    err       = INQ_VID (ncid, "time_bnds", NC_DOUBLE, 2, dimids, &time_bnds);
+    err       = driver.def_var (ncid, "time_bnds", MPI_DOUBLE, 2, dimids, &time_bnds);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, time_bnds, "long_name", 23, "time interval endpoints");
     CHECK_ERR
@@ -11075,40 +11075,40 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = INQ_VID (ncid, "date_written", NC_CHAR, 2, dimids, &date_written);
+    err       = driver.def_var (ncid, "date_written", MPI_CHAR, 2, dimids, &date_written);
     CHECK_ERR
     varids[i++] = date_written;
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = INQ_VID (ncid, "time_written", NC_CHAR, 2, dimids, &time_written);
+    err       = driver.def_var (ncid, "time_written", MPI_CHAR, 2, dimids, &time_written);
     CHECK_ERR
     varids[i++] = time_written;
 
-    err = INQ_VID (ncid, "ndbase", NC_INT, 0, NULL, &ndbase);
+    err = driver.def_var (ncid, "ndbase", MPI_INT, 0, NULL, &ndbase);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ndbase, "long_name", 8, "base day");
     CHECK_ERR
     varids[i++] = ndbase;
-    err         = INQ_VID (ncid, "nsbase", NC_INT, 0, NULL, &nsbase);
+    err         = driver.def_var (ncid, "nsbase", MPI_INT, 0, NULL, &nsbase);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nsbase, "long_name", 19, "seconds of base day");
     CHECK_ERR
     varids[i++] = nsbase;
 
-    err = INQ_VID (ncid, "nbdate", NC_INT, 0, NULL, &nbdate);
+    err = driver.def_var (ncid, "nbdate", MPI_INT, 0, NULL, &nbdate);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nbdate, "long_name", 20, "base date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = nbdate;
 
-    err = INQ_VID (ncid, "nbsec", NC_INT, 0, NULL, &nbsec);
+    err = driver.def_var (ncid, "nbsec", MPI_INT, 0, NULL, &nbsec);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nbsec, "long_name", 20, "seconds of base date");
     CHECK_ERR
     varids[i++] = nbsec;
 
-    err = INQ_VID (ncid, "mdt", NC_INT, 0, NULL, &mdt);
+    err = driver.def_var (ncid, "mdt", MPI_INT, 0, NULL, &mdt);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mdt, "long_name", 8, "timestep");
     CHECK_ERR
@@ -11117,56 +11117,56 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = mdt;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "ndcur", NC_INT, 1, dimids, &ndcur);
+    err       = driver.def_var (ncid, "ndcur", MPI_INT, 1, dimids, &ndcur);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ndcur, "long_name", 27, "current day (from base day)");
     CHECK_ERR
     varids[i++] = ndcur;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "nscur", NC_INT, 1, dimids, &nscur);
+    err       = driver.def_var (ncid, "nscur", MPI_INT, 1, dimids, &nscur);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nscur, "long_name", 30, "current seconds of current day");
     CHECK_ERR
     varids[i++] = nscur;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "co2vmr", NC_DOUBLE, 1, dimids, &co2vmr);
+    err       = driver.def_var (ncid, "co2vmr", MPI_DOUBLE, 1, dimids, &co2vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, co2vmr, "long_name", 23, "co2 volume mixing ratio");
     CHECK_ERR
     varids[i++] = co2vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "ch4vmr", NC_DOUBLE, 1, dimids, &ch4vmr);
+    err       = driver.def_var (ncid, "ch4vmr", MPI_DOUBLE, 1, dimids, &ch4vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ch4vmr, "long_name", 23, "ch4 volume mixing ratio");
     CHECK_ERR
     varids[i++] = ch4vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "n2ovmr", NC_DOUBLE, 1, dimids, &n2ovmr);
+    err       = driver.def_var (ncid, "n2ovmr", MPI_DOUBLE, 1, dimids, &n2ovmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, n2ovmr, "long_name", 23, "n2o volume mixing ratio");
     CHECK_ERR
     varids[i++] = n2ovmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "f11vmr", NC_DOUBLE, 1, dimids, &f11vmr);
+    err       = driver.def_var (ncid, "f11vmr", MPI_DOUBLE, 1, dimids, &f11vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, f11vmr, "long_name", 23, "f11 volume mixing ratio");
     CHECK_ERR
     varids[i++] = f11vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "f12vmr", NC_DOUBLE, 1, dimids, &f12vmr);
+    err       = driver.def_var (ncid, "f12vmr", MPI_DOUBLE, 1, dimids, &f12vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, f12vmr, "long_name", 23, "f12 volume mixing ratio");
     CHECK_ERR
     varids[i++] = f12vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "sol_tsi", NC_DOUBLE, 1, dimids, &sol_tsi);
+    err       = driver.def_var (ncid, "sol_tsi", MPI_DOUBLE, 1, dimids, &sol_tsi);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, sol_tsi, "long_name", 22, "total solar irradiance");
     CHECK_ERR
@@ -11175,7 +11175,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = sol_tsi;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "nsteph", NC_INT, 1, dimids, &nsteph);
+    err       = driver.def_var (ncid, "nsteph", MPI_INT, 1, dimids, &nsteph);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nsteph, "long_name", 16, "current timestep");
     CHECK_ERR
@@ -11183,7 +11183,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDHGH", NC_FLOAT, 2, dimids, &CLDHGH);
+    err       = driver.def_var (ncid, "CLDHGH", MPI_FLOAT, 2, dimids, &CLDHGH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDHGH, "units", 8, "fraction");
     CHECK_ERR
@@ -11193,7 +11193,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDLOW", NC_FLOAT, 2, dimids, &CLDLOW);
+    err       = driver.def_var (ncid, "CLDLOW", MPI_FLOAT, 2, dimids, &CLDLOW);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDLOW, "units", 8, "fraction");
     CHECK_ERR
@@ -11203,7 +11203,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDMED", NC_FLOAT, 2, dimids, &CLDMED);
+    err       = driver.def_var (ncid, "CLDMED", MPI_FLOAT, 2, dimids, &CLDMED);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDMED, "units", 8, "fraction");
     CHECK_ERR
@@ -11213,7 +11213,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FLNT", NC_FLOAT, 2, dimids, &FLNT);
+    err       = driver.def_var (ncid, "FLNT", MPI_FLOAT, 2, dimids, &FLNT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -11225,7 +11225,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "LWCF", NC_FLOAT, 2, dimids, &LWCF);
+    err       = driver.def_var (ncid, "LWCF", MPI_FLOAT, 2, dimids, &LWCF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -11237,7 +11237,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "OMEGA500", NC_FLOAT, 2, dimids, &OMEGA500);
+    err       = driver.def_var (ncid, "OMEGA500", MPI_FLOAT, 2, dimids, &OMEGA500);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OMEGA500, "units", 4, "Pa/s");
     CHECK_ERR
@@ -11248,7 +11248,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "OMEGA850", NC_FLOAT, 2, dimids, &OMEGA850);
+    err       = driver.def_var (ncid, "OMEGA850", MPI_FLOAT, 2, dimids, &OMEGA850);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OMEGA850, "units", 4, "Pa/s");
     CHECK_ERR
@@ -11259,7 +11259,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PRECT", NC_FLOAT, 2, dimids, &PRECT);
+    err       = driver.def_var (ncid, "PRECT", MPI_FLOAT, 2, dimids, &PRECT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECT, "units", 3, "m/s");
     CHECK_ERR
@@ -11270,7 +11270,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PS", NC_FLOAT, 2, dimids, &PS);
+    err       = driver.def_var (ncid, "PS", MPI_FLOAT, 2, dimids, &PS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PS, "units", 2, "Pa");
     CHECK_ERR
@@ -11280,7 +11280,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SWCF", NC_FLOAT, 2, dimids, &SWCF);
+    err       = driver.def_var (ncid, "SWCF", MPI_FLOAT, 2, dimids, &SWCF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -11292,7 +11292,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "T850", NC_FLOAT, 2, dimids, &T850);
+    err       = driver.def_var (ncid, "T850", MPI_FLOAT, 2, dimids, &T850);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, T850, "units", 1, "K");
     CHECK_ERR
@@ -11302,7 +11302,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TMQ", NC_FLOAT, 2, dimids, &TMQ);
+    err       = driver.def_var (ncid, "TMQ", MPI_FLOAT, 2, dimids, &TMQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TMQ, "units", 5, "kg/m2");
     CHECK_ERR
@@ -11313,7 +11313,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TS", NC_FLOAT, 2, dimids, &TS);
+    err       = driver.def_var (ncid, "TS", MPI_FLOAT, 2, dimids, &TS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TS, "units", 1, "K");
     CHECK_ERR
@@ -11324,9 +11324,9 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "U", NC_FLOAT, 3, dimids, &U);
+    err       = driver.def_var (ncid, "U", MPI_FLOAT, 3, dimids, &U);
     CHECK_ERR
-    err = PUT_ATT_INT (ncid, U, "mdims", NC_INT, 1, &mdims);
+    err = PUT_ATT_INT (ncid, U, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U, "units", 3, "m/s");
     CHECK_ERR
@@ -11336,7 +11336,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "U250", NC_FLOAT, 2, dimids, &U250);
+    err       = driver.def_var (ncid, "U250", MPI_FLOAT, 2, dimids, &U250);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U250, "units", 3, "m/s");
     CHECK_ERR
@@ -11346,7 +11346,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "U850", NC_FLOAT, 2, dimids, &U850);
+    err       = driver.def_var (ncid, "U850", MPI_FLOAT, 2, dimids, &U850);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U850, "units", 3, "m/s");
     CHECK_ERR
@@ -11356,7 +11356,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "UBOT", NC_FLOAT, 2, dimids, &UBOT);
+    err       = driver.def_var (ncid, "UBOT", MPI_FLOAT, 2, dimids, &UBOT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, UBOT, "units", 3, "m/s");
     CHECK_ERR
@@ -11366,7 +11366,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "V250", NC_FLOAT, 2, dimids, &V250);
+    err       = driver.def_var (ncid, "V250", MPI_FLOAT, 2, dimids, &V250);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, V250, "units", 3, "m/s");
     CHECK_ERR
@@ -11377,7 +11377,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "V850", NC_FLOAT, 2, dimids, &V850);
+    err       = driver.def_var (ncid, "V850", MPI_FLOAT, 2, dimids, &V850);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, V850, "units", 3, "m/s");
     CHECK_ERR
@@ -11388,7 +11388,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "VBOT", NC_FLOAT, 2, dimids, &VBOT);
+    err       = driver.def_var (ncid, "VBOT", MPI_FLOAT, 2, dimids, &VBOT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, VBOT, "units", 3, "m/s");
     CHECK_ERR
@@ -11398,7 +11398,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "Z500", NC_FLOAT, 2, dimids, &Z500);
+    err       = driver.def_var (ncid, "Z500", MPI_FLOAT, 2, dimids, &Z500);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Z500, "units", 1, "m");
     CHECK_ERR
@@ -11431,9 +11431,9 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     /* global attributes: */
     iattr = 4;
-    err   = GET_ATT (ncid, NC_GLOBAL, "ne", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = GET_ATT (ncid, NC_GLOBAL, "np", NC_INT, 1, &iattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "Conventions", 6, "CF-1.0");
     CHECK_ERR
@@ -11489,7 +11489,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     /* define variables */
     dimids[0] = dim_ncol;
-    err       = INQ_VID (ncid, "lat", NC_DOUBLE, 1, dimids, &lat);
+    err       = INQ_VID (ncid, "lat", MPI_DOUBLE, 1, dimids, &lat);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, lat, "long_name", 8, "latitude");
     CHECK_ERR
@@ -11498,7 +11498,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = lat;
 
     dimids[0] = dim_ncol;
-    err       = INQ_VID (ncid, "lon", NC_DOUBLE, 1, dimids, &lon);
+    err       = INQ_VID (ncid, "lon", MPI_DOUBLE, 1, dimids, &lon);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, lon, "long_name", 9, "longitude");
     CHECK_ERR
@@ -11507,14 +11507,14 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = lon;
 
     dimids[0] = dim_ncol;
-    err       = INQ_VID (ncid, "area", NC_DOUBLE, 1, dimids, &area);
+    err       = INQ_VID (ncid, "area", MPI_DOUBLE, 1, dimids, &area);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, area, "long_name", 14, "gll grid areas");
     CHECK_ERR
     varids[i++] = area;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "lev", NC_DOUBLE, 1, dimids, &lev);
+    err       = INQ_VID (ncid, "lev", MPI_DOUBLE, 1, dimids, &lev);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, lev, "long_name", 38, "hybrid level at midpoints (1000*(A+B))");
     CHECK_ERR
@@ -11530,21 +11530,21 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = lev;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "hyam", NC_DOUBLE, 1, dimids, &hyam);
+    err       = INQ_VID (ncid, "hyam", MPI_DOUBLE, 1, dimids, &hyam);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, hyam, "long_name", 39, "hybrid A coefficient at layer midpoints");
     CHECK_ERR
     varids[i++] = hyam;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "hybm", NC_DOUBLE, 1, dimids, &hybm);
+    err       = INQ_VID (ncid, "hybm", MPI_DOUBLE, 1, dimids, &hybm);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, hybm, "long_name", 39, "hybrid B coefficient at layer midpoints");
     CHECK_ERR
     varids[i++] = hybm;
 
     dimids[0] = dim_lev;
-    err       = INQ_VID (ncid, "P0", NC_DOUBLE, 0, NULL, &P0);
+    err       = INQ_VID (ncid, "P0", MPI_DOUBLE, 0, NULL, &P0);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, P0, "long_name", 18, "reference pressure");
     CHECK_ERR
@@ -11553,7 +11553,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = P0;
 
     dimids[0] = dim_ilev;
-    err       = INQ_VID (ncid, "ilev", NC_DOUBLE, 1, dimids, &ilev);
+    err       = INQ_VID (ncid, "ilev", MPI_DOUBLE, 1, dimids, &ilev);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ilev, "long_name", 39, "hybrid level at interfaces (1000*(A+B))");
     CHECK_ERR
@@ -11569,21 +11569,21 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = ilev;
 
     dimids[0] = dim_ilev;
-    err       = INQ_VID (ncid, "hyai", NC_DOUBLE, 1, dimids, &hyai);
+    err       = INQ_VID (ncid, "hyai", MPI_DOUBLE, 1, dimids, &hyai);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, hyai, "long_name", 40, "hybrid A coefficient at layer interfaces");
     CHECK_ERR
     varids[i++] = hyai;
 
     dimids[0] = dim_ilev;
-    err       = INQ_VID (ncid, "hybi", NC_DOUBLE, 1, dimids, &hybi);
+    err       = INQ_VID (ncid, "hybi", MPI_DOUBLE, 1, dimids, &hybi);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, hybi, "long_name", 40, "hybrid B coefficient at layer interfaces");
     CHECK_ERR
     varids[i++] = hybi;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "time", NC_DOUBLE, 1, dimids, &time);
+    err       = INQ_VID (ncid, "time", MPI_DOUBLE, 1, dimids, &time);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, time, "long_name", 4, "time");
     CHECK_ERR
@@ -11596,14 +11596,14 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = time;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "date", NC_INT, 1, dimids, &date);
+    err       = INQ_VID (ncid, "date", MPI_INT, 1, dimids, &date);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, date, "long_name", 23, "current date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = date;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "datesec", NC_INT, 1, dimids, &datesec);
+    err       = INQ_VID (ncid, "datesec", MPI_INT, 1, dimids, &datesec);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, datesec, "long_name", 31, "current seconds of current date");
     CHECK_ERR
@@ -11611,7 +11611,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_nbnd;
-    err       = INQ_VID (ncid, "time_bnds", NC_DOUBLE, 2, dimids, &time_bnds);
+    err       = INQ_VID (ncid, "time_bnds", MPI_DOUBLE, 2, dimids, &time_bnds);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, time_bnds, "long_name", 23, "time interval endpoints");
     CHECK_ERR
@@ -11619,40 +11619,40 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = INQ_VID (ncid, "date_written", NC_CHAR, 2, dimids, &date_written);
+    err       = INQ_VID (ncid, "date_written", MPI_CHAR, 2, dimids, &date_written);
     CHECK_ERR
     varids[i++] = date_written;
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = INQ_VID (ncid, "time_written", NC_CHAR, 2, dimids, &time_written);
+    err       = INQ_VID (ncid, "time_written", MPI_CHAR, 2, dimids, &time_written);
     CHECK_ERR
     varids[i++] = time_written;
 
-    err = INQ_VID (ncid, "ndbase", NC_INT, 0, NULL, &ndbase);
+    err = INQ_VID (ncid, "ndbase", MPI_INT, 0, NULL, &ndbase);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ndbase, "long_name", 8, "base day");
     CHECK_ERR
     varids[i++] = ndbase;
-    err         = INQ_VID (ncid, "nsbase", NC_INT, 0, NULL, &nsbase);
+    err         = INQ_VID (ncid, "nsbase", MPI_INT, 0, NULL, &nsbase);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nsbase, "long_name", 19, "seconds of base day");
     CHECK_ERR
     varids[i++] = nsbase;
 
-    err = INQ_VID (ncid, "nbdate", NC_INT, 0, NULL, &nbdate);
+    err = INQ_VID (ncid, "nbdate", MPI_INT, 0, NULL, &nbdate);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nbdate, "long_name", 20, "base date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = nbdate;
 
-    err = INQ_VID (ncid, "nbsec", NC_INT, 0, NULL, &nbsec);
+    err = INQ_VID (ncid, "nbsec", MPI_INT, 0, NULL, &nbsec);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nbsec, "long_name", 20, "seconds of base date");
     CHECK_ERR
     varids[i++] = nbsec;
 
-    err = INQ_VID (ncid, "mdt", NC_INT, 0, NULL, &mdt);
+    err = INQ_VID (ncid, "mdt", MPI_INT, 0, NULL, &mdt);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, mdt, "long_name", 8, "timestep");
     CHECK_ERR
@@ -11661,56 +11661,56 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = mdt;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "ndcur", NC_INT, 1, dimids, &ndcur);
+    err       = INQ_VID (ncid, "ndcur", MPI_INT, 1, dimids, &ndcur);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ndcur, "long_name", 27, "current day (from base day)");
     CHECK_ERR
     varids[i++] = ndcur;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "nscur", NC_INT, 1, dimids, &nscur);
+    err       = INQ_VID (ncid, "nscur", MPI_INT, 1, dimids, &nscur);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nscur, "long_name", 30, "current seconds of current day");
     CHECK_ERR
     varids[i++] = nscur;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "co2vmr", NC_DOUBLE, 1, dimids, &co2vmr);
+    err       = INQ_VID (ncid, "co2vmr", MPI_DOUBLE, 1, dimids, &co2vmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, co2vmr, "long_name", 23, "co2 volume mixing ratio");
     CHECK_ERR
     varids[i++] = co2vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "ch4vmr", NC_DOUBLE, 1, dimids, &ch4vmr);
+    err       = INQ_VID (ncid, "ch4vmr", MPI_DOUBLE, 1, dimids, &ch4vmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ch4vmr, "long_name", 23, "ch4 volume mixing ratio");
     CHECK_ERR
     varids[i++] = ch4vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "n2ovmr", NC_DOUBLE, 1, dimids, &n2ovmr);
+    err       = INQ_VID (ncid, "n2ovmr", MPI_DOUBLE, 1, dimids, &n2ovmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, n2ovmr, "long_name", 23, "n2o volume mixing ratio");
     CHECK_ERR
     varids[i++] = n2ovmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "f11vmr", NC_DOUBLE, 1, dimids, &f11vmr);
+    err       = INQ_VID (ncid, "f11vmr", MPI_DOUBLE, 1, dimids, &f11vmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, f11vmr, "long_name", 23, "f11 volume mixing ratio");
     CHECK_ERR
     varids[i++] = f11vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "f12vmr", NC_DOUBLE, 1, dimids, &f12vmr);
+    err       = INQ_VID (ncid, "f12vmr", MPI_DOUBLE, 1, dimids, &f12vmr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, f12vmr, "long_name", 23, "f12 volume mixing ratio");
     CHECK_ERR
     varids[i++] = f12vmr;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "sol_tsi", NC_DOUBLE, 1, dimids, &sol_tsi);
+    err       = INQ_VID (ncid, "sol_tsi", MPI_DOUBLE, 1, dimids, &sol_tsi);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, sol_tsi, "long_name", 22, "total solar irradiance");
     CHECK_ERR
@@ -11719,7 +11719,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     varids[i++] = sol_tsi;
 
     dimids[0] = dim_time;
-    err       = INQ_VID (ncid, "nsteph", NC_INT, 1, dimids, &nsteph);
+    err       = INQ_VID (ncid, "nsteph", MPI_INT, 1, dimids, &nsteph);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, nsteph, "long_name", 16, "current timestep");
     CHECK_ERR
@@ -11727,7 +11727,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDHGH", NC_FLOAT, 2, dimids, &CLDHGH);
+    err       = INQ_VID (ncid, "CLDHGH", MPI_FLOAT, 2, dimids, &CLDHGH);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLDHGH, "units", 8, "fraction");
     CHECK_ERR
@@ -11737,7 +11737,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDLOW", NC_FLOAT, 2, dimids, &CLDLOW);
+    err       = INQ_VID (ncid, "CLDLOW", MPI_FLOAT, 2, dimids, &CLDLOW);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLDLOW, "units", 8, "fraction");
     CHECK_ERR
@@ -11747,7 +11747,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "CLDMED", NC_FLOAT, 2, dimids, &CLDMED);
+    err       = INQ_VID (ncid, "CLDMED", MPI_FLOAT, 2, dimids, &CLDMED);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CLDMED, "units", 8, "fraction");
     CHECK_ERR
@@ -11757,7 +11757,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "FLNT", NC_FLOAT, 2, dimids, &FLNT);
+    err       = INQ_VID (ncid, "FLNT", MPI_FLOAT, 2, dimids, &FLNT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -11769,7 +11769,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "LWCF", NC_FLOAT, 2, dimids, &LWCF);
+    err       = INQ_VID (ncid, "LWCF", MPI_FLOAT, 2, dimids, &LWCF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -11781,7 +11781,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "OMEGA500", NC_FLOAT, 2, dimids, &OMEGA500);
+    err       = INQ_VID (ncid, "OMEGA500", MPI_FLOAT, 2, dimids, &OMEGA500);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, OMEGA500, "units", 4, "Pa/s");
     CHECK_ERR
@@ -11792,7 +11792,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "OMEGA850", NC_FLOAT, 2, dimids, &OMEGA850);
+    err       = INQ_VID (ncid, "OMEGA850", MPI_FLOAT, 2, dimids, &OMEGA850);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, OMEGA850, "units", 4, "Pa/s");
     CHECK_ERR
@@ -11803,7 +11803,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PRECT", NC_FLOAT, 2, dimids, &PRECT);
+    err       = INQ_VID (ncid, "PRECT", MPI_FLOAT, 2, dimids, &PRECT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PRECT, "units", 3, "m/s");
     CHECK_ERR
@@ -11814,7 +11814,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "PS", NC_FLOAT, 2, dimids, &PS);
+    err       = INQ_VID (ncid, "PS", MPI_FLOAT, 2, dimids, &PS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PS, "units", 2, "Pa");
     CHECK_ERR
@@ -11824,7 +11824,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "SWCF", NC_FLOAT, 2, dimids, &SWCF);
+    err       = INQ_VID (ncid, "SWCF", MPI_FLOAT, 2, dimids, &SWCF);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -11836,7 +11836,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "T850", NC_FLOAT, 2, dimids, &T850);
+    err       = INQ_VID (ncid, "T850", MPI_FLOAT, 2, dimids, &T850);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, T850, "units", 1, "K");
     CHECK_ERR
@@ -11846,7 +11846,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TMQ", NC_FLOAT, 2, dimids, &TMQ);
+    err       = INQ_VID (ncid, "TMQ", MPI_FLOAT, 2, dimids, &TMQ);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TMQ, "units", 5, "kg/m2");
     CHECK_ERR
@@ -11857,7 +11857,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "TS", NC_FLOAT, 2, dimids, &TS);
+    err       = INQ_VID (ncid, "TS", MPI_FLOAT, 2, dimids, &TS);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TS, "units", 1, "K");
     CHECK_ERR
@@ -11868,9 +11868,9 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = INQ_VID (ncid, "U", NC_FLOAT, 3, dimids, &U);
+    err       = INQ_VID (ncid, "U", MPI_FLOAT, 3, dimids, &U);
     CHECK_ERR
-    err = GET_ATT (ncid, U, "mdims", NC_INT, 1, &mdims);
+    err = GET_ATT (ncid, U, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, U, "units", 3, "m/s");
     CHECK_ERR
@@ -11880,7 +11880,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "U250", NC_FLOAT, 2, dimids, &U250);
+    err       = INQ_VID (ncid, "U250", MPI_FLOAT, 2, dimids, &U250);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, U250, "units", 3, "m/s");
     CHECK_ERR
@@ -11890,7 +11890,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "U850", NC_FLOAT, 2, dimids, &U850);
+    err       = INQ_VID (ncid, "U850", MPI_FLOAT, 2, dimids, &U850);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, U850, "units", 3, "m/s");
     CHECK_ERR
@@ -11900,7 +11900,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "UBOT", NC_FLOAT, 2, dimids, &UBOT);
+    err       = INQ_VID (ncid, "UBOT", MPI_FLOAT, 2, dimids, &UBOT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, UBOT, "units", 3, "m/s");
     CHECK_ERR
@@ -11910,7 +11910,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "V250", NC_FLOAT, 2, dimids, &V250);
+    err       = INQ_VID (ncid, "V250", MPI_FLOAT, 2, dimids, &V250);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, V250, "units", 3, "m/s");
     CHECK_ERR
@@ -11921,7 +11921,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "V850", NC_FLOAT, 2, dimids, &V850);
+    err       = INQ_VID (ncid, "V850", MPI_FLOAT, 2, dimids, &V850);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, V850, "units", 3, "m/s");
     CHECK_ERR
@@ -11932,7 +11932,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "VBOT", NC_FLOAT, 2, dimids, &VBOT);
+    err       = INQ_VID (ncid, "VBOT", MPI_FLOAT, 2, dimids, &VBOT);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, VBOT, "units", 3, "m/s");
     CHECK_ERR
@@ -11942,7 +11942,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = INQ_VID (ncid, "Z500", NC_FLOAT, 2, dimids, &Z500);
+    err       = INQ_VID (ncid, "Z500", MPI_FLOAT, 2, dimids, &Z500);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Z500, "units", 1, "m");
     CHECK_ERR

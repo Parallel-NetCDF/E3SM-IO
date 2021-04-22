@@ -22,11 +22,15 @@
 
 #include <string>
 
+#include "config.h"
 #include "e3sm_io.hpp"
 #include "e3sm_io_case.hpp"
 #include "e3sm_io_driver.hpp"
 #include "e3sm_io_driver_pnc.hpp"
 #include "e3sm_io_err.hpp"
+#ifdef ENABLE_HDF5
+#include "e3sm_io_driver_hdf5.hpp"
+#endif
 
 int verbose;      /* verbose mode to print additional messages on screen */
 int keep_outfile; /* whether to keep the output files when exits */
@@ -115,148 +119,172 @@ int main (int argc, char **argv) {
     int i;
     int ioproc;
     int nvars;
-    e3sm_io_config cfg;
-    e3sm_io_decom decom;
-    e3sm_io_case *tcase    = NULL;
-    e3sm_io_driver *driver = NULL;
 
     MPI_Init (&argc, &argv);
-    MPI_Comm_rank (MPI_COMM_WORLD, &(cfg.rank));
-    MPI_Comm_size (MPI_COMM_WORLD, &(cfg.np));
 
-    /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:l:o:i:c:dntRW")) != EOF) switch (i) {
-            case 'v':
-                cfg.verbose = 1;
+    {
+        e3sm_io_config cfg;
+        e3sm_io_decom decom;
+        e3sm_io_case *tcase    = NULL;
+        e3sm_io_driver *driver = NULL;
+
+        MPI_Comm_rank (MPI_COMM_WORLD, &(cfg.rank));
+        MPI_Comm_size (MPI_COMM_WORLD, &(cfg.np));
+
+        /* command-line arguments */
+        while ((i = getopt (argc, argv, "vkr:s:l:o:i:c:dntRWH:ha:")) != EOF) switch (i) {
+                case 'v':
+                    cfg.verbose = 1;
+                    break;
+                case 'k':
+                    cfg.keep_outfile = true;
+                    break;
+                case 'r':
+                    cfg.nrec = atoi (optarg);
+                    break;
+                case 's':
+                    cfg.io_stride = atoi (optarg);
+                    break;
+                case 'a':
+                    if (std::string (optarg) == "pnc") {
+                        cfg.api = pnc;
+                    } else if (std::string (optarg) == "hdf5") {
+                        cfg.api = hdf5;
+                    }
+                    break;
+                case 'l':
+                    if (std::string (optarg) == "contig") {
+                        cfg.layout = contig;
+                    } else if (std::string (optarg) == "chunk") {
+                        cfg.layout = chunk;
+                    }
+                    break;
+                case 'o':
+                    cfg.targetdir = std::string (optarg);
+                    break;
+                case 'i':
+                    cfg.datadir = std::string (optarg);
+                    break;
+                case 'c':
+                    cfg.cfgpath = std::string (optarg);
+                    break;
+                case 'd':
+                    cfg.low_lvl = true;
+                    break;
+                case 'n':
+                    cfg.non_contig_buf = true;
+                    break;
+                case 't':
+                    cfg.two_buf = true;
+                    break;
+                case 'R':
+                    cfg.rd = true;
+                    break;
+                case 'W':
+                    cfg.wr = true;
+                    break;
+                case 'H':
+                    cfg.hx = atoi (optarg);
+                    break;
+                case 'h':
+                default:
+                    if (cfg.rank == 0) usage (argv[0]);
+                    MPI_Finalize ();
+                    return 1;
+            }
+
+        if (cfg.cfgpath == "") { /* input file is mandatory */
+            if (!cfg.rank) usage (argv[0]);
+            ERR_OUT ("Decomposition file not provided")
+        }
+        /* input file contains number of write requests and their file access
+         * offsets (per array element) */
+        PRINT_MSG (1, "input file name =%s\n", cfg.cfgpath.c_str ());
+
+        /* neither command-line option -R or -W is used, run write */
+        if (!(cfg.wr || cfg.rd)) cfg.wr = true;
+
+        /* set the output folder name */
+        PRINT_MSG (1, "Target folder name =%s\n", cfg.targetdir.c_str ());
+
+        if (cfg.io_stride < 1) cfg.io_stride = 1;
+        if (cfg.io_stride == 1) {
+            cfg.num_iotasks = cfg.np;
+            cfg.io_comm     = MPI_COMM_WORLD;
+            ioproc          = 1;
+        } else {
+            int *ioranks;
+            MPI_Group group, iogroup;
+
+            /* assume that the IO root (rank of the first IO task) is 0 */
+            cfg.num_iotasks = (cfg.np - 1) / cfg.io_stride + 1;
+
+            /* create an array that holds the ranks of the IO tasks */
+            ioranks = (int *)malloc (cfg.num_iotasks * sizeof (int));
+            ioproc  = 0;
+            for (i = 0; i < cfg.num_iotasks; i++) {
+                ioranks[i] = i * cfg.io_stride;
+                if (ioranks[i] == cfg.rank) ioproc = 1;
+            }
+
+            /* create a group for all MPI tasks */
+            MPI_Comm_group (MPI_COMM_WORLD, &group);
+
+            /* create a sub-group for the IO tasks */
+            MPI_Group_incl (group, cfg.num_iotasks, ioranks, &iogroup);
+
+            /* create an MPI communicator for the IO tasks */
+            MPI_Comm_create (MPI_COMM_WORLD, iogroup, &(cfg.io_comm));
+
+            MPI_Group_free (&iogroup);
+            MPI_Group_free (&group);
+            free (ioranks);
+        }
+
+        /* only IO tasks call PnetCDF APIs */
+        if (!ioproc) goto err_out;
+
+        nerrs += set_info (cfg, decom);
+        CHECK_NERR
+
+        switch (cfg.api) {
+            case pnc:
+                driver = new e3sm_io_driver_pnc ();
                 break;
-            case 'k':
-                cfg.keep_outfile = true;
+            case hdf5:
+                driver = new e3sm_io_driver_hdf5 ();
                 break;
-            case 'r':
-                cfg.nrec = atoi (optarg);
-                break;
-            case 's':
-                cfg.io_stride = atoi (optarg);
-                break;
-            case 'l':
-                if (std::string (optarg) == "contig") {
-                    cfg.layout = contig;
-                } else if (std::string (optarg) == "chunk") {
-                    cfg.layout = chunk;
-                }
-                break;
-            case 'o':
-                cfg.targetdir = std::string (optarg);
-                break;
-            case 'i':
-                cfg.datadir = std::string (optarg);
-                break;
-            case 'c':
-                cfg.cfgpath = std::string (optarg);
-                break;
-            case 'd':
-                cfg.low_lvl = true;
-                break;
-            case 'n':
-                cfg.non_contig_buf = true;
-                break;
-            case 't':
-                cfg.two_buf = true;
-                break;
-            case 'R':
-                cfg.rd = true;
-                break;
-            case 'W':
-                cfg.wr = true;
-                break;
-            case 'h':
             default:
-                if (cfg.rank == 0) usage (argv[0]);
-                MPI_Finalize ();
-                return 1;
+                RET_ERR ("Unknown driver")
+                break;
         }
 
-    if (cfg.cfgpath == "") { /* input file is mandatory */
-        if (!cfg.rank) usage (argv[0]);
-        ERR_OUT ("Decomposition file not provided")
-    }
-    /* input file contains number of write requests and their file access
-     * offsets (per array element) */
-    PRINT_MSG (1, "input file name =%s\n", cfg.cfgpath.c_str ());
+        /* read request information from decompositions 1, 2 and 3 */
+        err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath.c_str (), &(decom.num_decomp),
+                           decom.dims, decom.contig_nreqs, decom.disps, decom.blocklens);
+        CHECK_ERR
 
-    /* neither command-line option -R or -W is used, run write */
-    if (!(cfg.wr || cfg.rd)) cfg.wr = true;
-
-    /* set the output folder name */
-    PRINT_MSG (1, "Target folder name =%s\n", cfg.targetdir.c_str());
-
-    if (cfg.io_stride < 1) cfg.io_stride = 1;
-    if (cfg.io_stride == 1) {
-        cfg.num_iotasks = cfg.np;
-        cfg.io_comm     = MPI_COMM_WORLD;
-        ioproc          = 1;
-    } else {
-        int *ioranks;
-        MPI_Group group, iogroup;
-
-        /* assume that the IO root (rank of the first IO task) is 0 */
-        cfg.num_iotasks = (cfg.np - 1) / cfg.io_stride + 1;
-
-        /* create an array that holds the ranks of the IO tasks */
-        ioranks = (int *)malloc (cfg.num_iotasks * sizeof (int));
-        ioproc  = 0;
-        for (i = 0; i < cfg.num_iotasks; i++) {
-            ioranks[i] = i * cfg.io_stride;
-            if (ioranks[i] == cfg.rank) ioproc = 1;
+        /* F case has 3 decompositions, G case has 6 */
+        if (decom.num_decomp == 3) {
+            cfg.nvars = 414;
+            tcase     = new e3sm_io_case_F ();
+        } else if (decom.num_decomp == 6) {
+            cfg.nvars = 52;
+            tcase     = new e3sm_io_case_G ();
+        } else {
+            RET_ERR ("Unknown decom file")
         }
 
-        /* create a group for all MPI tasks */
-        MPI_Comm_group (MPI_COMM_WORLD, &group);
+        if (cfg.wr) { tcase->wr_test (cfg, decom, *driver); }
+        if (cfg.rd) { tcase->rd_test (cfg, decom, *driver); }
 
-        /* create a sub-group for the IO tasks */
-        MPI_Group_incl (group, cfg.num_iotasks, ioranks, &iogroup);
+    err_out:
+        delete driver;
+        delete tcase;
 
-        /* create an MPI communicator for the IO tasks */
-        MPI_Comm_create (MPI_COMM_WORLD, iogroup, &(cfg.io_comm));
-
-        MPI_Group_free (&iogroup);
-        MPI_Group_free (&group);
-        free (ioranks);
+        /* Non-IO tasks wait for IO tasks to complete */
+        MPI_Barrier (MPI_COMM_WORLD);
     }
-
-    /* only IO tasks call PnetCDF APIs */
-    if (!ioproc) goto err_out;
-
-    nerrs += set_info (cfg, decom);
-    CHECK_NERR
-
-    driver = new e3sm_io_driver_pnc ();
-
-    /* read request information from decompositions 1, 2 and 3 */
-    err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath.c_str (), &(decom.num_decomp),
-                       decom.dims, decom.contig_nreqs, decom.disps, decom.blocklens);
-    CHECK_ERR
-
-    /* F case has 3 decompositions, G case has 6 */
-    if (decom.num_decomp == 3) {
-        cfg.nvars = 414;
-        tcase     = new e3sm_io_case_F ();
-    } else if (decom.num_decomp == 6) {
-        cfg.nvars = 52;
-        tcase     = new e3sm_io_case_G ();
-    } else {
-        RET_ERR ("Unknown decom file")
-    }
-
-    if (cfg.wr) { tcase->wr_test (cfg, decom, *driver); }
-    if (cfg.rd) { tcase->rd_test (cfg, decom, *driver); }
-
-err_out:
-    delete driver;
-    delete tcase;
-
-    /* Non-IO tasks wait for IO tasks to complete */
-    MPI_Barrier (MPI_COMM_WORLD);
 
     MPI_Finalize ();
 

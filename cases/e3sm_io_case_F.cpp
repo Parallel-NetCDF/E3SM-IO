@@ -36,9 +36,9 @@ int e3sm_io_case_F::wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
 
     /* vard APIs require internal data type matches external one */
     if (cfg.low_lvl) {
-#if REC_XTYPE != NC_FLOAT
+//#if REC_XTYPE != NC_FLOAT
         RET_ERR ("PnetCDF vard API requires internal and external data types match, skip\n");
-#endif
+//#endif
 
         PRINT_MSG (0, "\n==== benchmarking F case using vard API ========================\n");
         PRINT_MSG (0, "Variable written order: same as variables are defined\n\n");
@@ -113,9 +113,9 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
 
     /* vard APIs require internal data type matches external one */
     if (cfg.low_lvl) {
-#if REC_XTYPE != NC_FLOAT
+//#if REC_XTYPE != NC_FLOAT
         RET_ERR ("Low level API requires internal and external data types match, skip\n");
-#endif
+//#endif
         RET_ERR ("Reading not supported for low-level API\n");
     } else {
         PRINT_MSG (

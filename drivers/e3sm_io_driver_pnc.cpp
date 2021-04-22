@@ -9,6 +9,7 @@
         if (err != NC_NOERR) {                                        \
             printf ("Error at line %d in %s:\n", __LINE__, __FILE__); \
             err = -1;                                                 \
+            DEBUG_ABORT;                                              \
             goto err_out;                                             \
         }                                                             \
     }

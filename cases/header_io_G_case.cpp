@@ -34,7 +34,7 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "on_a_sphere", 3, "YES");
     CHECK_ERR
     dattr = 6371229.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "sphere_radius", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "sphere_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "model_name", 4, "mpas");
     CHECK_ERR
@@ -70,27 +70,27 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_write_output_on_startup", 2, "NO");
     CHECK_ERR
     iattr = 0;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_pio_num_iotasks", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_pio_num_iotasks", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_pio_stride", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_pio_stride", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 3;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_num_halos", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_num_halos", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_block_decomp_file_prefix", 89,
                         "/project/projectdirs/acme/inputdata/ocn/mpas-o/oRRS18to6v3/"
                         "mpas-o.graph.info.170111.part.");
     CHECK_ERR
     iattr = 0;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_number_of_blocks", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_number_of_blocks", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_explicit_proc_decomp", 2, "NO");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_proc_decomp_file_prefix", 16, "graph.info.part.");
     CHECK_ERR
     iattr = -1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_init_configuration", 4, "none");
     CHECK_ERR
@@ -103,13 +103,13 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_vertical_grid", 7, "uniform");
     CHECK_ERR
     dattr = 1.077;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch1", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.0275;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch2", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_1dCVTgenerator_dzSeed", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_1dCVTgenerator_dzSeed", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iterative_init_variable", 15, "landIcePressure");
     CHECK_ERR
@@ -122,10 +122,10 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_min_max_thickness", 2, "NO");
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_min_thickness", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_min_thickness", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 6.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_max_thickness_factor", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_max_thickness_factor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_dzdk_positive", 2, "NO");
     CHECK_ERR
@@ -133,186 +133,186 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 5.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_thickness_filter_timescale", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_thickness_filter_timescale", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_highFreqThick_restore", 2, "NO");
     CHECK_ERR
     dattr = 30.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_highFreqThick_restore_time", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_highFreqThick_restore_time", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_highFreqThick_del2", 2, "NO");
     CHECK_ERR
     dattr = 100.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_highFreqThick_del2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_highFreqThick_del2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_alter_ICs_for_pbcs", 2, "NO");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_pbc_alteration_type", 9, "full_cell");
     CHECK_ERR
     dattr = 0.1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_min_pbc_fraction", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_min_pbc_fraction", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_hmix_scaleWithMesh", 3, "YES");
     CHECK_ERR
     dattr = -1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_maxMeshDensity", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_maxMeshDensity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_apvm_scale_factor", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_apvm_scale_factor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del2", 2, "NO");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tracer_del2", 2, "NO");
     CHECK_ERR
     dattr = 10.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_tracer_del2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_tracer_del2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del4", 3, "YES");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tracer_del4", 2, "NO");
     CHECK_ERR
     dattr = 3200000000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del4", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del4_div_factor", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del4_div_factor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_tracer_del4", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_tracer_del4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_Leith_del2", 2, "NO");
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_Leith_parameter", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_Leith_parameter", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 15000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_Leith_dx", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_Leith_dx", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_Leith_visc2_max", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_Leith_visc2_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_standardGM", 2, "NO");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_Redi_surface_layer_tapering", 2, "NO");
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_Redi_surface_layer_tapering_extent", NC_DOUBLE,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_Redi_surface_layer_tapering_extent", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_Redi_bottom_layer_tapering", 2, "NO");
     CHECK_ERR
     dattr = 0.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_Redi_bottom_layer_tapering_depth", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_Redi_bottom_layer_tapering_depth", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_function", 8, "constant");
     CHECK_ERR
     dattr = 1800.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_standardGM_tracer_kappa", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_standardGM_tracer_kappa", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_min", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_min", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_max", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 20000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_min", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_min", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 30000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_max", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_Redi_kappa", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_Redi_kappa", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.3;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_gravWaveSpeed_trunc", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_gravWaveSpeed_trunc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.01;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_max_relative_slope", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_max_relative_slope", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del2_tensor", 2, "NO");
     CHECK_ERR
     dattr = 10.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del2_tensor", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del2_tensor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del4_tensor", 2, "NO");
     CHECK_ERR
     dattr = 50000000000000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del4_tensor", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_mom_del4_tensor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_Rayleigh_friction", 2, "NO");
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_Rayleigh_damping_coeff", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_Rayleigh_damping_coeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_Rayleigh_bottom_friction", 2, "NO");
     CHECK_ERR
     dattr = 0.0001;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_Rayleigh_bottom_damping_coeff", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_Rayleigh_bottom_damping_coeff", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix", 3, "YES");
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_prandtl_number", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_prandtl_number", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_background", 3, "YES");
     CHECK_ERR
     dattr = 0.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_background_diffusion", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_background_diffusion", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0001;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_background_viscosity", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_background_viscosity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_convection", 3, "YES");
     CHECK_ERR
     dattr = 1.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_convective_diffusion", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_convective_diffusion", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_convective_viscosity", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_convective_viscosity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_convective_basedOnBVF", 3, "YES");
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_convective_triggerBVF", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_convective_triggerBVF", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_shear", 3, "YES");
     CHECK_ERR
     iattr = 2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_num_ri_smooth_loops", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_num_ri_smooth_loops", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_use_BLD_smoothing", 3, "YES");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_shear_mixing_scheme", 3, "KPP");
     CHECK_ERR
     dattr = 0.005;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_PP_nu_zero", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_PP_nu_zero", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_PP_alpha", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_PP_alpha", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_PP_exp", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_PP_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.005;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_nu_zero", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_nu_zero", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.7;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_Ri_zero", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_Ri_zero", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_exp", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_tidal_mixing", 2, "NO");
     CHECK_ERR
@@ -323,12 +323,12 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_fixed_boundary_layer", 2, "NO");
     CHECK_ERR
     dattr = 30.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_kpp_boundary_layer_depth", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_kpp_boundary_layer_depth", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.25;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_kpp_criticalBulkRichardsonNumber",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_kpp_matching", 12, "SimpleShapes");
     CHECK_ERR
@@ -339,20 +339,20 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_kpp_interpolationOMLType", 9, "quadratic");
     CHECK_ERR
     dattr = 0.1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_extent", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_extent", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 5.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_averaging", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_averaging", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 10.;
     err   = driver.put_att (ncid, NC_GLOBAL, "configure_cvmix_kpp_minimum_OBL_under_sea_ice",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_kpp_stop_OBL_search", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_kpp_stop_OBL_search", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_kpp_use_enhanced_diff", 3, "YES");
     CHECK_ERR
@@ -363,76 +363,76 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_const_diff", 2, "NO");
     CHECK_ERR
     dattr = 0.0001;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_vert_visc", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_vert_visc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_vert_diff", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_vert_diff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_rich_visc", 2, "NO");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_rich_diff", 2, "NO");
     CHECK_ERR
     dattr = 0.0001;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_bkrd_vert_visc", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_bkrd_vert_visc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_bkrd_vert_diff", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_bkrd_vert_diff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.005;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rich_mix", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rich_mix", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_convective_visc", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_convective_visc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_convective_diff", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_convective_diff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tanh_visc", 2, "NO");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tanh_diff", 2, "NO");
     CHECK_ERR
     dattr = 0.25;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_max_visc_tanh", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_max_visc_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0001;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_min_visc_tanh", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_min_visc_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.025;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_max_diff_tanh", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_max_diff_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_min_diff_tanh", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_min_diff_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -100.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_zMid_tanh", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_zMid_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_zWidth_tanh", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_zWidth_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_bulk_wind_stress", 3, "YES");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_bulk_thickness_flux", 3, "YES");
     CHECK_ERR
     dattr = 0.001;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 10.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient_runoff", NC_DOUBLE,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient_runoff", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     dattr = 86400.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_ssh_grad_relax_timescale", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_ssh_grad_relax_timescale", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_remove_AIS_coupler_runoff", 2, "NO");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_sw_absorption_type", 6, "jerlov");
     CHECK_ERR
     iattr = 3;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_jerlov_water_type", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_jerlov_water_type", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_surface_buoyancy_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_surface_buoyancy_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_frazil_ice_formation", 3, "YES");
     CHECK_ERR
@@ -441,31 +441,31 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_frazil_under_land_ice", 3, "YES");
     CHECK_ERR
     dattr = 333700.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_frazil_heat_of_fusion", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_frazil_heat_of_fusion", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_frazil_ice_density", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_frazil_ice_density", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.1;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_frazil_fractional_thickness_limit", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_frazil_fractional_thickness_limit", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 3996.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_specific_heat_sea_water", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_specific_heat_sea_water", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_frazil_maximum_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_frazil_maximum_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 4.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_frazil_sea_ice_reference_salinity", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_frazil_sea_ice_reference_salinity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_frazil_land_ice_reference_salinity", NC_DOUBLE,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_frazil_land_ice_reference_salinity", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_frazil_maximum_freezing_temperature", NC_DOUBLE,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_frazil_maximum_freezing_temperature", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_frazil_use_surface_pressure", 2, "NO");
@@ -478,52 +478,52 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 10.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_attenuation_coefficient",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_boundaryLayerThickness", NC_DOUBLE,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_boundaryLayerThickness", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_boundaryLayerNeighborWeight",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2009.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_cp_ice", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_cp_ice", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 918.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_rho_ice", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_rho_ice", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0025;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_topDragCoeff", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_topDragCoeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0001;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_ISOMIP_gammaT", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_ISOMIP_gammaT", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.05;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_rms_tidal_velocity", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_rms_tidal_velocity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.011;
     err = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_jenkins_heat_transfer_coefficient",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.00031;
     err = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_flux_jenkins_salt_transfer_coefficient",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_vert_tracer_adv", 7, "stencil");
     CHECK_ERR
     iattr = 3;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_vert_tracer_adv_order", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_vert_tracer_adv_order", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 3;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_horiz_tracer_adv_order", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_horiz_tracer_adv_order", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 0.25;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_coef_3rd_order", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_coef_3rd_order", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_monotonic", 3, "YES");
     CHECK_ERR
@@ -531,111 +531,111 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 0.001;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_implicit_bottom_drag_coeff", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_implicit_bottom_drag_coeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_explicit_bottom_drag", 2, "NO");
     CHECK_ERR
     dattr = 0.001;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_explicit_bottom_drag_coeff", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_explicit_bottom_drag_coeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1026.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_density0", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_density0", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_pressure_gradient_type", 16, "Jacobian_from_TS");
     CHECK_ERR
     dattr = 0.5;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_common_level_weight", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_common_level_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_eos_type", 2, "jm");
     CHECK_ERR
     dattr = -1.8;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_0",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_S",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_p",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_pS",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL,
-                          "config_open_ocean_freezing_temperature_reference_pressure", NC_DOUBLE, 1,
+                          "config_open_ocean_freezing_temperature_reference_pressure", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.0622;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_0",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.0563;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_S",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -7.43e-08;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_p",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.74e-10;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_pS",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL,
                           "config_land_ice_cavity_freezing_temperature_reference_pressure",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_alpha", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_alpha", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.8;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_beta", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_beta", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_Tref", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_Tref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_Sref", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_Sref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_densityref", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_eos_linear_densityref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_ts_iter", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_ts_iter", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_bcl_iter_beg", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_bcl_iter_beg", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_bcl_iter_mid", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_bcl_iter_mid", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_bcl_iter_end", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_bcl_iter_end", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_btr_dt", 13, "0000_00:00:12");
     CHECK_ERR
     iattr = 2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_btr_cor_iter", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_n_btr_cor_iter", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_vel_correction", 3, "YES");
     CHECK_ERR
     iattr = 2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_btr_subcycle_loop_factor", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_btr_subcycle_loop_factor", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 0.5;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_btr_gam1_velWt1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_btr_gam1_velWt1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_btr_gam2_SSHWt1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_btr_gam2_SSHWt1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_btr_gam3_velWt2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_btr_gam3_velWt2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_btr_solve_SSH2", 2, "NO");
     CHECK_ERR
@@ -710,194 +710,194 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_rx1_constraint", 2, "NO");
     CHECK_ERR
     iattr = 20;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_outer_iter_count", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_outer_iter_count", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 10;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_inner_iter_count", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_inner_iter_count", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 0.1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_init_inner_weight", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_init_inner_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_max", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_weight", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_vert_smooth_weight", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_vert_smooth_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_slope_weight", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_slope_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_zstar_weight", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_zstar_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 20;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_open_ocean_cells", NC_INT, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_open_ocean_cells", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     iattr = 3;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_min_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_rx1_min_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 1.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_rx1_min_layer_thickness", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_rx1_min_layer_thickness", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 20;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_vert_levels", NC_INT, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_vert_levels", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_baroclinic_channel_use_distances", 2, "NO");
     CHECK_ERR
     dattr = 13.1000003814697;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_surface_temperature",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.1000003814697;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_bottom_temperature",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.20000004768372;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_temperature_difference",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0799999982118607;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_gradient_width_frac",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 40000.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_gradient_width_dist",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_bottom_depth", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_bottom_depth", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_salinity", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_salinity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = -0.000119999996968545;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_baroclinic_channel_coriolis_parameter",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 20;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 20.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_bottom_depth", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_cold_temperature", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_cold_temperature", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 30.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_warm_temperature", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_warm_temperature", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_lock_exchange_direction", 1, "y");
     CHECK_ERR
     dattr = 35.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_salinity", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_lock_exchange_layer_type", 7, "z-level");
     CHECK_ERR
     dattr = 0.00999999977648258;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_lock_exchange_isopycnal_min_thickness",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 20;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_vert_levels", NC_INT, 1, &iattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_internal_waves_use_distances", 2, "NO");
     CHECK_ERR
     dattr = 20.1000003814697;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_surface_temperature", NC_DOUBLE,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_surface_temperature", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     dattr = 10.1000003814697;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_bottom_temperature", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_bottom_temperature", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 2.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_temperature_difference",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.330000013113022;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_frac", NC_DOUBLE,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_frac", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     dattr = 50000.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_dist", NC_DOUBLE,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_dist", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_bottom_depth", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_bottom_depth", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 35.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_salinity", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_internal_waves_layer_type", 7, "z-level");
     CHECK_ERR
     dattr = 125.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_internal_waves_isopycnal_displacement",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_overflow_use_distances", 2, "NO");
     CHECK_ERR
     dattr = 2000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_ridge_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_ridge_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_overflow_plug_temperature", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_overflow_plug_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 20.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_domain_temperature", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_domain_temperature", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_salinity", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_overflow_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.100000001490116;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_overflow_plug_width_frac", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_overflow_plug_width_frac", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.200000002980232;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_overflow_slope_center_frac", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_overflow_slope_center_frac", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0500000007450581;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_overflow_slope_width_frac", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_overflow_slope_width_frac", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 20000.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_overflow_plug_width_dist", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_overflow_plug_width_dist", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 40000.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_overflow_slope_center_dist", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_overflow_slope_center_dist", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 7000.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_overflow_slope_width_dist", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_overflow_slope_width_dist", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_overflow_layer_type", 7, "z-level");
     CHECK_ERR
     dattr = 0.00999999977648258;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_overflow_isopycnal_min_thickness", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_overflow_isopycnal_min_thickness", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 15.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_minimum_depth", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_minimum_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_depth_file", 4, "none");
     CHECK_ERR
@@ -906,7 +906,7 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_depth_varname", 4, "none");
     CHECK_ERR
     dattr = 1.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_depth_conversion_factor", NC_DOUBLE,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_depth_conversion_factor", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_temperature_file", 4, "none");
@@ -921,10 +921,10 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 1.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_tracer_depth_conversion_factor",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = -1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_tracer_vert_levels", NC_INT, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_tracer_vert_levels", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_temperature_varname", 4, "none");
@@ -943,7 +943,7 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
                         "bilinear_interpolation");
     CHECK_ERR
     iattr = 0;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_smooth_TS_iterations", NC_INT, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_smooth_TS_iterations", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_swData_file", 4, "none");
@@ -968,11 +968,11 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_clearSky_varname", 4, "none");
     CHECK_ERR
     dattr = 4.99999987368938e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_piston_velocity", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_piston_velocity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_interior_restore_rate", NC_DOUBLE,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_interior_restore_rate", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_topography_file", 4, "none");
@@ -1038,7 +1038,7 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     dattr = -1.79999995231628;
     err =
         driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_constant_land_ice_cavity_temperature",
-                        NC_DOUBLE, 1, &dattr);
+                        MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_cull_inland_seas", 3, "YES");
     CHECK_ERR
@@ -1064,7 +1064,7 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 1.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_windstress_conversion_factor",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_file", 7, "unknown");
     CHECK_ERR
@@ -1078,10 +1078,10 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 1.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_ecosys_depth_conversion_factor",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = -1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_ecosys_vert_levels", NC_INT, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_ecosys_vert_levels", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_lat_varname", 4, "none");
@@ -1099,564 +1099,564 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
                         "none");
     CHECK_ERR
     iattr = 0;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_smooth_ecosys_iterations", NC_INT,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_global_ocean_smooth_ecosys_iterations", MPI_INT,
                           1, &iattr);
     CHECK_ERR
     iattr = 100;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 15.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_temperature", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_temperature", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_salinity", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_salinity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 15.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_restoring_temperature",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_restoring_salinity",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.99999998990097e-06;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_piston_velocity",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.99999998990097e-06;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_piston_velocity",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_sensible_heat_flux", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_sensible_heat_flux", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_latent_heat_flux", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_latent_heat_flux", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_shortwave_heat_flux", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_shortwave_heat_flux", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_rain_flux", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_rain_flux", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_evaporation_flux", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_evaporation_flux", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 9.99999997475243e-07;
     err =
         driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_interior_temperature_restoring_rate",
-                        NC_DOUBLE, 1, &dattr);
+                        MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 9.99999997475243e-07;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_interior_salinity_restoring_rate",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.00999999977648258;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_gradient", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_gradient", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_gradient", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_gradient", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_gradient_mixed_layer",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_gradient_mixed_layer",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_depth_temperature",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_depth_salinity",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_temperature_change",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_salinity_change",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_vertical_grid", 7, "uniform");
     CHECK_ERR
     dattr = 400.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_bottom_depth", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.100000001490116;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_max_windstress", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_max_windstress", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 9.99999974737875e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_coriolis_parameter", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_coriolis_parameter", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 4000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_main_channel_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_main_channel_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -50.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_north_wall_lat", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_north_wall_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -70.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_south_wall_lat", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_south_wall_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_ridge_flag", 3, "YES");
     CHECK_ERR
     dattr = 180.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_ridge_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_ridge_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_ridge_height", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_ridge_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2000000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_ridge_width", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_ridge_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_plateau_flag", 3, "YES");
     CHECK_ERR
     dattr = 300.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -58.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_height", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 200000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_radius", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000000.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_slope_width", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_plateau_slope_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_shelf_flag", 3, "YES");
     CHECK_ERR
     dattr = 500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_shelf_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_shelf_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 120000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_shelf_width", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_shelf_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_cont_slope_flag", 3, "YES");
     CHECK_ERR
     dattr = 0.00999999977648258;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_max_cont_slope", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_max_cont_slope", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_embayment_flag", 3, "YES");
     CHECK_ERR
     dattr = 60.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_embayment_center_lon", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_embayment_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -71.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_embayment_center_lat", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_embayment_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_embayment_radius", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_embayment_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_embayment_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_embayment_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_depression_flag", 3, "YES");
     CHECK_ERR
     dattr = 60.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_center_lon", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -72.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_south_lat", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_south_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -65.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_north_lat", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_north_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 480000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_width", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 800.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_depression_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_salinity", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.00999999977648258;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_wind_stress_max", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_wind_stress_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.200000002980232;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_acc_wind", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_acc_wind", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.0500000007450581;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_asf_wind", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_asf_wind", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -65.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_wind_trans", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_wind_trans", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -5.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_south", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_south", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_middle", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_middle", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -5.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_north", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_north", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -70.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_ss", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_ss", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -65.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_sm", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_sm", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -53.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_mn", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_mn", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 60.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region1_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region1_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -75.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region1_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region1_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 150.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region2_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region2_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -71.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region2_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region2_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 240.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region3_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region3_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -71.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region3_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region3_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 330.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region4_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region4_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -71.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region4_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_region4_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_heat_flux_region1_flag", 2, "NO");
     CHECK_ERR
     dattr = -5.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_region1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_region1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 300000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_region1_radius", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_region1_radius", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_heat_flux_region2_flag", 2, "NO");
     CHECK_ERR
     dattr = -5.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_region2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_region2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 240000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_region2_radius", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_heat_flux_region2_radius", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 5.80000014451798e-05;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_surface_temperature_piston_velocity",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.5;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_t1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 4.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_t2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_t2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1200.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_h0", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_h0", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_h1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_h1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 7.50000035623088e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_mt", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_mt", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -75.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_latS", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_latS", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -50.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_latN", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_initial_temp_latN", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_sponge_t1", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_sponge_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_sponge_h1", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_sponge_h1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 120000.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_sponge_l1", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_sponge_l1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_sponge_tau1", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_sponge_tau1", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region1_flag", 3, "YES");
     CHECK_ERR
     dattr = -1.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_t1", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx1", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx1", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy1", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy1", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region2_flag", 3, "YES");
     CHECK_ERR
     dattr = -1.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_t2", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_t2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx2", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx2", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 250000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy2", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy2", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region3_flag", 3, "YES");
     CHECK_ERR
     dattr = -1.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_t3", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_t3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx3", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx3", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 250000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy3", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy3", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region4_flag", 3, "YES");
     CHECK_ERR
     dattr = -1.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_t4", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_t4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx4", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx4", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 250000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy4", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy4", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 1250000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_domain_width", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_domain_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_center_latitude", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_center_latitude", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_center_longitude", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_center_longitude", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.100000001490116;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_phi", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_phi", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.400000005960464;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_shelf_width", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_shelf_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_shelf_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_shelf_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_ref_density", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_ref_density", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 4.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_soma_density_difference", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_soma_density_difference", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 300.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_thermocline_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_thermocline_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0500000007450581;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_density_difference_linear", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_density_difference_linear", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 20.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_soma_surface_temperature", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_soma_surface_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 33.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_surface_salinity", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_surface_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_soma_use_surface_temp_restoring", 2, "NO");
     CHECK_ERR
     dattr = 7.5;
     err = driver.put_att (ncid, NC_GLOBAL, "config_soma_surface_temp_restoring_at_center_latitude",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.5;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_surface_temp_restoring_latitude_gradient",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 9.99999974737875e-06;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_restoring_temp_piston_vel", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_soma_restoring_temp_piston_vel", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_ziso_add_easterly_wind_stress_ASF", 2, "NO");
     CHECK_ERR
     dattr = 800000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_wind_transition_position", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_wind_transition_position", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_antarctic_shelf_front_width", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_antarctic_shelf_front_width", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = -0.0500000007450581;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_wind_stress_shelf_front_max", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_wind_stress_shelf_front_max", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_ziso_use_slopping_bathymetry", 2, "NO");
     CHECK_ERR
     dattr = 2000000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_meridional_extent", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_meridional_extent", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_zonal_extent", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_zonal_extent", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_shelf_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_shelf_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_slope_half_width", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_slope_half_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500000.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_ziso_slope_center_position", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_ziso_slope_center_position", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -9.99999974737875e-05;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_reference_coriolis", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_reference_coriolis", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_coriolis_gradient", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_coriolis_gradient", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.200000002980232;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_wind_stress_max", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_wind_stress_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_mean_restoring_temp", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_mean_restoring_temp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_ta", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_ta", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_tb", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_tb", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 30.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_tau", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_tau", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.89999991562217e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_piston_vel", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_piston_vel", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1250.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_ze", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_temp_ze", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 80000.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_sponge_l", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_ziso_restoring_sponge_l", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 6.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_initial_temp_t1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_initial_temp_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.59999990463257;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_initial_temp_t2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_initial_temp_t2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 300.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_initial_temp_h1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_initial_temp_h1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 7.50000035623088e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_initial_temp_mt", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_initial_temp_mt", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_ziso_frazil_enable", 2, "NO");
     CHECK_ERR
     dattr = -3.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_frazil_temperature_anomaly", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ziso_frazil_temperature_anomaly", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     iattr = 20;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_vert_levels", NC_INT, 1, &iattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 2000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_depth", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_depth", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 25.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_cavity_thickness", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_cavity_thickness", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_slope_height", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_slope_height", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 15000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_edge_width", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_edge_width", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 30000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 60000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_temperature", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_temperature", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 34.5;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_surface_salinity", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_surface_salinity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 34.7000007629395;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_salinity", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_salinity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     iattr = 100;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_periodic_planar_vert_levels", NC_INT, 1, &iattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_periodic_planar_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 2500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_periodic_planar_bottom_depth", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_periodic_planar_bottom_depth", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_periodic_planar_velocity_strength", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_periodic_planar_velocity_strength", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ecosys_column_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ecosys_column_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err =
         PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_ecosys_column_vertical_grid", 14, "100layerACMEv1");
@@ -1667,160 +1667,160 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 6000.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_ecosys_column_bottom_depth", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_ecosys_column_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 10;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_sea_mount_layer_type", 5, "sigma");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_sea_mount_stratification_type", 11, "exponential");
     CHECK_ERR
     dattr = 1024.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_coef_linear", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_coef_linear", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1028.;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_coef_exp", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_coef_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.100000001490116;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_linear", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_linear", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 3.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_exp", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_exp", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 4500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_depth_linear", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_depth_linear", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_depth_exp", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_depth_exp", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1028.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_ref", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_ref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_Tref", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_Tref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.200000002980232;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_alpha", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_density_alpha", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 4500.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_height", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_radius", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 40000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_width", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_salinity", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -9.99999974737875e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_coriolis_parameter", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_sea_mount_coriolis_parameter", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     iattr = 30;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err =
         PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_isomip_vertical_level_distribution", 8, "constant");
     CHECK_ERR
     dattr = -900.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.89999997615814;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_temperature", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 34.4000015258789;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_salinity", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.89999997615814;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_restoring_temperature", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_restoring_temperature", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1.20000004244503e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_temperature_piston_velocity", NC_DOUBLE,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_temperature_piston_velocity", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     dattr = 34.4000015258789;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_isomip_restoring_salinity", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_isomip_restoring_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.20000004244503e-05;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_salinity_piston_velocity", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_salinity_piston_velocity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = -0.00014000000373926;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_isomip_coriolis_parameter", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_isomip_coriolis_parameter", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_southern_boundary", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_southern_boundary", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000000.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_northern_boundary", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_northern_boundary", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_western_boundary", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_western_boundary", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500000.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_eastern_boundary", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_eastern_boundary", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_y1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_y1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -700.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_z1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_z1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_ice_fraction1", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_ice_fraction1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 400000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_y2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_y2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -200.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_z2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_z2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_ice_fraction2", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_ice_fraction2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000000.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_y3", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_y3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -200.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_z3", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_z3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_ice_fraction3", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_ice_fraction3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 36;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_vert_levels", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_isomip_plus_vertical_level_distribution", 8,
                         "constant");
     CHECK_ERR
     dattr = -720.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_max_bottom_depth", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_max_bottom_depth", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     iattr = 3;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_minimum_levels", NC_INT, 1, &iattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_minimum_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 10.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_min_column_thickness", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_min_column_thickness", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 0.5;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_min_ocean_fraction", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_min_ocean_fraction", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_isomip_plus_topography_file", 27,
@@ -1828,53 +1828,53 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = -1.89999997615814;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_init_top_temp", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_init_top_temp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.89999997615814;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_temp", NC_DOUBLE, 1, &dattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_temp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 33.7999992370605;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_init_top_sal", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_init_top_sal", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 34.5;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_sal", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_sal", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.89999997615814;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_temp", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_temp", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_temp", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_temp", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 33.7999992370605;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_sal", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_sal", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 34.7000007629395;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_sal", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_sal", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 10.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_rate", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_rate", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 200.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_evap_rate", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_evap_rate", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 790000.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMin", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 800000.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMax", NC_DOUBLE, 1, &dattr);
+    err = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMax", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.000140999996801838;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_coriolis_parameter", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_coriolis_parameter", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1026.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_effective_density", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_isomip_plus_effective_density", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_activeTracers", 3, "YES");
@@ -1899,10 +1899,10 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 1.585e-06;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_salinity_restoring_constant_piston_velocity",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_salinity_restoring_max_difference", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_salinity_restoring_max_difference", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_salinity_restoring_under_sea_ice", 2, "NO");
@@ -1930,7 +1930,7 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_ecosys_atm_alt_co2_use_eco", 2, "NO");
     CHECK_ERR
     dattr = 379.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_ecosys_atm_co2_constant_value", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_ecosys_atm_co2_constant_value", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_use_ecosysTracers_surface_bulk_forcing", 2, "NO");
@@ -2044,19 +2044,19 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_write_on_startup", 2, "NO");
     CHECK_ERR
     dattr = -2.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minTemperature", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minTemperature", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 30.;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxTemperature", NC_DOUBLE, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxTemperature", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 32.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minSalinity", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minSalinity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 37.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxSalinity", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxSalinity", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_compute_predefined_regions", 3,
@@ -2091,13 +2091,13 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
         PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_zonalMean_output_stream", 15, "zonalMeanOutput");
     CHECK_ERR
     iattr = 180;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_zonalMean_num_bins", NC_INT, 1, &iattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_zonalMean_num_bins", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_zonalMean_min_bin", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_zonalMean_min_bin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_zonalMean_max_bin", NC_DOUBLE, 1, &dattr);
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_zonalMean_max_bin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_enable", 2, "NO");
     CHECK_ERR
@@ -2114,15 +2114,15 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_directory", 16, "analysis_members");
     CHECK_ERR
     dattr = -0.2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_okuboWeiss_threshold_value", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_okuboWeiss_threshold_value", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1.e-10;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_okuboWeiss_normalization", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_okuboWeiss_normalization", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1.e-10;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_AM_okuboWeiss_lambda2_normalization", NC_DOUBLE,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_AM_okuboWeiss_lambda2_normalization", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_use_lat_lon_coords", 3, "YES");
@@ -2131,7 +2131,7 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     iattr = 20;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_AM_okuboWeiss_eddy_min_cells", NC_INT, 1, &iattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_AM_okuboWeiss_eddy_min_cells", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_enable", 3, "YES");
     CHECK_ERR
@@ -2148,15 +2148,15 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
                         "meridionalHeatTransportOutput");
     CHECK_ERR
     iattr = 180;
-    err = driver.put_att (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_num_bins", NC_INT, 1,
+    err = driver.put_att (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_num_bins", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_min_bin", NC_DOUBLE,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_min_bin", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_max_bin", NC_DOUBLE,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_max_bin", MPI_DOUBLE,
                           1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_region_group", 0, "");
@@ -2226,11 +2226,11 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_write_on_startup", 2, "NO");
     CHECK_ERR
     iattr = 0;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_filter_number", NC_INT, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_filter_number", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     iattr = 2;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_timeIntegration", NC_INT, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_timeIntegration", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_reset_criteria", 4, "none");
@@ -2264,15 +2264,15 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_debug", 2, "NO");
     CHECK_ERR
     iattr = 45;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_eliassenPalm_nBuoyancyLayers", NC_INT, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_eliassenPalm_nBuoyancyLayers", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     dattr = 900.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomin_buoycoor", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomin_buoycoor", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = 1080.;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomax_buoycoor", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomax_buoycoor", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_enable", 3, "YES");
@@ -2293,15 +2293,15 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 0.2;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_crit_temp_threshold",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.03;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_crit_dens_threshold",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100000.;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_reference_pressure",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_Tgradient", 2, "NO");
     CHECK_ERR
@@ -2309,14 +2309,14 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = 5.e-07;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_temp_gradient_threshold",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.e-08;
     err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_den_gradient_threshold",
-                          NC_DOUBLE, 1, &dattr);
+                          MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 1;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_interp_method", NC_INT, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_interp_method", MPI_INT, 1,
                           &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_regionalStatsDaily_enable", 2, "NO");
@@ -2745,16 +2745,16 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_write_on_startup", 2, "NO");
     CHECK_ERR
     dattr = -1.e+34;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_min_bin", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_min_bin", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_max_bin", NC_DOUBLE, 1,
+    err   = driver.put_att (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_max_bin", MPI_DOUBLE, 1,
                           &dattr);
     CHECK_ERR
     iattr = 180;
     err =
-        driver.put_att (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_num_bins", NC_INT, 1, &iattr);
+        driver.put_att (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_num_bins", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_vertical_velocity_value", 15,
                         "vertVelocityTop");
@@ -2829,7 +2829,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_Time;
     dimids[1] = dim_nCells;
 
-    err = ncmpi_def_var (ncid, "salinitySurfaceRestoringTendency", NC_DOUBLE, 2, dimids,
+    err = ncmpi_def_var (ncid, "salinitySurfaceRestoringTendency", MPI_DOUBLE, 2, dimids,
                          &salinitySurfaceRestoringTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, salinitySurfaceRestoringTendency, "units", 7, "m PSU/s");
@@ -2844,7 +2844,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevelsP1;
 
-    err = ncmpi_def_var (ncid, "vertTransportVelocityTop", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "vertTransportVelocityTop", MPI_DOUBLE, 3, dimids,
                          &vertTransportVelocityTop);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, vertTransportVelocityTop, "units", 8, "m s^{-1}");
@@ -2857,7 +2857,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = vertTransportVelocityTop;
 
-    err = ncmpi_def_var (ncid, "vertGMBolusVelocityTop", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "vertGMBolusVelocityTop", MPI_DOUBLE, 3, dimids,
                          &vertGMBolusVelocityTop);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, vertGMBolusVelocityTop, "units", 8, "m s^{-1}");
@@ -2870,7 +2870,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = vertGMBolusVelocityTop;
 
-    err = ncmpi_def_var (ncid, "vertAleTransportTop", NC_DOUBLE, 3, dimids, &vertAleTransportTop);
+    err = ncmpi_def_var (ncid, "vertAleTransportTop", MPI_DOUBLE, 3, dimids, &vertAleTransportTop);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, vertAleTransportTop, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -2884,7 +2884,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_Time;
     dimids[1] = dim_nCells;
 
-    err = ncmpi_def_var (ncid, "tendSSH", NC_DOUBLE, 2, dimids, &tendSSH);
+    err = ncmpi_def_var (ncid, "tendSSH", MPI_DOUBLE, 2, dimids, &tendSSH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, tendSSH, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -2897,7 +2897,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "layerThickness", NC_DOUBLE, 3, dimids, &layerThickness);
+    err = ncmpi_def_var (ncid, "layerThickness", MPI_DOUBLE, 3, dimids, &layerThickness);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, layerThickness, "units", 1, "m");
     CHECK_ERR
@@ -2910,7 +2910,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nEdges;
     dimids[2] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "normalVelocity", NC_DOUBLE, 3, dimids, &normalVelocity);
+    err = ncmpi_def_var (ncid, "normalVelocity", MPI_DOUBLE, 3, dimids, &normalVelocity);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, normalVelocity, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -2924,7 +2924,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_Time;
     dimids[1] = dim_nCells;
 
-    err = ncmpi_def_var (ncid, "ssh", NC_DOUBLE, 2, dimids, &ssh);
+    err = ncmpi_def_var (ncid, "ssh", MPI_DOUBLE, 2, dimids, &ssh);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ssh, "units", 1, "m");
     CHECK_ERR
@@ -2935,7 +2935,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     /* 1 int (nEdges) */
     dimids[0] = dim_nEdges;
 
-    err = ncmpi_def_var (ncid, "maxLevelEdgeTop", NC_INT, 1, dimids, &maxLevelEdgeTop);
+    err = ncmpi_def_var (ncid, "maxLevelEdgeTop", MPI_INT, 1, dimids, &maxLevelEdgeTop);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, maxLevelEdgeTop, "units", 8, "unitless");
     CHECK_ERR
@@ -2948,7 +2948,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     /* 1 double (nVertLevels) */
     dimids[0] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "vertCoordMovementWeights", NC_DOUBLE, 1, dimids,
+    err = ncmpi_def_var (ncid, "vertCoordMovementWeights", MPI_DOUBLE, 1, dimids,
                          &vertCoordMovementWeights);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, vertCoordMovementWeights, "units", 8, "unitless");
@@ -2964,7 +2964,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_nEdges;
     dimids[1] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "edgeMask", NC_INT, 2, dimids, &edgeMask);
+    err = ncmpi_def_var (ncid, "edgeMask", MPI_INT, 2, dimids, &edgeMask);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, edgeMask, "units", 8, "unitless");
     CHECK_ERR
@@ -2978,7 +2978,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_nCells;
     dimids[1] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "cellMask", NC_INT, 2, dimids, &cellMask);
+    err = ncmpi_def_var (ncid, "cellMask", MPI_INT, 2, dimids, &cellMask);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, cellMask, "units", 8, "unitless");
     CHECK_ERR
@@ -2992,7 +2992,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_nVertices;
     dimids[1] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "vertexMask", NC_INT, 2, dimids, &vertexMask);
+    err = ncmpi_def_var (ncid, "vertexMask", MPI_INT, 2, dimids, &vertexMask);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, vertexMask, "units", 8, "unitless");
     CHECK_ERR
@@ -3005,7 +3005,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     /* 2 double (nVertLevels) */
     dimids[0] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "refZMid", NC_DOUBLE, 1, dimids, &refZMid);
+    err = ncmpi_def_var (ncid, "refZMid", MPI_DOUBLE, 1, dimids, &refZMid);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, refZMid, "units", 1, "m");
     CHECK_ERR
@@ -3015,7 +3015,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = refZMid;
 
-    err = ncmpi_def_var (ncid, "refLayerThickness", NC_DOUBLE, 1, dimids, &refLayerThickness);
+    err = ncmpi_def_var (ncid, "refLayerThickness", MPI_DOUBLE, 1, dimids, &refLayerThickness);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, refLayerThickness, "units", 1, "m");
     CHECK_ERR
@@ -3029,7 +3029,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_Time;
     dimids[1] = dim_StrLen;
 
-    err = ncmpi_def_var (ncid, "xtime", NC_CHAR, 2, dimids, &xtime);
+    err = ncmpi_def_var (ncid, "xtime", MPI_CHAR, 2, dimids, &xtime);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, xtime, "units", 8, "unitless");
     CHECK_ERR
@@ -3043,7 +3043,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "kineticEnergyCell", NC_DOUBLE, 3, dimids, &kineticEnergyCell);
+    err = ncmpi_def_var (ncid, "kineticEnergyCell", MPI_DOUBLE, 3, dimids, &kineticEnergyCell);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, kineticEnergyCell, "units", 10, "m^2 s^{-2}");
     CHECK_ERR
@@ -3054,7 +3054,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = kineticEnergyCell;
 
     err =
-        ncmpi_def_var (ncid, "relativeVorticityCell", NC_DOUBLE, 3, dimids, &relativeVorticityCell);
+        ncmpi_def_var (ncid, "relativeVorticityCell", MPI_DOUBLE, 3, dimids, &relativeVorticityCell);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, relativeVorticityCell, "units", 6, "s^{-1}");
     CHECK_ERR
@@ -3069,7 +3069,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nVertices;
     dimids[2] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "relativeVorticity", NC_DOUBLE, 3, dimids, &relativeVorticity);
+    err = ncmpi_def_var (ncid, "relativeVorticity", MPI_DOUBLE, 3, dimids, &relativeVorticity);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, relativeVorticity, "units", 6, "s^{-1}");
     CHECK_ERR
@@ -3084,7 +3084,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "divergence", NC_DOUBLE, 3, dimids, &divergence);
+    err = ncmpi_def_var (ncid, "divergence", MPI_DOUBLE, 3, dimids, &divergence);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, divergence, "units", 6, "s^{-1}");
     CHECK_ERR
@@ -3095,7 +3095,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     /* 6 double (Time) */
     dimids[0] = dim_Time;
 
-    err = ncmpi_def_var (ncid, "areaCellGlobal", NC_DOUBLE, 1, dimids, &areaCellGlobal);
+    err = ncmpi_def_var (ncid, "areaCellGlobal", MPI_DOUBLE, 1, dimids, &areaCellGlobal);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, areaCellGlobal, "units", 3, "m^2");
     CHECK_ERR
@@ -3105,7 +3105,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = areaCellGlobal;
 
-    err = ncmpi_def_var (ncid, "areaEdgeGlobal", NC_DOUBLE, 1, dimids, &areaEdgeGlobal);
+    err = ncmpi_def_var (ncid, "areaEdgeGlobal", MPI_DOUBLE, 1, dimids, &areaEdgeGlobal);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, areaEdgeGlobal, "units", 3, "m^2");
     CHECK_ERR
@@ -3115,7 +3115,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = areaEdgeGlobal;
 
-    err = ncmpi_def_var (ncid, "areaTriangleGlobal", NC_DOUBLE, 1, dimids, &areaTriangleGlobal);
+    err = ncmpi_def_var (ncid, "areaTriangleGlobal", MPI_DOUBLE, 1, dimids, &areaTriangleGlobal);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, areaTriangleGlobal, "units", 3, "m^2");
     CHECK_ERR
@@ -3125,7 +3125,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = areaTriangleGlobal;
 
-    err = ncmpi_def_var (ncid, "volumeCellGlobal", NC_DOUBLE, 1, dimids, &volumeCellGlobal);
+    err = ncmpi_def_var (ncid, "volumeCellGlobal", MPI_DOUBLE, 1, dimids, &volumeCellGlobal);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, volumeCellGlobal, "units", 3, "m^3");
     CHECK_ERR
@@ -3135,7 +3135,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = volumeCellGlobal;
 
-    err = ncmpi_def_var (ncid, "volumeEdgeGlobal", NC_DOUBLE, 1, dimids, &volumeEdgeGlobal);
+    err = ncmpi_def_var (ncid, "volumeEdgeGlobal", MPI_DOUBLE, 1, dimids, &volumeEdgeGlobal);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, volumeEdgeGlobal, "units", 3, "m^3");
     CHECK_ERR
@@ -3145,7 +3145,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = volumeEdgeGlobal;
 
-    err = ncmpi_def_var (ncid, "CFLNumberGlobal", NC_DOUBLE, 1, dimids, &CFLNumberGlobal);
+    err = ncmpi_def_var (ncid, "CFLNumberGlobal", MPI_DOUBLE, 1, dimids, &CFLNumberGlobal);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CFLNumberGlobal, "units", 8, "unitless");
     CHECK_ERR
@@ -3159,7 +3159,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "BruntVaisalaFreqTop", NC_DOUBLE, 3, dimids, &BruntVaisalaFreqTop);
+    err = ncmpi_def_var (ncid, "BruntVaisalaFreqTop", MPI_DOUBLE, 3, dimids, &BruntVaisalaFreqTop);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, BruntVaisalaFreqTop, "units", 6, "s^{-2}");
     CHECK_ERR
@@ -3174,7 +3174,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevelsP1;
 
-    err = ncmpi_def_var (ncid, "vertVelocityTop", NC_DOUBLE, 3, dimids, &vertVelocityTop);
+    err = ncmpi_def_var (ncid, "vertVelocityTop", MPI_DOUBLE, 3, dimids, &vertVelocityTop);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, vertVelocityTop, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -3189,7 +3189,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "velocityZonal", NC_DOUBLE, 3, dimids, &velocityZonal);
+    err = ncmpi_def_var (ncid, "velocityZonal", MPI_DOUBLE, 3, dimids, &velocityZonal);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, velocityZonal, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -3199,7 +3199,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = velocityZonal;
 
-    err = ncmpi_def_var (ncid, "velocityMeridional", NC_DOUBLE, 3, dimids, &velocityMeridional);
+    err = ncmpi_def_var (ncid, "velocityMeridional", MPI_DOUBLE, 3, dimids, &velocityMeridional);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, velocityMeridional, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -3209,7 +3209,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = velocityMeridional;
 
-    err = ncmpi_def_var (ncid, "displacedDensity", NC_DOUBLE, 3, dimids, &displacedDensity);
+    err = ncmpi_def_var (ncid, "displacedDensity", MPI_DOUBLE, 3, dimids, &displacedDensity);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, displacedDensity, "units", 9, "kg m^{-3}");
     CHECK_ERR
@@ -3221,7 +3221,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = displacedDensity;
 
-    err = ncmpi_def_var (ncid, "potentialDensity", NC_DOUBLE, 3, dimids, &potentialDensity);
+    err = ncmpi_def_var (ncid, "potentialDensity", MPI_DOUBLE, 3, dimids, &potentialDensity);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, potentialDensity, "units", 9, "kg m^{-3}");
     CHECK_ERR
@@ -3231,7 +3231,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = potentialDensity;
 
-    err = ncmpi_def_var (ncid, "pressure", NC_DOUBLE, 3, dimids, &pressure);
+    err = ncmpi_def_var (ncid, "pressure", MPI_DOUBLE, 3, dimids, &pressure);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pressure, "units", 8, "N m^{-2}");
     CHECK_ERR
@@ -3242,7 +3242,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     /* 1 double (nVertLevels) */
     dimids[0] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "refBottomDepth", NC_DOUBLE, 1, dimids, &refBottomDepth);
+    err = ncmpi_def_var (ncid, "refBottomDepth", MPI_DOUBLE, 1, dimids, &refBottomDepth);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, refBottomDepth, "units", 1, "m");
     CHECK_ERR
@@ -3257,7 +3257,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "zMid", NC_DOUBLE, 3, dimids, &zMid);
+    err = ncmpi_def_var (ncid, "zMid", MPI_DOUBLE, 3, dimids, &zMid);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, zMid, "units", 1, "m");
     CHECK_ERR
@@ -3268,7 +3268,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     /* 1 double (nCells) */
     dimids[0] = dim_nCells;
 
-    err = ncmpi_def_var (ncid, "bottomDepth", NC_DOUBLE, 1, dimids, &bottomDepth);
+    err = ncmpi_def_var (ncid, "bottomDepth", MPI_DOUBLE, 1, dimids, &bottomDepth);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bottomDepth, "units", 1, "m");
     CHECK_ERR
@@ -3281,7 +3281,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     /* 1 int (nCells) */
     dimids[0] = dim_nCells;
 
-    err = ncmpi_def_var (ncid, "maxLevelCell", NC_INT, 1, dimids, &maxLevelCell);
+    err = ncmpi_def_var (ncid, "maxLevelCell", MPI_INT, 1, dimids, &maxLevelCell);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, maxLevelCell, "units", 8, "unitless");
     CHECK_ERR
@@ -3293,7 +3293,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     /* 1 int (nEdges) */
     dimids[0] = dim_nEdges;
 
-    err = ncmpi_def_var (ncid, "maxLevelEdgeBot", NC_INT, 1, dimids, &maxLevelEdgeBot);
+    err = ncmpi_def_var (ncid, "maxLevelEdgeBot", MPI_INT, 1, dimids, &maxLevelEdgeBot);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, maxLevelEdgeBot, "units", 8, "unitless");
     CHECK_ERR
@@ -3308,7 +3308,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
 
     err =
-        ncmpi_def_var (ncid, "columnIntegratedSpeed", NC_DOUBLE, 2, dimids, &columnIntegratedSpeed);
+        ncmpi_def_var (ncid, "columnIntegratedSpeed", MPI_DOUBLE, 2, dimids, &columnIntegratedSpeed);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, columnIntegratedSpeed, "units", 10, "m^2 s^{-1}");
     CHECK_ERR
@@ -3324,7 +3324,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = ncmpi_def_var (ncid, "temperatureHorizontalAdvectionTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "temperatureHorizontalAdvectionTendency", MPI_DOUBLE, 3, dimids,
                          &temperatureHorizontalAdvectionTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, temperatureHorizontalAdvectionTendency, "long_name", 58,
@@ -3336,7 +3336,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureHorizontalAdvectionTendency;
 
-    err = ncmpi_def_var (ncid, "salinityHorizontalAdvectionTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "salinityHorizontalAdvectionTendency", MPI_DOUBLE, 3, dimids,
                          &salinityHorizontalAdvectionTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, salinityHorizontalAdvectionTendency, "long_name", 45,
@@ -3347,7 +3347,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinityHorizontalAdvectionTendency;
 
-    err = ncmpi_def_var (ncid, "temperatureVerticalAdvectionTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "temperatureVerticalAdvectionTendency", MPI_DOUBLE, 3, dimids,
                          &temperatureVerticalAdvectionTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, temperatureVerticalAdvectionTendency, "long_name", 56,
@@ -3359,7 +3359,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureVerticalAdvectionTendency;
 
-    err = ncmpi_def_var (ncid, "salinityVerticalAdvectionTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "salinityVerticalAdvectionTendency", MPI_DOUBLE, 3, dimids,
                          &salinityVerticalAdvectionTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, salinityVerticalAdvectionTendency, "long_name", 43,
@@ -3370,7 +3370,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinityVerticalAdvectionTendency;
 
-    err = ncmpi_def_var (ncid, "temperatureVertMixTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "temperatureVertMixTendency", MPI_DOUBLE, 3, dimids,
                          &temperatureVertMixTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, temperatureVertMixTendency, "long_name", 53,
@@ -3382,7 +3382,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureVertMixTendency;
 
-    err = ncmpi_def_var (ncid, "salinityVertMixTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "salinityVertMixTendency", MPI_DOUBLE, 3, dimids,
                          &salinityVertMixTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, salinityVertMixTendency, "long_name", 40,
@@ -3392,7 +3392,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinityVertMixTendency;
 
-    err = ncmpi_def_var (ncid, "temperatureSurfaceFluxTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "temperatureSurfaceFluxTendency", MPI_DOUBLE, 3, dimids,
                          &temperatureSurfaceFluxTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, temperatureSurfaceFluxTendency, "long_name", 52,
@@ -3404,7 +3404,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureSurfaceFluxTendency;
 
-    err = ncmpi_def_var (ncid, "salinitySurfaceFluxTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "salinitySurfaceFluxTendency", MPI_DOUBLE, 3, dimids,
                          &salinitySurfaceFluxTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, salinitySurfaceFluxTendency, "long_name", 39,
@@ -3414,7 +3414,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinitySurfaceFluxTendency;
 
-    err = ncmpi_def_var (ncid, "temperatureShortWaveTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "temperatureShortWaveTendency", MPI_DOUBLE, 3, dimids,
                          &temperatureShortWaveTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, temperatureShortWaveTendency, "units", 26,
@@ -3426,7 +3426,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureShortWaveTendency;
 
-    err = ncmpi_def_var (ncid, "temperatureNonLocalTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "temperatureNonLocalTendency", MPI_DOUBLE, 3, dimids,
                          &temperatureNonLocalTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, temperatureNonLocalTendency, "long_name", 56,
@@ -3438,7 +3438,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureNonLocalTendency;
 
-    err = ncmpi_def_var (ncid, "salinityNonLocalTendency", NC_DOUBLE, 3, dimids,
+    err = ncmpi_def_var (ncid, "salinityNonLocalTendency", MPI_DOUBLE, 3, dimids,
                          &salinityNonLocalTendency);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, salinityNonLocalTendency, "long_name", 43,
@@ -3448,7 +3448,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinityNonLocalTendency;
 
-    err = ncmpi_def_var (ncid, "temperature", NC_DOUBLE, 3, dimids, &temperature);
+    err = ncmpi_def_var (ncid, "temperature", MPI_DOUBLE, 3, dimids, &temperature);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, temperature, "long_name", 21, "potential temperature");
     CHECK_ERR
@@ -3456,7 +3456,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperature;
 
-    err = ncmpi_def_var (ncid, "salinity", NC_DOUBLE, 3, dimids, &salinity);
+    err = ncmpi_def_var (ncid, "salinity", MPI_DOUBLE, 3, dimids, &salinity);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, salinity, "long_name", 8, "salinity");
     CHECK_ERR
@@ -3479,7 +3479,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "on_a_sphere", 3, "YES");
     CHECK_ERR
     dattr = 6371229.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "sphere_radius", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "sphere_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "model_name", 4, "mpas");
     CHECK_ERR
@@ -3515,27 +3515,27 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_write_output_on_startup", 2, "NO");
     CHECK_ERR
     iattr = 0;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_pio_num_iotasks", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_pio_num_iotasks", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 1;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_pio_stride", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_pio_stride", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 3;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_num_halos", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_num_halos", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_block_decomp_file_prefix", 89,
                         "/project/projectdirs/acme/inputdata/ocn/mpas-o/oRRS18to6v3/"
                         "mpas-o.graph.info.170111.part.");
     CHECK_ERR
     iattr = 0;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_number_of_blocks", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_number_of_blocks", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_explicit_proc_decomp", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_proc_decomp_file_prefix", 16, "graph.info.part.");
     CHECK_ERR
     iattr = -1;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_init_configuration", 4, "none");
     CHECK_ERR
@@ -3548,13 +3548,13 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_vertical_grid", 7, "uniform");
     CHECK_ERR
     dattr = 1.077;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.0275;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_1dCVTgenerator_dzSeed", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_1dCVTgenerator_dzSeed", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iterative_init_variable", 15, "landIcePressure");
     CHECK_ERR
@@ -3567,189 +3567,189 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_min_max_thickness", 2, "NO");
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_min_thickness", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_min_thickness", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 6.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_max_thickness_factor", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_max_thickness_factor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_dzdk_positive", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_freq_filtered_thickness", 2, "NO");
     CHECK_ERR
     dattr = 5.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_thickness_filter_timescale", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_thickness_filter_timescale", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_highFreqThick_restore", 2, "NO");
     CHECK_ERR
     dattr = 30.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_highFreqThick_restore_time", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_highFreqThick_restore_time", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_highFreqThick_del2", 2, "NO");
     CHECK_ERR
     dattr = 100.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_highFreqThick_del2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_highFreqThick_del2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_alter_ICs_for_pbcs", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_pbc_alteration_type", 9, "full_cell");
     CHECK_ERR
     dattr = 0.1;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_min_pbc_fraction", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_min_pbc_fraction", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_hmix_scaleWithMesh", 3, "YES");
     CHECK_ERR
     dattr = -1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_maxMeshDensity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_maxMeshDensity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_apvm_scale_factor", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_apvm_scale_factor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del2", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tracer_del2", 2, "NO");
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_tracer_del2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_tracer_del2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del4", 3, "YES");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tracer_del4", 2, "NO");
     CHECK_ERR
     dattr = 3200000000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del4", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del4_div_factor", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del4_div_factor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_tracer_del4", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_tracer_del4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_Leith_del2", 2, "NO");
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_Leith_parameter", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_Leith_parameter", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 15000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_Leith_dx", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_Leith_dx", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_Leith_visc2_max", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_Leith_visc2_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_standardGM", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_Redi_surface_layer_tapering", 2, "NO");
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_Redi_surface_layer_tapering_extent", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_Redi_surface_layer_tapering_extent", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_Redi_bottom_layer_tapering", 2, "NO");
     CHECK_ERR
     dattr = 0.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_Redi_bottom_layer_tapering_depth", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_Redi_bottom_layer_tapering_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_function", 8, "constant");
     CHECK_ERR
     dattr = 1800.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_standardGM_tracer_kappa", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_standardGM_tracer_kappa", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_min", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_min", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_max", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 20000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_min", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_min", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 30000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_max", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_Redi_kappa", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_Redi_kappa", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.3;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_gravWaveSpeed_trunc", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_gravWaveSpeed_trunc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.01;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_max_relative_slope", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_max_relative_slope", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del2_tensor", 2, "NO");
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del2_tensor", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del2_tensor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del4_tensor", 2, "NO");
     CHECK_ERR
     dattr = 50000000000000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del4_tensor", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del4_tensor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_Rayleigh_friction", 2, "NO");
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_Rayleigh_damping_coeff", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_Rayleigh_damping_coeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_Rayleigh_bottom_friction", 2, "NO");
     CHECK_ERR
     dattr = 0.0001;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_Rayleigh_bottom_damping_coeff", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_Rayleigh_bottom_damping_coeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix", 3, "YES");
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_prandtl_number", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_prandtl_number", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_background", 3, "YES");
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_background_diffusion", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_background_diffusion", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0001;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_background_viscosity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_background_viscosity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_convection", 3, "YES");
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_convective_diffusion", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_convective_diffusion", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_convective_viscosity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_convective_viscosity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_convective_basedOnBVF", 3, "YES");
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_convective_triggerBVF", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_convective_triggerBVF", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_shear", 3, "YES");
     CHECK_ERR
     iattr = 2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_num_ri_smooth_loops", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_num_ri_smooth_loops", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_use_BLD_smoothing", 3, "YES");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_shear_mixing_scheme", 3, "KPP");
     CHECK_ERR
     dattr = 0.005;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_PP_nu_zero", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_PP_nu_zero", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_PP_alpha", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_PP_alpha", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_PP_exp", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_PP_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.005;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_nu_zero", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_nu_zero", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.7;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_Ri_zero", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_Ri_zero", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_exp", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_tidal_mixing", 2, "NO");
     CHECK_ERR
@@ -3760,10 +3760,10 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_fixed_boundary_layer", 2, "NO");
     CHECK_ERR
     dattr = 30.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_boundary_layer_depth", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_boundary_layer_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.25;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_criticalBulkRichardsonNumber", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_criticalBulkRichardsonNumber", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_kpp_matching", 12, "SimpleShapes");
@@ -3775,18 +3775,18 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_kpp_interpolationOMLType", 9, "quadratic");
     CHECK_ERR
     dattr = 0.1;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_extent", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_extent", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_averaging", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_averaging", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "configure_cvmix_kpp_minimum_OBL_under_sea_ice", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "configure_cvmix_kpp_minimum_OBL_under_sea_ice", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 100.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_stop_OBL_search", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_stop_OBL_search", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_kpp_use_enhanced_diff", 3, "YES");
     CHECK_ERR
@@ -3797,75 +3797,75 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_const_diff", 2, "NO");
     CHECK_ERR
     dattr = 0.0001;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_visc", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_visc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.e-05;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_diff", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_diff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_rich_visc", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_rich_diff", 2, "NO");
     CHECK_ERR
     dattr = 0.0001;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_bkrd_vert_visc", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_bkrd_vert_visc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.e-05;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_bkrd_vert_diff", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_bkrd_vert_diff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.005;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rich_mix", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rich_mix", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_convective_visc", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_convective_visc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_convective_diff", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_convective_diff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tanh_visc", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tanh_diff", 2, "NO");
     CHECK_ERR
     dattr = 0.25;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_max_visc_tanh", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_max_visc_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0001;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_min_visc_tanh", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_min_visc_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.025;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_max_diff_tanh", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_max_diff_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.e-05;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_min_diff_tanh", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_min_diff_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -100.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_zMid_tanh", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_zMid_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_zWidth_tanh", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_zWidth_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_bulk_wind_stress", 3, "YES");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_bulk_thickness_flux", 3, "YES");
     CHECK_ERR
     dattr = 0.001;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient_runoff", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient_runoff", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 86400.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ssh_grad_relax_timescale", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ssh_grad_relax_timescale", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_remove_AIS_coupler_runoff", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_sw_absorption_type", 6, "jerlov");
     CHECK_ERR
     iattr = 3;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_jerlov_water_type", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_jerlov_water_type", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_surface_buoyancy_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_surface_buoyancy_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_frazil_ice_formation", 3, "YES");
     CHECK_ERR
@@ -3874,31 +3874,31 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_frazil_under_land_ice", 3, "YES");
     CHECK_ERR
     dattr = 333700.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_heat_of_fusion", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_heat_of_fusion", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_ice_density", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_ice_density", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.1;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_frazil_fractional_thickness_limit", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_frazil_fractional_thickness_limit", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3996.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_specific_heat_sea_water", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_specific_heat_sea_water", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_maximum_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_maximum_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 4.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_frazil_sea_ice_reference_salinity", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_frazil_sea_ice_reference_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_land_ice_reference_salinity", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_land_ice_reference_salinity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_maximum_freezing_temperature", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_maximum_freezing_temperature", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_frazil_use_surface_pressure", 2, "NO");
@@ -3910,160 +3910,160 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_land_ice_flux_useHollandJenkinsAdvDiff", 2, "NO");
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_attenuation_coefficient", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_attenuation_coefficient", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_boundaryLayerThickness", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_boundaryLayerThickness", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_boundaryLayerNeighborWeight", NC_DOUBLE,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_boundaryLayerNeighborWeight", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     dattr = 2009.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_cp_ice", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_cp_ice", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 918.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_rho_ice", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_rho_ice", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0025;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_topDragCoeff", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_topDragCoeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0001;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_ISOMIP_gammaT", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_ISOMIP_gammaT", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.05;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_rms_tidal_velocity", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_rms_tidal_velocity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.011;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_jenkins_heat_transfer_coefficient",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.00031;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_jenkins_salt_transfer_coefficient",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_vert_tracer_adv", 7, "stencil");
     CHECK_ERR
     iattr = 3;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_tracer_adv_order", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_tracer_adv_order", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 3;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_horiz_tracer_adv_order", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_horiz_tracer_adv_order", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 0.25;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_coef_3rd_order", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_coef_3rd_order", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_monotonic", 3, "YES");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_implicit_bottom_drag", 3, "YES");
     CHECK_ERR
     dattr = 0.001;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_implicit_bottom_drag_coeff", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_implicit_bottom_drag_coeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_explicit_bottom_drag", 2, "NO");
     CHECK_ERR
     dattr = 0.001;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_explicit_bottom_drag_coeff", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_explicit_bottom_drag_coeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1026.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_density0", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_density0", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_pressure_gradient_type", 16, "Jacobian_from_TS");
     CHECK_ERR
     dattr = 0.5;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_common_level_weight", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_common_level_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_eos_type", 2, "jm");
     CHECK_ERR
     dattr = -1.8;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_0", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_0", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_S", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_S", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_p", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_p", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_pS", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_pS", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_reference_pressure",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0622;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_0",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.0563;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_S",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -7.43e-08;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_p",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.74e-10;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_pS",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_reference_pressure",
-                 NC_DOUBLE, 1, &dattr);
+                 MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_alpha", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_alpha", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.8;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_beta", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_beta", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_Tref", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_Tref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_Sref", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_Sref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_densityref", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_densityref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_ts_iter", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_ts_iter", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 1;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_bcl_iter_beg", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_bcl_iter_beg", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_bcl_iter_mid", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_bcl_iter_mid", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_bcl_iter_end", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_bcl_iter_end", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_btr_dt", 13, "0000_00:00:12");
     CHECK_ERR
     iattr = 2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_btr_cor_iter", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_n_btr_cor_iter", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_vel_correction", 3, "YES");
     CHECK_ERR
     iattr = 2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_subcycle_loop_factor", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_subcycle_loop_factor", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 0.5;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_gam1_velWt1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_gam1_velWt1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_gam2_SSHWt1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_gam2_SSHWt1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_gam3_velWt2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_gam3_velWt2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_btr_solve_SSH2", 2, "NO");
     CHECK_ERR
@@ -4138,179 +4138,179 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_rx1_constraint", 2, "NO");
     CHECK_ERR
     iattr = 20;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_outer_iter_count", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_outer_iter_count", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 10;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_inner_iter_count", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_inner_iter_count", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 0.1;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_init_inner_weight", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_init_inner_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_max", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_weight", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_vert_smooth_weight", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_vert_smooth_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.1;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_slope_weight", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_slope_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_zstar_weight", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_zstar_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 20;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_open_ocean_cells", NC_INT, 1, &iattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_open_ocean_cells", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 3;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_min_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_min_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_min_layer_thickness", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_min_layer_thickness", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 20;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_baroclinic_channel_use_distances", 2, "NO");
     CHECK_ERR
     dattr = 13.1000003814697;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_surface_temperature", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_surface_temperature", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 10.1000003814697;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_bottom_temperature", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_bottom_temperature", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 1.20000004768372;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_temperature_difference", NC_DOUBLE,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_temperature_difference", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     dattr = 0.0799999982118607;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_gradient_width_frac", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_gradient_width_frac", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 40000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_gradient_width_dist", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_gradient_width_dist", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 1000.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.000119999996968545;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_coriolis_parameter", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_coriolis_parameter", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     iattr = 20;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 20.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_cold_temperature", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_cold_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 30.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_warm_temperature", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_warm_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_lock_exchange_direction", 1, "y");
     CHECK_ERR
     dattr = 35.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_lock_exchange_layer_type", 7, "z-level");
     CHECK_ERR
     dattr = 0.00999999977648258;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_isopycnal_min_thickness", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_isopycnal_min_thickness", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     iattr = 20;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_internal_waves_use_distances", 2, "NO");
     CHECK_ERR
     dattr = 20.1000003814697;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_surface_temperature", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_surface_temperature", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 10.1000003814697;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_bottom_temperature", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_bottom_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_temperature_difference", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_temperature_difference", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.330000013113022;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_frac", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_frac", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 50000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_dist", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_dist", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_internal_waves_layer_type", 7, "z-level");
     CHECK_ERR
     dattr = 125.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_isopycnal_displacement", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_isopycnal_displacement", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_overflow_use_distances", 2, "NO");
     CHECK_ERR
     dattr = 2000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_ridge_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_ridge_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_plug_temperature", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_plug_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 20.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_domain_temperature", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_domain_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.100000001490116;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_plug_width_frac", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_plug_width_frac", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.200000002980232;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_center_frac", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_center_frac", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0500000007450581;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_width_frac", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_width_frac", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 20000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_plug_width_dist", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_plug_width_dist", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 40000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_center_dist", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_center_dist", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 7000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_width_dist", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_width_dist", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_overflow_layer_type", 7, "z-level");
     CHECK_ERR
     dattr = 0.00999999977648258;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_overflow_isopycnal_min_thickness", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_overflow_isopycnal_min_thickness", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 15.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_minimum_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_minimum_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_depth_file", 4, "none");
     CHECK_ERR
@@ -4319,7 +4319,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_depth_varname", 4, "none");
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_depth_conversion_factor", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_depth_conversion_factor", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_temperature_file", 4, "none");
@@ -4333,11 +4333,11 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_tracer_ndepth_dimname", 4, "none");
     CHECK_ERR
     dattr = 1.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_tracer_depth_conversion_factor", NC_DOUBLE,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_tracer_depth_conversion_factor", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     iattr = -1;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_tracer_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_tracer_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_temperature_varname", 4, "none");
     CHECK_ERR
@@ -4355,7 +4355,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
                         "bilinear_interpolation");
     CHECK_ERR
     iattr = 0;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_smooth_TS_iterations", NC_INT, 1, &iattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_smooth_TS_iterations", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_swData_file", 4, "none");
     CHECK_ERR
@@ -4379,10 +4379,10 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_clearSky_varname", 4, "none");
     CHECK_ERR
     dattr = 4.99999987368938e-05;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_piston_velocity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_piston_velocity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_interior_restore_rate", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_interior_restore_rate", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_topography_file", 4, "none");
@@ -4447,7 +4447,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = -1.79999995231628;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_constant_land_ice_cavity_temperature",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_cull_inland_seas", 3, "YES");
     CHECK_ERR
@@ -4472,7 +4472,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
                         "bilinear_interpolation");
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_windstress_conversion_factor", NC_DOUBLE,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_windstress_conversion_factor", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_file", 7, "unknown");
@@ -4486,11 +4486,11 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_ndepth_dimname", 4, "none");
     CHECK_ERR
     dattr = 1.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_depth_conversion_factor", NC_DOUBLE,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_depth_conversion_factor", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     iattr = -1;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_lat_varname", 4, "none");
     CHECK_ERR
@@ -4507,522 +4507,522 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
                         "none");
     CHECK_ERR
     iattr = 0;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_smooth_ecosys_iterations", NC_INT, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_smooth_ecosys_iterations", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
     iattr = 100;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 15.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_temperature", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 15.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_restoring_temperature", NC_DOUBLE,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_restoring_temperature", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_restoring_salinity", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_restoring_salinity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 3.99999998990097e-06;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_piston_velocity", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_piston_velocity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 3.99999998990097e-06;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_piston_velocity", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_piston_velocity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_sensible_heat_flux", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_sensible_heat_flux", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_latent_heat_flux", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_latent_heat_flux", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_shortwave_heat_flux", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_shortwave_heat_flux", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_rain_flux", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_rain_flux", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_evaporation_flux", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_evaporation_flux", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 9.99999997475243e-07;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_interior_temperature_restoring_rate",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 9.99999997475243e-07;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_interior_salinity_restoring_rate",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.00999999977648258;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_gradient", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_gradient", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_gradient", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_gradient", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_gradient_mixed_layer",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_gradient_mixed_layer", NC_DOUBLE,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_gradient_mixed_layer", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_depth_temperature", NC_DOUBLE,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_depth_temperature", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_depth_salinity", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_depth_salinity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_temperature_change", NC_DOUBLE,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_temperature_change", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_salinity_change", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_salinity_change", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_vertical_grid", 7, "uniform");
     CHECK_ERR
     dattr = 400.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.100000001490116;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_max_windstress", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_max_windstress", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 9.99999974737875e-05;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_coriolis_parameter", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_coriolis_parameter", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 4000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_main_channel_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_main_channel_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -50.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_north_wall_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_north_wall_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -70.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_south_wall_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_south_wall_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_ridge_flag", 3, "YES");
     CHECK_ERR
     dattr = 180.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_ridge_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_ridge_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_ridge_height", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_ridge_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2000000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_ridge_width", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_ridge_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_plateau_flag", 3, "YES");
     CHECK_ERR
     dattr = 300.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -58.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_height", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 200000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_radius", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_slope_width", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_slope_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_shelf_flag", 3, "YES");
     CHECK_ERR
     dattr = 500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_shelf_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_shelf_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 120000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_shelf_width", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_shelf_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_cont_slope_flag", 3, "YES");
     CHECK_ERR
     dattr = 0.00999999977648258;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_max_cont_slope", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_max_cont_slope", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_embayment_flag", 3, "YES");
     CHECK_ERR
     dattr = 60.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -71.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_radius", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_depression_flag", 3, "YES");
     CHECK_ERR
     dattr = 60.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -72.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_south_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_south_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -65.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_north_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_north_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 480000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_width", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 800.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.00999999977648258;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_wind_stress_max", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_wind_stress_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.200000002980232;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_acc_wind", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_acc_wind", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.0500000007450581;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_asf_wind", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_asf_wind", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -65.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_wind_trans", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_wind_trans", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -5.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_south", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_south", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_middle", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_middle", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -5.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_north", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_north", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -70.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_ss", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_ss", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -65.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_sm", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_sm", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -53.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_mn", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_mn", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 60.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region1_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region1_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -75.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region1_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region1_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 150.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region2_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region2_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -71.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region2_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region2_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 240.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region3_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region3_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -71.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region3_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region3_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 330.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region4_center_lon", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region4_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -71.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region4_center_lat", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_region4_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_heat_flux_region1_flag", 2, "NO");
     CHECK_ERR
     dattr = -5.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 300000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region1_radius", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region1_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_heat_flux_region2_flag", 2, "NO");
     CHECK_ERR
     dattr = -5.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 240000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region2_radius", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region2_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.80000014451798e-05;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_iso_surface_temperature_piston_velocity", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_iso_surface_temperature_piston_velocity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 3.5;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_t1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 4.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_t2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_t2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1200.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_h0", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_h0", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_h1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_h1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 7.50000035623088e-05;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_mt", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_mt", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -75.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_latS", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_latS", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -50.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_latN", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_latN", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_t1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_h1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_h1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 120000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_l1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_l1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_tau1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_tau1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region1_flag", 3, "YES");
     CHECK_ERR
     dattr = -1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region2_flag", 3, "YES");
     CHECK_ERR
     dattr = -1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 250000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region3_flag", 3, "YES");
     CHECK_ERR
     dattr = -1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t3", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx3", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 250000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy3", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region4_flag", 3, "YES");
     CHECK_ERR
     dattr = -1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t4", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx4", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 250000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy4", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 1250000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_domain_width", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_domain_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_center_latitude", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_center_latitude", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_center_longitude", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_center_longitude", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.100000001490116;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_phi", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_phi", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.400000005960464;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_shelf_width", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_shelf_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_shelf_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_shelf_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_ref_density", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_ref_density", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 4.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_density_difference", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_density_difference", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 300.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_thermocline_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_thermocline_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.0500000007450581;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_soma_density_difference_linear", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_soma_density_difference_linear", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 20.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_surface_temperature", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_surface_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 33.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_surface_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_surface_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_soma_use_surface_temp_restoring", 2, "NO");
     CHECK_ERR
     dattr = 7.5;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_surface_temp_restoring_at_center_latitude",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.5;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_surface_temp_restoring_latitude_gradient",
-                   NC_DOUBLE, 1, &dattr);
+                   MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 9.99999974737875e-06;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_soma_restoring_temp_piston_vel", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_soma_restoring_temp_piston_vel", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ziso_add_easterly_wind_stress_ASF", 2, "NO");
     CHECK_ERR
     dattr = 800000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_wind_transition_position", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_wind_transition_position", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 600000.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_ziso_antarctic_shelf_front_width", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_ziso_antarctic_shelf_front_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.0500000007450581;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_ziso_wind_stress_shelf_front_max", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_ziso_wind_stress_shelf_front_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ziso_use_slopping_bathymetry", 2, "NO");
     CHECK_ERR
     dattr = 2000000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_meridional_extent", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_meridional_extent", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_zonal_extent", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_zonal_extent", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_shelf_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_shelf_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 100000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_slope_half_width", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_slope_half_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_slope_center_position", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_slope_center_position", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -9.99999974737875e-05;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_reference_coriolis", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_reference_coriolis", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_coriolis_gradient", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_coriolis_gradient", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.200000002980232;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_wind_stress_max", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_wind_stress_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_mean_restoring_temp", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_mean_restoring_temp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_ta", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_ta", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 2.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_tb", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_tb", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 30.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_tau", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_tau", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.89999991562217e-05;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_piston_vel", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_piston_vel", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1250.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_ze", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_ze", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 80000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_sponge_l", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_sponge_l", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 6.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_t1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.59999990463257;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_t2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_t2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 300.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_h1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_h1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 7.50000035623088e-05;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_mt", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_mt", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ziso_frazil_enable", 2, "NO");
     CHECK_ERR
     dattr = -3.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_frazil_temperature_anomaly", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_frazil_temperature_anomaly", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 20;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 2000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 25.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_cavity_thickness", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_cavity_thickness", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_slope_height", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_slope_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 15000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_edge_width", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_edge_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 30000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 60000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_temperature", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 34.5;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_surface_salinity", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_surface_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 34.7000007629395;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_salinity", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_periodic_planar_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_periodic_planar_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 2500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_periodic_planar_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_periodic_planar_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_periodic_planar_velocity_strength", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_periodic_planar_velocity_strength", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 100;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ecosys_column_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ecosys_column_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ecosys_column_vertical_grid", 14, "100layerACMEv1");
@@ -5032,194 +5032,194 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ecosys_column_ecosys_filename", 7, "unknown");
     CHECK_ERR
     dattr = 6000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ecosys_column_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ecosys_column_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 10;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_sea_mount_layer_type", 5, "sigma");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_sea_mount_stratification_type", 11, "exponential");
     CHECK_ERR
     dattr = 1024.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_coef_linear", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_coef_linear", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1028.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_coef_exp", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_coef_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.100000001490116;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_linear", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_linear", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 3.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_exp", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 4500.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_depth_linear", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_depth_linear", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_depth_exp", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_depth_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1028.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_ref", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_ref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_Tref", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_Tref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.200000002980232;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_alpha", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_alpha", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 5000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 4500.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_height", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_radius", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 40000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_width", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 35.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -9.99999974737875e-05;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_coriolis_parameter", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_coriolis_parameter", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 30;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_isomip_vertical_level_distribution", 8, "constant");
     CHECK_ERR
     dattr = -900.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.89999997615814;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_temperature", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 34.4000015258789;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.89999997615814;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_restoring_temperature", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_restoring_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.20000004244503e-05;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_temperature_piston_velocity", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_temperature_piston_velocity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 34.4000015258789;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_restoring_salinity", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_restoring_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.20000004244503e-05;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_salinity_piston_velocity", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_salinity_piston_velocity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.00014000000373926;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_coriolis_parameter", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_coriolis_parameter", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_southern_boundary", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_southern_boundary", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_northern_boundary", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_northern_boundary", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_western_boundary", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_western_boundary", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 500000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_eastern_boundary", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_eastern_boundary", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_y1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_y1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -700.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_z1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_z1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_ice_fraction1", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_ice_fraction1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 400000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_y2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_y2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -200.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_z2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_z2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_ice_fraction2", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_ice_fraction2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1000000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_y3", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_y3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -200.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_z3", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_z3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_ice_fraction3", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_ice_fraction3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 36;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_vert_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_isomip_plus_vertical_level_distribution", 8,
                         "constant");
     CHECK_ERR
     dattr = -720.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_max_bottom_depth", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_max_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 3;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_minimum_levels", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_minimum_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 10.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_min_column_thickness", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_min_column_thickness", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 0.5;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_min_ocean_fraction", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_min_ocean_fraction", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_isomip_plus_topography_file", 27,
                         "input_geometry_processed.nc");
     CHECK_ERR
     dattr = -1.89999997615814;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_top_temp", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_top_temp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.89999997615814;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_temp", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_temp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 33.7999992370605;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_top_sal", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_top_sal", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 34.5;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_sal", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_sal", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.89999997615814;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_temp", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_temp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_temp", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_temp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 33.7999992370605;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_sal", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_sal", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 34.7000007629395;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_sal", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_sal", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 10.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_rate", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_rate", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 200.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_evap_rate", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_evap_rate", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 790000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMin", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 800000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMax", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMax", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -0.000140999996801838;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_coriolis_parameter", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_coriolis_parameter", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1026.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_effective_density", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_effective_density", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_activeTracers", 3, "YES");
     CHECK_ERR
@@ -5242,12 +5242,12 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
                       19, "0000-00-01_00:00:00");
     CHECK_ERR
     dattr = 1.585e-06;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_salinity_restoring_constant_piston_velocity", NC_DOUBLE,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_salinity_restoring_constant_piston_velocity", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     dattr = 100;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_salinity_restoring_max_difference", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_salinity_restoring_max_difference", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_salinity_restoring_under_sea_ice", 2, "NO");
     CHECK_ERR
@@ -5274,7 +5274,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ecosys_atm_alt_co2_use_eco", 2, "NO");
     CHECK_ERR
     dattr = 379.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_ecosys_atm_co2_constant_value", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_ecosys_atm_co2_constant_value", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_ecosysTracers_surface_bulk_forcing", 2, "NO");
     CHECK_ERR
@@ -5388,17 +5388,17 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     dattr = -2.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minTemperature", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minTemperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 30.;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxTemperature", NC_DOUBLE, 1, &dattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxTemperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 32.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minSalinity", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minSalinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 37.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxSalinity", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxSalinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_compute_predefined_regions", 3,
                         "YES");
@@ -5432,13 +5432,13 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_zonalMean_output_stream", 15, "zonalMeanOutput");
     CHECK_ERR
     iattr = 180;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_zonalMean_num_bins", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_zonalMean_num_bins", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_zonalMean_min_bin", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_zonalMean_min_bin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_zonalMean_max_bin", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_zonalMean_max_bin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_enable", 2, "NO");
     CHECK_ERR
@@ -5455,13 +5455,13 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_directory", 16, "analysis_members");
     CHECK_ERR
     dattr = -0.2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_threshold_value", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_threshold_value", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.e-10;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_normalization", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_normalization", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1.e-10;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_lambda2_normalization", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_lambda2_normalization", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_use_lat_lon_coords", 3, "YES");
@@ -5469,7 +5469,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_compute_eddy_census", 3, "YES");
     CHECK_ERR
     iattr = 20;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_eddy_min_cells", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_eddy_min_cells", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_enable", 3, "YES");
     CHECK_ERR
@@ -5487,14 +5487,14 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     iattr = 180;
     err =
-        GET_ATT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_num_bins", NC_INT, 1, &iattr);
+        GET_ATT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_num_bins", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_min_bin", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_min_bin", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_max_bin", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_max_bin", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_region_group", 0, "");
@@ -5564,10 +5564,10 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_write_on_startup", 2, "NO");
     CHECK_ERR
     iattr = 0;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_filter_number", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_filter_number", MPI_INT, 1, &iattr);
     CHECK_ERR
     iattr = 2;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_timeIntegration", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_timeIntegration", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_reset_criteria", 4, "none");
     CHECK_ERR
@@ -5600,13 +5600,13 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_debug", 2, "NO");
     CHECK_ERR
     iattr = 45;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_nBuoyancyLayers", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_nBuoyancyLayers", MPI_INT, 1, &iattr);
     CHECK_ERR
     dattr = 900.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomin_buoycoor", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomin_buoycoor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = 1080.;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomax_buoycoor", NC_DOUBLE, 1, &dattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomax_buoycoor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_enable", 3, "YES");
     CHECK_ERR
@@ -5625,15 +5625,15 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_Dthreshold", 3, "YES");
     CHECK_ERR
     dattr = 0.2;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_crit_temp_threshold", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_crit_temp_threshold", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 0.03;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_crit_dens_threshold", NC_DOUBLE, 1,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_crit_dens_threshold", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     dattr = 100000.;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_reference_pressure", NC_DOUBLE, 1,
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_reference_pressure", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_Tgradient", 2, "NO");
@@ -5641,15 +5641,15 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_Dgradient", 2, "NO");
     CHECK_ERR
     dattr = 5.e-07;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_temp_gradient_threshold", NC_DOUBLE,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_temp_gradient_threshold", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     dattr = 5.e-08;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_den_gradient_threshold", NC_DOUBLE,
+    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_den_gradient_threshold", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     iattr = 1;
-    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_interp_method", NC_INT, 1, &iattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_interp_method", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_regionalStatsDaily_enable", 2, "NO");
     CHECK_ERR
@@ -6077,13 +6077,13 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_write_on_startup", 2, "NO");
     CHECK_ERR
     dattr = -1.e+34;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_min_bin", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_min_bin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     dattr = -1.e+34;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_max_bin", NC_DOUBLE, 1, &dattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_max_bin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     iattr = 180;
-    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_num_bins", NC_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_num_bins", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_vertical_velocity_value", 15,
                         "vertVelocityTop");
@@ -6175,7 +6175,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_Time;
     dimids[1] = dim_nCells;
 
-    err = INQ_VID (ncid, "salinitySurfaceRestoringTendency", NC_DOUBLE, 2, dimids,
+    err = INQ_VID (ncid, "salinitySurfaceRestoringTendency", MPI_DOUBLE, 2, dimids,
                    &salinitySurfaceRestoringTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, salinitySurfaceRestoringTendency, "units", 7, "m PSU/s");
@@ -6191,7 +6191,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[2] = dim_nVertLevelsP1;
 
     err =
-        INQ_VID (ncid, "vertTransportVelocityTop", NC_DOUBLE, 3, dimids, &vertTransportVelocityTop);
+        INQ_VID (ncid, "vertTransportVelocityTop", MPI_DOUBLE, 3, dimids, &vertTransportVelocityTop);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, vertTransportVelocityTop, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -6203,7 +6203,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = vertTransportVelocityTop;
 
-    err = INQ_VID (ncid, "vertGMBolusVelocityTop", NC_DOUBLE, 3, dimids, &vertGMBolusVelocityTop);
+    err = INQ_VID (ncid, "vertGMBolusVelocityTop", MPI_DOUBLE, 3, dimids, &vertGMBolusVelocityTop);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, vertGMBolusVelocityTop, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -6215,7 +6215,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = vertGMBolusVelocityTop;
 
-    err = INQ_VID (ncid, "vertAleTransportTop", NC_DOUBLE, 3, dimids, &vertAleTransportTop);
+    err = INQ_VID (ncid, "vertAleTransportTop", MPI_DOUBLE, 3, dimids, &vertAleTransportTop);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, vertAleTransportTop, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -6229,7 +6229,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_Time;
     dimids[1] = dim_nCells;
 
-    err = INQ_VID (ncid, "tendSSH", NC_DOUBLE, 2, dimids, &tendSSH);
+    err = INQ_VID (ncid, "tendSSH", MPI_DOUBLE, 2, dimids, &tendSSH);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, tendSSH, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -6242,7 +6242,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "layerThickness", NC_DOUBLE, 3, dimids, &layerThickness);
+    err = INQ_VID (ncid, "layerThickness", MPI_DOUBLE, 3, dimids, &layerThickness);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, layerThickness, "units", 1, "m");
     CHECK_ERR
@@ -6255,7 +6255,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nEdges;
     dimids[2] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "normalVelocity", NC_DOUBLE, 3, dimids, &normalVelocity);
+    err = INQ_VID (ncid, "normalVelocity", MPI_DOUBLE, 3, dimids, &normalVelocity);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, normalVelocity, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -6269,7 +6269,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_Time;
     dimids[1] = dim_nCells;
 
-    err = INQ_VID (ncid, "ssh", NC_DOUBLE, 2, dimids, &ssh);
+    err = INQ_VID (ncid, "ssh", MPI_DOUBLE, 2, dimids, &ssh);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, ssh, "units", 1, "m");
     CHECK_ERR
@@ -6280,7 +6280,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     /* 1 int (nEdges) */
     dimids[0] = dim_nEdges;
 
-    err = INQ_VID (ncid, "maxLevelEdgeTop", NC_INT, 1, dimids, &maxLevelEdgeTop);
+    err = INQ_VID (ncid, "maxLevelEdgeTop", MPI_INT, 1, dimids, &maxLevelEdgeTop);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, maxLevelEdgeTop, "units", 8, "unitless");
     CHECK_ERR
@@ -6294,7 +6294,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_nVertLevels;
 
     err =
-        INQ_VID (ncid, "vertCoordMovementWeights", NC_DOUBLE, 1, dimids, &vertCoordMovementWeights);
+        INQ_VID (ncid, "vertCoordMovementWeights", MPI_DOUBLE, 1, dimids, &vertCoordMovementWeights);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, vertCoordMovementWeights, "units", 8, "unitless");
     CHECK_ERR
@@ -6309,7 +6309,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_nEdges;
     dimids[1] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "edgeMask", NC_INT, 2, dimids, &edgeMask);
+    err = INQ_VID (ncid, "edgeMask", MPI_INT, 2, dimids, &edgeMask);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, edgeMask, "units", 8, "unitless");
     CHECK_ERR
@@ -6323,7 +6323,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_nCells;
     dimids[1] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "cellMask", NC_INT, 2, dimids, &cellMask);
+    err = INQ_VID (ncid, "cellMask", MPI_INT, 2, dimids, &cellMask);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, cellMask, "units", 8, "unitless");
     CHECK_ERR
@@ -6337,7 +6337,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_nVertices;
     dimids[1] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "vertexMask", NC_INT, 2, dimids, &vertexMask);
+    err = INQ_VID (ncid, "vertexMask", MPI_INT, 2, dimids, &vertexMask);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, vertexMask, "units", 8, "unitless");
     CHECK_ERR
@@ -6350,7 +6350,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     /* 2 double (nVertLevels) */
     dimids[0] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "refZMid", NC_DOUBLE, 1, dimids, &refZMid);
+    err = INQ_VID (ncid, "refZMid", MPI_DOUBLE, 1, dimids, &refZMid);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, refZMid, "units", 1, "m");
     CHECK_ERR
@@ -6360,7 +6360,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = refZMid;
 
-    err = INQ_VID (ncid, "refLayerThickness", NC_DOUBLE, 1, dimids, &refLayerThickness);
+    err = INQ_VID (ncid, "refLayerThickness", MPI_DOUBLE, 1, dimids, &refLayerThickness);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, refLayerThickness, "units", 1, "m");
     CHECK_ERR
@@ -6374,7 +6374,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_Time;
     dimids[1] = dim_StrLen;
 
-    err = INQ_VID (ncid, "xtime", NC_CHAR, 2, dimids, &xtime);
+    err = INQ_VID (ncid, "xtime", MPI_CHAR, 2, dimids, &xtime);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, xtime, "units", 8, "unitless");
     CHECK_ERR
@@ -6388,7 +6388,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "kineticEnergyCell", NC_DOUBLE, 3, dimids, &kineticEnergyCell);
+    err = INQ_VID (ncid, "kineticEnergyCell", MPI_DOUBLE, 3, dimids, &kineticEnergyCell);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, kineticEnergyCell, "units", 10, "m^2 s^{-2}");
     CHECK_ERR
@@ -6398,7 +6398,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = kineticEnergyCell;
 
-    err = INQ_VID (ncid, "relativeVorticityCell", NC_DOUBLE, 3, dimids, &relativeVorticityCell);
+    err = INQ_VID (ncid, "relativeVorticityCell", MPI_DOUBLE, 3, dimids, &relativeVorticityCell);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, relativeVorticityCell, "units", 6, "s^{-1}");
     CHECK_ERR
@@ -6413,7 +6413,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nVertices;
     dimids[2] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "relativeVorticity", NC_DOUBLE, 3, dimids, &relativeVorticity);
+    err = INQ_VID (ncid, "relativeVorticity", MPI_DOUBLE, 3, dimids, &relativeVorticity);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, relativeVorticity, "units", 6, "s^{-1}");
     CHECK_ERR
@@ -6428,7 +6428,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "divergence", NC_DOUBLE, 3, dimids, &divergence);
+    err = INQ_VID (ncid, "divergence", MPI_DOUBLE, 3, dimids, &divergence);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, divergence, "units", 6, "s^{-1}");
     CHECK_ERR
@@ -6439,7 +6439,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     /* 6 double (Time) */
     dimids[0] = dim_Time;
 
-    err = INQ_VID (ncid, "areaCellGlobal", NC_DOUBLE, 1, dimids, &areaCellGlobal);
+    err = INQ_VID (ncid, "areaCellGlobal", MPI_DOUBLE, 1, dimids, &areaCellGlobal);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, areaCellGlobal, "units", 3, "m^2");
     CHECK_ERR
@@ -6449,7 +6449,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = areaCellGlobal;
 
-    err = INQ_VID (ncid, "areaEdgeGlobal", NC_DOUBLE, 1, dimids, &areaEdgeGlobal);
+    err = INQ_VID (ncid, "areaEdgeGlobal", MPI_DOUBLE, 1, dimids, &areaEdgeGlobal);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, areaEdgeGlobal, "units", 3, "m^2");
     CHECK_ERR
@@ -6459,7 +6459,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = areaEdgeGlobal;
 
-    err = INQ_VID (ncid, "areaTriangleGlobal", NC_DOUBLE, 1, dimids, &areaTriangleGlobal);
+    err = INQ_VID (ncid, "areaTriangleGlobal", MPI_DOUBLE, 1, dimids, &areaTriangleGlobal);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, areaTriangleGlobal, "units", 3, "m^2");
     CHECK_ERR
@@ -6469,7 +6469,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = areaTriangleGlobal;
 
-    err = INQ_VID (ncid, "volumeCellGlobal", NC_DOUBLE, 1, dimids, &volumeCellGlobal);
+    err = INQ_VID (ncid, "volumeCellGlobal", MPI_DOUBLE, 1, dimids, &volumeCellGlobal);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, volumeCellGlobal, "units", 3, "m^3");
     CHECK_ERR
@@ -6479,7 +6479,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = volumeCellGlobal;
 
-    err = INQ_VID (ncid, "volumeEdgeGlobal", NC_DOUBLE, 1, dimids, &volumeEdgeGlobal);
+    err = INQ_VID (ncid, "volumeEdgeGlobal", MPI_DOUBLE, 1, dimids, &volumeEdgeGlobal);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, volumeEdgeGlobal, "units", 3, "m^3");
     CHECK_ERR
@@ -6489,7 +6489,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = volumeEdgeGlobal;
 
-    err = INQ_VID (ncid, "CFLNumberGlobal", NC_DOUBLE, 1, dimids, &CFLNumberGlobal);
+    err = INQ_VID (ncid, "CFLNumberGlobal", MPI_DOUBLE, 1, dimids, &CFLNumberGlobal);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, CFLNumberGlobal, "units", 8, "unitless");
     CHECK_ERR
@@ -6503,7 +6503,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "BruntVaisalaFreqTop", NC_DOUBLE, 3, dimids, &BruntVaisalaFreqTop);
+    err = INQ_VID (ncid, "BruntVaisalaFreqTop", MPI_DOUBLE, 3, dimids, &BruntVaisalaFreqTop);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, BruntVaisalaFreqTop, "units", 6, "s^{-2}");
     CHECK_ERR
@@ -6518,7 +6518,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevelsP1;
 
-    err = INQ_VID (ncid, "vertVelocityTop", NC_DOUBLE, 3, dimids, &vertVelocityTop);
+    err = INQ_VID (ncid, "vertVelocityTop", MPI_DOUBLE, 3, dimids, &vertVelocityTop);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, vertVelocityTop, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -6533,7 +6533,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "velocityZonal", NC_DOUBLE, 3, dimids, &velocityZonal);
+    err = INQ_VID (ncid, "velocityZonal", MPI_DOUBLE, 3, dimids, &velocityZonal);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, velocityZonal, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -6543,7 +6543,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = velocityZonal;
 
-    err = INQ_VID (ncid, "velocityMeridional", NC_DOUBLE, 3, dimids, &velocityMeridional);
+    err = INQ_VID (ncid, "velocityMeridional", MPI_DOUBLE, 3, dimids, &velocityMeridional);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, velocityMeridional, "units", 8, "m s^{-1}");
     CHECK_ERR
@@ -6553,7 +6553,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = velocityMeridional;
 
-    err = INQ_VID (ncid, "displacedDensity", NC_DOUBLE, 3, dimids, &displacedDensity);
+    err = INQ_VID (ncid, "displacedDensity", MPI_DOUBLE, 3, dimids, &displacedDensity);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, displacedDensity, "units", 9, "kg m^{-3}");
     CHECK_ERR
@@ -6565,7 +6565,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = displacedDensity;
 
-    err = INQ_VID (ncid, "potentialDensity", NC_DOUBLE, 3, dimids, &potentialDensity);
+    err = INQ_VID (ncid, "potentialDensity", MPI_DOUBLE, 3, dimids, &potentialDensity);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, potentialDensity, "units", 9, "kg m^{-3}");
     CHECK_ERR
@@ -6575,7 +6575,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = potentialDensity;
 
-    err = INQ_VID (ncid, "pressure", NC_DOUBLE, 3, dimids, &pressure);
+    err = INQ_VID (ncid, "pressure", MPI_DOUBLE, 3, dimids, &pressure);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, pressure, "units", 8, "N m^{-2}");
     CHECK_ERR
@@ -6586,7 +6586,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     /* 1 double (nVertLevels) */
     dimids[0] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "refBottomDepth", NC_DOUBLE, 1, dimids, &refBottomDepth);
+    err = INQ_VID (ncid, "refBottomDepth", MPI_DOUBLE, 1, dimids, &refBottomDepth);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, refBottomDepth, "units", 1, "m");
     CHECK_ERR
@@ -6601,7 +6601,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "zMid", NC_DOUBLE, 3, dimids, &zMid);
+    err = INQ_VID (ncid, "zMid", MPI_DOUBLE, 3, dimids, &zMid);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, zMid, "units", 1, "m");
     CHECK_ERR
@@ -6612,7 +6612,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     /* 1 double (nCells) */
     dimids[0] = dim_nCells;
 
-    err = INQ_VID (ncid, "bottomDepth", NC_DOUBLE, 1, dimids, &bottomDepth);
+    err = INQ_VID (ncid, "bottomDepth", MPI_DOUBLE, 1, dimids, &bottomDepth);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bottomDepth, "units", 1, "m");
     CHECK_ERR
@@ -6625,7 +6625,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     /* 1 int (nCells) */
     dimids[0] = dim_nCells;
 
-    err = INQ_VID (ncid, "maxLevelCell", NC_INT, 1, dimids, &maxLevelCell);
+    err = INQ_VID (ncid, "maxLevelCell", MPI_INT, 1, dimids, &maxLevelCell);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, maxLevelCell, "units", 8, "unitless");
     CHECK_ERR
@@ -6637,7 +6637,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     /* 1 int (nEdges) */
     dimids[0] = dim_nEdges;
 
-    err = INQ_VID (ncid, "maxLevelEdgeBot", NC_INT, 1, dimids, &maxLevelEdgeBot);
+    err = INQ_VID (ncid, "maxLevelEdgeBot", MPI_INT, 1, dimids, &maxLevelEdgeBot);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, maxLevelEdgeBot, "units", 8, "unitless");
     CHECK_ERR
@@ -6651,7 +6651,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_Time;
     dimids[1] = dim_nCells;
 
-    err = INQ_VID (ncid, "columnIntegratedSpeed", NC_DOUBLE, 2, dimids, &columnIntegratedSpeed);
+    err = INQ_VID (ncid, "columnIntegratedSpeed", MPI_DOUBLE, 2, dimids, &columnIntegratedSpeed);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, columnIntegratedSpeed, "units", 10, "m^2 s^{-1}");
     CHECK_ERR
@@ -6667,7 +6667,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_nCells;
     dimids[2] = dim_nVertLevels;
 
-    err = INQ_VID (ncid, "temperatureHorizontalAdvectionTendency", NC_DOUBLE, 3, dimids,
+    err = INQ_VID (ncid, "temperatureHorizontalAdvectionTendency", MPI_DOUBLE, 3, dimids,
                    &temperatureHorizontalAdvectionTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, temperatureHorizontalAdvectionTendency, "long_name", 58,
@@ -6679,7 +6679,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureHorizontalAdvectionTendency;
 
-    err = INQ_VID (ncid, "salinityHorizontalAdvectionTendency", NC_DOUBLE, 3, dimids,
+    err = INQ_VID (ncid, "salinityHorizontalAdvectionTendency", MPI_DOUBLE, 3, dimids,
                    &salinityHorizontalAdvectionTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, salinityHorizontalAdvectionTendency, "long_name", 45,
@@ -6690,7 +6690,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinityHorizontalAdvectionTendency;
 
-    err = INQ_VID (ncid, "temperatureVerticalAdvectionTendency", NC_DOUBLE, 3, dimids,
+    err = INQ_VID (ncid, "temperatureVerticalAdvectionTendency", MPI_DOUBLE, 3, dimids,
                    &temperatureVerticalAdvectionTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, temperatureVerticalAdvectionTendency, "long_name", 56,
@@ -6702,7 +6702,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureVerticalAdvectionTendency;
 
-    err = INQ_VID (ncid, "salinityVerticalAdvectionTendency", NC_DOUBLE, 3, dimids,
+    err = INQ_VID (ncid, "salinityVerticalAdvectionTendency", MPI_DOUBLE, 3, dimids,
                    &salinityVerticalAdvectionTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, salinityVerticalAdvectionTendency, "long_name", 43,
@@ -6713,7 +6713,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinityVerticalAdvectionTendency;
 
-    err = INQ_VID (ncid, "temperatureVertMixTendency", NC_DOUBLE, 3, dimids,
+    err = INQ_VID (ncid, "temperatureVertMixTendency", MPI_DOUBLE, 3, dimids,
                    &temperatureVertMixTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, temperatureVertMixTendency, "long_name", 53,
@@ -6725,7 +6725,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureVertMixTendency;
 
-    err = INQ_VID (ncid, "salinityVertMixTendency", NC_DOUBLE, 3, dimids, &salinityVertMixTendency);
+    err = INQ_VID (ncid, "salinityVertMixTendency", MPI_DOUBLE, 3, dimids, &salinityVertMixTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, salinityVertMixTendency, "long_name", 40,
                         "salinity tendency due to vertical mixing");
@@ -6734,7 +6734,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinityVertMixTendency;
 
-    err = INQ_VID (ncid, "temperatureSurfaceFluxTendency", NC_DOUBLE, 3, dimids,
+    err = INQ_VID (ncid, "temperatureSurfaceFluxTendency", MPI_DOUBLE, 3, dimids,
                    &temperatureSurfaceFluxTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, temperatureSurfaceFluxTendency, "long_name", 52,
@@ -6746,7 +6746,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureSurfaceFluxTendency;
 
-    err = INQ_VID (ncid, "salinitySurfaceFluxTendency", NC_DOUBLE, 3, dimids,
+    err = INQ_VID (ncid, "salinitySurfaceFluxTendency", MPI_DOUBLE, 3, dimids,
                    &salinitySurfaceFluxTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, salinitySurfaceFluxTendency, "long_name", 39,
@@ -6756,7 +6756,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinitySurfaceFluxTendency;
 
-    err = INQ_VID (ncid, "temperatureShortWaveTendency", NC_DOUBLE, 3, dimids,
+    err = INQ_VID (ncid, "temperatureShortWaveTendency", MPI_DOUBLE, 3, dimids,
                    &temperatureShortWaveTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, temperatureShortWaveTendency, "units", 26,
@@ -6768,7 +6768,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperatureShortWaveTendency;
 
-    err = INQ_VID (ncid, "temperatureNonLocalTendency", NC_DOUBLE, 3, dimids,
+    err = INQ_VID (ncid, "temperatureNonLocalTendency", MPI_DOUBLE, 3, dimids,
                    &temperatureNonLocalTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, temperatureNonLocalTendency, "long_name", 56,
@@ -6781,7 +6781,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = temperatureNonLocalTendency;
 
     err =
-        INQ_VID (ncid, "salinityNonLocalTendency", NC_DOUBLE, 3, dimids, &salinityNonLocalTendency);
+        INQ_VID (ncid, "salinityNonLocalTendency", MPI_DOUBLE, 3, dimids, &salinityNonLocalTendency);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, salinityNonLocalTendency, "long_name", 43,
                         "salinity tendency due to kpp non-local flux");
@@ -6790,7 +6790,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = salinityNonLocalTendency;
 
-    err = INQ_VID (ncid, "temperature", NC_DOUBLE, 3, dimids, &temperature);
+    err = INQ_VID (ncid, "temperature", MPI_DOUBLE, 3, dimids, &temperature);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, temperature, "long_name", 21, "potential temperature");
     CHECK_ERR
@@ -6798,7 +6798,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
     varids[i++] = temperature;
 
-    err = INQ_VID (ncid, "salinity", NC_DOUBLE, 3, dimids, &salinity);
+    err = INQ_VID (ncid, "salinity", MPI_DOUBLE, 3, dimids, &salinity);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, salinity, "long_name", 8, "salinity");
     CHECK_ERR
