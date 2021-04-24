@@ -32,8 +32,8 @@ typedef enum e3sm_io_layout { contig, chunk } e3sm_io_layout;
 typedef struct e3sm_io_config {
     int rank;
     int np;
-    MPI_Comm io_comm;
-    MPI_Info info;
+    MPI_Comm io_comm = MPI_COMM_WORLD;
+    MPI_Info info    = MPI_INFO_NULL;
     int num_iotasks;
 
     std::string targetdir = "./";

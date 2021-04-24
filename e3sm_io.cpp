@@ -101,21 +101,22 @@ void print_info (MPI_Info *info_used) {
 /*----< usage() >------------------------------------------------------------*/
 static void usage (char *argv0) {
     std::string help =
-        "Usage: %s [OPTION]... FILE\n"
+        "Usage: %s [OPTION]...\n"
         "       [-h] Print help\n"
         "       [-v] Verbose mode\n"
-        "       [-k] Keep the output files when program exits\n"
+        "       [-k] Keep the output files when the program exits\n"
         "       [-d] Run test that uses low-level APIs\n"
         "       [-n] Run test using noncontiguous write buffer\n"
         "       [-t] Write 2D variables followed by 3D variables\n"
         "       [-R] Test reading performance\n"
         "       [-W] Test writing performance\n"
+        "       [-H num] File number to run in F case (-1 (both) (default), 0, 1)\n"
         "       [-r num] Number of records (default 1)\n"
         "       [-s num] Stride between IO tasks (default 1)\n"
         "       [-a api] Underlying API to test (pnc (default), hdf5, adios2)\n"
         "       [-l layout] Storage layout of the variables (contig (default), chunk)\n"
         "       [-o target_dir] Path to directory containing the test files (default ./)\n"
-        "       [-i target_dir] Path to directory containing the input files (default ./)\n"
+        "       [-i target_dir] Path to directory containing the input files\n"
         "       [-c output_dir] Name of input netCDF file describing data decompositions "
         "\n";
     fprintf (stderr, help.c_str (), argv0);
@@ -203,8 +204,7 @@ int main (int argc, char **argv) {
                 case 'h':
                 default:
                     if (cfg.rank == 0) usage (argv[0]);
-                    MPI_Finalize ();
-                    return 1;
+                    goto err_out;
             }
 
         if (cfg.cfgpath == "") { /* input file is mandatory */
@@ -304,8 +304,8 @@ int main (int argc, char **argv) {
         if (cfg.rd) { tcase->rd_test (cfg, decom, *driver); }
 
     err_out:
-        delete driver;
-        delete tcase;
+        if (driver) { delete driver; }
+        if (tcase) { delete tcase; }
 
         /* Non-IO tasks wait for IO tasks to complete */
         MPI_Barrier (MPI_COMM_WORLD);

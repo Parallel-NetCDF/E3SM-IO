@@ -86,7 +86,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = e3sm_io$(EXEEXT)
+bin_PROGRAMS = e3sm_io$(EXEEXT) dat2nc$(EXEEXT)
 am__append_1 = -lH5VL_log
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -104,6 +104,9 @@ CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
+am_dat2nc_OBJECTS = dat2nc.$(OBJEXT)
+dat2nc_OBJECTS = $(am_dat2nc_OBJECTS)
+dat2nc_DEPENDENCIES =
 am_e3sm_io_OBJECTS = e3sm_io.$(OBJEXT) read_decomp.$(OBJEXT)
 e3sm_io_OBJECTS = $(am_e3sm_io_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -124,9 +127,21 @@ am__v_at_1 =
 DEFAULT_INCLUDES = -I.
 depcomp = $(SHELL) $(top_srcdir)/./scripts/depcomp
 am__maybe_remake_depfiles = depfiles
-am__depfiles_remade = ./$(DEPDIR)/e3sm_io.Po \
+am__depfiles_remade = ./$(DEPDIR)/dat2nc.Po ./$(DEPDIR)/e3sm_io.Po \
 	./$(DEPDIR)/read_decomp.Po
 am__mv = mv -f
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_$(V))
+am__v_CC_ = $(am__v_CC_$(AM_DEFAULT_VERBOSITY))
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_$(V))
+am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_$(V))
@@ -140,20 +155,8 @@ AM_V_CXXLD = $(am__v_CXXLD_$(V))
 am__v_CXXLD_ = $(am__v_CXXLD_$(AM_DEFAULT_VERBOSITY))
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
-	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-AM_V_CC = $(am__v_CC_$(V))
-am__v_CC_ = $(am__v_CC_$(AM_DEFAULT_VERBOSITY))
-am__v_CC_0 = @echo "  CC      " $@;
-am__v_CC_1 = 
-CCLD = $(CC)
-LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-AM_V_CCLD = $(am__v_CCLD_$(V))
-am__v_CCLD_ = $(am__v_CCLD_$(AM_DEFAULT_VERBOSITY))
-am__v_CCLD_0 = @echo "  CCLD    " $@;
-am__v_CCLD_1 = 
-SOURCES = $(e3sm_io_SOURCES)
-DIST_SOURCES = $(e3sm_io_SOURCES)
+SOURCES = $(dat2nc_SOURCES) $(e3sm_io_SOURCES)
+DIST_SOURCES = $(dat2nc_SOURCES) $(e3sm_io_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -358,13 +361,15 @@ AM_CPPFLAGS = -I${top_srcdir} -I${top_srcdir}/drivers \
 e3sm_io_SOURCES = e3sm_io.cpp read_decomp.cpp e3sm_io.hpp
 e3sm_io_LDADD = drivers/libe3sm_io_drivers.a cases/libe3sm_io_cases.a \
 	-lpnetcdf $(am__append_1)
+dat2nc_SOURCES = dat2nc.c 
+dat2nc_LDADD = -lpnetcdf
 SUBDIRS = drivers cases
 DIST_SUBDIRS = drivers cases
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
+.SUFFIXES: .c .cpp .o .obj
 am--refresh: Makefile
 	@:
 $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
@@ -456,6 +461,10 @@ uninstall-binPROGRAMS:
 clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 
+dat2nc$(EXEEXT): $(dat2nc_OBJECTS) $(dat2nc_DEPENDENCIES) $(EXTRA_dat2nc_DEPENDENCIES) 
+	@rm -f dat2nc$(EXEEXT)
+	$(AM_V_CCLD)$(LINK) $(dat2nc_OBJECTS) $(dat2nc_LDADD) $(LIBS)
+
 e3sm_io$(EXEEXT): $(e3sm_io_OBJECTS) $(e3sm_io_DEPENDENCIES) $(EXTRA_e3sm_io_DEPENDENCIES) 
 	@rm -f e3sm_io$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(e3sm_io_OBJECTS) $(e3sm_io_LDADD) $(LIBS)
@@ -466,6 +475,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+include ./$(DEPDIR)/dat2nc.Po # am--include-marker
 include ./$(DEPDIR)/e3sm_io.Po # am--include-marker
 include ./$(DEPDIR)/read_decomp.Po # am--include-marker
 
@@ -474,6 +484,20 @@ $(am__depfiles_remade):
 	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
 am--depfiles: $(am__depfiles_remade)
+
+.c.o:
+	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
+	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+#	$(AM_V_CC)source='$<' object='$@' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+	$(AM_V_CC)$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ `$(CYGPATH_W) '$<'`
+	$(AM_V_at)$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
+#	$(AM_V_CC)source='$<' object='$@' libtool=no \
+#	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
+#	$(AM_V_CC_no)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cpp.o:
 	$(AM_V_CXX)$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -831,7 +855,8 @@ clean-am: clean-binPROGRAMS clean-generic mostlyclean-am
 
 distclean: distclean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-		-rm -f ./$(DEPDIR)/e3sm_io.Po
+		-rm -f ./$(DEPDIR)/dat2nc.Po
+	-rm -f ./$(DEPDIR)/e3sm_io.Po
 	-rm -f ./$(DEPDIR)/read_decomp.Po
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
@@ -880,7 +905,8 @@ installcheck-am:
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
 	-rm -rf $(top_srcdir)/autom4te.cache
-		-rm -f ./$(DEPDIR)/e3sm_io.Po
+		-rm -f ./$(DEPDIR)/dat2nc.Po
+	-rm -f ./$(DEPDIR)/e3sm_io.Po
 	-rm -f ./$(DEPDIR)/read_decomp.Po
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic

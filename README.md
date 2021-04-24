@@ -6,7 +6,7 @@ E3SM I/O module makes use of [PIO](https://github.com/NCAR/ParallelIO)
 library which is built on top of
 [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF) and
 [NetCDF-4](http://www.unidata.ucar.edu/software/netcdf). PnetCDF is a
-parallel I/O library for accessing the classic NetCDF files, i.e. CDF-1,
+parallel I/O library for accessing the classic NetCDF files, i.e., CDF-1,
 CDF-2, and CDF-5 formats. NetCDF-4 provides parallel I/O capability for
 [HDF5](https://www.hdfgroup.org/solutions/hdf5) based NetCDF file format.
 The benchmark program in this repository, e3sm_io.c, is designed to evaluate
@@ -24,7 +24,7 @@ The I/O patterns (data decompositions among MPI processes) used in this case
 study were captured by the [PIO](https://github.com/NCAR/ParallelIO) library.
 A data decomposition file records the data access patterns at the array element
 level for each MPI process. The access offsets are stored in a text file,
-referred by PIO as the `decomposition file. This benchmark currently studies
+referred to by PIO as the `decomposition file. This benchmark currently studies
 two cases from E3SM, namely F and G cases. The F case uses three unique data
 decomposition patterns shared by 388 2D and 3D variables (2 sharing
 Decomposition 1, 323 sharing Decomposition 2, and 63 sharing Decomposition 3).
@@ -33,18 +33,101 @@ Decomposition 1, 2 sharing Decomposition 2, 25 sharing Decomposition 3, 2
 sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 6).
 
+### Software Requirements
+* [PnetCDF 1.12.2](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz)
+* MPI C and C++ compilers
+  + The plugin uses the constant initializer; a C++ compiler supporting std 11 is required
+* Autotools utility
+  + autoconf 2.69
+  + automake 1.16.1
+  + libtoolize 2.4.6
+  + m4 1.4.18
+* (Optional) [HDF5 1.12.0](https://hdf-wordpress-1.s3.amazonaws.com/wp-content/uploads/manual/HDF5/HDF5_1_12_0/source/hdf5-1.12.0.tar.gz)
+  + Parallel I/O support (--enable-parallel) is required
+* (Optional) [Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
+  + Experimental
+  + Must have HDF5
+* (Optional) [ADIOS2 2.7.1](https://github.com/ornladios/ADIOS2.git)
+  + Parallel I/O support (-DADIOS2_USE_MPI=ON) is required
+
+### Building Steps
+* Build PnetCDF
+  + Download and extract the PnetCDF source code
+  + Run command autoreconf -i
+  + Configure PnetCDF with mpi C compiler
+  + Run make install
+  + Example commands are given below. This example will install
+    the HD5 library under the folder `${HOME}/PNC`.
+    ```
+    % wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz
+    % tar -zxf pnetcdf-1.12.2.tar.gz
+    % cd pnetcdf-1.12.2
+    % autoreconf -i
+    % ./configure --prefix=${HOME}/PNC CC=mpicc
+    % make -j 16 install
+    ```
+    The PnetCDF library is now installed under the folder `${HOME}/PNC.`
+* (Optional) Build HDF5 with parallel I/O support
+  + Download and extract the HDF5 source code
+  + Run command ./autogen.sh
+  + Configure HDF5 with parallel I/O enabled
+  + Run make install
+  + Example commands are given below. This example will install
+    the HD5 library under the folder `${HOME}/HDF5`.
+    ```
+    % wget https://hdf-wordpress-1.s3.amazonaws.com/wp-content/uploads/manual/HDF5/HDF5_1_12_0/source/hdf5-1.12.0.tar.gz
+    % tar -zxf hdf5-1.12.0.tar.gz 
+    % cd hdf5-1.12.0
+    % ./autogen
+    % ./configure --prefix=${HOME}/HDF5 --enable-parallel CC=mpicc
+    % make -j 16 install
+    ```
+    The HDF5 library is now installed under the folder `${HOME}/HDF5.`
+* (Optional) Build log-based VOL plugin.
+  + Clone the source code from the log-based VOL repository
+  + Run command autoreconf -i
+  + Configure log-based VOL 
+    + Shared library is required to enable log-based VOL by environment variables
+    + Compile with zlib library to enable metadata compression
+  + Example commands are given below.
+    ```
+    % git clone https://github.com/DataLib-ECP/vol-log-based.git
+    % cd log_io_vol
+    % autoreconf -i
+    % ./configure --prefix=${HOME}/Log_IO_VOL --with-hdf5=${HOME}/HDF5 --enable-shared --enable-zlib
+    % make -j 16 install
+    ```
+    The VOL plugin library is now installed under the folder `${HOME}/Log_IO_VOL.`
+* Build the E3SM-I/O benchmark
+  + Clone this E3SM-I/O benchmark repository
+  + Run command autoreconf -i
+  + Configure the E3SM-I/O benchmark with mpi compilers
+    + Add HDF5 installation path (--with-hdf5=/path/to/implementation) to enable HDF5 API support
+    + Add log-based VOL installation path (--with-logvol=/path/to/implementation) to enable HDF5 API support
+    + Add ADIOS2 installation path (--with-adios2=/path/to/implementation) to enable HDF5 API support
+  + Run make install
+  + Example commands are given below. This example will install
+    the HD5 library under the folder `${HOME}/PNC`.
+    ```
+    % git clone https://github.com/Parallel-NetCDF/E3SM-IO.git
+    % cd E3SM-IO
+    % autoreconf -i
+    % CC=mpicc CXX=mpicxx ./configure --with-pnetcdf=${HOME}/PNC --with-hdf5=${HOME}/HDF --with-logvol=${HOME}/Log_IO_VOL --with-adios2=${HOME}/ADIOS2
+    % make -j 16 install
+    ```
+
 ### Prepare the data decomposition file in NetCDF file format
-* For the F case, the three data decomposition files generated by PIO library
+* For the F case, the three data decomposition files generated by the PIO library
   are in text format with file extension name `.dat`. The decomposition files
-  must first be combined and converted into a NetCDF file, to be read in
-  parallel as the input file to this benchmark program. Similarly for the G
+  must first be combined and converted into a NetCDF file to be read in
+  parallel as the input file to this benchmark program. Similarly, for the G
   case, the six decomposition files need to be converted first.
-* A utility program, `dat2nc.c`, is includes to convert the text files. To
+* A utility program, `dat2nc.c`, is included to convert the text files. To
   build this utility program, run command
   ```
     % make dat2nc
   ```
-* The command to combine the three .dat files to a NetCDF file, for F case
+* The command to combine the three .dat files to a NetCDF file for the F case
   as an example, is:
   ```
     % ./dat2nc -o outputfile.nc -1 decomp_1.dat -2 decomp_2.dat -3 decomp_3.dat
@@ -132,7 +215,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 * Edit `Makefile` to customize the MPI compiler, compile options, location of
   PnetCDF library, etc.
 * The minimum required PnetCDF version is 1.11.0.
-* Run command below to generate the executable program named `e3sm_io`.
+* Run the command below to generate the executable program named `e3sm_io`.
   ```
     % make e3sm_io
   ```
@@ -140,13 +223,12 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 ### Run command:
 * An example run command using `mpiexec` and 16 MPI processes is:
   ```
-    % mpiexec -n 16 ./e3sm_io datasets/f_case_866x72_16p.nc
+    % mpiexec -n 16 ./e3sm_io -c datasets/f_case_866x72_16p.nc
   ```
 * The number of MPI processes used to run this benchmark can be different
   from the value of the variable `decomp_nprocs` stored in the decomposition
   NetCDF file. For example, in file `f_case_866x72_16p.nc`, `decomp_nprocs`
-  is 16, the number of MPI processes originally used to produce the
-  decomposition .dat files. When running this benchmark using less number of
+  is 16, the number of MPI processes originally used to produce the decomposition .dat files. When running this benchmark using less number of
   MPI processes, the I/O workload will be divided among all the allocated MPI
   processes. When using more processes than `decomp_nprocs`, those processes
   with MPI ranks greater than or equal to `decomp_nprocs` will have no data
@@ -154,18 +236,23 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 * Command-line options:
   ```
     % ./e3sm_io -h
-    Usage: ./e3sm_io [OPTION]... FILE
-           [-h] Print help
-           [-v] Verbose mode
-           [-k] Keep the output files when program exits
-           [-d] Run test that uses PnetCDF vard API
-           [-n] Run test that uses PnetCDF varn API
-           [-m] Run test using noncontiguous write buffer
-           [-t] Write 2D variables followed by 3D variables
-           [-r num] Number of records (default 1)
-           [-s num] Stride between IO tasks (default 1)
-           [-o output_dir] Output directory name (default ./)
-           FILE: Name of input netCDF file describing data decompositions
+    Usage: ./e3sm_io [OPTION]...
+       [-h] Print help
+       [-v] Verbose mode
+       [-k] Keep the output files when the program exits
+       [-d] Run test that uses low-level APIs
+       [-n] Run test using noncontiguous write buffer
+       [-t] Write 2D variables followed by 3D variables
+       [-R] Test reading performance
+       [-W] Test writing performance
+       [-H num] File number to run in F case (-1 (both) (default), 0, 1)
+       [-r num] Number of records (default 1)
+       [-s num] Stride between IO tasks (default 1)
+       [-a api] Underlying API to test (pnc (default), hdf5, adios2)
+       [-l layout] Storage layout of the variables (contig (default), chunk)
+       [-o target_dir] Path to directory containing the test files (default ./)
+       [-i target_dir] Path to directory containing the input files
+       [-c output_dir] Name of input netCDF file describing data decompositions 
   ```
 * An example batch script file for running a job on Cori @NERSC with 8 KNL
   nodes, 64 MPI processes per node, is provided in `./slurm.knl`.
@@ -177,9 +264,9 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   F and G cases running on 21632 and 9600 MPI processes respectively are
   available upon request.
 
-### Example outputs shown on screen
+### example outputs shown on screen
 ```
-  % mpiexec -n 512 ./e3sm_io -k -r 3  -o $SCRATCH/FS_1M_64 datasets/f_case_48602x72_512p.nc
+  % mpiexec -n 512 ./e3sm_io -k -r 3 -o $SCRATCH/FS_1M_64 -c datasets/f_case_48602x72_512p.nc
 
   Total number of MPI processes      = 512
   Input decomposition file           = datasets/f_case_48602x72_512p.nc
@@ -283,10 +370,10 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 ### Current build status
 * [Travis CI ![Build Status](https://travis-ci.org/Parallel-NetCDF/E3SM-IO.svg?branch=master)](https://travis-ci.org/Parallel-NetCDF/E3SM-IO)
 
-## Questions/Comments:
-email: wkliao@eecs.northwestern.edu
+### Developers
+* Wei-keng Liao <wkliao@northwestern.edu>
+* Kai-yuan Hou <kai-yuanhou2020@u.northwestern.edu>
 
-Copyright (C) 2018, Northwestern University.
+Copyright (C) 2021, Northwestern University.
 
 See [COPYRIGHT](COPYRIGHT) notice in top-level directory.
-
