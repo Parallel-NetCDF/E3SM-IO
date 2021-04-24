@@ -31,6 +31,9 @@
 #ifdef ENABLE_HDF5
 #include "e3sm_io_driver_hdf5.hpp"
 #endif
+#ifdef ENABLE_ADIOS2
+#include "e3sm_io_driver_adios2.hpp"
+#endif
 
 int verbose;      /* verbose mode to print additional messages on screen */
 int keep_outfile; /* whether to keep the output files when exits */
@@ -102,14 +105,19 @@ static void usage (char *argv0) {
         "       [-h] Print help\n"
         "       [-v] Verbose mode\n"
         "       [-k] Keep the output files when program exits\n"
-        "       [-d] Run test that uses PnetCDF vard API\n"
-        "       [-n] Run test that uses PnetCDF varn API\n"
-        "       [-m] Run test using noncontiguous write buffer\n"
+        "       [-d] Run test that uses low-level APIs\n"
+        "       [-n] Run test using noncontiguous write buffer\n"
         "       [-t] Write 2D variables followed by 3D variables\n"
+        "       [-R] Test reading performance\n"
+        "       [-W] Test writing performance\n"
         "       [-r num] Number of records (default 1)\n"
         "       [-s num] Stride between IO tasks (default 1)\n"
-        "       [-o output_dir] Output directory name (default ./)\n"
-        "       FILE: Name of input netCDF file describing data decompositions\n";
+        "       [-a api] Underlying API to test (pnc (default), hdf5, adios2)\n"
+        "       [-l layout] Storage layout of the variables (contig (default), chunk)\n"
+        "       [-o target_dir] Path to directory containing the test files (default ./)\n"
+        "       [-i target_dir] Path to directory containing the input files (default ./)\n"
+        "       [-c output_dir] Name of input netCDF file describing data decompositions "
+        "\n";
     fprintf (stderr, help.c_str (), argv0);
 }
 
@@ -150,6 +158,10 @@ int main (int argc, char **argv) {
                         cfg.api = pnc;
                     } else if (std::string (optarg) == "hdf5") {
                         cfg.api = hdf5;
+                    } else if (std::string (optarg) == "adios2") {
+                        cfg.api = adios2;
+                    } else {
+                        RET_ERR ("Unknown API")
                     }
                     break;
                 case 'l':
@@ -157,6 +169,8 @@ int main (int argc, char **argv) {
                         cfg.layout = contig;
                     } else if (std::string (optarg) == "chunk") {
                         cfg.layout = chunk;
+                    } else {
+                        RET_ERR ("Unknown layout")
                     }
                     break;
                 case 'o':
@@ -252,7 +266,18 @@ int main (int argc, char **argv) {
                 driver = new e3sm_io_driver_pnc ();
                 break;
             case hdf5:
+#ifdef ENABLE_HDF5
                 driver = new e3sm_io_driver_hdf5 ();
+#else
+                RET_ERR ("HDF5 support was not enabled in this build")
+#endif
+                break;
+            case adios2:
+#ifdef ENABLE_ADIOS2
+                driver = new e3sm_io_driver_adios2 ();
+#else
+                RET_ERR ("ADIOS2 support was not enabled in this build")
+#endif
                 break;
             default:
                 RET_ERR ("Unknown driver")

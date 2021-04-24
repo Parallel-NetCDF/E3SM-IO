@@ -16,6 +16,8 @@
 #include <cstdio>
 #include <string>
 
+#define E3SM_IO_GLOBAL_ATTR -1
+
 #define MAX_NUM_DECOMP 6
 
 #define PRINT_MSG(V, ...)                                                    \
@@ -64,13 +66,6 @@ typedef struct e3sm_io_decom {
     int *blocklens[MAX_NUM_DECOMP];
     MPI_Offset dims[MAX_NUM_DECOMP][2];
 } e3sm_io_decom;
-
-#ifndef MAX
-#define MAX(a, b) ((a) > (b)) ? (a) : (b)
-#endif
-#ifndef MIN
-#define MIN(a, b) ((a) < (b)) ? (a) : (b)
-#endif
 
 /* In E3SM production runs, the write buffers are of type double in memory,
  * and the variables stored in NetCDF files are of type NC_FLOAT. This default

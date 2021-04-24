@@ -2,6 +2,7 @@
 
 #include <pnetcdf.h>
 
+#include "e3sm_io.hpp"
 #include "e3sm_io_err.hpp"
 
 #define CHECK_NCERR                                                   \
@@ -229,6 +230,8 @@ int e3sm_io_driver_pnc::put_att (
     int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) {
     int err, nerrs = 0;
 
+    if (vid == E3SM_IO_GLOBAL_ATTR) { vid = NC_GLOBAL; }
+
     err = ncmpi_put_att (fid, vid, name.c_str (), mpitype2nctype (type), size, buf);
     CHECK_NCERR
 
@@ -238,6 +241,8 @@ err_out:;
 
 int e3sm_io_driver_pnc::get_att (int fid, int vid, std::string name, void *buf) {
     int err, nerrs = 0;
+
+    if (vid == E3SM_IO_GLOBAL_ATTR) { vid = NC_GLOBAL; }
 
     err = ncmpi_get_att (fid, vid, name.c_str (), buf);
     CHECK_NCERR

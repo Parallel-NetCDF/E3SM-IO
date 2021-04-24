@@ -518,7 +518,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     open_timing = MPI_Wtime ();
 
     /* set output file name */
-    targetfname = cfg.targetdir + outfile;
+    targetfname = cfg.targetdir + '/'  + outfile;
 
     /* create a new CDF-5 file for writing */
     err = driver.create (targetfname, cfg.io_comm, cfg.info, &ncid);
@@ -1048,7 +1048,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
     timing = MPI_Wtime ();
 
     /* set output file name */
-    targetfname = cfg.targetdir + outfile;
+    targetfname = cfg.targetdir + '/'  + outfile;
 
     /* create a new CDF-5 file for writing */
     err = driver.create (targetfname, cfg.io_comm, cfg.info, &ncid);
@@ -1493,7 +1493,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     timing = MPI_Wtime ();
 
     /* set output file name */
-    targetfname = cfg.targetdir + outfile;
+    targetfname = cfg.targetdir + '/'  + outfile;
 
     /* create a new CDF-5 file for writing */
     err = driver.open (targetfname.c_str (), comm, cfg.info, &ncid);

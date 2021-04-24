@@ -471,7 +471,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     timing = MPI_Wtime ();
 
     /* set output file name */
-    outfname = cfg.targetdir + outfile;
+    outfname = cfg.targetdir + '/' + outfile;
 
     /* create a new CDF-5 file for writing */
     err = driver.create (outfname, cfg.io_comm, cfg.info, &ncid);
@@ -1090,7 +1090,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     timing = MPI_Wtime ();
 
     /* set output file name */
-    outfname = cfg.targetdir + outfile;
+    outfname = cfg.targetdir + '/' + outfile;
 
     /* create a new CDF-5 file for writing */
     err = driver.open (outfname, comm, cfg.info, &ncid);

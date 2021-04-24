@@ -410,6 +410,72 @@ if test "x$have_logvol" = xno ; then
 fi
 AM_CONDITIONAL(ENABLE_LOGVOL, [test "x$have_logvol" = xyes])
 
+
+# Check for ADIOS2
+AC_ARG_WITH([adios2],
+   [AS_HELP_STRING([--with-adios2=/path/to/adios2], [Specify ADIOS2 installation path(s):
+    --with-adios2=INC,LIB for include directory and library directory separated by a comma
+    --with-adios2=DIR for directory containing include/ and lib/ subdirectories
+   ])], [
+   if test "x${withval}" != xyes && test "x${withval}" != xno ; then
+      ADIOS2_INSTALL=${withval}
+   fi
+   case $withval in
+     *,*)
+        adios2_inc="`echo $withval |cut -f1 -d,`"
+        adios2_lib="`echo $withval |cut -f2 -d, -s`"
+        adios2_bindir="$adios2_inc/../bin"
+        ;;
+     *)
+        if test -n "$withval"; then
+          adios2_inc="$withval/include"
+          adios2_lib="$withval/lib"
+          adios2_bindir="$ADIOS2_INSTALL/bin"
+        fi
+        ;;
+   esac
+   adios2_config=
+   if test "x$ADIOS2_INSTALL" != x ; then
+      AC_PATH_PROG([adios2_config],[adios2-config],,[$adios2_bindir])
+   else
+      dnl Check adios2-config under $PATH
+      AC_PATH_PROG([adios2_config],[adios2-config])
+   fi
+   if test "x$adios2_config" != x ; then
+      adios2_cflags=`$adios2_config --c-flags -m`
+      adios2_lflags=`$adios2_config --c-libs -m`
+   else
+      adios2_cflags="-I$adios2_inc"
+      adios2_lflags="-L$adios2_lib"
+   fi
+   if test "x$adios2_cflags" != x ; then
+      if test "x$CPPFLAGS" = x ; then
+         CPPFLAGS="${adios2_cflags}"
+      elif ! echo "${CPPFLAGS}" | ${EGREP} -q -w -- "${adios2_cflags}" ; then
+         # append only if not already appear in CPPFLAGS
+         CPPFLAGS="$CPPFLAGS ${adios2_cflags}"
+      fi
+   fi
+   if test "x$adios2_lflags" != x ; then
+      if test "x$LDFLAGS" = x ; then
+         LDFLAGS="$adios2_lflags"
+      elif ! echo "${LDFLAGS}" | ${EGREP} -q -w -- "${adios2_lflags}" ; then
+         # append only if not already appear in LDFLAGS
+         LDFLAGS="$LDFLAGS $adios2_lflags"
+      fi
+   fi
+])
+AC_CHECK_HEADER([adios2_c.h], [have_adios2=yes], [have_adios2=no])
+if test "x$have_adios2" = xno ; then
+      AC_MSG_WARN([
+      -----------------------------------------------------------------------
+      Missing ADIOS2-header files 'adios2_c.h' required to build E3SM_IO. Use
+      configure command-line option --with-adios2=/path/to/implementation
+      to specify the location of ADIOS2 installation. Disable ADIOS2 support.
+      -----------------------------------------------------------------------])
+fi
+AM_CONDITIONAL(ENABLE_ADIOS2, [test "x$have_adios2" = xyes])
+
 if test "x$LIBS" = x ; then
 LIBS="-lpnetcdf"
 else
@@ -432,6 +498,15 @@ if test "x$have_logvol" = xyes ; then
     LIBS="$LIBS -lH5VL_log"
     fi
     AC_DEFINE([ENABLE_LOGVOL], [1], [Build logvol benchmark])
+fi
+
+if test "x$have_adios2" = xyes ; then
+    if test "x$LIBS" = x ; then
+    LIBS="${adios2_lflags}"
+    else
+    LIBS="$LIBS ${adios2_lflags}"
+    fi
+    AC_DEFINE([ENABLE_ADIOS2], [1], [Build ADIOS2 benchmark])
 fi
 
 AC_CONFIG_FILES(  Makefile \

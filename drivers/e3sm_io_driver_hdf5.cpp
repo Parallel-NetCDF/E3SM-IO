@@ -1,3 +1,4 @@
+#include "e3sm_io.hpp"
 #include "e3sm_io_driver_hdf5.hpp"
 
 #include <hdf5.h>
@@ -44,6 +45,7 @@ static inline hid_t nc_type_to_hdf5_type (nc_type nctype) {
             return H5T_NATIVE_CHAR;
         default:
             printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, nctype);
+            DEBUG_ABORT
     }
 
     return -1;
@@ -61,6 +63,7 @@ static inline hid_t mpi_type_to_hdf5_type (MPI_Datatype mpitype) {
             return H5T_NATIVE_CHAR;
         default:
             printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, mpitype);
+            DEBUG_ABORT
     }
 
     return -1;
@@ -103,7 +106,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 () {
     CHECK_HID (this->log_vlid)
 #endif
 
-    for (i = 0; i < H5S_MAX_RANK; i++) {
+    for (i = 0; i < E3SM_IO_DRIVER_MAX_RANK; i++) {
         one[i]  = 1;
         mone[i] = 1;
     }
@@ -294,7 +297,7 @@ int e3sm_io_driver_hdf5::def_var (
     hid_t h5did;
     hid_t sid    = -1;
     hid_t dcplid = -1;
-    hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
+    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
 
     dcplid = H5Pcreate (H5P_DATASET_CREATE);
     CHECK_HID (dcplid)
@@ -433,7 +436,7 @@ int e3sm_io_driver_hdf5::put_att (
     asid  = H5Screate_simple (1, &asize, &asize);
     CHECK_HID (asid)
 
-    if (vid == NC_GLOBAL)
+    if (vid == E3SM_IO_GLOBAL_ATTR)
         did = fp->id;
     else
         did = fp->dids[vid];
@@ -466,7 +469,7 @@ int e3sm_io_driver_hdf5::get_att (int fid, int vid, std::string name, void *buf)
     hsize_t asize;
     htri_t exists;
 
-    if (vid == NC_GLOBAL)
+    if (vid == E3SM_IO_GLOBAL_ATTR)
         did = fp->id;
     else
         did = fp->dids[vid];
@@ -501,8 +504,8 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
     hid_t dsid = -1, msid = -1;
     hid_t did;
     hid_t dxplid;
-    hsize_t hstart[H5S_MAX_RANK], hblock[H5S_MAX_RANK];
-    hsize_t dims[H5S_MAX_RANK];
+    hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
 
     did = fp->dids[vid];
 
@@ -620,8 +623,8 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
     hid_t dsid = -1, msid = -1;
     hid_t did;
     hid_t dxplid;
-    hsize_t hstart[H5S_MAX_RANK], hblock[H5S_MAX_RANK], hstride[H5S_MAX_RANK];
-    hsize_t dims[H5S_MAX_RANK];
+    hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK], hstride[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
 
     did = fp->dids[vid];
 
@@ -730,8 +733,8 @@ int e3sm_io_driver_hdf5::put_varn (int fid,
     hid_t did;
     hid_t dxplid;
     hsize_t **hstarts = NULL, **hcounts = NULL;
-    hsize_t start[H5S_MAX_RANK], block[H5S_MAX_RANK];
-    hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
+    hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
 
     did = fp->dids[vid];
 
@@ -900,8 +903,8 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
     hid_t dsid = -1, msid = -1;
     hid_t did;
     hid_t dxplid;
-    hsize_t hstart[H5S_MAX_RANK], hblock[H5S_MAX_RANK];
-    hsize_t dims[H5S_MAX_RANK];
+    hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
 
     did = fp->dids[vid];
 
@@ -1014,8 +1017,8 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
     hid_t dsid = -1, msid = -1;
     hid_t did;
     hid_t dxplid;
-    hsize_t hstart[H5S_MAX_RANK], hblock[H5S_MAX_RANK], hstride[H5S_MAX_RANK];
-    hsize_t dims[H5S_MAX_RANK];
+    hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK], hstride[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
 
     did = fp->dids[vid];
 
@@ -1120,8 +1123,8 @@ int e3sm_io_driver_hdf5::get_varn (int fid,
     hid_t did;
     hid_t dxplid;
     hsize_t **hstarts = NULL, **hcounts = NULL;
-    hsize_t start[H5S_MAX_RANK], block[H5S_MAX_RANK];
-    hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
+    hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
 
     did = fp->dids[vid];
 

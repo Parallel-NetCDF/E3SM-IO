@@ -13,8 +13,9 @@
  *
  *********************************************************************/
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
+#include <algorithm>
 
 #include <e3sm_io.hpp>
 #include <e3sm_io_err.hpp>
@@ -263,8 +264,8 @@ int read_decomp (int verbose,
             int min_blocklen = blocklens[decomp_id][0];
             int max_blocklen = blocklens[decomp_id][0];
             for (i = 1; i < contig_nreqs[decomp_id]; i++) {
-                max_blocklen = MAX (blocklens[decomp_id][i], max_blocklen);
-                min_blocklen = MIN (blocklens[decomp_id][i], min_blocklen);
+                max_blocklen = std::max (blocklens[decomp_id][i], max_blocklen);
+                min_blocklen = std::min (blocklens[decomp_id][i], min_blocklen);
             }
             printf ("D%d rank %d nreqs=%d contig nreqs=%4d max_blocklen=%d min_blocklen=%d\n",
                     decomp_id + 1, rank, nreqs, contig_nreqs[decomp_id], max_blocklen,

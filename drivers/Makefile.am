@@ -20,6 +20,12 @@ H_SRCS += e3sm_io_driver_hdf5.hpp
 endif
 
 
+if ENABLE_ADIOS2
+C_SRCS += e3sm_io_driver_adios2.cpp
+H_SRCS += e3sm_io_driver_adios2.hpp
+endif
+
+
 libe3sm_io_drivers_a_SOURCES = $(C_SRCS) $(H_SRCS)
 
 CLEANFILES = core core.* *.gcda *.gcno *.gcov gmon.out
