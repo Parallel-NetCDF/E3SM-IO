@@ -33,6 +33,13 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             RET_ERR ("HDF5 support was not enabled in this build")
 #endif
             break;
+        case adios2:
+#ifdef ENABLE_ADIOS2
+            driver = new e3sm_io_driver_adios2 ();
+#else
+            RET_ERR ("ADIOS2 support was not enabled in this build")
+#endif
+            break;
         default:
             RET_ERR ("Unknown driver")
             break;
