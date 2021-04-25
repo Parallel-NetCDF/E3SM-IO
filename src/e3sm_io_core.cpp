@@ -9,18 +9,29 @@
 
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
+
 #include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
 #include <e3sm_io_driver_pnc.hpp>
+#ifdef ENABLE_HDF5
+#include <e3sm_io_driver_hdf5.hpp>
+#endif
 
 extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
-    int nerrs=0;
+    int nerrs              = 0;
     e3sm_io_case *tcase    = NULL;
     e3sm_io_driver *driver = NULL;
 
     switch (cfg->api) {
         case pnc:
             driver = new e3sm_io_driver_pnc ();
+            break;
+        case hdf5:
+#ifdef ENABLE_HDF5
+            driver = new e3sm_io_driver_hdf5 ();
+#else
+            RET_ERR ("HDF5 support was not enabled in this build")
+#endif
             break;
         default:
             RET_ERR ("Unknown driver")
