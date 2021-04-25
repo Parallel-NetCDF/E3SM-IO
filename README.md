@@ -53,6 +53,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 ### Building Steps
 * Build PnetCDF
   + Download and extract the PnetCDF source code
+    + The minimum required PnetCDF version is 1.11.0.
   + Run command autoreconf -i
   + Configure PnetCDF with mpi C compiler
   + Run make install
@@ -210,15 +211,6 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   ```
 * A NetCDF file containing 6 decompositions from a small G case is also
   included in folder `datasets` named `g_case_cmpaso_16p.nc`.
-
-### Compile command to build the executable of benchmark program, `e3sm_io`:
-* Edit `Makefile` to customize the MPI compiler, compile options, location of
-  PnetCDF library, etc.
-* The minimum required PnetCDF version is 1.11.0.
-* Run the command below to generate the executable program named `e3sm_io`.
-  ```
-    % make e3sm_io
-  ```
 
 ### Run command:
 * An example run command using `mpiexec` and 16 MPI processes is:
