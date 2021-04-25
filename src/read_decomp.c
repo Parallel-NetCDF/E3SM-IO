@@ -14,6 +14,7 @@
  *********************************************************************/
 
 #include <e3sm_io.h>
+#include <e3sm_io_err.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -98,7 +99,8 @@ static int compare (const void *p1, const void *p2) {
  *                         Memory space will be allocated in this subroutine
  *                         and to be freed by the caller.
  */
-int read_decomp (MPI_Comm io_comm, /* MPI communicator that includes all the tasks involved in IO */
+int read_decomp (int verbose,
+                 MPI_Comm io_comm, /* MPI communicator that includes all the tasks involved in IO */
                  const char *infname,  /* IN */
                  int *num_decomp,      /* OUT */
                  MPI_Offset dims[][2], /* OUT */
@@ -119,20 +121,20 @@ int read_decomp (MPI_Comm io_comm, /* MPI communicator that includes all the tas
 
     /* open input file that contains I/O decomposition information */
     err = ncmpi_open (io_comm, infname, NC_NOWRITE, MPI_INFO_NULL, &ncid);
-    ERR
+    CHECK_ERR
 
     /* number of decompositions stored in file */
     err = ncmpi_inq_dimid (ncid, "num_decomp", &dimids[0]);
-    ERR
+    CHECK_ERR
     err = ncmpi_inq_dimlen (ncid, dimids[0], &num);
-    ERR
+    CHECK_ERR
     *num_decomp = (int)num;
 
     /* number of processes used when the decomposition was produced */
     err = ncmpi_inq_dimid (ncid, "decomp_nprocs", &dimids[0]);
-    ERR
+    CHECK_ERR
     err = ncmpi_inq_dimlen (ncid, dimids[0], &decomp_nprocs);
-    ERR
+    CHECK_ERR
 
     /* decomp_nprocs is the number of processes used to generate the E3SM data
      * decomposition. nprocs is the number of processes running this benchmark.
@@ -165,9 +167,9 @@ int read_decomp (MPI_Comm io_comm, /* MPI communicator that includes all the tas
         /* total number of noncontiguous requests of all processes */
         sprintf (name, "D%d.total_nreqs", decomp_id + 1);
         err = ncmpi_inq_dimid (ncid, name, &dimids[1]);
-        ERR
+        CHECK_ERR
         err = ncmpi_inq_dimlen (ncid, dimids[1], &total_nreqs);
-        ERR
+        CHECK_ERR
 
         /* ndims: number of decomposition dimensions, not variable dimensions
          * In E3SM, decomposition is along the lowest 1 or 2 dimensions of 2D
@@ -176,21 +178,21 @@ int read_decomp (MPI_Comm io_comm, /* MPI communicator that includes all the tas
         sprintf (name, "D%d.dims", decomp_id + 1);
         /* obtain the number of dimensions of this decomposition */
         err = ncmpi_inq_attlen (ncid, NC_GLOBAL, name, &num);
-        ERR
+        CHECK_ERR
         ndims = num;
         /* obtain the dimension lengths of this decomposition */
         err = ncmpi_get_att_longlong (ncid, NC_GLOBAL, name, dims[decomp_id]);
-        ERR
+        CHECK_ERR
 
         /* obtain varid of request variable Dx.nreqs */
         sprintf (name, "D%d.nreqs", decomp_id + 1);
         err = ncmpi_inq_varid (ncid, name, &varid);
-        ERR
+        CHECK_ERR
 
         /* read all numbers of requests */
         all_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
         err       = ncmpi_get_var_int_all (ncid, varid, all_nreqs);
-        ERR
+        CHECK_ERR
 
         /* calculate start index in Dx.offsets for this process */
         i     = 0;
@@ -211,17 +213,17 @@ int read_decomp (MPI_Comm io_comm, /* MPI communicator that includes all the tas
         disps[decomp_id] = (int *)malloc (nreqs * sizeof (int));
         sprintf (name, "D%d.offsets", decomp_id + 1);
         err = ncmpi_inq_varid (ncid, name, &varid);
-        ERR
+        CHECK_ERR
         err = ncmpi_get_vara_int_all (ncid, varid, &start, &count, disps[decomp_id]);
-        ERR
+        CHECK_ERR
 
         /* read lengths of requests into blocklens[] */
         blocklens[decomp_id] = (int *)malloc (nreqs * sizeof (int));
         sprintf (name, "D%d.lengths", decomp_id + 1);
         err = ncmpi_inq_varid (ncid, name, &varid);
-        ERR
+        CHECK_ERR
         err = ncmpi_get_vara_int_all (ncid, varid, &start, &count, blocklens[decomp_id]);
-        ERR
+        CHECK_ERR
 
         /* sort all disps[] of all responsible requests into an increasing
          * order (this is to satisfy the MPI fileview or monotonically
@@ -270,9 +272,9 @@ int read_decomp (MPI_Comm io_comm, /* MPI communicator that includes all the tas
     }
 
     err = ncmpi_close (ncid);
-    ERR
+    CHECK_ERR
 
-fn_exit:
+err_out:
     if (nerrs) {
         for (decomp_id = 0; decomp_id < *num_decomp; decomp_id++) {
             contig_nreqs[decomp_id] = 0;
