@@ -1,0 +1,36 @@
+BasedOnStyle: Google
+IndentWidth: 4
+DerivePointerAlignment: false
+PointerAlignment: Left
+ColumnLimit: 100
+AlignAfterOpenBracket: Align
+AlignConsecutiveAssignments: true
+AlignConsecutiveMacros: true
+AlignTrailingComments: true
+AllowShortBlocksOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+AlwaysBreakAfterReturnType: None 
+BinPackArguments: true
+BinPackParameters: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterEnum: false
+  AfterStruct: false
+  SplitEmptyFunction: false
+  AfterCaseLabel: false
+  AfterFunction: false
+  AfterNamespace: false 
+  AfterStruct: false
+  AfterUnion: false
+  AfterExternBlock: false
+  BeforeCatch: false
+  BeforeElse: false
+IndentCaseLabels: true
+PointerAlignment: Right
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeCpp11BracedList: true
+SpaceBeforeCtorInitializerColon: true
+SpaceBeforeInheritanceColon: true
+SpaceBeforeParens: Always
+SpaceBeforeRangeBasedForLoopColon: true
+StatementMacros: ['ERR']
