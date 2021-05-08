@@ -1,4 +1,14 @@
+/*********************************************************************
+ *
+ * Copyright (C) 2021, Northwestern University
+ * See COPYRIGHT notice in top-level directory.
+ *
+ * This program is part of the E3SM I/O benchmark.
+ *
+ *********************************************************************/
+#ifdef HAVE_CONFIG_H
 #include <config.h>
+#endif
 //
 #include <sys/stat.h>
 //
@@ -7,9 +17,9 @@
 #include "H5VL_log.h"
 #endif
 //
-#include "e3sm_io_err.h"
-#include "e3sm_io.h"
-#include "e3sm_io_driver_hdf5.hpp"
+#include <e3sm_io.h>
+#include <e3sm_io_driver_hdf5.hpp>
+#include <e3sm_io_err.h>
 
 #define CHECK_HERR                                                    \
     {                                                                 \

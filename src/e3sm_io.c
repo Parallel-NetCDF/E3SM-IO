@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * Copyright (C) 2018, Northwestern University
+ * Copyright (C) 2021, Northwestern University
  * See COPYRIGHT notice in top-level directory.
  *
  * This program uses the E3SM I/O patterns recorded by the PIO library to
@@ -12,14 +12,18 @@
  * See README.md for compile and run instructions.
  *
  *********************************************************************/
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+/**/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> /* strcpy(), strncpy() */
-//
+/**/
 #include <unistd.h> /* getopt() */
-//
+/**/
 #include <mpi.h>
-//
+/**/
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 

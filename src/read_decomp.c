@@ -1,22 +1,22 @@
 /*********************************************************************
  *
- * Copyright (C) 2018, Northwestern University
+ * Copyright (C) 2021, Northwestern University
  * See COPYRIGHT notice in top-level directory.
  *
- * This program uses the E3SM I/O patterns recorded by the PIO library to
- * evaluate the performance of two PnetCDF APIs: ncmpi_vard_all(), and
- * ncmpi_iput_varn(). The E3SM I/O patterns consist of a large number of small,
- * noncontiguous requests on each MPI process, which presents a challenge for
- * achieving a good performance.
- *
- * See README.md for compile and run instructions.
+ * This program is part of the E3SM I/O benchmark.
  *
  *********************************************************************/
-
-#include <e3sm_io.h>
-#include <e3sm_io_err.h>
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+//
 #include <stdio.h>
 #include <stdlib.h>
+//
+#include <mpi.h>
+//
+#include <e3sm_io.h>
+#include <e3sm_io_err.h>
 
 struct off_len {
     int off;

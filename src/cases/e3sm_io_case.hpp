@@ -1,8 +1,14 @@
-#pragma once
-
-#include "e3sm_io.h"
-#include "e3sm_io_driver.hpp"
-
+/*********************************************************************
+ *
+ * Copyright (C) 2021, Northwestern University
+ * See COPYRIGHT notice in top-level directory.
+ *
+ * This program is part of the E3SM I/O benchmark.
+ *
+ *********************************************************************/
+//
+#include <e3sm_io.h>
+#include <e3sm_io_driver.hpp>
 class e3sm_io_case {
    public:
     virtual ~e3sm_io_case () {};

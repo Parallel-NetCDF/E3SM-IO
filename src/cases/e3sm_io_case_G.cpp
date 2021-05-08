@@ -1,8 +1,19 @@
-#include "e3sm_io_case_G.hpp"
-
-#include "e3sm_io.h"
-#include "e3sm_io_case.hpp"
-#include "e3sm_io_err.h"
+/*********************************************************************
+ *
+ * Copyright (C) 2021, Northwestern University
+ * See COPYRIGHT notice in top-level directory.
+ *
+ * This program is part of the E3SM I/O benchmark.
+ *
+ *********************************************************************/
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+//
+#include <e3sm_io_case_G.hpp>
+#include <e3sm_io.h>
+#include <e3sm_io_case.hpp>
+#include <e3sm_io_err.h>
 
 e3sm_io_case_G::e3sm_io_case_G () {}
 

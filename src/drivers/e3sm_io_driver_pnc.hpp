@@ -1,12 +1,21 @@
+/*********************************************************************
+ *
+ * Copyright (C) 2021, Northwestern University
+ * See COPYRIGHT notice in top-level directory.
+ *
+ * This program is part of the E3SM I/O benchmark.
+ *
+ *********************************************************************/
+//
 #pragma once
-
-#include <mpi.h>
-
+//
 #include <map>
 #include <vector>
-
-#include "e3sm_io.h"
-#include "e3sm_io_driver.hpp"
+//
+#include <mpi.h>
+//
+#include <e3sm_io.h>
+#include <e3sm_io_driver.hpp>
 
 class e3sm_io_driver_pnc : public e3sm_io_driver {
     MPI_Comm comm;

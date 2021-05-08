@@ -6,10 +6,14 @@
  * This program is part of the E3SM I/O benchmark.
  *
  *********************************************************************/
-
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+//
 #include <assert.h>
+//
 #include <mpi.h>
-
+//
 #include <e3sm_io.h>
 #include <e3sm_io_driver.hpp>
 #include <e3sm_io_err.h>

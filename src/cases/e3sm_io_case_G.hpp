@@ -1,10 +1,20 @@
+/*********************************************************************
+ *
+ * Copyright (C) 2021, Northwestern University
+ * See COPYRIGHT notice in top-level directory.
+ *
+ * This program is part of the E3SM I/O benchmark.
+ *
+ *********************************************************************/
+//
 #pragma once
-#include <mpi.h>
-
+//
 #include <string>
-
-#include "e3sm_io.h"
-#include "e3sm_io_driver.hpp"
+//
+#include <mpi.h>
+//
+#include <e3sm_io.h>
+#include <e3sm_io_driver.hpp>
 
 extern int def_G_case_h0 (e3sm_io_driver &driver,
                           int ncid,                    /* file ID */
