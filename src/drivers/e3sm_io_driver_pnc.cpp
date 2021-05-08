@@ -13,8 +13,9 @@
 #include <pnetcdf.h>
 //
 #include <e3sm_io.h>
-#include <e3sm_io_driver_pnc.hpp>
 #include <e3sm_io_err.h>
+
+#include <e3sm_io_driver_pnc.hpp>
 
 #define CHECK_NCERR                                                   \
     {                                                                 \
@@ -141,15 +142,19 @@ int e3sm_io_driver_pnc::def_var (
     int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did) {
     int err, nerrs = 0;
     int i;
-    MPI_Offset nelems;
+    MPI_Offset bufcounts;
 
     err = ncmpi_def_var (fid, name.c_str (), mpitype2nctype (type), ndim, dimids, did);
     CHECK_NCERR
 
-    if (this->var_nelems.size () <= *did) { this->var_nelems.resize (*did + 1); }
-    nelems = 1;
-    for (i = 0; i < ndim; i++) { nelems *= this->dim_lens[dimids[i]]; }
-    this->var_nelems[*did] = nelems;
+    if (this->var_nelems.size () <= *did) {
+        this->var_nelems.resize (*did + 1);
+        this->var_ndims.resize (*did + 1);
+    }
+    bufcounts = 1;
+    for (i = 0; i < ndim; i++) { bufcounts *= this->dim_lens[dimids[i]]; }
+    this->var_nelems[*did] = bufcounts;
+    this->var_ndims[*did]  = ndim;
 
 err_out:;
     return nerrs;
@@ -270,49 +275,50 @@ int e3sm_io_driver_pnc::put_vara (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
+    int i;
     MPI_Offset bufcount;
 
     if (start) {
         if (count) {
+            bufcount = 1;
+            for (i = 0; i < this->var_ndims[vid]; i++) { bufcount *= count[i]; }
             switch (mode) {
                 case indep: {
-                    err = ncmpi_put_vara (fid, vid, start, count, buf, this->var_nelems[vid], type);
+                    err = ncmpi_put_vara (fid, vid, start, count, buf, bufcount, type);
                     break;
                 }
                 case coll: {
-                    err = ncmpi_put_vara_all (fid, vid, start, count, buf, this->var_nelems[vid],
-                                              type);
+                    err = ncmpi_put_vara_all (fid, vid, start, count, buf, bufcount, type);
                     break;
                 }
                 case nb: {
-                    err = ncmpi_iput_vara (fid, vid, start, count, buf, this->var_nelems[vid], type,
-                                           NULL);
+                    err = ncmpi_iput_vara (fid, vid, start, count, buf, bufcount, type, NULL);
                     break;
                 }
                 case nbe: {
-                    err = ncmpi_bput_vara (fid, vid, start, count, buf, this->var_nelems[vid], type,
-                                           NULL);
+                    err = ncmpi_bput_vara (fid, vid, start, count, buf, bufcount, type, NULL);
                     break;
                 }
                 default:
                     throw "Unrecognized mode";
             }
         } else {
+            bufcount = 1;
             switch (mode) {
                 case indep: {
-                    err = ncmpi_put_var1 (fid, vid, start, buf, this->var_nelems[vid], type);
+                    err = ncmpi_put_var1 (fid, vid, start, buf, bufcount, type);
                     break;
                 }
                 case coll: {
-                    err = ncmpi_put_var1_all (fid, vid, start, buf, this->var_nelems[vid], type);
+                    err = ncmpi_put_var1_all (fid, vid, start, buf, bufcount, type);
                     break;
                 }
                 case nb: {
-                    err = ncmpi_iput_var1 (fid, vid, start, buf, this->var_nelems[vid], type, NULL);
+                    err = ncmpi_iput_var1 (fid, vid, start, buf, bufcount, type, NULL);
                     break;
                 }
                 case nbe: {
-                    err = ncmpi_bput_var1 (fid, vid, start, buf, this->var_nelems[vid], type, NULL);
+                    err = ncmpi_bput_var1 (fid, vid, start, buf, bufcount, type, NULL);
                     break;
                 }
                 default:
@@ -320,21 +326,22 @@ int e3sm_io_driver_pnc::put_vara (int fid,
             }
         }
     } else {
+        bufcount = this->var_nelems[vid];
         switch (mode) {
             case indep: {
-                err = ncmpi_put_var (fid, vid, buf, this->var_nelems[vid], type);
+                err = ncmpi_put_var (fid, vid, buf, bufcount, type);
                 break;
             }
             case coll: {
-                err = ncmpi_put_var_all (fid, vid, buf, this->var_nelems[vid], type);
+                err = ncmpi_put_var_all (fid, vid, buf, bufcount, type);
                 break;
             }
             case nb: {
-                err = ncmpi_iput_var (fid, vid, buf, this->var_nelems[vid], type, NULL);
+                err = ncmpi_iput_var (fid, vid, buf, bufcount, type, NULL);
                 break;
             }
             case nbe: {
-                err = ncmpi_bput_var (fid, vid, buf, this->var_nelems[vid], type, NULL);
+                err = ncmpi_bput_var (fid, vid, buf, bufcount, type, NULL);
                 break;
             }
             default:
@@ -355,26 +362,26 @@ int e3sm_io_driver_pnc::put_vars (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
+    int i;
     MPI_Offset bufcount;
 
+    bufcount = 1;
+    for (i = 0; i < this->var_ndims[vid]; i++) { bufcount *= count[i]; }
     switch (mode) {
         case indep: {
-            err = ncmpi_put_vars (fid, vid, start, count, stride, buf, this->var_nelems[vid], type);
+            err = ncmpi_put_vars (fid, vid, start, count, stride, buf, bufcount, type);
             break;
         }
         case coll: {
-            err = ncmpi_put_vars_all (fid, vid, start, count, stride, buf, this->var_nelems[vid],
-                                      type);
+            err = ncmpi_put_vars_all (fid, vid, start, count, stride, buf, bufcount, type);
             break;
         }
         case nb: {
-            err = ncmpi_iput_vars (fid, vid, start, count, stride, buf, this->var_nelems[vid], type,
-                                   NULL);
+            err = ncmpi_iput_vars (fid, vid, start, count, stride, buf, bufcount, type, NULL);
             break;
         }
         case nbe: {
-            err = ncmpi_bput_vars (fid, vid, start, count, stride, buf, this->var_nelems[vid], type,
-                                   NULL);
+            err = ncmpi_bput_vars (fid, vid, start, count, stride, buf, bufcount, type, NULL);
             break;
         }
         default:
@@ -394,26 +401,31 @@ int e3sm_io_driver_pnc::put_varn (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
+    int i, j;
     MPI_Offset bufcount;
+    MPI_Offset blockcount;
 
+    bufcount = 0;
+    for (i = 0; i < nreq; i++) {
+        blockcount = 1;
+        for (j = 0; j < this->var_ndims[vid]; j++) { blockcount *= counts[i][j]; }
+        bufcount += blockcount;
+    }
     switch (mode) {
         case indep: {
-            err = ncmpi_put_varn (fid, vid, nreq, starts, counts, buf, this->var_nelems[vid], type);
+            err = ncmpi_put_varn (fid, vid, nreq, starts, counts, buf, bufcount, type);
             break;
         }
         case coll: {
-            err = ncmpi_put_varn_all (fid, vid, nreq, starts, counts, buf, this->var_nelems[vid],
-                                      type);
+            err = ncmpi_put_varn_all (fid, vid, nreq, starts, counts, buf, bufcount, type);
             break;
         }
         case nb: {
-            err = ncmpi_iput_varn (fid, vid, nreq, starts, counts, buf, this->var_nelems[vid], type,
-                                   NULL);
+            err = ncmpi_iput_varn (fid, vid, nreq, starts, counts, buf, bufcount, type, NULL);
             break;
         }
         case nbe: {
-            err = ncmpi_bput_varn (fid, vid, nreq, starts, counts, buf, this->var_nelems[vid], type,
-                                   NULL);
+            err = ncmpi_bput_varn (fid, vid, nreq, starts, counts, buf, bufcount, type, NULL);
             break;
         }
         default:
@@ -428,20 +440,19 @@ err_out:;
 int e3sm_io_driver_pnc::put_vard (int fid,
                                   int vid,
                                   MPI_Datatype type,
-                                  MPI_Offset nelem,
+                                  MPI_Offset bufcount,
                                   MPI_Datatype ftype,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
-    MPI_Offset bufcount;
 
     switch (mode) {
         case indep: {
-            err = ncmpi_put_vard (fid, vid, ftype, buf, nelem, type);
+            err = ncmpi_put_vard (fid, vid, ftype, buf, bufcount, type);
             break;
         }
         case coll: {
-            err = ncmpi_put_vard_all (fid, vid, ftype, buf, nelem, type);
+            err = ncmpi_put_vard_all (fid, vid, ftype, buf, bufcount, type);
             break;
         }
         default:
@@ -461,40 +472,42 @@ int e3sm_io_driver_pnc::get_vara (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
+    int i;
     MPI_Offset bufcount;
 
     if (start) {
         if (count) {
+            bufcount = 1;
+            for (i = 0; i < this->var_ndims[vid]; i++) { bufcount *= count[i]; }
             switch (mode) {
                 case indep: {
-                    err = ncmpi_get_vara (fid, vid, start, count, buf, this->var_nelems[vid], type);
+                    err = ncmpi_get_vara (fid, vid, start, count, buf, bufcount, type);
                     break;
                 }
                 case coll: {
-                    err = ncmpi_get_vara_all (fid, vid, start, count, buf, this->var_nelems[vid],
-                                              type);
+                    err = ncmpi_get_vara_all (fid, vid, start, count, buf, bufcount, type);
                     break;
                 }
                 case nb: {
-                    err = ncmpi_iget_vara (fid, vid, start, count, buf, this->var_nelems[vid], type,
-                                           NULL);
+                    err = ncmpi_iget_vara (fid, vid, start, count, buf, bufcount, type, NULL);
                     break;
                 }
                 default:
                     throw "Unrecognized mode";
             }
         } else {
+            bufcount = 1;
             switch (mode) {
                 case indep: {
-                    err = ncmpi_get_var1 (fid, vid, start, buf, this->var_nelems[vid], type);
+                    err = ncmpi_get_var1 (fid, vid, start, buf, bufcount, type);
                     break;
                 }
                 case coll: {
-                    err = ncmpi_get_var1_all (fid, vid, start, buf, this->var_nelems[vid], type);
+                    err = ncmpi_get_var1_all (fid, vid, start, buf, bufcount, type);
                     break;
                 }
                 case nb: {
-                    err = ncmpi_iget_var1 (fid, vid, start, buf, this->var_nelems[vid], type, NULL);
+                    err = ncmpi_iget_var1 (fid, vid, start, buf, bufcount, type, NULL);
                     break;
                 }
                 default:
@@ -502,17 +515,18 @@ int e3sm_io_driver_pnc::get_vara (int fid,
             }
         }
     } else {
+        bufcount = this->var_nelems[vid];
         switch (mode) {
             case indep: {
-                err = ncmpi_get_var (fid, vid, buf, this->var_nelems[vid], type);
+                err = ncmpi_get_var (fid, vid, buf, bufcount, type);
                 break;
             }
             case coll: {
-                err = ncmpi_get_var_all (fid, vid, buf, this->var_nelems[vid], type);
+                err = ncmpi_get_var_all (fid, vid, buf, bufcount, type);
                 break;
             }
             case nb: {
-                err = ncmpi_iget_var (fid, vid, buf, this->var_nelems[vid], type, NULL);
+                err = ncmpi_iget_var (fid, vid, buf, bufcount, type, NULL);
                 break;
             }
             default:
@@ -533,21 +547,22 @@ int e3sm_io_driver_pnc::get_vars (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
+    int i;
     MPI_Offset bufcount;
 
+    bufcount = 1;
+    for (i = 0; i < this->var_ndims[vid]; i++) { bufcount *= count[i]; }
     switch (mode) {
         case indep: {
-            err = ncmpi_get_vars (fid, vid, start, count, stride, buf, this->var_nelems[vid], type);
+            err = ncmpi_get_vars (fid, vid, start, count, stride, buf, bufcount, type);
             break;
         }
         case coll: {
-            err = ncmpi_get_vars_all (fid, vid, start, count, stride, buf, this->var_nelems[vid],
-                                      type);
+            err = ncmpi_get_vars_all (fid, vid, start, count, stride, buf, bufcount, type);
             break;
         }
         case nb: {
-            err = ncmpi_iget_vars (fid, vid, start, count, stride, buf, this->var_nelems[vid], type,
-                                   NULL);
+            err = ncmpi_iget_vars (fid, vid, start, count, stride, buf, bufcount, type, NULL);
             break;
         }
         default:
@@ -567,21 +582,27 @@ int e3sm_io_driver_pnc::get_varn (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
+    int i, j;
     MPI_Offset bufcount;
+    MPI_Offset blockcount;
 
+    bufcount = 0;
+    for (i = 0; i < nreq; i++) {
+        blockcount = 1;
+        for (j = 0; j < this->var_ndims[vid]; j++) { blockcount *= counts[i][j]; }
+        bufcount += blockcount;
+    }
     switch (mode) {
         case indep: {
-            err = ncmpi_get_varn (fid, vid, nreq, starts, counts, buf, this->var_nelems[vid], type);
+            err = ncmpi_get_varn (fid, vid, nreq, starts, counts, buf, bufcount, type);
             break;
         }
         case coll: {
-            err = ncmpi_get_varn_all (fid, vid, nreq, starts, counts, buf, this->var_nelems[vid],
-                                      type);
+            err = ncmpi_get_varn_all (fid, vid, nreq, starts, counts, buf, bufcount, type);
             break;
         }
         case nb: {
-            err = ncmpi_iget_varn (fid, vid, nreq, starts, counts, buf, this->var_nelems[vid], type,
-                                   NULL);
+            err = ncmpi_iget_varn (fid, vid, nreq, starts, counts, buf, bufcount, type, NULL);
             break;
         }
         default:
@@ -596,20 +617,19 @@ err_out:;
 int e3sm_io_driver_pnc::get_vard (int fid,
                                   int vid,
                                   MPI_Datatype type,
-                                  MPI_Offset nelem,
+                                  MPI_Offset bufcount,
                                   MPI_Datatype ftype,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
-    MPI_Offset bufcount;
 
     switch (mode) {
         case indep: {
-            err = ncmpi_get_vard (fid, vid, ftype, buf, nelem, type);
+            err = ncmpi_get_vard (fid, vid, ftype, buf, bufcount, type);
             break;
         }
         case coll: {
-            err = ncmpi_get_vard_all (fid, vid, ftype, buf, nelem, type);
+            err = ncmpi_get_vard_all (fid, vid, ftype, buf, bufcount, type);
             break;
         }
         default:

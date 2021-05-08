@@ -114,7 +114,7 @@ int main (int argc, char **argv) {
     cfg.datadir        = datadir;
     cfg.cfgpath        = cfgpath;
     cfg.hx             = 0;
-    cfg.nrec           = 0;
+    cfg.nrec           = 1;
     cfg.wr             = 0;
     cfg.rd             = 0;
     cfg.nvars          = 0;
