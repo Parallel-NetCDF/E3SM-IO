@@ -1119,7 +1119,6 @@ int run_varn_F_case (e3sm_io_config &cfg,
         /* construct varn API arguments starts[][] and counts[][] */
         FIX_1D_VAR_STARTS_COUNTS (fix_starts_D1, fix_counts_D1, xnreqs[0], decom.disps[0],
                                   decom.blocklens[0]);
-        nvars_D[0]++;
 
         err = IPUT_VARN (ncid, varids[i++], xnreqs[0], fix_starts_D1, fix_counts_D1, dbl_buf_ptr,
                          nelems[0], MPI_DOUBLE, NULL);
