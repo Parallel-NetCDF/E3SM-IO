@@ -800,7 +800,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
         printf ("Max number of requests             = %lld\n", max_nreqs);
         printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
-        printf ("Max Time of driver.put_vard         = %.4f sec\n", io_timing);
+        printf ("Max Time of driver.put_vard        = %.4f sec\n", io_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -1382,8 +1382,8 @@ int run_varn_F_case (e3sm_io_config &cfg,
         printf ("Max number of requests             = %lld\n", max_nreqs);
         printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
-        printf ("Max Time of IPUT_VARN        = %.4f sec\n", post_timing);
-        printf ("Max Time of WAIT_ALL_REQS         = %.4f sec\n", wait_timing);
+        printf ("Max Time of IPUT_VARN              = %.4f sec\n", post_timing);
+        printf ("Max Time of WAIT_ALL_REQS          = %.4f sec\n", wait_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -1809,19 +1809,19 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
         printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                 (float)max_alloc / 1048576);
         printf ("Total number of variables          = %d\n", cfg.nvars);
-        printf ("Total read amount                 = %.2f MiB = %.2f GiB\n",
+        printf ("Total read amount                  = %.2f MiB = %.2f GiB\n",
                 (double)total_size / 1048576, (double)total_size / 1073741824);
         printf ("Total number of requests           = %lld\n", total_nreqs);
         printf ("Max number of requests             = %lld\n", max_nreqs);
         printf ("Max Time of open + metadata inquery = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
-        printf ("Max Time of IGET_VARN        = %.4f sec\n", post_timing);
-        printf ("Max Time of WAIT_ALL_REQS         = %.4f sec\n", wait_timing);
+        printf ("Max Time of IGET_VARN              = %.4f sec\n", post_timing);
+        printf ("Max Time of WAIT_ALL_REQS          = %.4f sec\n", wait_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
                 (double)total_size / 1048576.0 / total_timing);
-        printf ("I/O bandwidth (read-only)         = %.4f MiB/sec\n",
+        printf ("I/O bandwidth (read-only)          = %.4f MiB/sec\n",
                 (double)put_size / 1048576.0 / wait_timing);
         if (cfg.verbose) print_info (&info_used);
         printf ("-----------------------------------------------------------\n");
