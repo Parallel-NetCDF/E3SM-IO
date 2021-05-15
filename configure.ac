@@ -56,9 +56,8 @@ AC_PROG_EGREP
 
 MPI_INSTALL=
 AC_ARG_WITH(mpi,
-   [AS_HELP_STRING([--with-mpi=/path/to/implementation],
-                   [The installation prefix path for MPI implementation.])
-   ],[ dnl this clause is run when --with-mpi or --without-mpi is used
+   [AS_HELP_STRING([--with-mpi=DIR],
+                   [Provide the installation prefix path for MPI implementation.])],[ dnl this clause is run when --with-mpi or --without-mpi is used
    if test "x${withval}" = xno ; then
       AC_MSG_ERROR([
       -----------------------------------------------------------------------
@@ -243,9 +242,11 @@ fi
 
 # Check for pnc
 AC_ARG_WITH([pnetcdf],
-   [AS_HELP_STRING([--with-pnetcdf=/path/to/pnetcdf], [Specify PnetCDF installation path(s):
-    --with-pnetcdf=INC,LIB for include directory and library directory separated by a comma
-    --with-pnetcdf=DIR for directory containing include/ and lib/ subdirectories
+   [AS_HELP_STRING([--with-pnetcdf@<:@=INC,LIB | =DIR@:>@],
+                   [Provide the PnetCDF installation path(s):
+    --with-pnetcdf=INC,LIB for include and lib paths separated by a comma.
+    --with-pnetcdf=DIR for the path containing include/ and lib/ subdirectories.
+    @<:@default: enabled@:>@
    ])], [
    case $withval in
      *,*)
@@ -304,9 +305,11 @@ fi
 
 # Check for HDF5
 AC_ARG_WITH([hdf5],
-   [AS_HELP_STRING([--with-hdf5=/path/to/hdf5], [Specify HDF5 installation path(s):
-    --with-hdf5=INC,LIB for include directory and library directory separated by a comma
-    --with-hdf5=DIR for directory containing include/ and lib/ subdirectories
+   [AS_HELP_STRING([--with-hdf5@<:@=INC,LIB | =DIR@:>@], 
+                   [Enable HDF5 feature and provide the HDF5 installation path(s):
+    --with-hdf5=INC,LIB for include and lib paths separated by a comma.
+    --with-hdf5=DIR for the path containing include/ and lib/ subdirectories.
+    @<:@default: disabled@:>@
    ])], [
    case $withval in
      *,*)
@@ -336,39 +339,43 @@ AC_ARG_WITH([hdf5],
          LDFLAGS="$LDFLAGS -L$hdf5_lib"
       fi
    fi
-])
-AC_CHECK_HEADER([hdf5.h], [have_hdf5=yes], [have_hdf5=no])
-if test "x$have_hdf5" = xno ; then
+
+   AC_CHECK_HEADER([hdf5.h], [have_hdf5=yes], [have_hdf5=no])
+   if test "x$have_hdf5" = xno ; then
       AC_MSG_WARN([
       -----------------------------------------------------------------------
       Missing HDF5-header files 'hdf5.h' required to build E3SM_IO. Use
       configure command-line option --with-hdf5=/path/to/implementation
       to specify the location of HDF5 installation. Disable HDF5 support.
       -----------------------------------------------------------------------])
-else
-    AC_MSG_CHECKING([whether HDF5 parallel I/O is enabled])
-    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-    #include <hdf5.h>
-    #if !defined(H5_HAVE_PARALLEL) || H5_HAVE_PARALLEL != 1
-    #error Parallel I/O is not enabled in HDF5
-    #endif
-    ]])], [hdf5_parallel_io=yes], [hdf5_parallel_io=no])
-    AC_MSG_RESULT([$hdf5_parallel_io])
-    if test "x$hdf5_parallel_io" = xno ; then
-        AC_MSG_WARN([
-        -----------------------------------------------------------------------
-            E3SM_IO requires parallel I/O feature enabled in HDF5. Disable HDF5 support.
-        -----------------------------------------------------------------------])
-        have_hdf5=no
-    fi
-fi
+   else
+      AC_MSG_CHECKING([whether HDF5 parallel I/O is enabled])
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+      #include <hdf5.h>
+      #if !defined(H5_HAVE_PARALLEL) || H5_HAVE_PARALLEL != 1
+      #error Parallel I/O is not enabled in HDF5
+      #endif
+      ]])], [hdf5_parallel_io=yes], [hdf5_parallel_io=no])
+      AC_MSG_RESULT([$hdf5_parallel_io])
+      if test "x$hdf5_parallel_io" = xno ; then
+          AC_MSG_WARN([
+          -----------------------------------------------------------------------
+              E3SM_IO requires parallel I/O feature enabled in HDF5. Disable HDF5 support.
+          -----------------------------------------------------------------------])
+          have_hdf5=no
+      fi
+   fi
+])
 AM_CONDITIONAL(ENABLE_HDF5, [test "x$have_hdf5" = xyes])
 
 # Check for logvol
+have_logvol=no
 AC_ARG_WITH([logvol],
-   [AS_HELP_STRING([--with-logvol=/path/to/logvol], [Specify logvol installation path(s):
-    --with-logvol=INC,LIB for include directory and library directory separated by a comma
-    --with-logvol=DIR for directory containing include/ and lib/ subdirectories
+   [AS_HELP_STRING([--with-logvol@<:@=INC,LIB | =DIR@:>@],
+                   [Enable HDF5 log-based VOL feature and provide the VOL installation path(s):
+    --with-logvol=INC,LIB for include and lib paths separated by a comma.
+    --with-logvol=DIR for the path containing include/ and lib/ subdirectories.
+    @<:@default: disabled@:>@
    ])], [
    case $withval in
      *,*)
@@ -398,24 +405,26 @@ AC_ARG_WITH([logvol],
          LDFLAGS="$LDFLAGS -L$logvol_lib"
       fi
    fi
-])
-AC_CHECK_HEADER([H5VL_log.h], [have_logvol=yes], [have_logvol=no])
-if test "x$have_logvol" = xno ; then
+   AC_CHECK_HEADER([H5VL_log.h], [have_logvol=yes], [have_logvol=no])
+   if test "x$have_logvol" = xno ; then
       AC_MSG_WARN([
       -----------------------------------------------------------------------
       Missing logvol-header files 'H5VL_log.h' required to build E3SM_IO. Use
       configure command-line option --with-logvol=/path/to/implementation
       to specify the location of logvol installation. Disable logvol support.
       -----------------------------------------------------------------------])
-fi
+   fi
+])
 AM_CONDITIONAL(ENABLE_LOGVOL, [test "x$have_logvol" = xyes])
 
-
 # Check for ADIOS2
+have_adios2=no
 AC_ARG_WITH([adios2],
-   [AS_HELP_STRING([--with-adios2=/path/to/adios2], [Specify ADIOS2 installation path(s):
-    --with-adios2=INC,LIB for include directory and library directory separated by a comma
-    --with-adios2=DIR for directory containing include/ and lib/ subdirectories
+   [AS_HELP_STRING([--with-adios2@<:@=INC,LIB | =DIR@:>@],
+                   [Enable ADIOS-2 feature and provide the ADIOS-2 installation path(s):
+    --with-adios2=INC,LIB for include and lib paths separated by a comma.
+    --with-adios2=DIR for the path containing include/ and lib/ subdirectories.
+    @<:@default: disabled@:>@
    ])], [
    if test "x${withval}" != xyes && test "x${withval}" != xno ; then
       ADIOS2_INSTALL=${withval}
@@ -464,16 +473,16 @@ AC_ARG_WITH([adios2],
          LDFLAGS="$LDFLAGS $adios2_lflags"
       fi
    fi
-])
-AC_CHECK_HEADER([adios2_c.h], [have_adios2=yes], [have_adios2=no])
-if test "x$have_adios2" = xno ; then
+   AC_CHECK_HEADER([adios2_c.h], [have_adios2=yes], [have_adios2=no])
+   if test "x$have_adios2" = xno ; then
       AC_MSG_WARN([
       -----------------------------------------------------------------------
       Missing ADIOS2-header files 'adios2_c.h' required to build E3SM_IO. Use
       configure command-line option --with-adios2=/path/to/implementation
       to specify the location of ADIOS2 installation. Disable ADIOS2 support.
       -----------------------------------------------------------------------])
-fi
+   fi
+])
 AM_CONDITIONAL(ENABLE_ADIOS2, [test "x$have_adios2" = xyes])
 
 if test "x$LIBS" = x ; then
@@ -523,9 +532,8 @@ echo \
    ${PACKAGE_NAME} Version ${PACKAGE_VERSION}
 
    Features:  Internal debug mode         - ${debug}
-              Internal profiling mode     - ${enable_profiling}"
-
-echo "\
+              ADIOS-2 support             - ${have_adios2}
+              HDF5 log-based VOL support  - ${have_logvol}
 
    Compilers: MPICC    = ${MPICC}
               MPICXX   = ${MPICXX}"
