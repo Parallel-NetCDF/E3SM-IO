@@ -53,37 +53,32 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 ### Building Steps
 * Build PnetCDF
   + Download and extract the PnetCDF source code
-    + The minimum required PnetCDF version is 1.11.0.
-  + Run command autoreconf -i
   + Configure PnetCDF with mpi C compiler
   + Run make install
-  + Example commands are given below. This example will install
-    the HD5 library under the folder `${HOME}/PNC`.
+  + Example build commands are given below. This example will install
+    the PnetCDF library under the folder `${HOME}/PnetCDF/1.12.2`.
     ```
     % wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz
     % tar -zxf pnetcdf-1.12.2.tar.gz
     % cd pnetcdf-1.12.2
-    % autoreconf -i
-    % ./configure --prefix=${HOME}/PNC CC=mpicc
+    % ./configure --prefix=${HOME}/PnetCDF/1.12.2 CC=mpicc
     % make -j 16 install
     ```
-    The PnetCDF library is now installed under the folder `${HOME}/PNC.`
+    The PnetCDF library is now installed under the folder `${HOME}/PnetCDF/1.12.2.`
 * (Optional) Build HDF5 with parallel I/O support
   + Download and extract the HDF5 source code
-  + Run command ./autogen.sh
   + Configure HDF5 with parallel I/O enabled
   + Run make install
-  + Example commands are given below. This example will install
-    the HD5 library under the folder `${HOME}/HDF5`.
+  + Example build commands are given below. This example will install
+    the HD5 library under the folder `${HOME}/HDF5/1.12.0`.
     ```
     % wget https://hdf-wordpress-1.s3.amazonaws.com/wp-content/uploads/manual/HDF5/HDF5_1_12_0/source/hdf5-1.12.0.tar.gz
     % tar -zxf hdf5-1.12.0.tar.gz 
     % cd hdf5-1.12.0
-    % ./autogen
-    % ./configure --prefix=${HOME}/HDF5 --enable-parallel CC=mpicc
+    % ./configure --prefix=${HOME}/HDF5/1.12.0 --enable-parallel CC=mpicc
     % make -j 16 install
     ```
-    The HDF5 library is now installed under the folder `${HOME}/HDF5.`
+    The HDF5 library is now installed under the folder `${HOME}/HDF5/1.12.0.`
 * (Optional) Build log-based VOL plugin.
   + Clone the source code from the log-based VOL repository
   + Run command autoreconf -i
@@ -95,7 +90,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % git clone https://github.com/DataLib-ECP/vol-log-based.git
     % cd log_io_vol
     % autoreconf -i
-    % ./configure --prefix=${HOME}/Log_IO_VOL --with-hdf5=${HOME}/HDF5 --enable-shared --enable-zlib
+    % ./configure --prefix=${HOME}/Log_IO_VOL --with-hdf5=${HOME}/HDF5/1.12.0 --enable-shared --enable-zlib
     % make -j 16 install
     ```
     The VOL plugin library is now installed under the folder `${HOME}/Log_IO_VOL.`
@@ -109,13 +104,12 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     + Add log-based VOL installation path (--with-logvol=/path/to/implementation) to enable HDF5 API support
     + Add ADIOS2 installation path (--with-adios2=/path/to/implementation) to enable HDF5 API support
   + Run make install
-  + Example commands are given below. This example will install
-    the HD5 library under the folder `${HOME}/PNC`.
+  + Example commands are given below.
     ```
     % git clone https://github.com/Parallel-NetCDF/E3SM-IO.git
     % cd E3SM-IO
     % autoreconf -i
-    % CC=mpicc CXX=mpicxx ./configure --with-pnetcdf=${HOME}/PNC --with-hdf5=${HOME}/HDF --with-logvol=${HOME}/Log_IO_VOL --with-adios2=${HOME}/ADIOS2
+    % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.2 --with-hdf5=${HOME}/HDF5/1.12.0 --with-logvol=${HOME}/Log_IO_VOL --with-adios2=${HOME}/ADIOS2 CC=mpicc CXX=mpicxx
     % make -j 16 install
     ```
 
