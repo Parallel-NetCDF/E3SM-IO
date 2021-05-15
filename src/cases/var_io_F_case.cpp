@@ -840,7 +840,7 @@ static inline void FIX_1D_VAR_STARTS_COUNTS (
 
 static inline void FIX_2D_VAR_STARTS_COUNTS (MPI_Offset **&starts,
                                              MPI_Offset **&counts,
-                                             int nreq,
+                                             int &nreq,
                                              int *disps,
                                              int *blocklens,
                                              MPI_Offset last_dimlen) {
