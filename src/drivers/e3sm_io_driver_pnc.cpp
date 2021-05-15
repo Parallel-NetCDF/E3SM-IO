@@ -21,6 +21,7 @@
     {                                                                 \
         if (err != NC_NOERR) {                                        \
             printf ("Error at line %d in %s:\n", __LINE__, __FILE__); \
+            printf ("\t(%s) %s\n", ncmpi_strerrno(err), ncmpi_strerror(err)); \
             err = -1;                                                 \
             DEBUG_ABORT;                                              \
             goto err_out;                                             \
@@ -400,7 +401,7 @@ int e3sm_io_driver_pnc::put_varn (int fid,
                                   MPI_Offset **counts,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err, nerrs = 0;
+    int err=NC_NOERR, nerrs = 0;
     int i, j;
     MPI_Offset bufcount;
     MPI_Offset blockcount;
