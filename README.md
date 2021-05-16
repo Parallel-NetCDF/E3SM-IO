@@ -224,23 +224,23 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 * Command-line options:
   ```
     % ./e3sm_io -h
-    Usage: ./e3sm_io [OPTION]...
+    Usage: src/e3sm_io [OPTION]... FILE
        [-h] Print help
        [-v] Verbose mode
-       [-k] Keep the output files when the program exits
-       [-d] Run test that uses low-level APIs
-       [-n] Run test using noncontiguous write buffer
+       [-k] Keep the output files when program exits
+       [-d] Run test that uses PnetCDF vard API
+       [-n] Run test that uses PnetCDF varn API
+       [-m] Run test using noncontiguous write buffer
        [-t] Write 2D variables followed by 3D variables
        [-R] Test reading performance
        [-W] Test writing performance
-       [-H num] File number to run in F case (-1 (both) (default), 0, 1)
+       [-f num] File number to run in F case (-1 (both) (default), 0, 1)
        [-r num] Number of records (default 1)
        [-s num] Stride between IO tasks (default 1)
-       [-a api] Underlying API to test (pnc (default), hdf5, adios2)
-       [-l layout] Storage layout of the variables (contig (default), chunk)
-       [-o target_dir] Path to directory containing the test files (default ./)
+       [-o output_dir] Output directory name (default ./)
        [-i target_dir] Path to directory containing the input files
-       [-c output_dir] Name of input netCDF file describing data decompositions 
+       [-a api] Underlying API to test (pnc (default), hdf5, adios2)
+       FILE: Name of input netCDF file describing data decompositions
   ```
 * An example batch script file for running a job on Cori @NERSC with 8 KNL
   nodes, 64 MPI processes per node, is provided in `./slurm.knl`.

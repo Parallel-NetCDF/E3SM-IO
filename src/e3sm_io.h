@@ -68,7 +68,7 @@ typedef struct e3sm_io_config {
 
     e3sm_io_api api;
     e3sm_io_layout layout;
-    int low_lvl ;
+    int vard ;
 
     int verbose      ; /* verbose mode to print additional messages on screen */
     int keep_outfile ; /* whether to keep the output files when exits */

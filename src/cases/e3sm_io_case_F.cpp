@@ -46,7 +46,7 @@ int e3sm_io_case_F::wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
     nvar = cfg.nvars;
 
     /* vard APIs require internal data type matches external one */
-    if (cfg.low_lvl) {
+    if (cfg.vard) {
         //#if REC_XTYPE != NC_FLOAT
         RET_ERR ("PnetCDF vard API requires internal and external data types match, skip\n");
         //#endif
@@ -123,7 +123,7 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
     nvar = cfg.nvars;
 
     /* vard APIs require internal data type matches external one */
-    if (cfg.low_lvl) {
+    if (cfg.vard) {
         //#if REC_XTYPE != NC_FLOAT
         RET_ERR ("Low level API requires internal and external data types match, skip\n");
         //#endif

@@ -73,24 +73,25 @@ void print_info (MPI_Info *info_used) {
 /*----< usage() >------------------------------------------------------------*/
 static void usage (char *argv0) {
     char *help =
-        "Usage: %s [OPTION]...\n"
+        "Usage: %s [OPTION]... FILE\n"
         "       [-h] Print help\n"
         "       [-v] Verbose mode\n"
-        "       [-k] Keep the output files when the program exits\n"
-        "       [-d] Run test that uses low-level APIs\n"
-        "       [-n] Run test using noncontiguous write buffer\n"
+        "       [-k] Keep the output files when program exits\n"
+        "       [-d] Run test that uses PnetCDF vard API\n"
+        "       [-n] Run test that uses PnetCDF varn API\n"
+        "       [-m] Run test using noncontiguous write buffer\n"
         "       [-t] Write 2D variables followed by 3D variables\n"
         "       [-R] Test reading performance\n"
         "       [-W] Test writing performance\n"
-        "       [-H num] File number to run in F case (-1 (both) (default), 0, 1)\n"
+        "       [-f num] File number to run in F case (-1 (both) (default), 0, 1)\n"
         "       [-r num] Number of records (default 1)\n"
         "       [-s num] Stride between IO tasks (default 1)\n"
-        "       [-a api] Underlying API to test (pnc (default), hdf5, adios2)\n"
-        "       [-l layout] Storage layout of the variables (contig (default), chunk)\n"
-        "       [-o target_dir] Path to directory containing the test files (default ./)\n"
+        "       [-o output_dir] Output directory name (default ./)\n"
         "       [-i target_dir] Path to directory containing the input files\n"
-        "       [-c output_dir] Name of input netCDF file describing data decompositions "
-        "\n";
+        "       [-a api] Underlying API to test (pnc (default), hdf5, adios2)\n"
+        //"       [-l layout] Storage layout of the variables (contig (default), chunk)\n"
+        "       FILE: Name of input netCDF file describing data decompositions\n";
+    "\n";
     fprintf (stderr, help, argv0);
 }
 
@@ -120,7 +121,7 @@ int main (int argc, char **argv) {
     cfg.nvars          = 0;
     cfg.api            = pnc;
     cfg.layout         = contig;
-    cfg.low_lvl        = 0;
+    cfg.vard        = 0;
     cfg.verbose        = 0;
     cfg.keep_outfile   = 0;
     cfg.two_buf        = 0;
@@ -128,7 +129,7 @@ int main (int argc, char **argv) {
     cfg.io_stride      = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:l:o:i:c:dntRWH:ha:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:")) != EOF) switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -152,6 +153,7 @@ int main (int argc, char **argv) {
                     RET_ERR ("Unknown API")
                 }
                 break;
+                /*
             case 'l':
                 if (strcmp (optarg, "contig") == 0) {
                     cfg.layout = contig;
@@ -161,22 +163,20 @@ int main (int argc, char **argv) {
                     RET_ERR ("Unknown layout")
                 }
                 break;
+                */
             case 'o':
                 strncpy (cfg.targetdir, optarg, E3SM_IO_MAX_PATH);
-
                 break;
             case 'i':
                 strncpy (cfg.datadir, optarg, E3SM_IO_MAX_PATH);
-
-                break;
-            case 'c':
-                strncpy (cfg.cfgpath, optarg, E3SM_IO_MAX_PATH);
-
                 break;
             case 'd':
-                cfg.low_lvl = 1;
+                cfg.vard = 1;
                 break;
             case 'n':
+                cfg.vard = 0;
+                break;
+            case 'm':
                 cfg.non_contig_buf = 1;
                 break;
             case 't':
@@ -188,7 +188,7 @@ int main (int argc, char **argv) {
             case 'W':
                 cfg.wr = 1;
                 break;
-            case 'H':
+            case 'f':
                 cfg.hx = atoi (optarg);
                 break;
             case 'h':
@@ -197,10 +197,12 @@ int main (int argc, char **argv) {
                 goto err_out;
         }
 
-    if (cfg.cfgpath[0] == '\0') { /* input file is mandatory */
-        if (!cfg.rank) usage (argv[0]);
+    if ((optind >= argc) || (argv[optind] == NULL)) { /* input file is mandatory */
+        if (!(cfg.rank)) usage (argv[0]);
         ERR_OUT ("Decomposition file not provided")
     }
+    strncpy (cfg.cfgpath, argv[optind], E3SM_IO_MAX_PATH);
+
     /* input file contains number of write requests and their file access
      * offsets (per array element) */
     PRINT_MSG (1, "input file name =%s\n", cfg.cfgpath);
