@@ -10,6 +10,8 @@
 #include <config.h>
 #endif
 //
+#include <cstring>
+//
 #include <sys/stat.h>
 //
 #include <hdf5.h>
@@ -18,66 +20,10 @@
 #endif
 //
 #include <e3sm_io.h>
-#include <e3sm_io_driver_hdf5.hpp>
 #include <e3sm_io_err.h>
 
-#define CHECK_HERR                                                    \
-    {                                                                 \
-        if (herr != 0) {                                              \
-            printf ("Error at line %d in %s:\n", __LINE__, __FILE__); \
-            H5Eprint1 (stdout);                                       \
-            DEBUG_ABORT;                                              \
-            nerrs++;                                                  \
-            goto err_out;                                             \
-        }                                                             \
-    }
-
-#define CHECK_HID(A)                                                  \
-    {                                                                 \
-        if (A < 0) {                                                  \
-            printf ("Error at line %d in %s:\n", __LINE__, __FILE__); \
-            H5Eprint1 (stdout);                                       \
-            DEBUG_ABORT;                                              \
-            nerrs++;                                                  \
-            goto err_out;                                             \
-        }                                                             \
-    }
-
-static inline hid_t nc_type_to_hdf5_type (nc_type nctype) {
-    switch (nctype) {
-        case NC_INT:
-            return H5T_NATIVE_INT;
-        case NC_FLOAT:
-            return H5T_NATIVE_FLOAT;
-        case NC_DOUBLE:
-            return H5T_NATIVE_DOUBLE;
-        case NC_CHAR:
-            return H5T_NATIVE_CHAR;
-        default:
-            printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, nctype);
-            DEBUG_ABORT
-    }
-
-    return -1;
-}
-
-static inline hid_t mpi_type_to_hdf5_type (MPI_Datatype mpitype) {
-    switch (mpitype) {
-        case MPI_INT:
-            return H5T_NATIVE_INT;
-        case MPI_FLOAT:
-            return H5T_NATIVE_FLOAT;
-        case MPI_DOUBLE:
-            return H5T_NATIVE_DOUBLE;
-        case MPI_CHAR:
-            return H5T_NATIVE_CHAR;
-        default:
-            printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, mpitype);
-            DEBUG_ABORT
-    }
-
-    return -1;
-}
+#include <e3sm_io_driver_hdf5.hpp>
+#include <e3sm_io_driver_hdf5_int.hpp>
 
 e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 () {
     int nerrs   = 0;
@@ -116,12 +62,12 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 () {
     CHECK_HID (this->log_vlid)
 #endif
 
-    for (i = 0; i < E3SM_IO_DRIVER_MAX_RANK; i++) {
-        one[i]  = 1;
-        mone[i] = 1;
-    }
+    for (i = 0; i < E3SM_IO_DRIVER_MAX_RANK; i++) { one[i] = 1; }
 
-    this->tsel = this->twrite = this->tread = this->text = 0;
+    this->tsel = this->twrite = this->tread = this->text = this->tsort = this->tcpy = 0;
+    this->hyperslab_time                                                            = .0;
+    this->hyperslab_count                                                           = 0;
+    this->total_data_size                                                           = 0;
 
     env = getenv ("E3SM_IO_HDF5_ENABLE_LOGVOL");
     if (env) {
@@ -134,13 +80,18 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 () {
         }
     }
 
+    env = getenv ("E3SM_IO_HDF5_MERGE_VARN");
+    if (env) {
+        if (std::string (env) == "1") { this->merge_varn = true; }
+    }
+
 err_out:;
     if (nerrs > 0) { throw "HDF5 driver init fail"; }
 }
 e3sm_io_driver_hdf5::~e3sm_io_driver_hdf5 () {
     int rank;
     int nerrs = 0;
-    double tsel_all, twrite_all, text_all;
+    double tsel_all, twrite_all, text_all, tcpy_all, tsort_all;
 
     if (dxplid_coll >= 0) H5Pclose (dxplid_coll);
     if (dxplid_indep >= 0) H5Pclose (dxplid_indep);
@@ -151,12 +102,16 @@ e3sm_io_driver_hdf5::~e3sm_io_driver_hdf5 () {
     MPI_Allreduce (&twrite, &twrite_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
     MPI_Allreduce (&tsel, &tsel_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
     MPI_Allreduce (&text, &text_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+    MPI_Reduce (&tsort, &tsort_all, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce (&tcpy, &tcpy_all, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
     if (rank == 0) {
         printf ("#%%$: H5Dwrite_time_max: %lf\n", twrite_all);
         printf ("#%%$: H5Sselect_hyperslab_time_max: %lf\n", tsel_all);
         printf ("#%%$: H5Dset_extent_time_max: %lf\n", text_all);
+        printf ("H5D sort memory: %lf\n", tsort_all);
+        printf ("H5D copy memory: %lf\n", tcpy_all);
     }
 }
 
@@ -166,7 +121,7 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
     hid_t faplid;
     hdf5_file *fp;
 
-    fp = new hdf5_file ();
+    fp = new hdf5_file (*this);
 
     faplid = H5Pcreate (H5P_FILE_ACCESS);
     CHECK_HID (faplid)
@@ -200,7 +155,7 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
     hid_t faplid;
     hdf5_file *fp;
 
-    fp = new hdf5_file ();
+    fp = new hdf5_file (*this);
 
     faplid = H5Pcreate (H5P_FILE_ACCESS);
     CHECK_HID (faplid)
@@ -312,6 +267,10 @@ int e3sm_io_driver_hdf5::def_var (
     dcplid = H5Pcreate (H5P_DATASET_CREATE);
     CHECK_HID (dcplid)
 
+    H5Pset_fill_value (dcplid, 0, NULL);
+    H5Pset_fill_time (dcplid, H5D_FILL_TIME_NEVER);
+    H5Pset_alloc_time (dcplid, H5D_ALLOC_TIME_DEFAULT);
+
     for (i = 0; i < ndim; i++) { dims[i] = mdims[i] = fp->dsizes[dimids[i]]; }
     if (ndim) {
         if (dims[0] == H5S_UNLIMITED) {
@@ -388,6 +347,7 @@ err_out:;
     if (sid != -1) H5Sclose (sid);
     return nerrs;
 }
+
 int e3sm_io_driver_hdf5::inq_dim (int fid, std::string name, int *dimid) {
     int nerrs = 0;
     herr_t herr;
@@ -424,6 +384,9 @@ int e3sm_io_driver_hdf5::wait (int fid) {
     int nerrs = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
+
+    nerrs += fp->flush_multidatasets ();
+    CHECK_NERR
 
     herr = H5Fflush (fp->id, H5F_SCOPE_GLOBAL);
     CHECK_HERR
@@ -600,8 +563,21 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
             throw "Unrecognized mode";
     }
 
-    herr = H5Dwrite (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
-    CHECK_HERR
+    // Call H5Dwrite immediately if blocking or Log VOL is used
+    if ((mode == indep) || (mode == coll)
+#ifdef ENABLE_LOGVOL
+        || this->use_logvol
+#endif
+    ) {
+        herr = H5Dwrite (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
+        CHECK_HERR
+    } else {  // Otherwier, queue request in driver
+        herr = fp->register_multidataset (buf, did, dsid, msid, mpi_type_to_hdf5_type (type), 1);
+        CHECK_HERR
+        // Prevent freeing of dsid and msid, they will be freed after flush
+        dsid = msid = -1;
+    }
+
     this->twrite += MPI_Wtime () - te;
 
 err_out:;
@@ -633,7 +609,8 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
     hid_t dsid = -1, msid = -1;
     hid_t did;
     hid_t dxplid;
-    hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK], hstride[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK],
+        hstride[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
 
     did = fp->dids[vid];
@@ -706,8 +683,21 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
             throw "Unrecognized mode";
     }
 
-    herr = H5Dwrite (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
-    CHECK_HERR
+    // Call H5Dwrite immediately if blocking or Log VOL is used
+    if ((mode == indep) || (mode == coll)
+#ifdef ENABLE_LOGVOL
+        || this->use_logvol
+#endif
+    ) {
+        herr = H5Dwrite (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
+        CHECK_HERR
+    } else {  // Otherwier, queue request in driver
+        herr = fp->register_multidataset (buf, did, dsid, msid, mpi_type_to_hdf5_type (type), 1);
+        CHECK_HERR
+        // Prevent freeing of dsid and msid, they will be freed after flush
+        dsid = msid = -1;
+    }
+
     this->twrite += MPI_Wtime () - te;
 
 err_out:;
@@ -729,6 +719,20 @@ int e3sm_io_driver_hdf5::put_varn (int fid,
                                    MPI_Offset **counts,
                                    void *buf,
                                    e3sm_io_op_mode mode) {
+    if (this->merge_varn) {
+        return this->put_varn_merge (fid, vid, type, nreq, starts, counts, buf, mode);
+    } else {
+        return this->put_varn_expand (fid, vid, type, nreq, starts, counts, buf, mode);
+    }
+}
+int e3sm_io_driver_hdf5::put_varn_expand (int fid,
+                                          int vid,
+                                          MPI_Datatype type,
+                                          int nreq,
+                                          MPI_Offset **starts,
+                                          MPI_Offset **counts,
+                                          void *buf,
+                                          e3sm_io_op_mode mode) {
     int err;
     int nerrs = 0;
     herr_t herr;
@@ -865,6 +869,21 @@ int e3sm_io_driver_hdf5::put_varn (int fid,
                 herr = H5Dwrite (did, mtype, msid, dsid, dxplid, bufp);
                 CHECK_HERR
 
+                // Call H5Dwrite immediately if blocking or Log VOL is used
+                if ((mode == indep) || (mode == coll)
+#ifdef ENABLE_LOGVOL
+                    || this->use_logvol
+#endif
+                ) {
+                    herr = H5Dwrite (did, mtype, msid, dsid, dxplid, bufp);
+                    CHECK_HERR
+                } else {  // Otherwier, queue request in driver
+                    herr = fp->register_multidataset (bufp, did, dsid, msid, mtype, 1);
+                    CHECK_HERR
+                    // Prevent freeing of dsid and msid, they will be freed after flush
+                    dsid = msid = -1;
+                }
+
                 twrite += MPI_Wtime () - te;
                 bufp += rsize;
             }
@@ -995,8 +1014,20 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
             throw "Unrecognized mode";
     }
 
-    herr = H5Dread (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
-    CHECK_HERR
+    // Call H5Dread immediately if blocking or Log VOL is used
+    if ((mode == indep) || (mode == coll)
+#ifdef ENABLE_LOGVOL
+        || this->use_logvol
+#endif
+    ) {
+        herr = H5Dread (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
+        CHECK_HERR
+    } else {  // Otherwier, queue request in driver
+        herr = fp->register_multidataset (buf, did, dsid, msid, mpi_type_to_hdf5_type (type), 0);
+        CHECK_HERR
+        // Prevent freeing of dsid and msid, they will be freed after flush
+        dsid = msid = -1;
+    }
     this->tread += MPI_Wtime () - te;
 
 err_out:;
@@ -1027,7 +1058,8 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
     hid_t dsid = -1, msid = -1;
     hid_t did;
     hid_t dxplid;
-    hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK], hstride[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK],
+        hstride[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
 
     did = fp->dids[vid];
@@ -1096,8 +1128,20 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
             throw "Unrecognized mode";
     }
 
-    herr = H5Dread (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
-    CHECK_HERR
+    // Call H5Dread immediately if blocking or Log VOL is used
+    if ((mode == indep) || (mode == coll)
+#ifdef ENABLE_LOGVOL
+        || this->use_logvol
+#endif
+    ) {
+        herr = H5Dread (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
+        CHECK_HERR
+    } else {  // Otherwier, queue request in driver
+        herr = fp->register_multidataset (buf, did, dsid, msid, mpi_type_to_hdf5_type (type), 0);
+        CHECK_HERR
+        // Prevent freeing of dsid and msid, they will be freed after flush
+        dsid = msid = -1;
+    }
     this->tread += MPI_Wtime () - te;
 
 err_out:;
@@ -1111,6 +1155,7 @@ err_out:;
 #endif
     return nerrs;
 }
+
 int e3sm_io_driver_hdf5::get_varn (int fid,
                                    int vid,
                                    MPI_Datatype type,
@@ -1119,6 +1164,20 @@ int e3sm_io_driver_hdf5::get_varn (int fid,
                                    MPI_Offset **counts,
                                    void *buf,
                                    e3sm_io_op_mode mode) {
+    if (this->merge_varn) {
+        return this->get_varn_merge (fid, vid, type, nreq, starts, counts, buf, mode);
+    } else {
+        return this->get_varn_expand (fid, vid, type, nreq, starts, counts, buf, mode);
+    }
+}
+int e3sm_io_driver_hdf5::get_varn_expand (int fid,
+                                          int vid,
+                                          MPI_Datatype type,
+                                          int nreq,
+                                          MPI_Offset **starts,
+                                          MPI_Offset **counts,
+                                          void *buf,
+                                          e3sm_io_op_mode mode) {
     int err;
     int nerrs = 0;
     herr_t herr;
@@ -1248,8 +1307,20 @@ int e3sm_io_driver_hdf5::get_varn (int fid,
                 te = MPI_Wtime ();
                 tsel += te - ts;
 
-                herr = H5Dread (did, mtype, msid, dsid, dxplid, bufp);
-                CHECK_HERR
+                // Call H5Dread immediately if blocking or Log VOL is used
+                if ((mode == indep) || (mode == coll)
+#ifdef ENABLE_LOGVOL
+                    || this->use_logvol
+#endif
+                ) {
+                    herr = H5Dread (did, mtype, msid, dsid, dxplid, bufp);
+                    CHECK_HERR
+                } else {  // Otherwier, queue request in driver
+                    herr = fp->register_multidataset (bufp, did, dsid, msid, mtype, 0);
+                    CHECK_HERR
+                    // Prevent freeing of dsid and msid, they will be freed after flush
+                    dsid = msid = -1;
+                }
 
                 twrite += MPI_Wtime () - te;
                 bufp += rsize;

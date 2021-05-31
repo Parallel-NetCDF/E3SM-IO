@@ -16,15 +16,51 @@
 #include <mpi.h>
 //
 #include <e3sm_io.h>
+
 #include <e3sm_io_driver.hpp>
 
 class e3sm_io_driver_hdf5 : public e3sm_io_driver {
-    typedef struct hdf5_file {
+    typedef struct Index_order {
+        hsize_t index;
+        hsize_t coverage;
+        char *data;
+    } Index_order;
+
+    class hdf5_file {
+       public:
         hid_t id;
         std::vector<hid_t> dids;
         std::vector<hsize_t> dsizes;
         MPI_Offset recsize = 0;
-    } hdf5_file;
+#ifndef HDF5_HAVE_DWRITE_MULTI
+        typedef struct H5D_rw_multi_t {
+            hid_t dset_id;       /* dataset ID */
+            hid_t dset_space_id; /* dataset selection dataspace ID */
+            hid_t mem_type_id;   /* memory datatype ID */
+            hid_t mem_space_id;  /* memory selection dataspace ID */
+            union {
+                void *rbuf;       /* pointer to read buffer */
+                const void *wbuf; /* pointer to write buffer */
+            } u;
+        } H5D_rw_multi_t;
+#endif
+        std::vector<H5D_rw_multi_t> multi_datasets;
+
+        std::vector<std::vector<e3sm_io_driver_hdf5::Index_order>> dataset_segments;
+
+        std::vector<hid_t> memspace_recycle;
+        std::vector<hid_t> dataspace_recycle;
+
+        e3sm_io_driver_hdf5 &driver;
+
+        hdf5_file (e3sm_io_driver_hdf5 &x) : driver (x) {};
+
+        herr_t register_multidataset (
+            void *buf, hid_t did, hid_t dsid, hid_t msid, hid_t mtype, int write);
+        herr_t pull_multidatasets ();
+        int flush_multidatasets ();
+    };
+
     std::vector<hdf5_file *> files;
     hid_t dxplid_coll;
     hid_t dxplid_indep;
@@ -34,10 +70,17 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     hid_t log_vlid;
 #endif
     hsize_t one[H5S_MAX_RANK];
-    MPI_Offset mone[H5S_MAX_RANK];
-    double tsel, twrite, tread, text;
-    bool use_logvol;
-    bool use_logvol_varn;
+
+    // Config
+    bool use_logvol      = false;
+    bool use_logvol_varn = false;
+    bool merge_varn      = false;
+
+    // Profiling
+    double tsel, twrite, tread, text, tsort, tcpy;
+    int hyperslab_count     = 0;
+    double hyperslab_time   = 0;
+    hsize_t total_data_size = 0;
 
    public:
     e3sm_io_driver_hdf5 ();
@@ -122,4 +165,51 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
                   MPI_Datatype ftype,
                   void *buf,
                   e3sm_io_op_mode mode);
+
+   private:
+    static int index_order_cmp (const void *a, const void *b);
+    int pack_data (Index_order *index_order,
+                   int *index,
+                   char *src,
+                   hsize_t esize,
+                   int ndim,
+                   const hsize_t *dims,
+                   const hsize_t *start,
+                   const hsize_t *block);
+    int copy_index_buf (Index_order *index_order, int total_blocks, char *out_buf);
+
+    int put_varn_expand (int fid,
+                         int vid,
+                         MPI_Datatype type,
+                         int nreq,
+                         MPI_Offset **starts,
+                         MPI_Offset **counts,
+                         void *buf,
+                         e3sm_io_op_mode mode);
+
+    int get_varn_expand (int fid,
+                         int vid,
+                         MPI_Datatype type,
+                         int nreq,
+                         MPI_Offset **starts,
+                         MPI_Offset **counts,
+                         void *buf,
+                         e3sm_io_op_mode mode);
+    int put_varn_merge (int fid,
+                        int vid,
+                        MPI_Datatype type,
+                        int nreq,
+                        MPI_Offset **starts,
+                        MPI_Offset **counts,
+                        void *buf,
+                        e3sm_io_op_mode mode);
+
+    int get_varn_merge (int fid,
+                        int vid,
+                        MPI_Datatype type,
+                        int nreq,
+                        MPI_Offset **starts,
+                        MPI_Offset **counts,
+                        void *buf,
+                        e3sm_io_op_mode mode);
 };

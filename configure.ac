@@ -365,8 +365,12 @@ AC_ARG_WITH([hdf5],
           have_hdf5=no
       fi
    fi
+   if test "x$have_hdf5" = xyes ; then
+      AC_SEARCH_LIBS([H5Dwrite_multi], [hdf5], [have_multi_dset=yes], [have_multi_dset=no])
+   fi
 ])
 AM_CONDITIONAL(ENABLE_HDF5, [test "x$have_hdf5" = xyes])
+AM_CONDITIONAL(HDF5_HAVE_DWRITE_MULTI, [test "x$have_multi_dset" = xyes])
 
 # Check for logvol
 have_logvol=no
@@ -498,6 +502,9 @@ if test "x$have_hdf5" = xyes ; then
     LIBS="$LIBS -lhdf5"
     fi
     AC_DEFINE([ENABLE_HDF5], [1], [Build HDF5 benchmark])
+    if test "x$have_multi_dset" = xyes ; then
+      AC_DEFINE([HDF5_HAVE_DWRITE_MULTI], [1], [Have multi-dataset I/O support])
+    fi
 fi
 
 if test "x$have_logvol" = xyes ; then
