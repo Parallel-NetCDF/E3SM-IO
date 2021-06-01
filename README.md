@@ -252,6 +252,18 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   F and G cases running on 21632 and 9600 MPI processes respectively are
   available upon request.
 
+### Environment variables
+* E3SM_IO_HDF5_ENABLE_LOGVOL 
+  + 1: Use Log I/O VOL if available
+  + 0: Use the native VOL (default)
+* E3SM_IO_HDF5_USE_LOGVOL_WRITEN
+  + 1: Use the H5Dwrite_N API in Log I/O VOL
+  + 0: Use the HDF5 driver varn implementation (default)
+  + Only effective when E3SM_IO_HDF5_ENABLE_LOGVOL is 1
+* E3SM_IO_HDF5_MERGE_VARN
+  + 1: Merge varn hyper-slabs into one dataspace selection
+  + 0: Call H5Dwrite per hyper-slab (default)
+
 ### example outputs shown on screen
 ```
   % mpiexec -n 512 ./e3sm_io -k -r 3 -o $SCRATCH/FS_1M_64 -c datasets/f_case_48602x72_512p.nc
