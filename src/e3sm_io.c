@@ -88,8 +88,12 @@ static void usage (char *argv0) {
         "       [-s num] Stride between IO tasks (default 1)\n"
         "       [-o output_dir] Output directory name (default ./)\n"
         "       [-i target_dir] Path to directory containing the input files\n"
-        "       [-a api] Underlying API to test (pnc (default), hdf5, adios2)\n"
-        //"       [-l layout] Storage layout of the variables (contig (default), chunk)\n"
+        "       [-a api] Underlying API to test (pnc (default), hdf5, hdf5_logvol, hdf5_multi, "
+        "adios2)\n"
+        "       [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) "
+        "(default))\n"
+        "       [-z filter] Apply the filter if supported by the underlying API (none (default), "
+        "deflate) \n"
         "       FILE: Name of input netCDF file describing data decompositions\n";
     "\n";
     fprintf (stderr, help, argv0);
@@ -120,8 +124,8 @@ int main (int argc, char **argv) {
     cfg.rd             = 0;
     cfg.nvars          = 0;
     cfg.api            = pnc;
-    cfg.layout         = contig;
-    cfg.vard        = 0;
+    cfg.filter         = none;
+    cfg.vard           = 0;
     cfg.verbose        = 0;
     cfg.keep_outfile   = 0;
     cfg.two_buf        = 0;
@@ -146,7 +150,19 @@ int main (int argc, char **argv) {
                 if (strcmp (optarg, "pnc") == 0) {
                     cfg.api = pnc;
                 } else if (strcmp (optarg, "hdf5") == 0) {
-                    cfg.api = hdf5;
+                    cfg.api = hdf5_native;
+                } else if (strcmp (optarg, "hdf5_multi") == 0) {
+#ifdef HDF5_HAVE_DWRITE_MULTI
+                    cfg.api = hdf5_multi;
+#else
+                    RET_ERR ("The HDF5 used does not support multi-dataset write")
+#endif
+                } else if (strcmp (optarg, "hdf5_logvol") == 0) {
+#ifdef ENABLE_LOGVOL
+                    cfg.api = hdf5_logvol;
+#else
+                    RET_ERR ("Log VOL support was not enabled in this build");
+#endif
                 } else if (strcmp (optarg, "adios2") == 0) {
                     cfg.api = adios2;
                 } else {
@@ -190,6 +206,18 @@ int main (int argc, char **argv) {
                 break;
             case 'f':
                 cfg.hx = atoi (optarg);
+                break;
+            case 'c':
+                cfg.chunksize = atoll (optarg);
+                break;
+            case 'z':
+                if (strcmp (optarg, "deflate") == 0) {
+                    cfg.filter = deflate;
+                } else if (strcmp (optarg, "zlib") == 0) {
+                    cfg.filter = deflate;
+                } else {
+                    RET_ERR ("Unknown filter")
+                }
                 break;
             case 'h':
             default:
