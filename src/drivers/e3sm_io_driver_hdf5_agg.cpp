@@ -24,6 +24,7 @@
 
 #include <e3sm_io_driver_hdf5.hpp>
 #include <e3sm_io_driver_hdf5_int.hpp>
+#include <e3sm_io_profile.hpp>
 
 int e3sm_io_driver_hdf5::index_order_cmp (const void *a, const void *b) {
     return (((Index_order *)a)->index - ((Index_order *)b)->index);
@@ -253,7 +254,7 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     for (i = 0; i < multi_datasets.size (); ++i) {
         H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
         esize = H5Tget_size (multi_datasets[i].mem_type_id);
-        driver.total_data_size += dims[0] * esize;
+        E3SM_IO_TIMER_ADD (E3SM_IO_TIMER_HDF5_DSIZE, (dims[0] * esize))
     }
 
     // Free data spaces
@@ -317,14 +318,15 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     for (i = 0; i < multi_datasets.size (); ++i) {
         H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
         esize = H5Tget_size (multi_datasets[i].mem_type_id);
-        driver.total_data_size += dims[0] * esize;
+        // data using the recorded dataset_segments.
+        E3SM_IO_TIMER_ADD (E3SM_IO_TIMER_HDF5_DSIZE, (dims[0] * esize))
     }
 
     // printf("rank %d number of hyperslab called %d\n", rank, hyperslab_count);
 
     // Read is completed here, but data is out-of-order in user buffer. We need to rearrange all
     // data using the recorded dataset_segments.
-    start = MPI_Wtime ();
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_CPY)
     for (i = 0; i < multi_datasets.size (); ++i) {
         // First, we make a copy of data in the current dataset.
         H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
@@ -347,7 +349,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
             temp_buf_ptr += dataset_segments[i][j].coverage;
         }
     }
-    driver.tcpy = MPI_Wtime () - start;
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_CPY)
     if (temp_size) { free (temp_buf); }
 
     multi_datasets.clear ();
@@ -367,7 +369,6 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     int nerrs     = 0;
     hdf5_file *fp = this->files[fid];
     int i, j;
-    double ts, te;
     hsize_t esize, rsize, rsize_old = 0, memspace_size, total_memspace_size, hyperslab_set;
     int ndim;
     hid_t dsid = -1, msid = -1;
@@ -377,11 +378,12 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     hid_t dxplid;
     hsize_t start[H5S_MAX_RANK], block[H5S_MAX_RANK];
     hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
-
     char *buf2;
     int index;
     Index_order *index_order;
     int total_blocks;
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     did = fp->dids[vid];
 
@@ -437,7 +439,7 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
             // Recreate only when size mismatch
             if (rsize != rsize_old) { rsize_old = rsize; }
 
-            ts = MPI_Wtime ();
+            E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
             if (!hyperslab_set) {
                 herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, start, NULL, this->one, block);
                 hyperslab_set = 1;
@@ -445,14 +447,12 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
                 herr = H5Sselect_hyperslab (dsid, H5S_SELECT_OR, start, NULL, this->one, block);
             }
             CHECK_HERR
-            te = MPI_Wtime ();
-            this->tsel += te - ts;
-
+            E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
             herr = pack_data (index_order, &index, bufp, esize, ndim, dims, start, block);
             CHECK_HERR
-            this->hyperslab_count++;
+            E3SM_IO_TIMER_ADD (E3SM_IO_TIMER_HDF5_NSLAB, 1)
+            E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
-            this->twrite += MPI_Wtime () - te;
             bufp += rsize;
         }
     }
@@ -463,11 +463,11 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     }
 #endif
 
-    ts = MPI_Wtime ();
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SORT_REQ)
     qsort (index_order, total_blocks, sizeof (Index_order), index_order_cmp);
-    this->tsort += MPI_Wtime () - ts;
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_SORT_REQ)
 
-    ts   = MPI_Wtime ();
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_CPY)
     buf2 = (char *)malloc (esize * total_memspace_size);
     herr = copy_index_buf (index_order, total_blocks, buf2);
     CHECK_HERR
@@ -513,12 +513,13 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
         // Prevent freeing of dsid and msid, they will be freed after flush
         dsid = msid = -1;
     }
-    this->tcpy += MPI_Wtime () - ts;
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_CPY)
     /* The folowing code is to place dummy H5Dwrite for collective call.*/
 
 err_out:;
     if (dsid >= 0) H5Sclose (dsid);
     if (msid >= 0) H5Sclose (msid);
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return nerrs;
 }
 
@@ -545,7 +546,8 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
     hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
     hsize_t start[H5S_MAX_RANK], block[H5S_MAX_RANK];
     int total_blocks;
-    double ts;
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     did = fp->dids[vid];
 
@@ -574,24 +576,24 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
         herr = pack_data (fp->dataset_segments[fp->multi_datasets.size ()].data (), &index, bufp,
                           esize, ndim, dims, start, block);
         CHECK_HERR
-        ts = MPI_Wtime ();
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
         if (i) {
             herr = H5Sselect_hyperslab (dsid, H5S_SELECT_OR, start, NULL, this->one, block);
         } else {
             herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, start, NULL, this->one, block);
         }
         CHECK_HERR
-        this->tsel += MPI_Wtime () - ts;
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_SEL)
         rsize = 1;
         for (j = 0; j < ndim; ++j) { rsize *= block[j]; }
         total_mem_size += rsize;
         bufp += rsize * esize;
     }
 
-    ts = MPI_Wtime ();
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SORT_REQ)
     qsort (fp->dataset_segments[fp->multi_datasets.size ()].data (), total_blocks,
            sizeof (Index_order), index_order_cmp);
-    this->tsort += MPI_Wtime () - ts;
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_SORT_REQ)
 
     msid = H5Screate_simple (1, &total_mem_size, &total_mem_size);
     CHECK_HID (msid)
@@ -637,5 +639,6 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
 err_out:;
     if (dsid >= 0) H5Sclose (dsid);
     if (msid >= 0) H5Sclose (msid);
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return nerrs;
 }
