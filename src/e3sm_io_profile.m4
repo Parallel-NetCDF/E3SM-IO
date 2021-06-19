@@ -46,7 +46,7 @@ double e3sm_io_profile_start_time[E3SM_IO_NTIMER];
 double e3sm_io_profile_counts[E3SM_IO_NTIMER];
 
 const char * const tname[E3SM_IO_NTIMER]={
-foreach(`t', E3SM_IO_TIMERS, `"CONCATE(`nc_zip_timer_', t)",
+foreach(`t', E3SM_IO_TIMERS, `"CONCATE(`e3sm_io_timer_', t)",
 ')dnl
 };
 
