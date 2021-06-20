@@ -32,6 +32,8 @@ static inline nc_type mpitype2nctype (MPI_Datatype type) {
     switch (type) {
         case MPI_INT:
             return NC_INT;
+        case MPI_LONG_LONG:
+            return NC_INT64;
         case MPI_FLOAT:
             return NC_FLOAT;
         case MPI_DOUBLE:
@@ -208,12 +210,8 @@ err_out:;
 }
 
 int e3sm_io_driver_pnc::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
-    int err, nerrs = 0;
-
     *size = this->dim_lens[dimid];
-
-err_out:;
-    return nerrs;
+    return 0;
 }
 int e3sm_io_driver_pnc::enddef (int fid) {
     int err, nerrs = 0;
