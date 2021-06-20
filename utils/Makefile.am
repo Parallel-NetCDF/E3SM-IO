@@ -1,4 +1,9 @@
-bin_PROGRAMS = dat2nc
+# @configure_input@
 
-dat2nc_SOURCES = dat2nc.c 
-dat2nc_LDADD = -lpnetcdf
+SUFFIXES = .o .c
+
+LDADD = -lpnetcdf
+
+bin_PROGRAMS = dat2nc \
+               pnetcdf_blob_replay
+

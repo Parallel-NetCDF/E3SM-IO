@@ -76,13 +76,26 @@ typedef struct e3sm_io_config {
     int two_buf        ;
     int non_contig_buf ;
     int io_stride      ;
+
+    int      blob;         /* whether to use one-file-per-node blob I/O strategy */
+    int      num_subfiles; /* number of subfiles */
+    int      subfile_ID;   /* unqiue file identifier for subfiles */
+    MPI_Comm sub_comm;
 } e3sm_io_config;
 
+#define NVARS_DECOMP 5
+
 typedef struct e3sm_io_decom {
-    int num_decomp;
-    int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
-    int *blocklens[MAX_NUM_DECOMP];
-    MPI_Offset dims[MAX_NUM_DECOMP][2];
+    int  num_decomp;                   /* number of decompositions: 3 or 6 */
+    int  contig_nreqs[MAX_NUM_DECOMP];
+    int  max_nreqs[MAX_NUM_DECOMP];    /* max among processes */
+    int *disps[MAX_NUM_DECOMP];        /* starting offset of each request of this proc */
+    int *blocklens[MAX_NUM_DECOMP];    /* length of each request of this proc */
+    MPI_Offset ndims[MAX_NUM_DECOMP];
+    MPI_Offset dims[MAX_NUM_DECOMP][2];  /* global dimension sizes of variables */
+    MPI_Offset nelems[MAX_NUM_DECOMP];   /* total number of array elements in decomposition */
+    MPI_Offset start[MAX_NUM_DECOMP];    /* This proc's starting offset of variable array index */
+    MPI_Offset count[MAX_NUM_DECOMP];    /* This proc's number of variable array elements */
 } e3sm_io_decom;
 
 #ifdef __cplusplus
@@ -92,11 +105,13 @@ extern int read_decomp (int verbose,
                         MPI_Comm io_comm,
                         const char *infname,
                         int *num_decomp,
+                        MPI_Offset ndims[],
                         MPI_Offset dims[][2],
                         int contig_nreqs[3],
                         int *disps[3],
                         int *blocklens[3]);
 
+extern int blob_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern void print_info (MPI_Info *info_used);
 int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);
 #ifdef __cplusplus

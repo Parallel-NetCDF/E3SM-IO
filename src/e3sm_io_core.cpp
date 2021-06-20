@@ -23,7 +23,7 @@
 #endif
 
 extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
-    int nerrs              = 0;
+    int nerrs=0, err=0;
     e3sm_io_case *tcase    = NULL;
     e3sm_io_driver *driver = NULL;
 
@@ -61,12 +61,12 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         RET_ERR ("Unknown decom file")
     }
 
-    if (cfg->wr) { tcase->wr_test (*cfg, *decom, *driver); }
-    if (cfg->rd) { tcase->rd_test (*cfg, *decom, *driver); }
+    if (cfg->wr) { err = tcase->wr_test (*cfg, *decom, *driver); }
+    if (cfg->rd) { err = tcase->rd_test (*cfg, *decom, *driver); }
 
 err_out:
     if (driver) { delete driver; }
     if (tcase) { delete tcase; }
 
-    return nerrs;
+    return (nerrs > 0) ? err : 0;
 }

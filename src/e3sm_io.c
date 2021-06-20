@@ -28,20 +28,31 @@
 #include <e3sm_io_err.h>
 
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
-    int err, nerrs = 0;
     MPI_Offset estimated_nc_ibuf_size;
 
     /* set MPI-IO hints */
-    MPI_Info_set (cfg->info, "romio_cb_write", "enable");  /* collective write */
-    MPI_Info_set (cfg->info, "romio_no_indep_rw", "true"); /* no independent MPI-IO */
+
+    /* collective write */
+    MPI_Info_set (cfg->info, "romio_cb_write", "enable");
+    /* no independent MPI-IO */
+    MPI_Info_set (cfg->info, "romio_no_indep_rw", "true");
+
+#if 0
+    /* select 4 processes per node to be I/O aggregators */
+    MPI_Info_set (cfg->info, "cb_nodes", "4");
+    MPI_Info_set (cfg->info, "cb_config_list", "*:4");
+#endif
 
     /* set PnetCDF I/O hints */
-    MPI_Info_set (cfg->info, "nc_var_align_size", "1");     /* no gap between variables */
-    MPI_Info_set (cfg->info, "nc_in_place_swap", "enable"); /* in-place byte swap */
+
+    /* no gap between variables */
+    MPI_Info_set (cfg->info, "nc_var_align_size", "1");
+    /* in-place byte swap */
+    MPI_Info_set (cfg->info, "nc_in_place_swap", "enable");
 
     /* use total write amount to estimate nc_ibuf_size */
-    estimated_nc_ibuf_size =
-        decom->dims[2][0] * decom->dims[2][1] * sizeof (double) / cfg->num_iotasks;
+    estimated_nc_ibuf_size = decom->dims[2][0] * decom->dims[2][1]
+                           * sizeof(double) / cfg->num_iotasks;
     estimated_nc_ibuf_size *= cfg->nvars;
     if (estimated_nc_ibuf_size > 16777216) {
         char nc_ibuf_size_str[32];
@@ -49,8 +60,7 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         MPI_Info_set (cfg->info, "nc_ibuf_size", nc_ibuf_size_str);
     }
 
-err_out:;
-    return nerrs;
+    return 0;
 }
 
 /*----< print_info() >------------------------------------------------------*/
@@ -83,6 +93,7 @@ static void usage (char *argv0) {
         "       [-t] Write 2D variables followed by 3D variables\n"
         "       [-R] Test reading performance\n"
         "       [-W] Test writing performance\n"
+        "       [-x] Use one-file-per-node blob I/O strategy\n"
         "       [-f num] File number to run in F case (-1 (both) (default), 0, 1)\n"
         "       [-r num] Number of records (default 1)\n"
         "       [-s num] Stride between IO tasks (default 1)\n"
@@ -90,18 +101,18 @@ static void usage (char *argv0) {
         "       [-i target_dir] Path to directory containing the input files\n"
         "       [-a api] Underlying API to test (pnc (default), hdf5, adios2)\n"
         //"       [-l layout] Storage layout of the variables (contig (default), chunk)\n"
-        "       FILE: Name of input netCDF file describing data decompositions\n";
-    "\n";
+        "       FILE: Name of input netCDF file describing data decompositions\n\n";
     fprintf (stderr, help, argv0);
 }
 
 /*----< main() >-------------------------------------------------------------*/
-int main (int argc, char **argv) {
-    int err, nerrs = 0;
-    int i;
-    char targetdir[E3SM_IO_MAX_PATH] = "./";
+int main (int argc, char **argv)
+{
+    int i, err, nerrs = 0;
+    char targetdir[E3SM_IO_MAX_PATH] = ".";
     char datadir[E3SM_IO_MAX_PATH]   = "";
     char cfgpath[E3SM_IO_MAX_PATH]   = "";
+    double timing[3], max_t[3];
     e3sm_io_config cfg;
     e3sm_io_decom decom;
 
@@ -114,7 +125,7 @@ int main (int argc, char **argv) {
     cfg.targetdir      = targetdir;
     cfg.datadir        = datadir;
     cfg.cfgpath        = cfgpath;
-    cfg.hx             = 0;
+    cfg.hx             = -1;
     cfg.nrec           = 1;
     cfg.wr             = 0;
     cfg.rd             = 0;
@@ -128,8 +139,12 @@ int main (int argc, char **argv) {
     cfg.non_contig_buf = 0;
     cfg.io_stride      = 1;
 
+    cfg.blob           = 0;
+    cfg.sub_comm       = MPI_COMM_NULL;
+
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:x")) != EOF)
+        switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -191,6 +206,9 @@ int main (int argc, char **argv) {
             case 'f':
                 cfg.hx = atoi (optarg);
                 break;
+            case 'x':
+                cfg.blob = 1;
+                break;
             case 'h':
             default:
                 if (cfg.rank == 0) usage (argv[0]);
@@ -219,22 +237,53 @@ int main (int argc, char **argv) {
     nerrs += set_info (&cfg, &decom);
     CHECK_NERR
 
+    MPI_Barrier(MPI_COMM_WORLD);
+    timing[0] = MPI_Wtime();
+
     /* read request information from decompositions 1, 2 and 3 */
-    err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
-                       decom.contig_nreqs, decom.disps, decom.blocklens);
-    CHECK_ERR
+    err = read_decomp(cfg.verbose, cfg.io_comm, cfg.cfgpath, &decom.num_decomp,
+                      decom.ndims, decom.dims, decom.contig_nreqs, decom.disps,
+                      decom.blocklens);
+    if (err != NC_NOERR) goto err_out;
 
-    nerrs += e3sm_io_core (&cfg, &decom);
+    timing[0] = MPI_Wtime() - timing[0];
+    MPI_Barrier(MPI_COMM_WORLD);
+    timing[1] = MPI_Wtime();
 
-err_out:;
-    if (cfg.info != MPI_INFO_NULL) MPI_Info_free (&(cfg.info));
-    if (cfg.io_comm != MPI_COMM_WORLD && cfg.io_comm != MPI_COMM_NULL) {
-        MPI_Comm_free (&(cfg.io_comm));
+    if (cfg.blob) {
+        /* construct metadata for blob I/O strategy */
+        err = blob_metadata(&cfg, &decom);
+        if (err != 0) goto err_out;
     }
 
-    /* Non-IO tasks wait for IO tasks to complete */
-    MPI_Barrier (MPI_COMM_WORLD);
-    MPI_Finalize ();
+    timing[1] = MPI_Wtime() - timing[1];
+    MPI_Barrier(MPI_COMM_WORLD);
+    timing[2] = MPI_Wtime();
+
+    err = e3sm_io_core (&cfg, &decom);
+    if (err < 0) nerrs++;
+
+    timing[2] = MPI_Wtime() - timing[2];
+
+err_out:;
+    if (cfg.blob && cfg.sub_comm != MPI_COMM_NULL)
+        MPI_Comm_free(&cfg.sub_comm);
+    if (cfg.info != MPI_INFO_NULL)
+        MPI_Info_free(&cfg.info);
+    if (cfg.io_comm != MPI_COMM_WORLD && cfg.io_comm != MPI_COMM_NULL)
+        MPI_Comm_free(&cfg.io_comm);
+
+    for (i=0; i<decom.num_decomp; i++) {
+        if (decom.disps[i] != NULL) free(decom.disps[i]);
+        if (decom.blocklens[i] != NULL) free(decom.blocklens[i]);
+    }
+
+    MPI_Reduce(timing, max_t, 3, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    if (cfg.rank == 0)
+        printf("read_decomp=%.2f split_communicator=%.2f e3sm_io_core=%.2f\n",
+               max_t[0],max_t[1],max_t[2]);
+
+    MPI_Finalize();
 
     return (nerrs > 0);
 }

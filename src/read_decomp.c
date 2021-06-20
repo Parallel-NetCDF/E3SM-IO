@@ -119,7 +119,16 @@ int read_decomp(int verbose,
     int err, nerrs = 0, rank, nprocs, ncid, varid, proc_start, proc_count;
     int i, j, nreqs, *all_nreqs, dimids[2], decomp_id;
     MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
+    MPI_Info info=MPI_INFO_NULL;
     struct off_len *myreqs;
+
+    /* set MPI-IO hints: decomposition variables are usually small and enabling
+     * collective buffering read can be expensive. Doing independent reads is
+     * often much faster. An example is when using Lustre on Cori at NERSC.
+     */
+    MPI_Info_create(&info);
+    MPI_Info_set(info, "romio_cb_read", "disable");
+    MPI_Info_set(info, "romio_no_indep_rw", "false");
 
     MPI_Comm_rank(io_comm, &rank);
     MPI_Comm_size(io_comm, &nprocs);
@@ -127,8 +136,10 @@ int read_decomp(int verbose,
     *num_decomp = 0;
 
     /* open input file that contains I/O decomposition information */
-    err = ncmpi_open(io_comm, infname, NC_NOWRITE, MPI_INFO_NULL, &ncid);
+    err = ncmpi_open(io_comm, infname, NC_NOWRITE, info, &ncid);
     CHECK_ERR
+
+    MPI_Info_free(&info);
 
     /* number of decompositions stored in file */
     err = ncmpi_inq_dimid(ncid, "num_decomp", &dimids[0]);
