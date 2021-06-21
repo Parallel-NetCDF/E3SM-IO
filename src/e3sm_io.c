@@ -266,16 +266,16 @@ int main (int argc, char **argv) {
     PRINT_MSG (1, "Target folder name =%s\n", cfg.targetdir);
     if (cfg.datadir[0] != '\0') { PRINT_MSG (1, "Input folder name =%s\n", cfg.datadir); }
 
-    err = MPI_Info_create (&(cfg.info));
-    CHECK_MPIERR
-    nerrs += set_info (&cfg, &decom);
-    CHECK_NERR
-
     /* read request information from decompositions 1, 2 and 3 */
     err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
                        decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens, decom.raw_nreqs,
                        decom.raw_offsets);
     CHECK_ERR
+
+    err = MPI_Info_create (&(cfg.info));
+    CHECK_MPIERR
+    nerrs += set_info (&cfg, &decom);
+    CHECK_NERR
 
     nerrs += e3sm_io_core (&cfg, &decom);
 
