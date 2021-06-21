@@ -89,9 +89,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
         throw "Fitler requries chunking in HDF5";
     }
 
-    if (cfg->num_group!=1){
-           throw "Subfiling not supported by HDF5 driver";
-    }
+    if (cfg->num_group != 1) { throw "Subfiling not supported by HDF5 driver"; }
 
     /*
     env = getenv ("E3SM_IO_HDF5_ENABLE_LOGVOL");
@@ -309,7 +307,7 @@ int e3sm_io_driver_hdf5::def_var (
     for (i = 0; i < ndim; i++) { dims[i] = mdims[i] = fp->dsizes[dimids[i]]; }
     if (ndim) {
         if ((cfg->chunksize > 0) || (dims[0] == H5S_UNLIMITED)) {
-            csize = H5Tget_size (type);
+            csize = H5Tget_size (mpi_type_to_hdf5_type(type));
             for (i = 0; i < ndim; i++) {
                 if (csize < cfg->chunksize) {
                     cdim[i] = mdims[i];
@@ -326,7 +324,7 @@ int e3sm_io_driver_hdf5::def_var (
         }
 
         if (csize > 0) {
-            herr = H5Pset_chunk (dcplid, ndim, dims);
+            herr = H5Pset_chunk (dcplid, ndim, cdim);
             CHECK_HERR
 
             switch (cfg->filter) {
@@ -403,7 +401,7 @@ int e3sm_io_driver_hdf5::def_dim (int fid, std::string name, MPI_Offset size, in
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     hsize = (hsize_t)size;
-    if (hsize == NC_UNLIMITED) size = H5S_UNLIMITED;
+    if (hsize == NC_UNLIMITED) hsize = H5S_UNLIMITED;
 
     sid = H5Screate (H5S_SCALAR);
     CHECK_HID (sid)
@@ -552,12 +550,13 @@ err_out:;
     return nerrs;
 }
 
-int e3sm_io_driver_hdf5::put_varl (int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode){
-    int nerrs=0;
+int e3sm_io_driver_hdf5::put_varl (
+    int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) {
+    int nerrs = 0;
 
-    RET_ERR("HDF5 does not support local variables")
-    
-    err_out:;
+    RET_ERR ("HDF5 does not support local variables")
+
+err_out:;
     return nerrs;
 }
 
@@ -634,8 +633,10 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
     }
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
-    herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, hstart, NULL, this->one, hblock);
-    CHECK_HERR
+    if (ndim > 0) {
+        herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, hstart, NULL, this->one, hblock);
+        CHECK_HERR
+    }
 
     E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
     switch (mode) {
@@ -1027,7 +1028,7 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     int i;
-    int ndim = -1;
+    int ndim   = -1;
     hid_t dsid = -1, msid = -1;
     hid_t did;
     hid_t dxplid;
