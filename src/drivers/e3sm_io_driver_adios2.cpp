@@ -19,8 +19,9 @@
 #include <adios2_c.h>
 //
 #include <e3sm_io.h>
-#include <e3sm_io_driver_adios2.hpp>
 #include <e3sm_io_err.h>
+
+#include <e3sm_io_driver_adios2.hpp>
 
 #define CHECK_AERR                                                    \
     {                                                                 \
@@ -79,7 +80,7 @@ size_t adios2_type_size (adios2_type type) {
     return 0;
 }
 
-e3sm_io_driver_adios2::e3sm_io_driver_adios2 () {}
+e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {}
 
 e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {
     int nerrs = 0;
@@ -108,6 +109,18 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
 
     fp->adp = adios2_init (comm, "");
     CHECK_APTR (fp->adp)
+
+    switch (cfg->filter) {
+        case none:
+            fp->op = NULL;
+            break;
+        case bzip2:
+            fp->op = adios2_define_operator (fp->adp, "testOp", "bzip2");
+            CHECK_APTR (fp->op)
+            break;
+        default:
+            throw "Unsupported filter";
+    }
 
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
@@ -262,6 +275,7 @@ int e3sm_io_driver_adios2::def_var (
     int i;
     adios2_variable *dp;
     size_t dims[E3SM_IO_DRIVER_MAX_RANK], zero[E3SM_IO_DRIVER_MAX_RANK];
+    size_t opidx;
 
     for (i = 0; i < ndim; i++) {
         dims[i] = fp->dsizes[dimids[i]];
@@ -272,6 +286,11 @@ int e3sm_io_driver_adios2::def_var (
     dp = adios2_define_variable (fp->iop, name.c_str (), mpi_type_to_adios2_type (type),
                                  (size_t)ndim, dims, zero, zero, adios2_constant_dims_false);
     CHECK_APTR (dp)
+
+    if (fp->op) {
+        aerr = adios2_add_operation (&opidx, dp, fp->op, NULL, NULL);
+        CHECK_AERR
+    }
 
     *did = fp->dids.size ();
     fp->dids.push_back (dp);
@@ -557,8 +576,8 @@ int e3sm_io_driver_adios2::put_vars (int fid,
     size_t ndim;
     adios2_type atype;
     adios2_variable *did;
-    size_t astart[E3SM_IO_DRIVER_MAX_RANK], aend[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK],
-        dims[E3SM_IO_DRIVER_MAX_RANK];
+    size_t astart[E3SM_IO_DRIVER_MAX_RANK], aend[E3SM_IO_DRIVER_MAX_RANK],
+        ablock[E3SM_IO_DRIVER_MAX_RANK], dims[E3SM_IO_DRIVER_MAX_RANK];
     char *bufp;
     adios2_mode iomode;
     double ts, te;
@@ -822,8 +841,8 @@ int e3sm_io_driver_adios2::get_vars (int fid,
     size_t ndim;
     adios2_type atype;
     adios2_variable *did;
-    size_t astart[E3SM_IO_DRIVER_MAX_RANK], aend[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK],
-        dims[E3SM_IO_DRIVER_MAX_RANK];
+    size_t astart[E3SM_IO_DRIVER_MAX_RANK], aend[E3SM_IO_DRIVER_MAX_RANK],
+        ablock[E3SM_IO_DRIVER_MAX_RANK], dims[E3SM_IO_DRIVER_MAX_RANK];
     char *bufp;
     adios2_mode iomode;
     double ts, te;

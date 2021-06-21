@@ -240,6 +240,8 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-o output_dir] Output directory name (default ./)
        [-i target_dir] Path to directory containing the input files
        [-a api] Underlying API to test (pnc (default), hdf5, adios2)
+       [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) (default))
+       [-z filter] Apply the filter if supported by the underlying API (none (default), deflate)
        FILE: Name of input netCDF file describing data decompositions
   ```
 * An example batch script file for running a job on Cori @NERSC with 8 KNL
@@ -251,6 +253,18 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   `g_case_11135652x80_9600p.nc.gz` (126 MB) from high-resolution simulations of
   F and G cases running on 21632 and 9600 MPI processes respectively are
   available upon request.
+
+### Environment variables
+* E3SM_IO_HDF5_ENABLE_LOGVOL 
+  + 1: Use Log I/O VOL if available
+  + 0: Use the native VOL (default)
+* E3SM_IO_HDF5_USE_LOGVOL_WRITEN
+  + 1: Use the H5Dwrite_N API in Log I/O VOL
+  + 0: Use the HDF5 driver varn implementation (default)
+  + Only effective when E3SM_IO_HDF5_ENABLE_LOGVOL is 1
+* E3SM_IO_HDF5_MERGE_VARN
+  + 1: Merge varn hyper-slabs into one dataspace selection
+  + 0: Call H5Dwrite per hyper-slab (default)
 
 ### example outputs shown on screen
 ```

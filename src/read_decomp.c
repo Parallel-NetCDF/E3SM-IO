@@ -10,13 +10,11 @@
 #include <config.h>
 #endif
 
-#include <stdio.h>
-#include <stdlib.h>
-
-#include <mpi.h>
-
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
+#include <mpi.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 struct off_len {
     int off;
@@ -25,11 +23,11 @@ struct off_len {
 
 /*----< compare() >---------------------------------------------------------*/
 /* This subroutine is used in qsort() */
-static int compare(const void *p1, const void *p2) {
+static int compare (const void *p1, const void *p2) {
     int i = ((struct off_len *)p1)->off;
     int j = ((struct off_len *)p2)->off;
-    if (i > j) return(1);
-    if (i < j) return(-1);
+    if (i > j) return (1);
+    if (i < j) return (-1);
     return 0;
 }
 
@@ -73,9 +71,10 @@ static int compare(const void *p1, const void *p2) {
  *           D3.lengths:min = 1 ;
  *
  *   // global attributes:
- *       :command_line = "./dat2nc -o f_case_866x72_16p.nc -1 datasets/piodecomp16tasks16io01dims_ioid_514.dat -2 datasets/piodecomp16tasks16io01dims_ioid_516.dat -3 datasets/piodecomp16tasks16io02dims_ioid_548.dat " ;
- *       :D1.ndims = 1 ;
- *       :D1.dims = 866 ;
+ *       :command_line = "./dat2nc -o f_case_866x72_16p.nc -1
+ * datasets/piodecomp16tasks16io01dims_ioid_514.dat -2
+ * datasets/piodecomp16tasks16io01dims_ioid_516.dat -3
+ * datasets/piodecomp16tasks16io02dims_ioid_548.dat " ; :D1.ndims = 1 ; :D1.dims = 866 ;
  *       :D1.max_nreqs = 4 ;
  *       :D1.min_nreqs = 2 ;
  *       :D2.ndims = 1 ;
@@ -105,42 +104,41 @@ static int compare(const void *p1, const void *p2) {
  *                         Memory space will be allocated in this subroutine
  *                         and must be freed by the caller.
  */
-int read_decomp(int verbose,
-                MPI_Comm io_comm,     /* MPI communicator of I/O processes */
-                const char *infname,  /* IN: */
-                int *num_decomp,      /* OUT: */
-                MPI_Offset *ndims,    /* OUT: [num_decomp] */
-                MPI_Offset  dims[][2],/* OUT: [num_decomp][2] */
-                int contig_nreqs[],   /* OUT: [num_decomp] */
-                int *disps[],         /* OUT: [num_decomp][contig_nreqs[]] */
-                int *blocklens[])     /* OUT: [num_decomp][contig_nreqs[]] */
+int read_decomp (int verbose,
+                 MPI_Comm io_comm,     /* MPI communicator of I/O processes */
+                 const char *infname,  /* IN: */
+                 int *num_decomp,      /* OUT: */
+                 MPI_Offset dims[][2], /* OUT: [num_decomp][2] */
+                 int contig_nreqs[],   /* OUT: [num_decomp] */
+                 int *disps[],         /* OUT: [num_decomp][contig_nreqs[]] */
+                 int *blocklens[])     /* OUT: [num_decomp][contig_nreqs[]] */
 {
     char name[128];
     int err, nerrs = 0, rank, nprocs, ncid, varid, proc_start, proc_count;
-    int i, j, nreqs, *all_nreqs, dimids[2], decomp_id;
+    int i, j, nreqs, *all_nreqs, ndims, dimids[2], decomp_id;
     MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
     struct off_len *myreqs;
 
-    MPI_Comm_rank(io_comm, &rank);
-    MPI_Comm_size(io_comm, &nprocs);
+    MPI_Comm_rank (io_comm, &rank);
+    MPI_Comm_size (io_comm, &nprocs);
 
     *num_decomp = 0;
 
     /* open input file that contains I/O decomposition information */
-    err = ncmpi_open(io_comm, infname, NC_NOWRITE, MPI_INFO_NULL, &ncid);
+    err = ncmpi_open (io_comm, infname, NC_NOWRITE, MPI_INFO_NULL, &ncid);
     CHECK_ERR
 
     /* number of decompositions stored in file */
-    err = ncmpi_inq_dimid(ncid, "num_decomp", &dimids[0]);
+    err = ncmpi_inq_dimid (ncid, "num_decomp", &dimids[0]);
     CHECK_ERR
-    err = ncmpi_inq_dimlen(ncid, dimids[0], &num);
+    err = ncmpi_inq_dimlen (ncid, dimids[0], &num);
     CHECK_ERR
     *num_decomp = (int)num;
 
     /* number of processes used when the decomposition was produced */
-    err = ncmpi_inq_dimid(ncid, "decomp_nprocs", &dimids[0]);
+    err = ncmpi_inq_dimid (ncid, "decomp_nprocs", &dimids[0]);
     CHECK_ERR
-    err = ncmpi_inq_dimlen(ncid, dimids[0], &decomp_nprocs);
+    err = ncmpi_inq_dimlen (ncid, dimids[0], &decomp_nprocs);
     CHECK_ERR
 
     /* decomp_nprocs is the number of processes used to generate the E3SM data
@@ -172,32 +170,33 @@ int read_decomp(int verbose,
         blocklens[decomp_id]    = NULL;
 
         /* total number of noncontiguous requests of all processes */
-        sprintf(name, "D%d.total_nreqs", decomp_id + 1);
-        err = ncmpi_inq_dimid(ncid, name, &dimids[1]);
+        sprintf (name, "D%d.total_nreqs", decomp_id + 1);
+        err = ncmpi_inq_dimid (ncid, name, &dimids[1]);
         CHECK_ERR
-        err = ncmpi_inq_dimlen(ncid, dimids[1], &total_nreqs);
+        err = ncmpi_inq_dimlen (ncid, dimids[1], &total_nreqs);
         CHECK_ERR
 
         /* ndims: number of decomposition dimensions, not variable dimensions
          * In E3SM, decomposition is along the lowest 1 or 2 dimensions of 2D
          * or 3D variables.
          */
-        sprintf(name, "D%d.dims", decomp_id + 1);
+        sprintf (name, "D%d.dims", decomp_id + 1);
         /* obtain the number of dimensions of this decomposition */
-        err = ncmpi_inq_attlen(ncid, NC_GLOBAL, name, &ndims[decomp_id]);
+        err = ncmpi_inq_attlen (ncid, NC_GLOBAL, name, &num);
         CHECK_ERR
+        ndims = num;
         /* obtain the dimension lengths of this decomposition */
-        err = ncmpi_get_att_longlong(ncid, NC_GLOBAL, name, dims[decomp_id]);
+        err = ncmpi_get_att_longlong (ncid, NC_GLOBAL, name, dims[decomp_id]);
         CHECK_ERR
 
         /* obtain varid of request variable Dx.nreqs */
-        sprintf(name, "D%d.nreqs", decomp_id + 1);
-        err = ncmpi_inq_varid(ncid, name, &varid);
+        sprintf (name, "D%d.nreqs", decomp_id + 1);
+        err = ncmpi_inq_varid (ncid, name, &varid);
         CHECK_ERR
 
         /* read all numbers of requests */
-        all_nreqs = (int *)malloc(decomp_nprocs * sizeof(int));
-        err       = ncmpi_get_var_int_all(ncid, varid, all_nreqs);
+        all_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
+        err       = ncmpi_get_var_int_all (ncid, varid, all_nreqs);
         CHECK_ERR
 
         /* calculate start index in Dx.offsets for this process */
@@ -209,48 +208,48 @@ int read_decomp(int verbose,
         count = 0;
         for (; i < proc_start + proc_count; i++) count += all_nreqs[i];
         nreqs = count;
-        free(all_nreqs);
+        free (all_nreqs);
 
         if (verbose)
-            printf("D%d rank %d: proc_start=%d proc_count=%d start%lld count=%lld\n", decomp_id + 1,
-                    rank, proc_start, proc_count, start, count);
+            printf ("D%d rank %d: proc_start=%d proc_count=%d start%lld count=%lld\n",
+                    decomp_id + 1, rank, proc_start, proc_count, start, count);
 
         /* read starting offsets of requests into disps[] */
-        disps[decomp_id] = (int *)malloc(nreqs * sizeof(int));
-        sprintf(name, "D%d.offsets", decomp_id + 1);
-        err = ncmpi_inq_varid(ncid, name, &varid);
+        disps[decomp_id] = (int *)malloc (nreqs * sizeof (int));
+        sprintf (name, "D%d.offsets", decomp_id + 1);
+        err = ncmpi_inq_varid (ncid, name, &varid);
         CHECK_ERR
-        err = ncmpi_get_vara_int_all(ncid, varid, &start, &count, disps[decomp_id]);
+        err = ncmpi_get_vara_int_all (ncid, varid, &start, &count, disps[decomp_id]);
         CHECK_ERR
 
         /* read lengths of requests into blocklens[] */
-        blocklens[decomp_id] = (int *)malloc(nreqs * sizeof(int));
-        sprintf(name, "D%d.lengths", decomp_id + 1);
-        err = ncmpi_inq_varid(ncid, name, &varid);
+        blocklens[decomp_id] = (int *)malloc (nreqs * sizeof (int));
+        sprintf (name, "D%d.lengths", decomp_id + 1);
+        err = ncmpi_inq_varid (ncid, name, &varid);
         CHECK_ERR
-        err = ncmpi_get_vara_int_all(ncid, varid, &start, &count, blocklens[decomp_id]);
+        err = ncmpi_get_vara_int_all (ncid, varid, &start, &count, blocklens[decomp_id]);
         CHECK_ERR
 
         /* sort all disps[] of all responsible requests into an increasing
          * order (this is to satisfy the MPI fileview or monotonically
          * nondecreasing file offset requirement)
          */
-        myreqs = (struct off_len *)malloc(nreqs * sizeof(struct off_len));
+        myreqs = (struct off_len *)malloc (nreqs * sizeof (struct off_len));
         for (i = 0; i < nreqs; i++) {
             myreqs[i].off = disps[decomp_id][i];
             myreqs[i].len = blocklens[decomp_id][i];
         }
-        qsort((void *)myreqs, nreqs, sizeof(struct off_len), compare);
+        qsort ((void *)myreqs, nreqs, sizeof (struct off_len), compare);
         for (i = 0; i < nreqs; i++) {
             disps[decomp_id][i]     = myreqs[i].off;
             blocklens[decomp_id][i] = myreqs[i].len;
         }
-        free(myreqs);
+        free (myreqs);
 
         /* coalesce offset-length pairs */
         j = 0;
         for (i = 1; i < nreqs; i++) {
-            if (disps[decomp_id][i] % dims[decomp_id][ndims[decomp_id] - 1] == 0 ||
+            if (disps[decomp_id][i] % dims[decomp_id][ndims - 1] == 0 ||
                 disps[decomp_id][i] > disps[decomp_id][j] + blocklens[decomp_id][j]) {
                 /* break contiguity at dimension boundaries or noncontiguous */
                 j++;
@@ -268,24 +267,24 @@ int read_decomp(int verbose,
             int min_blocklen = blocklens[decomp_id][0];
             int max_blocklen = blocklens[decomp_id][0];
             for (i = 1; i < contig_nreqs[decomp_id]; i++) {
-                max_blocklen = MAX(blocklens[decomp_id][i], max_blocklen);
-                min_blocklen = MIN(blocklens[decomp_id][i], min_blocklen);
+                max_blocklen = MAX (blocklens[decomp_id][i], max_blocklen);
+                min_blocklen = MIN (blocklens[decomp_id][i], min_blocklen);
             }
-            printf("D%d rank %d nreqs=%d contig nreqs=%4d max_blocklen=%d min_blocklen=%d\n",
+            printf ("D%d rank %d nreqs=%d contig nreqs=%4d max_blocklen=%d min_blocklen=%d\n",
                     decomp_id + 1, rank, nreqs, contig_nreqs[decomp_id], max_blocklen,
                     min_blocklen);
         }
     }
 
-    err = ncmpi_close(ncid);
+    err = ncmpi_close (ncid);
     CHECK_ERR
 
 err_out:
     if (nerrs) {
         for (decomp_id = 0; decomp_id < *num_decomp; decomp_id++) {
             contig_nreqs[decomp_id] = 0;
-            if (disps[decomp_id] != NULL) free(disps[decomp_id]);
-            if (blocklens[decomp_id] != NULL) free(blocklens[decomp_id]);
+            if (disps[decomp_id] != NULL) free (disps[decomp_id]);
+            if (blocklens[decomp_id] != NULL) free (blocklens[decomp_id]);
         }
     }
     return nerrs;
