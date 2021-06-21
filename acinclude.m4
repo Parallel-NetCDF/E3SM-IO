@@ -145,3 +145,37 @@ EOF
    rm -f conftest.sed_i
 ])
 
+dnl
+dnl Check for an m4(1) preprocessor utility.
+dnl
+AC_DEFUN([UD_PROG_M4],
+[
+    dnl AS_MESSAGE([checking for m4 preprocessor...])
+    case "${M4-unset}" in
+	unset) AC_CHECK_PROGS(M4, m4 gm4, []) ;;
+	*) AC_CHECK_PROGS(M4, $M4 m4 gm4, []) ;;
+    esac
+    if test -z "$M4" ; then
+       AC_MSG_ERROR("m4 utility program is required by PnetCDF")
+    fi
+    AC_MSG_CHECKING(m4 additional flags)
+    case "${M4FLAGS-unset}" in
+	unset) dnl test if M4 runs fine without option -B10000
+               `${M4} /dev/null > conftest.err 2>&1`
+               ac_cv_m4_stdout=`cat conftest.err`
+               if test "x$ac_cv_m4_stdout" != x; then
+                  M4FLAGS=-B10000
+               fi
+               ${RM} -f conftest.err
+               ;;
+    esac
+    if test "x$M4FLAGS" = x; then
+       AC_MSG_RESULT(none needed)
+    else
+       AC_MSG_RESULT($M4FLAGS)
+    fi
+    M4FFLAGS=`echo $M4FLAGS | sed 's/-s *//g'`
+    dnl AC_MSG_NOTICE(M4FFLAGS=$M4FFLAGS)
+    AC_SUBST(M4FLAGS)
+    AC_SUBST(M4FFLAGS)
+])

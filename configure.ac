@@ -23,6 +23,8 @@ AC_CONFIG_SRCDIR([src/e3sm_io.h])
 
 AC_CONFIG_AUX_DIR([./scripts])
 
+m4_ifdef([AC_CONFIG_MACRO_DIRS], [AC_CONFIG_MACRO_DIRS([m4])], [AC_CONFIG_MACRO_DIR([m4])])
+
 AM_INIT_AUTOMAKE([foreign])
 AM_SILENT_RULES([yes])
 AM_MAINTAINER_MODE([enable])
@@ -239,6 +241,9 @@ if test "x${debug}" = xyes; then
    unset str_found
    AC_DEFINE([E3SM_IO_DEBUG], [1], [Enable debug mode])
 fi
+
+UD_PROG_M4
+M4FLAGS=""
 
 # Check for pnc
 AC_ARG_WITH([pnetcdf],
