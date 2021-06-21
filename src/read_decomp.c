@@ -109,7 +109,6 @@ int read_decomp(int verbose,
                 MPI_Comm io_comm,     /* MPI communicator of I/O processes */
                 const char *infname,  /* IN: */
                 int *num_decomp,      /* OUT: */
-                MPI_Offset *ndims,    /* OUT: [num_decomp] */
                 MPI_Offset  dims[][2],/* OUT: [num_decomp][2] */
                 int contig_nreqs[],   /* OUT: [num_decomp] */
                 int *disps[],         /* OUT: [num_decomp][contig_nreqs[]] */
@@ -117,7 +116,7 @@ int read_decomp(int verbose,
 {
     char name[128];
     int err, nerrs = 0, rank, nprocs, ncid, varid, proc_start, proc_count;
-    int i, j, nreqs, *all_nreqs, dimids[2], decomp_id;
+    int i, j, nreqs, *all_nreqs, ndims, dimids[2], decomp_id;
     MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
     struct off_len *myreqs;
 
@@ -184,8 +183,9 @@ int read_decomp(int verbose,
          */
         sprintf(name, "D%d.dims", decomp_id + 1);
         /* obtain the number of dimensions of this decomposition */
-        err = ncmpi_inq_attlen(ncid, NC_GLOBAL, name, &ndims[decomp_id]);
+        err = ncmpi_inq_attlen(ncid, NC_GLOBAL, name, &num);
         CHECK_ERR
+        ndims=num;
         /* obtain the dimension lengths of this decomposition */
         err = ncmpi_get_att_longlong(ncid, NC_GLOBAL, name, dims[decomp_id]);
         CHECK_ERR
@@ -250,7 +250,7 @@ int read_decomp(int verbose,
         /* coalesce offset-length pairs */
         j = 0;
         for (i = 1; i < nreqs; i++) {
-            if (disps[decomp_id][i] % dims[decomp_id][ndims[decomp_id] - 1] == 0 ||
+            if (disps[decomp_id][i] % dims[decomp_id][ndims - 1] == 0 ||
                 disps[decomp_id][i] > disps[decomp_id][j] + blocklens[decomp_id][j]) {
                 /* break contiguity at dimension boundaries or noncontiguous */
                 j++;
