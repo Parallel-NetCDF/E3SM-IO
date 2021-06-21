@@ -127,8 +127,9 @@ int main (int argc, char **argv) {
     cfg.wr             = 0;
     cfg.rd             = 0;
     cfg.nvars          = 0;
-    cfg.strate            = native;
+    cfg.strate         = native;
     cfg.api            = pnc;
+    cfg.chunksize      = 0;
     cfg.filter         = none;
     cfg.vard           = 0;
     cfg.verbose        = 0;
@@ -267,9 +268,14 @@ int main (int argc, char **argv) {
     if (cfg.datadir[0] != '\0') { PRINT_MSG (1, "Input folder name =%s\n", cfg.datadir); }
 
     /* read request information from decompositions 1, 2 and 3 */
+    for (i = 0; i < MAX_NUM_DECOMP; i++) {
+        decom.blocklens[i]   = NULL;
+        decom.disps[i]       = NULL;
+        decom.raw_offsets[i] = NULL;
+    }
     err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
-                       decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens, decom.raw_nreqs,
-                       decom.raw_offsets);
+                       decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens,
+                       decom.raw_nreqs, decom.raw_offsets);
     CHECK_ERR
 
     err = MPI_Info_create (&(cfg.info));
@@ -283,6 +289,13 @@ err_out:;
     if (cfg.info != MPI_INFO_NULL) MPI_Info_free (&(cfg.info));
     if (cfg.io_comm != MPI_COMM_WORLD && cfg.io_comm != MPI_COMM_NULL) {
         MPI_Comm_free (&(cfg.io_comm));
+    }
+
+    // Free decom
+    for (i = 0; i < MAX_NUM_DECOMP; i++) {
+        if (decom.blocklens[i]) { free (decom.blocklens[i]); }
+        if (decom.disps[i]) { free (decom.disps[i]); }
+        if (decom.raw_offsets[i]) { free (decom.raw_offsets[i]); }
     }
 
     /* Non-IO tasks wait for IO tasks to complete */
