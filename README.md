@@ -239,7 +239,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-s num] Stride between IO tasks (default 1)
        [-o output_dir] Output directory name (default ./)
        [-i target_dir] Path to directory containing the input files
-       [-a api] Underlying API to test (pnc (default), hdf5, adios2)
+       [-a api] Underlying API to test (pnc (default), hdf5, hdf5_logvol, hdf5_multi, adios2)
        [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) (default))
        [-z filter] Apply the filter if supported by the underlying API (none (default), deflate)
        FILE: Name of input netCDF file describing data decompositions
@@ -255,9 +255,6 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   available upon request.
 
 ### Environment variables
-* E3SM_IO_HDF5_ENABLE_LOGVOL 
-  + 1: Use Log I/O VOL if available
-  + 0: Use the native VOL (default)
 * E3SM_IO_HDF5_USE_LOGVOL_WRITEN
   + 1: Use the H5Dwrite_N API in Log I/O VOL
   + 0: Use the HDF5 driver varn implementation (default)

@@ -69,11 +69,29 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
     this->hyperslab_count                                                           = 0;
     this->total_data_size                                                           = 0;
 
+    if (cfg->api == hdf5_logvol) {
+#ifdef ENABLE_LOGVOL
+        this->use_logvol = true;
+        env              = getenv ("E3SM_IO_HDF5_USE_LOGVOL_WRITEN");
+        if (env) {
+            if (std::string (env) == "1") { this->use_logvol_varn = true; }
+        }
+#else
+        throw "Log VOL support was not enabled in this build";
+#endif
+    } else if (cfg->api == hdf5_multi) {
+#ifdef HDF5_HAVE_DWRITE_MULTI
+        this->use_dwrite_multi = true;
+#else
+        throw "The HDF5 used does not support multi-dataset write";
+#endif
+    }
+
     if ((cfg->chunksize != 0) && (cfg->filter != none)) {
         throw "Fitler requries chunking in HDF5";
     }
 
-    
+    /*
     env = getenv ("E3SM_IO_HDF5_ENABLE_LOGVOL");
     if (env) {
         if (std::string (env) == "1") {
@@ -89,6 +107,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
     if (env) {
         if (std::string (env) == "1") { this->merge_varn = true; }
     }
+    */
 
 err_out:;
     if (nerrs > 0) { throw "HDF5 driver init fail"; }
