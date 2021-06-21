@@ -16,6 +16,7 @@
 #include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
 #include <e3sm_io_driver_pnc.hpp>
+#include <e3sm_io_profile.hpp>
 #ifdef ENABLE_HDF5
 #include <e3sm_io_driver_hdf5.hpp>
 #endif
@@ -27,6 +28,8 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     int nerrs              = 0;
     e3sm_io_case *tcase    = NULL;
     e3sm_io_driver *driver = NULL;
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_TOTAL)
 
     switch (cfg->api) {
         case pnc:
@@ -70,6 +73,10 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 err_out:
     if (driver) { delete driver; }
     if (tcase) { delete tcase; }
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_TOTAL)
+
+    e3sm_io_print_profile(cfg);
 
     return nerrs;
 }

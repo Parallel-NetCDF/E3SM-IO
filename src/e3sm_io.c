@@ -26,6 +26,7 @@
 /**/
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
+#include <e3sm_io_profile.hpp>
 
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     int err, nerrs = 0;
@@ -149,7 +150,9 @@ int main (int argc, char **argv) {
             case 'a':
                 if (strcmp (optarg, "pnc") == 0) {
                     cfg.api = pnc;
-                } else if (strcmp (optarg, "hdf5") == 0) {
+                }
+#ifdef ENABLE_HDF5
+                else if (strcmp (optarg, "hdf5") == 0) {
                     cfg.api = hdf5_native;
                 } else if (strcmp (optarg, "hdf5_multi") == 0) {
 #ifdef HDF5_HAVE_DWRITE_MULTI
@@ -163,23 +166,19 @@ int main (int argc, char **argv) {
 #else
                     RET_ERR ("Log VOL support was not enabled in this build");
 #endif
-                } else if (strcmp (optarg, "adios2") == 0) {
+                }
+#endif
+#ifdef ENABLE_ADIOS2
+                else if (strcmp (optarg, "adios2") == 0) {
                     cfg.api = adios2;
-                } else {
+                } else if (strcmp (optarg, "adios2_bp3") == 0) {
+                    cfg.api = adios2_bp3;
+                }
+#endif
+                else {
                     RET_ERR ("Unknown API")
                 }
                 break;
-                /*
-            case 'l':
-                if (strcmp (optarg, "contig") == 0) {
-                    cfg.layout = contig;
-                } else if (strcmp (optarg, "chunk") == 0) {
-                    cfg.layout = chunk;
-                } else {
-                    RET_ERR ("Unknown layout")
-                }
-                break;
-                */
             case 'o':
                 strncpy (cfg.targetdir, optarg, E3SM_IO_MAX_PATH);
                 break;

@@ -77,12 +77,6 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     bool use_dwrite_multi = false;
     bool merge_varn       = false;
 
-    // Profiling
-    double tsel, twrite, tread, text, tsort, tcpy;
-    int hyperslab_count     = 0;
-    double hyperslab_time   = 0;
-    hsize_t total_data_size = 0;
-
    public:
     e3sm_io_driver_hdf5 (e3sm_io_config *cfg);
     ~e3sm_io_driver_hdf5 ();

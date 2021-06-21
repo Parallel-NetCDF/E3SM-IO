@@ -103,6 +103,7 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
     int nerrs = 0;
     adios2_error aerr;
     adios2_file *fp;
+    char ng[32];
 
     fp       = new adios2_file ();
     fp->path = std::string (path);
@@ -124,10 +125,9 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
 
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
-    aerr = adios2_set_engine (fp->iop, "BPFile");
+    aerr = adios2_set_engine (fp->iop, "BP4");
     CHECK_AERR
-    aerr = adios2_set_parameter (fp->iop, "substreams", "1");
-    CHECK_AERR
+
     aerr = adios2_set_parameter (fp->iop, "CollectiveMetadata", "OFF");
     CHECK_AERR
     fp->ep   = NULL;
