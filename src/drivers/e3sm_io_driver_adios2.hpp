@@ -16,6 +16,7 @@
 #include <mpi.h>
 //
 #include <e3sm_io.h>
+
 #include <e3sm_io_driver.hpp>
 
 class e3sm_io_driver_adios2 : public e3sm_io_driver {
@@ -29,13 +30,13 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
         std::vector<int> ndims;
         std::vector<size_t> dsizes;
         MPI_Offset recsize = 0;
+        adios2_operator *op;
     } adios2_file;
     std::vector<adios2_file *> files;
-
     double tsel, twrite, tread, text;
 
    public:
-    e3sm_io_driver_adios2 ();
+    e3sm_io_driver_adios2 (e3sm_io_config *cfg);
     ~e3sm_io_driver_adios2 ();
     int create (std::string path, MPI_Comm comm, MPI_Info info, int *fid);
     int open (std::string path, MPI_Comm comm, MPI_Info info, int *fid);
