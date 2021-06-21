@@ -14,8 +14,8 @@
 #include <pnetcdf.h>
 #include <stdio.h>
 
-#define E3SM_IO_MAX_PATH 1024
-#define MAX_NUM_DECOMP 6
+#define E3SM_IO_MAX_PATH    1024
+#define MAX_NUM_DECOMP      6
 #define E3SM_IO_GLOBAL_ATTR -1
 
 #define PRINT_MSG(V, ...)                                                    \
@@ -48,7 +48,7 @@ typedef float itype; /* internal data type of buffer in memory */
 
 typedef enum e3sm_io_api { pnc, hdf5, adios2 } e3sm_io_api;
 
-typedef enum e3sm_io_layout { contig, chunk } e3sm_io_layout;
+typedef enum e3sm_io_filter { none, deflate, bzip2 } e3sm_io_filter;
 
 typedef struct e3sm_io_config {
     int rank;
@@ -60,22 +60,23 @@ typedef struct e3sm_io_config {
     char *targetdir;
     char *datadir;
     char *cfgpath;
-    int hx                           ;
-    int nrec                         ;
-    int wr                           ;
-    int rd                           ;
-    int nvars                        ;
+    int hx;
+    int nrec;
+    int wr;
+    int rd;
+    int nvars;
 
     e3sm_io_api api;
-    e3sm_io_layout layout;
-    int vard ;
+    e3sm_io_filter filter;
+    size_t chunksize;
+    int vard;
 
-    int verbose      ; /* verbose mode to print additional messages on screen */
-    int keep_outfile ; /* whether to keep the output files when exits */
+    int verbose;      /* verbose mode to print additional messages on screen */
+    int keep_outfile; /* whether to keep the output files when exits */
 
-    int two_buf        ;
-    int non_contig_buf ;
-    int io_stride      ;
+    int two_buf;
+    int non_contig_buf;
+    int io_stride;
 } e3sm_io_config;
 
 typedef struct e3sm_io_decom {

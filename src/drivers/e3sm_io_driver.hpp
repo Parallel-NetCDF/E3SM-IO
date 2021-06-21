@@ -9,7 +9,11 @@
 typedef enum e3sm_io_op_mode { coll, indep, nb, nbe } e3sm_io_op_mode;
 
 class e3sm_io_driver {
+   protected:
+    e3sm_io_config *cfg;
+
    public:
+    e3sm_io_driver (e3sm_io_config *cfg) : cfg (cfg) {};
     virtual int create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) = 0;
     virtual int open (std::string path, MPI_Comm comm, MPI_Info info, int *fid)   = 0;
     virtual int close (int fid)                                                   = 0;
