@@ -240,7 +240,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-g num] Number of IO groups (subfiles) (default 1)
        [-o output_dir] Output directory name (default ./)
        [-i target_dir] Path to directory containing the input files
-       [-a api] Underlying API to test (pnc (default), hdf5, hdf5_logvol, hdf5_multi, adios2)
+       [-a api] Underlying API to test (pnc (default), hdf5, hdf5_logvol, hdf5_multi, adios2, adios2_bp3)
        [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) (default))
        [-z filter] Apply the filter if supported by the underlying API (none (default), deflate)
        FILE: Name of input netCDF file describing data decompositions

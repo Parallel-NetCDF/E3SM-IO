@@ -46,7 +46,7 @@ typedef float itype; /* internal data type of buffer in memory */
 #define REC_XTYPE NC_FLOAT
 #endif
 
-typedef enum e3sm_io_api { pnc, hdf5_native, hdf5_multi, hdf5_logvol, adios2 } e3sm_io_api;
+typedef enum e3sm_io_api { pnc, hdf5_native, hdf5_multi, hdf5_logvol, adios2, adios2_bp3 } e3sm_io_api;
 
 typedef enum e3sm_io_filter { none, deflate, bzip2 } e3sm_io_filter;
 
