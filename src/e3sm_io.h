@@ -46,7 +46,16 @@ typedef float itype; /* internal data type of buffer in memory */
 #define REC_XTYPE NC_FLOAT
 #endif
 
-typedef enum e3sm_io_api { pnc, hdf5_native, hdf5_multi, hdf5_logvol, adios2, adios2_bp3 } e3sm_io_api;
+typedef enum e3sm_io_api {
+    pnc,
+    hdf5_native,
+    hdf5_multi,
+    hdf5_logvol,
+    adios2,
+    adios2_bp3
+} e3sm_io_api;
+
+typedef enum e3sm_io_strate { native, pio } e3sm_io_strate;
 
 typedef enum e3sm_io_filter { none, deflate, bzip2 } e3sm_io_filter;
 
@@ -67,6 +76,7 @@ typedef struct e3sm_io_config {
     int rd;
     int nvars;
 
+    e3sm_io_strate strate;
     e3sm_io_api api;
     e3sm_io_filter filter;
     size_t chunksize;
@@ -84,7 +94,10 @@ typedef struct e3sm_io_decom {
     int num_decomp;
     int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
     int *blocklens[MAX_NUM_DECOMP];
+    int ndims[MAX_NUM_DECOMP];
     MPI_Offset dims[MAX_NUM_DECOMP][2];
+    MPI_Offset raw_nreqs[MAX_NUM_DECOMP];  // For pio output style
+    MPI_Offset *raw_offsets[MAX_NUM_DECOMP];
 } e3sm_io_decom;
 
 #ifdef __cplusplus
@@ -95,9 +108,12 @@ extern int read_decomp (int verbose,
                         const char *infname,
                         int *num_decomp,
                         MPI_Offset dims[][2],
-                        int contig_nreqs[3],
-                        int *disps[3],
-                        int *blocklens[3]);
+                        int contig_nreqs[],
+                        int var_ndims[],
+                        int *disps[],
+                        int *blocklens[],
+                        MPI_Offset raw_nreqs[],
+                        MPI_Offset *raw_offsets[]);
 
 extern void print_info (MPI_Info *info_used);
 int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);

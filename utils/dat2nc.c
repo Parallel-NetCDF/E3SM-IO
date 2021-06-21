@@ -137,8 +137,8 @@ static int add_decomp (int ncid, const char *infname, int label) {
             nreqs[rank++] = 0;
 
         nreqs[rank] = atoi (strtok (NULL, " ")); /* number of requests */
-        if (nreqs[rank] == 0)                    /* this rank has zero request */
-            continue;                            /* loop of rank */
+        if (nreqs[rank] == 0) /* this rank has zero request */
+            continue;         /* loop of rank */
 
         off = (int *)malloc (nreqs[rank] * sizeof (int));
         fgets (buf, LINE_SIZE + 1, fd); /* 2nd line: list of offsets */
