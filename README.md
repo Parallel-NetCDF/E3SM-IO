@@ -237,6 +237,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-f num] File number to run in F case (-1 (both) (default), 0, 1)
        [-r num] Number of records (default 1)
        [-s num] Stride between IO tasks (default 1)
+       [-g num] Number of IO groups (subfiles) (default 1)
        [-o output_dir] Output directory name (default ./)
        [-i target_dir] Path to directory containing the input files
        [-a api] Underlying API to test (pnc (default), hdf5, hdf5_logvol, hdf5_multi, adios2)
