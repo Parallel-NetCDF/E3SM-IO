@@ -28,23 +28,6 @@
         }                                                                       \
     }
 
-static inline nc_type mpitype2nctype (MPI_Datatype type) {
-    switch (type) {
-        case MPI_INT:
-            return NC_INT;
-        case MPI_LONG_LONG:
-            return NC_INT64;
-        case MPI_FLOAT:
-            return NC_FLOAT;
-        case MPI_DOUBLE:
-            return NC_DOUBLE;
-        case MPI_CHAR:
-            return NC_CHAR;
-        default:
-            throw "Unsupported datatype";
-    }
-}
-
 e3sm_io_driver_pnc::e3sm_io_driver_pnc (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
     if ((cfg->chunksize != 0) && (cfg->filter != none)) {
         throw "Fitler requries chunking in PnetCDF";
@@ -216,6 +199,16 @@ int e3sm_io_driver_pnc::def_var (
 err_out:;
     return nerrs;
 }
+int e3sm_io_driver_pnc::def_local_var (
+    int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) {
+    int nerrs = 0;
+
+    RET_ERR ("PNC does not support local variables")
+
+err_out:;
+    return nerrs;
+}
+
 int e3sm_io_driver_pnc::inq_var (int fid, std::string name, int *did) {
     int err, nerrs = 0;
 
@@ -315,6 +308,16 @@ int e3sm_io_driver_pnc::get_att (int fid, int vid, std::string name, void *buf) 
 
     err = ncmpi_get_att (fid, vid, name.c_str (), buf);
     CHECK_NCERR
+
+err_out:;
+    return nerrs;
+}
+
+int e3sm_io_driver_pnc::put_varl (
+    int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) {
+    int nerrs = 0;
+
+    RET_ERR ("PNC does not support local variables")
 
 err_out:;
     return nerrs;

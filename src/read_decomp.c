@@ -111,12 +111,16 @@ int read_decomp(int verbose,
                 int *num_decomp,      /* OUT: */
                 MPI_Offset  dims[][2],/* OUT: [num_decomp][2] */
                 int contig_nreqs[],   /* OUT: [num_decomp] */
+                int var_ndims[],   /* OUT */
                 int *disps[],         /* OUT: [num_decomp][contig_nreqs[]] */
-                int *blocklens[])     /* OUT: [num_decomp][contig_nreqs[]] */
+                int *blocklens[],     /* OUT: [num_decomp][contig_nreqs[]] */
+                MPI_Offset raw_nreqs[],    /* OUT */
+                 MPI_Offset *raw_offsets[]) /* OUT: to be freed by caller */
 {
     char name[128];
     int err, nerrs = 0, rank, nprocs, ncid, varid, proc_start, proc_count;
     int i, j, nreqs, *all_nreqs, ndims, dimids[2], decomp_id;
+    int64_t k;
     MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
     struct off_len *myreqs;
 
@@ -169,6 +173,8 @@ int read_decomp(int verbose,
         contig_nreqs[decomp_id] = 0;
         disps[decomp_id]        = NULL;
         blocklens[decomp_id]    = NULL;
+        raw_nreqs[decomp_id]    = 0;
+        raw_offsets[decomp_id]  = NULL;
 
         /* total number of noncontiguous requests of all processes */
         sprintf(name, "D%d.total_nreqs", decomp_id + 1);
@@ -186,10 +192,17 @@ int read_decomp(int verbose,
         err = ncmpi_inq_attlen(ncid, NC_GLOBAL, name, &num);
         CHECK_ERR
         ndims=num;
+        var_ndims[decomp_id] = ndims;
         /* obtain the dimension lengths of this decomposition */
         err = ncmpi_get_att_longlong(ncid, NC_GLOBAL, name, dims[decomp_id]);
         CHECK_ERR
 
+        /*
+                sprintf (name, "D%d.max_raw_nreqs", decomp_id + 1);
+                /* obtain the number of requests before merging
+                err = ncmpi_get_att_longlong (ncid, NC_GLOBAL, name, raw_nreqs + decomp_id);
+                CHECK_ERR
+        */
         /* obtain varid of request variable Dx.nreqs */
         sprintf(name, "D%d.nreqs", decomp_id + 1);
         err = ncmpi_inq_varid(ncid, name, &varid);
@@ -244,6 +257,9 @@ int read_decomp(int verbose,
         for (i = 0; i < nreqs; i++) {
             disps[decomp_id][i]     = myreqs[i].off;
             blocklens[decomp_id][i] = myreqs[i].len;
+
+            // Count number of offsets without merge
+            raw_nreqs[decomp_id] += blocklens[decomp_id][i];
         }
         free(myreqs);
 
@@ -263,6 +279,16 @@ int read_decomp(int verbose,
         }
         /* update number of true noncontiguous requests */
         if (nreqs > 0) contig_nreqs[decomp_id] = j + 1;
+
+        /* Generate (simualted) raw decomposition map */
+        raw_offsets[decomp_id] =
+            (MPI_Offset *)malloc ((size_t) (raw_nreqs[decomp_id]) * sizeof (MPI_Offset));
+        memset (raw_offsets[decomp_id], 0, (size_t) (raw_nreqs[decomp_id]) * sizeof (MPI_Offset));
+        for (i = j = 0; i < contig_nreqs[decomp_id]; i++) {
+            for (k = disps[decomp_id][i]; k < disps[decomp_id][i] + blocklens[decomp_id][i]; k++) {
+                raw_offsets[decomp_id][j++] = k;
+            }
+        }
 
         if (verbose) {
             int min_blocklen = blocklens[decomp_id][0];

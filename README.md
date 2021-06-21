@@ -266,7 +266,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 
 ### example outputs shown on screen
 ```
-  % mpiexec -n 512 ./e3sm_io -k -r 3 -o $SCRATCH/FS_1M_64 -c datasets/f_case_48602x72_512p.nc
+  % mpiexec -n 512 ./e3sm_io -k -r 3 -o $SCRATCH/FS_1M_64 datasets/f_case_48602x72_512p.nc
 
   Total number of MPI processes      = 512
   Input decomposition file           = datasets/f_case_48602x72_512p.nc
@@ -279,8 +279,8 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   Variable written order: same as variables are defined
 
   History output file                = f_case_h0_vard.nc
-  No. variables use no decomposition =  26
-  No. variables use decomposition D1 =   2
+  No. variables use no decomposition =  27
+  No. variables use decomposition D1 =   1
   No. variables use decomposition D2 = 323
   No. variables use decomposition D3 =  63
   Total number of variables          = 414
@@ -318,7 +318,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 
   History output file                = f_case_h0_varn.nc
   No. variables use no decomposition =  26
-  No. variables use decomposition D1 =   2
+  No. variables use decomposition D1 =   1
   No. variables use decomposition D2 = 323
   No. variables use decomposition D3 =  63
   Total number of variables          = 414
