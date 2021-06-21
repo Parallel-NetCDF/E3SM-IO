@@ -54,8 +54,8 @@
 #define IGET_VARA_CHAR(F, D, S, C, B, R)       driver.get_vara (F, D, MPI_CHAR, S, C, B, nb);
 #define IGET_VARN(F, D, N, S, C, B, BC, BT, R) driver.get_varn (F, D, BT, N, S, C, B, nb);
 
-#define GET_VARD_ALL(F, D, FT, B, N, T) driver.put_vard (F, D, T, N, FT, B, coll);
-#define GET_VARD(F, D, FT, B, N, T)     driver.put_vard (F, D, T, N, FT, B, indep);
+#define GET_VARD_ALL(F, D, FT, B, N, T) driver.get_vard (F, D, T, N, FT, B, coll);
+#define GET_VARD(F, D, FT, B, N, T)     driver.get_vard (F, D, T, N, FT, B, indep);
 
 #define WAIT_ALL_REQS(F, D, B, R) driver.wait (F);
 
@@ -502,7 +502,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     for (i = 0; i < 16; i++) txt_buf[i] = 'a' + rank + i;
 
     /* allocate and initialize write buffer for large variables */
-    if (cfg.nvars == 414)
+    if (cfg.nvars == 416)
         rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321 + 63) * gap;
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20 + 1) * gap;
@@ -523,7 +523,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
-    if (cfg.nvars == 414) {
+    if (cfg.nvars == 416) {
         /* for h0 file */
         err = def_F_case_h0 (driver, ncid, decom.dims[2], cfg.nvars, varids);
         CHECK_ERR
@@ -604,7 +604,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     CHECK_ERR
     buf_disps[i] = 0;
 
-    if (cfg.nvars == 414) {
+    if (cfg.nvars == 416) {
         SET_TYPE (2)       /* AEROD_v */
         SET_TYPES (3, 2)   /* ANRAIN and ANSNOW */
         SET_TYPES (2, 19)  /* AODABS ... AODVIS */
@@ -694,7 +694,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     if (cfg.non_contig_buf)
         fix_buflen = rec_buflen = 1;
     else {
-        if (cfg.nvars == 414)
+        if (cfg.nvars == 416)
             rec_buflen = nelems[1] * 321 + nelems[2] * 63;
         else
             rec_buflen = nelems[1] * 20 + nelems[2];
@@ -954,7 +954,7 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
 
 #define POST_VARN(k, num, vid)                                                                    \
     for (j = 0; j < num; j++) {                                                                   \
-        err = IPUT_VARN (ncid, vid + j, xnreqs[k - 1], starts_D##k, counts_D##k, rec_buf_ptr, -1, \
+        err = IPUT_VARN (ncid, varids[vid + j], xnreqs[k - 1], starts_D##k, counts_D##k, rec_buf_ptr, -1, \
                          REC_ITYPE, NULL);                                                        \
         CHECK_ERR                                                                                 \
         rec_buf_ptr += nelems[k - 1] + gap;                                                       \
@@ -1025,7 +1025,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
     }
 
     /* allocate and initialize write buffer for large variables */
-    if (cfg.nvars == 414)
+    if (cfg.nvars == 416)
         rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321 + 63) * gap;
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20 + 1) * gap;
@@ -1053,7 +1053,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
-    if (cfg.nvars == 414) {
+    if (cfg.nvars == 416) {
         /* for h0 file */
         err = def_F_case_h0 (driver, ncid, decom.dims[2], cfg.nvars, varids);
         CHECK_ERR
@@ -1178,7 +1178,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
         for (j = 0; j < xnreqs[1]; j++) starts_D2[j][0] = rec_no;
         for (j = 0; j < xnreqs[2]; j++) starts_D3[j][0] = rec_no;
 
-        if (cfg.nvars == 414) {
+        if (cfg.nvars == 416) {
             if (cfg.two_buf) {
                 /* write 2D variables */
                 POST_VARN (2, 1, 30)    /* AEROD_v */
@@ -1199,13 +1199,13 @@ int run_varn_F_case (e3sm_io_config &cfg,
                 POST_VARN (2, 8, 153)   /* PBLH ... PSL */
                 POST_VARN (2, 2, 162)   /* QFLX and QREFHT */
                 POST_VARN (2, 1, 167)   /* RAM1 */
-                POST_VARN (2, 37, 169)  /* SFDMS ... SNOWHLND */
-                POST_VARN (2, 10, 208)  /* SO2_CLXF ... SWCF */
-                POST_VARN (2, 19, 219)  /* TAUGWX ... TVQ */
-                POST_VARN (2, 1, 239)   /* U10 */
-                POST_VARN (2, 3, 246)   /* WD_H2O2 ... WD_SO2 */
-                POST_VARN (2, 32, 252)  /* airFV ... dst_c3SFWET */
-                POST_VARN (2, 129, 285) /* mlip ... soa_c3SFWET */
+                POST_VARN (2, 38, 169)  /* SCO ... SNOWHLND */
+                POST_VARN (2, 10, 209)  /* SO2_CLXF ... SWCF */
+                POST_VARN (2, 20, 220)  /* TAUGWX ... TVQ */
+                POST_VARN (2, 1, 241)   /* U10 */
+                POST_VARN (2, 3, 248)   /* WD_H2O2 ... WD_SO2 */
+                POST_VARN (2, 32, 254)  /* airFV ... dst_c3SFWET */
+                POST_VARN (2, 129, 287) /* mlip ... soa_c3SFWET */
                 /* write 3D variables */
                 POST_VARN (3, 2, 31)   /* ANRAIN and ANSNOW */
                 POST_VARN (3, 2, 52)   /* AQRAIN and AQSNOW */
@@ -1225,12 +1225,12 @@ int run_varn_F_case (e3sm_io_config &cfg,
                 POST_VARN (3, 1, 161)  /* Q */
                 POST_VARN (3, 3, 164)  /* QRL ... RAINQM */
                 POST_VARN (3, 1, 168)  /* RELHUM */
-                POST_VARN (3, 2, 206)  /* SNOWQM and SO2 */
-                POST_VARN (3, 1, 218)  /* T */
-                POST_VARN (3, 1, 238)  /* U */
-                POST_VARN (3, 6, 240)  /* UU ... VV */
-                POST_VARN (3, 3, 249)  /* WSUB ... aero_water */
-                POST_VARN (3, 1, 284)  /* hstobie_linoz */
+                POST_VARN (3, 2, 207)  /* SNOWQM and SO2 */
+                POST_VARN (3, 1, 219)  /* T */
+                POST_VARN (3, 1, 240)  /* U */
+                POST_VARN (3, 6, 242)  /* UU ... VV */
+                POST_VARN (3, 3, 251)  /* WSUB ... aero_water */
+                POST_VARN (3, 1, 286)  /* hstobie_linoz */
             } else {
                 /* write variables in the same order as they defined */
                 POST_VARN (2, 1, 30)    /* AEROD_v */
@@ -1269,19 +1269,19 @@ int run_varn_F_case (e3sm_io_config &cfg,
                 POST_VARN (3, 3, 164)   /* QRL ... RAINQM */
                 POST_VARN (2, 1, 167)   /* RAM1 */
                 POST_VARN (3, 1, 168)   /* RELHUM */
-                POST_VARN (2, 37, 169)  /* SFDMS ... SNOWHLND */
-                POST_VARN (3, 2, 206)   /* SNOWQM and SO2 */
-                POST_VARN (2, 10, 208)  /* SO2_CLXF ... SWCF */
-                POST_VARN (3, 1, 218)   /* T */
-                POST_VARN (2, 19, 219)  /* TAUGWX ... TVQ */
-                POST_VARN (3, 1, 238)   /* U */
-                POST_VARN (2, 1, 239)   /* U10 */
-                POST_VARN (3, 6, 240)   /* UU ... VV */
-                POST_VARN (2, 3, 246)   /* WD_H2O2 ... WD_SO2 */
-                POST_VARN (3, 3, 249)   /* WSUB ... aero_water */
-                POST_VARN (2, 32, 252)  /* airFV ... dst_c3SFWET */
-                POST_VARN (3, 1, 284)   /* hstobie_linoz */
-                POST_VARN (2, 129, 285) /* mlip ... soa_c3SFWET */
+                POST_VARN (2, 38, 169)  /* SFDMS ... SNOWHLND */
+                POST_VARN (3, 2, 207)   /* SNOWQM and SO2 */
+                POST_VARN (2, 10, 209)  /* SO2_CLXF ... SWCF */
+                POST_VARN (3, 1, 219)   /* T */
+                POST_VARN (2, 20, 220)  /* TAUGWX ... TVQ */
+                POST_VARN (3, 1, 240)   /* U */
+                POST_VARN (2, 1, 241)   /* U10 */
+                POST_VARN (3, 6, 242)   /* UU ... VV */
+                POST_VARN (2, 3, 248)   /* WD_H2O2 ... WD_SO2 */
+                POST_VARN (3, 3, 251)   /* WSUB ... aero_water */
+                POST_VARN (2, 32, 254)  /* airFV ... dst_c3SFWET */
+                POST_VARN (3, 1, 286)   /* hstobie_linoz */
+                POST_VARN (2, 129, 287) /* mlip ... soa_c3SFWET */
             }
         } else {
             if (cfg.two_buf) {
@@ -1404,7 +1404,7 @@ err_out:
 
 #define POST_VARN_RD(k, num, vid)                                                            \
     for (j = 0; j < num; j++) {                                                              \
-        err = IGET_VARN (ncid, vid + j, decom.contig_nreqs[k - 1], starts_D##k, counts_D##k, \
+        err = IGET_VARN (ncid, varids[vid + j], decom.contig_nreqs[k - 1], starts_D##k, counts_D##k, \
                          rec_buf_ptr, -1, REC_ITYPE, NULL);                                  \
         CHECK_ERR                                                                            \
         rec_buf_ptr += nelems[k - 1] + gap;                                                  \
@@ -1468,7 +1468,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     for (i = 0; i < dbl_buflen; i++) dbl_buf[i] = rank;
 
     /* allocate and initialize write buffer for large variables */
-    if (cfg.nvars == 414)
+    if (cfg.nvars == 416)
         rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321 + 63) * gap;
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20 + 1) * gap;
@@ -1497,7 +1497,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
-    if (cfg.nvars == 414) {
+    if (cfg.nvars == 416) {
         /* for h0 file */
         err = inq_F_case_h0 (driver, ncid, decom.dims[2], cfg.nvars, varids);
         CHECK_ERR
@@ -1618,7 +1618,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
         for (j = 0; j < decom.contig_nreqs[1]; j++) starts_D2[j][0] = rec_no;
         for (j = 0; j < decom.contig_nreqs[2]; j++) starts_D3[j][0] = rec_no;
 
-        if (cfg.nvars == 414) {
+        if (cfg.nvars == 416) {
             if (cfg.two_buf) {
                 /* read 2D variables */
                 POST_VARN_RD (2, 1, 30)    /* AEROD_v */

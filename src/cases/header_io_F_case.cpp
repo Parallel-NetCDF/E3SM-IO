@@ -38,7 +38,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
                    int nvars,                /* number of variables */
                    int *varids)              /* variable IDs */
 {
-    /* Total 414 variables */
+    /* Total 416 variables */
     int lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date, datesec, time_bnds,
         date_written, time_written, ndbase, nsbase, nbdate, nbsec, mdt, ndcur, nscur, co2vmr,
         ch4vmr, n2ovmr, f11vmr, f12vmr, sol_tsi, nsteph, AEROD_v, ANRAIN, ANSNOW, AODABS, AODABSBC,
@@ -54,13 +54,13 @@ int def_F_case_h0 (e3sm_io_driver &driver,
         LINOZ_O3CLIM, LINOZ_O3COL, LINOZ_SFCSINK, LINOZ_SSO3, LINOZ_SZA, LND_MBL, LWCF, Mass_bc,
         Mass_dst, Mass_mom, Mass_ncl, Mass_pom, Mass_so4, Mass_soa, NUMICE, NUMLIQ, NUMRAI, NUMSNO,
         O3, O3_SRF, OCNFRAC, OMEGA, OMEGA500, OMEGAT, PBLH, PHIS, PRECC, PRECL, PRECSC, PRECSL, PS,
-        PSL, Q, QFLX, QREFHT, QRL, QRS, RAINQM, RAM1, RELHUM, SFDMS, SFH2O2, SFH2SO4, SFO3, SFSO2,
+        PSL, Q, QFLX, QREFHT, QRL, QRS, RAINQM, RAM1, RELHUM, SCO, SFDMS, SFH2O2, SFH2SO4, SFO3, SFSO2,
         SFSOAG, SFbc_a1, SFbc_a3, SFbc_a4, SFdst_a1, SFdst_a3, SFmom_a1, SFmom_a2, SFmom_a3,
         SFmom_a4, SFncl_a1, SFncl_a2, SFncl_a3, SFnum_a1, SFnum_a2, SFnum_a3, SFnum_a4, SFpom_a1,
         SFpom_a3, SFpom_a4, SFso4_a1, SFso4_a2, SFso4_a3, SFsoa_a1, SFsoa_a2, SFsoa_a3, SHFLX,
         SH_KCLDBASE, SH_MFUP_MAX, SH_WCLDBASE, SNOWHICE, SNOWHLND, SNOWQM, SO2, SO2_CLXF, SO2_SRF,
         SOAG_CLXF, SOAG_SRF, SOAG_sfgaex1, SOLIN, SSAVIS, SSTSFMBL, SSTSFMBL_OM, SWCF, T, TAUGWX,
-        TAUGWY, TAUX, TAUY, TGCLDCWP, TGCLDIWP, TGCLDLWP, TH7001000, TMQ, TREFHT, TROP_P, TROP_T,
+        TAUGWY, TAUX, TAUY, TCO, TGCLDCWP, TGCLDIWP, TGCLDLWP, TH7001000, TMQ, TREFHT, TROP_P, TROP_T,
         TS, TSMN, TSMX, TUH, TUQ, TVH, TVQ, U, U10, UU, V, VQ, VT, VU, VV, WD_H2O2, WD_H2SO4,
         WD_SO2, WSUB, Z3, aero_water, airFV, bc_a1DDF, bc_a1SFWET, bc_a1_SRF, bc_a1_sfgaex1,
         bc_a3DDF, bc_a3SFWET, bc_a3_SRF, bc_a4DDF, bc_a4SFWET, bc_a4_CLXF, bc_a4_SRF, bc_a4_sfgaex1,
@@ -2342,6 +2342,19 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
+    err       = driver.def_var (ncid, "SCO", MPI_FLOAT, 2, dimids, &SCO);
+    CHECK_ERR
+        err = PUT_ATT_TEXT (ncid, SCO, "units", 3, "DU");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, SCO, "long_name", 56, "Stratospheric column ozone based on chemistry tropopause");
+    CHECK_ERR
+
+    err = PUT_ATT_TEXT (ncid, SCO, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    varids[i++] = SCO;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "SFDMS", MPI_FLOAT, 2, dimids, &SFDMS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFDMS, "units", 7, "kg/m2/s");
@@ -3012,6 +3025,19 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, TAUY, "cell_methods", 10, "time: mean");
     CHECK_ERR
     varids[i++] = TAUY;
+
+    dimids[0] = dim_time;
+    dimids[1] = dim_ncol;
+    err = driver.def_var (ncid, "TCO", MPI_FLOAT, 2, dimids, &TCO);
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, TCO, "units", 2, "DU");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, TCO, "long_name", 55,
+                        "Tropospheric column ozone based on chemistry tropopause");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, TCO, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    varids[i++] = TCO;
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
@@ -5458,7 +5484,7 @@ int ncid,           /* file ID */
                    int nvars,          /* number of variables */
                    int *varids)        /* variable IDs */
 {
-    /* Total 414 variables */
+    /* Total 416 variables */
     int lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date, datesec, time_bnds,
         date_written, time_written, ndbase, nsbase, nbdate, nbsec, mdt, ndcur, nscur, co2vmr,
         ch4vmr, n2ovmr, f11vmr, f12vmr, sol_tsi, nsteph, AEROD_v, ANRAIN, ANSNOW, AODABS, AODABSBC,
