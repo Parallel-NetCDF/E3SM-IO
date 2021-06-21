@@ -26,6 +26,7 @@
 /**/
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
+
 #include <e3sm_io_profile.hpp>
 
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
@@ -126,6 +127,7 @@ int main (int argc, char **argv) {
     cfg.wr             = 0;
     cfg.rd             = 0;
     cfg.nvars          = 0;
+    cfg.strate            = native;
     cfg.api            = pnc;
     cfg.filter         = none;
     cfg.vard           = 0;
@@ -136,7 +138,7 @@ int main (int argc, char **argv) {
     cfg.io_stride      = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:S:")) != EOF) switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -192,6 +194,16 @@ int main (int argc, char **argv) {
                 }
                 break;
                 */
+            case 'S':
+                if (strcmp (optarg, "native") == 0) {
+                    cfg.strate = native;
+                } else if (strcmp (optarg, "pio") == 0) {
+                    cfg.strate = pio;
+                } else {
+                    RET_ERR ("Unknown I/O strategy")
+                }
+                break;
+
             case 'o':
                 strncpy (cfg.targetdir, optarg, E3SM_IO_MAX_PATH);
                 break;
@@ -261,7 +273,8 @@ int main (int argc, char **argv) {
 
     /* read request information from decompositions 1, 2 and 3 */
     err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
-                       decom.contig_nreqs, decom.disps, decom.blocklens);
+                       decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens, decom.raw_nreqs,
+                       decom.raw_offsets);
     CHECK_ERR
 
     nerrs += e3sm_io_core (&cfg, &decom);
