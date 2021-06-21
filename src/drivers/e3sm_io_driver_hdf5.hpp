@@ -72,9 +72,10 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     hsize_t one[H5S_MAX_RANK];
 
     // Config
-    bool use_logvol      = false;
-    bool use_logvol_varn = false;
-    bool merge_varn      = false;
+    bool use_logvol       = false;
+    bool use_logvol_varn  = false;
+    bool use_dwrite_multi = false;
+    bool merge_varn       = false;
 
     // Profiling
     double tsel, twrite, tread, text, tsort, tcpy;
@@ -83,7 +84,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     hsize_t total_data_size = 0;
 
    public:
-    e3sm_io_driver_hdf5 ();
+    e3sm_io_driver_hdf5 (e3sm_io_config *cfg);
     ~e3sm_io_driver_hdf5 ();
     int create (std::string path, MPI_Comm comm, MPI_Info info, int *fid);
     int open (std::string path, MPI_Comm comm, MPI_Info info, int *fid);

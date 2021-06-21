@@ -25,7 +25,7 @@
 #include <e3sm_io_driver_hdf5.hpp>
 #include <e3sm_io_driver_hdf5_int.hpp>
 
-e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 () {
+e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
     int nerrs   = 0;
     herr_t herr = 0;
     char *env   = NULL;
@@ -69,6 +69,11 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 () {
     this->hyperslab_count                                                           = 0;
     this->total_data_size                                                           = 0;
 
+    if ((cfg->chunksize != 0) && (cfg->filter != none)) {
+        throw "Fitler requries chunking in HDF5";
+    }
+
+    
     env = getenv ("E3SM_IO_HDF5_ENABLE_LOGVOL");
     if (env) {
         if (std::string (env) == "1") {
@@ -262,7 +267,9 @@ int e3sm_io_driver_hdf5::def_var (
     hid_t h5did;
     hid_t sid    = -1;
     hid_t dcplid = -1;
-    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t cdim[E3SM_IO_DRIVER_MAX_RANK], dims[E3SM_IO_DRIVER_MAX_RANK],
+        mdims[E3SM_IO_DRIVER_MAX_RANK];
+    size_t csize = 0;
 
     dcplid = H5Pcreate (H5P_DATASET_CREATE);
     CHECK_HID (dcplid)
@@ -273,12 +280,37 @@ int e3sm_io_driver_hdf5::def_var (
 
     for (i = 0; i < ndim; i++) { dims[i] = mdims[i] = fp->dsizes[dimids[i]]; }
     if (ndim) {
-        if (dims[0] == H5S_UNLIMITED) {
-            dims[0] = 1;
+        if ((cfg->chunksize > 0) || (dims[0] == H5S_UNLIMITED)) {
+            csize = H5Tget_size (type);
+            for (i = 0; i < ndim; i++) {
+                if (csize < cfg->chunksize) {
+                    cdim[i] = mdims[i];
+                    csize *= cdim[i];
+                } else {
+                    cdim[i] = 1;
+                }
+            }
+            // Chunk size along rec dim is always 1
+            if (dims[0] == H5S_UNLIMITED) {
+                cdim[0] = 1;
+                dims[0] = 0;
+            }
+        }
 
+        if (csize > 0) {
             herr = H5Pset_chunk (dcplid, ndim, dims);
             CHECK_HERR
-            dims[0] = 0;
+
+            switch (cfg->filter) {
+                case none:
+                    break;
+                case deflate:
+                    herr = H5Pset_deflate (dcplid, 6);
+                    CHECK_HERR
+                    break;
+                default:
+                    RET_ERR ("Unknown filter")
+            }
         }
     }
 

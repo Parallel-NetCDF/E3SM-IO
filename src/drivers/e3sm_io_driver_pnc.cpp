@@ -17,15 +17,15 @@
 
 #include <e3sm_io_driver_pnc.hpp>
 
-#define CHECK_NCERR                                                   \
-    {                                                                 \
-        if (err != NC_NOERR) {                                        \
-            printf ("Error at line %d in %s:\n", __LINE__, __FILE__); \
-            printf ("\t(%s) %s\n", ncmpi_strerrno(err), ncmpi_strerror(err)); \
-            err = -1;                                                 \
-            DEBUG_ABORT;                                              \
-            goto err_out;                                             \
-        }                                                             \
+#define CHECK_NCERR                                                             \
+    {                                                                           \
+        if (err != NC_NOERR) {                                                  \
+            printf ("Error at line %d in %s:\n", __LINE__, __FILE__);           \
+            printf ("\t(%s) %s\n", ncmpi_strerrno (err), ncmpi_strerror (err)); \
+            err = -1;                                                           \
+            DEBUG_ABORT;                                                        \
+            goto err_out;                                                       \
+        }                                                                       \
     }
 
 static inline nc_type mpitype2nctype (MPI_Datatype type) {
@@ -45,9 +45,21 @@ static inline nc_type mpitype2nctype (MPI_Datatype type) {
     }
 }
 
+e3sm_io_driver_pnc::e3sm_io_driver_pnc (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
+    if ((cfg->chunksize != 0) && (cfg->filter != none)) {
+        throw "Fitler requries chunking in PnetCDF";
+    }
+}
+
 int e3sm_io_driver_pnc::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err, nerrs = 0;
     MPI_Offset put_buffer_size_limit;
+
+    // Use the zip driver for chunked I/O
+    if (cfg->chunksize > 0) {
+        MPI_Info_set (info, "nc_compression", "enable");
+        MPI_Info_set (info, "nc_zip_comm_unit", "chunk");
+    }
 
     err = ncmpi_create (comm, path.c_str (), NC_CLOBBER | NC_64BIT_DATA, info, fid);
     CHECK_NCERR
@@ -146,9 +158,45 @@ int e3sm_io_driver_pnc::def_var (
     int err, nerrs = 0;
     int i;
     MPI_Offset bufcounts;
+    int cdim[E3SM_IO_DRIVER_MAX_RANK];
+    int tsize;
+    size_t csize = 0;
 
     err = ncmpi_def_var (fid, name.c_str (), mpitype2nctype (type), ndim, dimids, did);
     CHECK_NCERR
+
+    if (ndim) {
+        if ((cfg->chunksize > 0) || (this->dim_lens[dimids[0]] == NC_UNLIMITED)) {
+            csize = MPI_Type_size (type, &tsize);
+            for (i = 0; i < ndim; i++) {
+                if (csize < cfg->chunksize) {
+                    cdim[i] = this->dim_lens[dimids[i]];
+                    csize *= cdim[i];
+                } else {
+                    cdim[i] = 1;
+                }
+            }
+            // Chunk size along rec dim is always 1
+            if (this->dim_lens[dimids[0]] == NC_UNLIMITED) { cdim[0] = 1; }
+        }
+
+        if (csize > 0) {
+            err = ncmpi_put_att_int (fid, *did, "_chunkdim", NC_INT, ndim, cdim);
+            CHECK_ERR
+
+            switch (cfg->filter) {
+                case none:
+                    break;
+                case deflate:
+                    tsize = 2;  // TODO: Use formal PnetCDF filter ID
+                    err   = ncmpi_put_att_int (fid, *did, "_zipdriver", NC_INT, 1, &tsize);
+                    CHECK_ERR
+                    break;
+                default:
+                    RET_ERR ("Unknown filter")
+            }
+        }
+    }
 
     if (this->var_nelems.size () <= *did) {
         this->var_nelems.resize (*did + 1);
@@ -399,7 +447,7 @@ int e3sm_io_driver_pnc::put_varn (int fid,
                                   MPI_Offset **counts,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err=NC_NOERR, nerrs = 0;
+    int err = NC_NOERR, nerrs = 0;
     int i, j;
     MPI_Offset bufcount;
     MPI_Offset blockcount;

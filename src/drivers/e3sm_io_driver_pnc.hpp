@@ -27,6 +27,7 @@ class e3sm_io_driver_pnc : public e3sm_io_driver {
     std::map<int, MPI_Info> file_infos;
 
    public:
+    e3sm_io_driver_pnc (e3sm_io_config *cfg);
     int create (std::string path, MPI_Comm comm, MPI_Info info, int *fid);
     int open (std::string path, MPI_Comm comm, MPI_Info info, int *fid);
     int close (int fid);

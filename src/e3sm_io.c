@@ -89,7 +89,10 @@ static void usage (char *argv0) {
         "       [-o output_dir] Output directory name (default ./)\n"
         "       [-i target_dir] Path to directory containing the input files\n"
         "       [-a api] Underlying API to test (pnc (default), hdf5, adios2)\n"
-        //"       [-l layout] Storage layout of the variables (contig (default), chunk)\n"
+        "       [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) "
+        "(default))\n"
+        "       [-z filter] Apply the filter if supported by the underlying API (none (default), "
+        "deflate) \n"
         "       FILE: Name of input netCDF file describing data decompositions\n";
     "\n";
     fprintf (stderr, help, argv0);
@@ -120,8 +123,8 @@ int main (int argc, char **argv) {
     cfg.rd             = 0;
     cfg.nvars          = 0;
     cfg.api            = pnc;
-    cfg.layout         = contig;
-    cfg.vard        = 0;
+    cfg.filter         = none;
+    cfg.vard           = 0;
     cfg.verbose        = 0;
     cfg.keep_outfile   = 0;
     cfg.two_buf        = 0;
@@ -190,6 +193,18 @@ int main (int argc, char **argv) {
                 break;
             case 'f':
                 cfg.hx = atoi (optarg);
+                break;
+            case 'c':
+                cfg.chunksize = atoll (optarg);
+                break;
+            case 'z':
+                if (strcmp (optarg, "deflate") == 0) {
+                    cfg.filter = deflate;
+                } else if (strcmp (optarg, "zlib") == 0) {
+                    cfg.filter = deflate;
+                } else {
+                    RET_ERR ("Unknown filter")
+                }
                 break;
             case 'h':
             default:
