@@ -57,7 +57,7 @@ int e3sm_io_driver_pnc::create (std::string path, MPI_Comm comm, MPI_Info info, 
 
     put_buffer_size_limit = 10485760;
     err                   = ncmpi_buffer_attach (*fid, put_buffer_size_limit);
-    CHECK_ERR
+    CHECK_NCERR
 
 err_out:;
     return nerrs;
@@ -77,7 +77,7 @@ int e3sm_io_driver_pnc::close (int fid) {
     int err, nerrs = 0;
 
     err = ncmpi_buffer_detach (fid);
-    CHECK_ERR
+    CHECK_NCERR
 
     err = ncmpi_close (fid);
     CHECK_NCERR
@@ -173,7 +173,7 @@ int e3sm_io_driver_pnc::def_var (
 
         if (csize > 0) {
             err = ncmpi_put_att_int (fid, *did, "_chunkdim", NC_INT, ndim, cdim);
-            CHECK_ERR
+            CHECK_NCERR
 
             switch (cfg->filter) {
                 case none:
@@ -181,7 +181,7 @@ int e3sm_io_driver_pnc::def_var (
                 case deflate:
                     tsize = 2;  // TODO: Use formal PnetCDF filter ID
                     err   = ncmpi_put_att_int (fid, *did, "_zipdriver", NC_INT, 1, &tsize);
-                    CHECK_ERR
+                    CHECK_NCERR
                     break;
                 default:
                     RET_ERR ("Unknown filter")
