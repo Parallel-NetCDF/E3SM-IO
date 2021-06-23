@@ -25,6 +25,8 @@ class e3sm_io_driver {
     virtual int inq_rec_size (int fid, MPI_Offset *size)                          = 0;
     virtual int def_var (
         int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did) = 0;
+    virtual int def_local_var (
+        int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) = 0;
     virtual int inq_var (int fid, std::string name, int *did)                          = 0;
     virtual int inq_var_off (int fid, int vid, MPI_Offset *off)                        = 0;
     virtual int def_dim (int fid, std::string name, MPI_Offset size, int *dimid)       = 0;
@@ -36,6 +38,11 @@ class e3sm_io_driver {
     virtual int put_att (
         int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) = 0;
     virtual int get_att (int fid, int vid, std::string name, void *buf)                    = 0;
+    virtual int put_varl (int fid,
+                          int vid,
+                          MPI_Datatype type,
+                          void *buf,
+                          e3sm_io_op_mode mode)                                            = 0;
     virtual int put_vara (int fid,
                           int vid,
                           MPI_Datatype type,

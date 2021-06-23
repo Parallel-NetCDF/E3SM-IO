@@ -18,6 +18,21 @@
 
 #include <e3sm_io_driver.hpp>
 
+inline nc_type mpitype2nctype (MPI_Datatype type) {
+    switch (type) {
+        case MPI_INT:
+            return NC_INT;
+        case MPI_FLOAT:
+            return NC_FLOAT;
+        case MPI_DOUBLE:
+            return NC_DOUBLE;
+        case MPI_CHAR:
+            return NC_CHAR;
+        default:
+            throw "Unsupported datatype";
+    }
+}
+
 class e3sm_io_driver_pnc : public e3sm_io_driver {
     MPI_Comm comm;
     MPI_Info info;
@@ -38,6 +53,8 @@ class e3sm_io_driver_pnc : public e3sm_io_driver {
     int inq_malloc_max_size (MPI_Offset *size);
     int inq_rec_size (int fid, MPI_Offset *size);
     int def_var (int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did);
+    int def_local_var (
+        int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did);
     int inq_var (int fid, std::string name, int *did);
     int inq_var_off (int fid, int vid, MPI_Offset *off);
     int def_dim (int fid, std::string name, MPI_Offset size, int *dimid);
@@ -48,6 +65,7 @@ class e3sm_io_driver_pnc : public e3sm_io_driver {
     int wait (int fid);
     int put_att (int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf);
     int get_att (int fid, int vid, std::string name, void *buf);
+    int put_varl (int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode);
     int put_vara (int fid,
                   int vid,
                   MPI_Datatype type,

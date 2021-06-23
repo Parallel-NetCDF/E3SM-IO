@@ -43,26 +43,6 @@
         }                                                          \
     }
 
-adios2_type mpi_type_to_adios2_type (MPI_Datatype mpitype) {
-    switch (mpitype) {
-        case MPI_INT:
-            return adios2_type_int32_t;
-        case MPI_FLOAT:
-            return adios2_type_float;
-        case MPI_DOUBLE:
-            return adios2_type_double;
-        case MPI_LONG_LONG:
-            return adios2_type_int64_t;
-        case MPI_CHAR:
-            return adios2_type_uint8_t;
-        default:
-            printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, mpitype);
-            DEBUG_ABORT
-    }
-
-    return adios2_type_unknown;
-}
-
 size_t adios2_type_size (adios2_type type) {
     switch (type) {
         case adios2_type_int32_t:
@@ -161,8 +141,11 @@ int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info,
 
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
-    aerr = adios2_set_engine (fp->iop, "BPFile");
-    CHECK_AERR
+    if (cfg->api == adios2_bp3) {
+        aerr = adios2_set_engine (fp->iop, "BP3");
+    } else {
+        aerr = adios2_set_engine (fp->iop, "BP4");
+    }
     aerr = adios2_set_parameter (fp->iop, "substreams", "1");
     CHECK_AERR
     aerr = adios2_set_parameter (fp->iop, "CollectiveMetadata", "OFF");
@@ -306,7 +289,38 @@ int e3sm_io_driver_adios2::def_var (
 err_out:;
     return nerrs;
 }
+int e3sm_io_driver_adios2::def_local_var (
+    int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) {
+    int nerrs = 0;
+    adios2_error aerr;
+    adios2_file *fp = this->files[fid];
+    int i;
+    adios2_variable *dp;
+    size_t dims[E3SM_IO_DRIVER_MAX_RANK];
+    size_t opidx;
 
+    for (i = 0; i < ndim; i++) {
+        dims[i] = (size_t)dsize[i];
+        // Unlimited dimension is simulated by timesteps
+        if (dims[i] == NC_UNLIMITED) { dims[i] = 1; }
+    }
+
+    dp = adios2_define_variable (fp->iop, name.c_str (), mpi_type_to_adios2_type (type),
+                                 (size_t)ndim, NULL, NULL, dims, adios2_constant_dims_false);
+    CHECK_APTR (dp)
+
+    if (fp->op) {
+        aerr = adios2_add_operation (&opidx, dp, fp->op, NULL, NULL);
+        CHECK_AERR
+    }
+
+    *did = fp->dids.size ();
+    fp->dids.push_back (dp);
+    fp->ndims.push_back (ndim);
+
+err_out:;
+    return nerrs;
+}
 int e3sm_io_driver_adios2::inq_var (int fid, std::string name, int *did) {
     int nerrs = 0;
     adios2_error aerr;
@@ -336,15 +350,16 @@ int e3sm_io_driver_adios2::def_dim (int fid, std::string name, MPI_Offset size, 
     int nerrs = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
-    size_t asize;
+    adios2_variable *dp;
 
-    asize = (size_t)size;
-    nerrs += this->put_att (fid, E3SM_IO_GLOBAL_ATTR, "_DIM_" + name, MPI_LONG_LONG, 1, &asize);
-    CHECK_NERR
+    dp =
+        adios2_define_variable (fp->iop, ("/__e3sm_io__/dim/" + name).c_str (), adios2_type_int64_t,
+                                0, NULL, NULL, NULL, adios2_constant_dims_true);
+    CHECK_APTR (dp)
 
     *dimid = fp->dsizes.size ();
-    fp->dsizes.push_back (asize);
-
+    fp->dsizes.push_back ((size_t)size);
+    fp->ddids.push_back (dp);
 err_out:;
     return nerrs;
 }
@@ -352,14 +367,27 @@ int e3sm_io_driver_adios2::inq_dim (int fid, std::string name, int *dimid) {
     int nerrs = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
-    size_t asize;
+    MPI_Offset size;
+    adios2_variable *dp;
 
-    nerrs += this->get_att (fid, E3SM_IO_GLOBAL_ATTR, "_DIM_" + name, &asize);
-    CHECK_NERR
+    dp = adios2_inquire_variable (fp->iop, ("/__e3sm_io__/dim/" + name).c_str ());
+
+    // Read must happen in data mode
+    if (fp->ep == NULL) {
+        nerrs += this->enddef (fid);
+        CHECK_NERR
+        aerr = adios2_get (fp->ep, dp, &size, adios2_mode_sync);
+        CHECK_AERR
+        nerrs += this->redef (fid);
+        CHECK_NERR
+    } else {
+        aerr = adios2_get (fp->ep, dp, &size, adios2_mode_sync);
+        CHECK_AERR
+    }
 
     *dimid = fp->dsizes.size ();
-    fp->dsizes.push_back (asize);
-
+    fp->dsizes.push_back ((size_t)size);
+    fp->ddids.push_back (dp);
 err_out:;
     return nerrs;
 }
@@ -374,6 +402,7 @@ int e3sm_io_driver_adios2::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
 
 int e3sm_io_driver_adios2::enddef (int fid) {
     int nerrs = 0;
+    int i;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_step_status stat;
@@ -388,6 +417,13 @@ int e3sm_io_driver_adios2::enddef (int fid) {
         CHECK_APTR (fp->ep)
         aerr = adios2_begin_step (fp->ep, adios2_step_mode_append, -1, &stat);
         CHECK_AERR
+
+        // Write dim variables
+        if (this->cfg->rank == 0) {
+            for (i = 0; i < fp->ddids.size (); i++) {
+                adios2_put (fp->ep, fp->ddids[i], &(fp->dsizes[i]), adios2_mode_sync);
+            }
+        }
     }
 
 err_out:;
@@ -489,6 +525,46 @@ int e3sm_io_driver_adios2::get_att (int fid, int vid, std::string name, void *bu
     CHECK_AERR
     aerr = adios2_attribute_data (buf, &asize, aid);
     CHECK_AERR
+
+err_out:;
+    return nerrs;
+}
+
+int e3sm_io_driver_adios2::put_varl (
+    int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) {
+    int nerrs = 0;
+    adios2_error aerr;
+    adios2_file *fp = this->files[fid];
+    int i;
+    size_t ndim;
+    adios2_variable *did;
+    size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
+    adios2_mode iomode;
+    double ts, te;
+
+    did = fp->dids[vid];
+
+    switch (mode) {
+        case indep:
+        case coll: {
+            iomode = adios2_mode_sync;
+            break;
+        }
+        case nb: {
+            iomode = adios2_mode_deferred;
+            break;
+        }
+        case nbe: {
+            iomode = adios2_mode_sync;
+            break;
+        }
+        default:
+            throw "Unrecognized mode";
+    }
+
+    aerr = adios2_put (fp->ep, did, buf, iomode);
+    CHECK_AERR
+    this->twrite += MPI_Wtime () - te;
 
 err_out:;
     return nerrs;

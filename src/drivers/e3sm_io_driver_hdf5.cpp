@@ -358,6 +358,15 @@ err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return nerrs;
 }
+int e3sm_io_driver_hdf5::def_local_var (
+    int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) {
+    int nerrs = 0;
+
+    RET_ERR ("HDF5 does not support local variables")
+
+err_out:;
+    return nerrs;
+}
 
 int e3sm_io_driver_hdf5::inq_var (int fid, std::string name, int *did) {
     int nerrs = 0;
@@ -540,6 +549,15 @@ err_out:;
     if (aid >= 0) H5Aclose (aid);
     if (tid >= 0) H5Tclose (tid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
+    return nerrs;
+}
+
+int e3sm_io_driver_hdf5::put_varl (int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode){
+    int nerrs=0;
+
+    RET_ERR("HDF5 does not support local variables")
+    
+    err_out:;
     return nerrs;
 }
 
