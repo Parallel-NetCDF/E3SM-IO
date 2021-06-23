@@ -60,8 +60,8 @@
 #define IGET_VARS_DOUBLE(F, D, S, C, ST, B, R) driver.get_vars (F, D, MPI_DOUBLE, S, C, ST, B, nb);
 #define IGET_VARS_CHAR(F, D, S, C, ST, B, R)   driver.get_vars (F, D, MPI_CHAR, S, C, ST, B, nb);
 
-#define GET_VARD_ALL(F, D, FT, B, N, T) driver.put_vard (F, D, T, N, FT, B, coll);
-#define GET_VARD(F, D, FT, B, N, T)     driver.put_vard (F, D, T, N, FT, B, indep);
+#define GET_VARD_ALL(F, D, FT, B, N, T) driver.get_vard (F, D, T, N, FT, B, coll);
+#define GET_VARD(F, D, FT, B, N, T)     driver.get_vard (F, D, T, N, FT, B, indep);
 
 #define WAIT_ALL_REQS(F, D, B, R) driver.wait (F);
 
