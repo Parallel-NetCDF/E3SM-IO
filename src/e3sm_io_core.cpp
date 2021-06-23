@@ -60,7 +60,14 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     /* F case has 3 decompositions, G case has 6 */
     if (decom->num_decomp == 3) {
         cfg->nvars = 414;
-        tcase      = new e3sm_io_case_F ();
+        switch (cfg->strate) {
+            case canonical:
+                tcase = new e3sm_io_case_F ();
+                break;
+            case blob:
+                tcase = new e3sm_io_case_F_pio ();
+                break;
+        }
     } else if (decom->num_decomp == 6) {
         cfg->nvars = 52;
         tcase      = new e3sm_io_case_G ();
@@ -77,7 +84,7 @@ err_out:
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_TOTAL)
 
-    e3sm_io_print_profile(cfg);
+    e3sm_io_print_profile (cfg);
 
     return nerrs;
 }

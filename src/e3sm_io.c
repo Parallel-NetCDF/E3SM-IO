@@ -26,6 +26,7 @@
 /**/
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
+
 #include <e3sm_io_profile.hpp>
 
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
@@ -126,6 +127,7 @@ int main (int argc, char **argv) {
     cfg.wr             = 0;
     cfg.rd             = 0;
     cfg.nvars          = 0;
+    cfg.strate         = canonical;
     cfg.api            = pnc;
     cfg.filter         = none;
     cfg.vard           = 0;
@@ -136,7 +138,7 @@ int main (int argc, char **argv) {
     cfg.io_stride      = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:S:")) != EOF) switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -192,6 +194,18 @@ int main (int argc, char **argv) {
                 }
                 break;
                 */
+            case 'S':
+                if (strcmp (optarg, "canonical") == 0) {
+                    cfg.strate = canonical;
+                } else if (strcmp (optarg, "log") == 0) {
+                    cfg.strate = log;
+                } else if (strcmp (optarg, "blob") == 0) {
+                    cfg.strate = blob;
+                } else {
+                    RET_ERR ("Unknown I/O strategy")
+                }
+                break;
+
             case 'o':
                 strncpy (cfg.targetdir, optarg, E3SM_IO_MAX_PATH);
                 break;
@@ -243,6 +257,10 @@ int main (int argc, char **argv) {
     }
     strncpy (cfg.cfgpath, argv[optind], E3SM_IO_MAX_PATH);
 
+    if((cfg.strate==log) && (cfg.api!=hdf5_logvol)){
+        ERR_OUT ("Selected API does not support log-based I/O")
+    }
+
     /* input file contains number of write requests and their file access
      * offsets (per array element) */
     PRINT_MSG (1, "input file name =%s\n", cfg.cfgpath);
@@ -260,8 +278,16 @@ int main (int argc, char **argv) {
     CHECK_NERR
 
     /* read request information from decompositions 1, 2 and 3 */
-    err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
-                       decom.contig_nreqs, decom.disps, decom.blocklens);
+    if (cfg.strate == log) {
+        err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
+                           decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens,
+                           decom.raw_nreqs, decom.raw_offsets);
+    } else {
+        // No need to generate simulated raw offsets in canonical strategy
+        err =
+            read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
+                         decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens, NULL, NULL);
+    }
     CHECK_ERR
 
     nerrs += e3sm_io_core (&cfg, &decom);
