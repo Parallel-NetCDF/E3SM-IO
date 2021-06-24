@@ -17,6 +17,7 @@
 #include <unistd.h>
 //
 #include <adios2_c.h>
+#include <mpi.h>
 //
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
@@ -60,12 +61,16 @@ size_t adios2_type_size (adios2_type type) {
     return 0;
 }
 
-e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {}
+e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
+    twrite = tsel = text = 0;
+}
 
 e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {
     int nerrs = 0;
     int rank;
     double tsel_all, twrite_all, text_all;
+
+    // printf("adios2 destructor\n");
 
     MPI_Allreduce (&twrite, &twrite_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
     MPI_Allreduce (&tsel, &tsel_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
@@ -219,6 +224,7 @@ static MPI_Offset get_dir_size (std::string path) {
                 total_size += (MPI_Offset)size;
             }
         }
+        closedir (dir);
     } else {  // Try again as file
         struct stat file_stat;
         stat (path.c_str (), &file_stat);
