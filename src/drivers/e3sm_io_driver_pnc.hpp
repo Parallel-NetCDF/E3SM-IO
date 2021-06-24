@@ -43,6 +43,7 @@ class e3sm_io_driver_pnc : public e3sm_io_driver {
 
    public:
     e3sm_io_driver_pnc (e3sm_io_config *cfg);
+    ~e3sm_io_driver_pnc ();
     int create (std::string path, MPI_Comm comm, MPI_Info info, int *fid);
     int open (std::string path, MPI_Comm comm, MPI_Info info, int *fid);
     int close (int fid);

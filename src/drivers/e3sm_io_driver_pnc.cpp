@@ -34,6 +34,8 @@ e3sm_io_driver_pnc::e3sm_io_driver_pnc (e3sm_io_config *cfg) : e3sm_io_driver (c
     }
 }
 
+e3sm_io_driver_pnc::~e3sm_io_driver_pnc () {}
+
 int e3sm_io_driver_pnc::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err, nerrs = 0;
     MPI_Offset put_buffer_size_limit;
