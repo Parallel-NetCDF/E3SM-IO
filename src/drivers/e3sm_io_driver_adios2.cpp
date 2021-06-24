@@ -550,6 +550,8 @@ int e3sm_io_driver_adios2::put_varl (
 
     did = fp->dids[vid];
 
+    te = MPI_Wtime ();
+
     switch (mode) {
         case indep:
         case coll: {
