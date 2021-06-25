@@ -4,6 +4,7 @@ dist: trusty
 branches:
   only:
   - master
+  - dev
 
 before_install:
   - sudo add-apt-repository ppa:dns/gnu -y
@@ -23,11 +24,13 @@ before_install:
   - popd
 
 script:
-  - make PnetCDF_DIR=$HOME/PnetCDF
+  - autoreconf -i
+  - ./configure --with-pnetcdf=$HOME/PnetCDF --enable-debug
+  - make -j 64
   # - mpiexec -n 16 valgrind --quiet --leak-check=full ./e3sm_io datasets/f_case_866x72_16p.nc
   # - mpiexec -n 16 valgrind --quiet --leak-check=full ./e3sm_io datasets/g_case_cmpaso_16p.nc
-  - mpiexec -n 16 ./e3sm_io datasets/f_case_866x72_16p.nc
-  - mpiexec -n 16 ./e3sm_io datasets/g_case_cmpaso_16p.nc
+  - mpiexec -n 16 ./src/e3sm_io -a pnc datasets/f_case_866x72_16p.nc
+  - mpiexec -n 16 ./src/e3sm_io -a pnc datasets/g_case_cmpaso_16p.nc
 
 after_success:
   - make -s clean
