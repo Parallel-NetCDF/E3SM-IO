@@ -3225,19 +3225,19 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     CHECK_ERR
 
     /* define dimensions */
-    err = ncmpi_def_dim (ncid, "nCells", dims_D1[0], &dim_nCells);
+    err = driver.def_dim (ncid, "nCells", dims_D1[0], &dim_nCells);
     CHECK_ERR
-    err = ncmpi_def_dim (ncid, "Time", NC_UNLIMITED, &dim_Time);
+    err = driver.def_dim (ncid, "Time", NC_UNLIMITED, &dim_Time);
     CHECK_ERR
-    err = ncmpi_def_dim (ncid, "nVertLevelsP1", dims_D6[1], &dim_nVertLevelsP1);
+    err = driver.def_dim (ncid, "nVertLevelsP1", dims_D6[1], &dim_nVertLevelsP1);
     CHECK_ERR
-    err = ncmpi_def_dim (ncid, "nVertLevels", dims_D3[1], &dim_nVertLevels);
+    err = driver.def_dim (ncid, "nVertLevels", dims_D3[1], &dim_nVertLevels);
     CHECK_ERR
-    err = ncmpi_def_dim (ncid, "nEdges", dims_D2[0], &dim_nEdges);
+    err = driver.def_dim (ncid, "nEdges", dims_D2[0], &dim_nEdges);
     CHECK_ERR
-    err = ncmpi_def_dim (ncid, "nVertices", dims_D5[0], &dim_nVertices);
+    err = driver.def_dim (ncid, "nVertices", dims_D5[0], &dim_nVertices);
     CHECK_ERR
-    err = ncmpi_def_dim (ncid, "StrLen", 64, &dim_StrLen);
+    err = driver.def_dim (ncid, "StrLen", 64, &dim_StrLen);
     CHECK_ERR
 
     i = 0;
@@ -6959,13 +6959,13 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
 
     /* define dimensions */
     /*
-    err = ncmpi_def_dim(ncid, "nCells", dims_D1[0], &dim_nCells); CHECK_ERR
-    err = ncmpi_def_dim(ncid, "Time", NC_UNLIMITED, &dim_Time); CHECK_ERR
-    err = ncmpi_def_dim(ncid, "nVertLevelsP1", dims_D6[1], &dim_nVertLevelsP1); CHECK_ERR
-    err = ncmpi_def_dim(ncid, "nVertLevels", dims_D3[1], &dim_nVertLevels); CHECK_ERR
-    err = ncmpi_def_dim(ncid, "nEdges", dims_D2[0], &dim_nEdges); CHECK_ERR
-    err = ncmpi_def_dim(ncid, "nVertices", dims_D5[0], &dim_nVertices); CHECK_ERR
-    err = ncmpi_def_dim(ncid, "StrLen", 64, &dim_StrLen); CHECK_ERR
+    err = driver.def_dim(ncid, "nCells", dims_D1[0], &dim_nCells); CHECK_ERR
+    err = driver.def_dim(ncid, "Time", NC_UNLIMITED, &dim_Time); CHECK_ERR
+    err = driver.def_dim(ncid, "nVertLevelsP1", dims_D6[1], &dim_nVertLevelsP1); CHECK_ERR
+    err = driver.def_dim(ncid, "nVertLevels", dims_D3[1], &dim_nVertLevels); CHECK_ERR
+    err = driver.def_dim(ncid, "nEdges", dims_D2[0], &dim_nEdges); CHECK_ERR
+    err = driver.def_dim(ncid, "nVertices", dims_D5[0], &dim_nVertices); CHECK_ERR
+    err = driver.def_dim(ncid, "StrLen", 64, &dim_StrLen); CHECK_ERR
     */
 
     err = driver.inq_dim (ncid, "nCells", &dim_nCells);
