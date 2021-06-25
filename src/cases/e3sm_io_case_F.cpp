@@ -88,7 +88,7 @@ int e3sm_io_case_F::wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
                                       this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
         }
 
-        if (cfg.hx == 0 || cfg.hx == -1) {
+        if (cfg.hx == 1 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 51;
             nerrs += run_varn_F_case (cfg, decom, driver, "f_case_h1_varn.nc", this->dbl_buf_h0,
