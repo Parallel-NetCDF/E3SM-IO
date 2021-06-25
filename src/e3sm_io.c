@@ -122,7 +122,7 @@ int main (int argc, char **argv) {
     cfg.targetdir      = targetdir;
     cfg.datadir        = datadir;
     cfg.cfgpath        = cfgpath;
-    cfg.hx             = 0;
+    cfg.hx             = -1;
     cfg.nrec           = 1;
     cfg.wr             = 0;
     cfg.rd             = 0;
