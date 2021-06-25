@@ -476,23 +476,19 @@ int run_varn_G_case (e3sm_io_config &cfg,
     err = driver.create (outfname, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
-    // put_buffer_size_limit = 10485760;
-    // err                   = ncmpi_buffer_attach (ncid, put_buffer_size_limit);
-    // CHECK_ERR
-
     /* define dimensions, variables, and attributes */
     err = def_G_case_h0 (driver, ncid, decom.dims[0], decom.dims[1], decom.dims[2], decom.dims[3],
                          decom.dims[4], decom.dims[5], cfg.nvars, varids);
     CHECK_ERR
 
     /* exit define mode and enter data mode */
-    err = ncmpi_enddef (ncid);
+    err = driver.enddef(ncid);
     CHECK_ERR
 
     /* I/O amount so far */
-    err = ncmpi_inq_put_size (ncid, &metadata_size);
+    err = driver.inq_put_size (ncid, &metadata_size);
     CHECK_ERR
-    err = ncmpi_inq_file_info (ncid, &info_used);
+    err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
     open_timing += MPI_Wtime () - timing;
 
@@ -693,7 +689,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    err = ncmpi_wait_all (ncid, NC_REQ_ALL, NULL, NULL);
+    err = driver.wait (ncid);
     CHECK_ERR
 
     wait_timing += MPI_Wtime () - timing;
@@ -701,12 +697,11 @@ int run_varn_G_case (e3sm_io_config &cfg,
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    err = ncmpi_inq_put_size (ncid, &total_size);
+    err = driver.inq_put_size (ncid, &total_size);
     CHECK_ERR
     put_size = total_size - metadata_size;
-    // err      = ncmpi_buffer_detach (ncid);
-    // CHECK_ERR
-    err = ncmpi_close (ncid);
+
+    err = driver.close (ncid);
     CHECK_ERR
     close_timing += MPI_Wtime () - timing;
 
@@ -786,7 +781,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     total_timing = max_timing;
 
     /* check if there is any PnetCDF internal malloc residue */
-    err = ncmpi_inq_malloc_size (&malloc_size);
+    err = driver.inq_malloc_size (&malloc_size);
     if (err == NC_NOERR) {
         MPI_Reduce (&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, cfg.io_comm);
         if (rank == 0 && sum_size > 0) {
@@ -795,7 +790,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
                     sum_size);
         }
     }
-    ncmpi_inq_malloc_max_size (&m_alloc);
+    driver.inq_malloc_max_size (&m_alloc);
     MPI_Reduce (&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, cfg.io_comm);
     if (rank == 0) {
         int nvars_noD = cfg.nvars;
@@ -818,7 +813,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
         printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
         printf ("Max Time of IPUT_VARN              = %.4f sec\n", post_timing);
-        printf ("Max Time of ncmpi_wait_all         = %.4f sec\n", wait_timing);
+        printf ("Max Time of driver.wait         = %.4f sec\n", wait_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -1095,22 +1090,16 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     err = driver.open (outfname, comm, cfg.info, &ncid);
     CHECK_ERR
 
-    // put_buffer_size_limit = 10485760;
-    // err                   = ncmpi_buffer_attach (ncid, put_buffer_size_limit);
-    // CHECK_ERR
-
     /* define dimensions, variables, and attributes */
     err = inq_G_case_h0 (driver, ncid, decom.dims[0], decom.dims[1], decom.dims[2], decom.dims[3],
                          decom.dims[4], decom.dims[5], cfg.nvars, varids);
     CHECK_ERR
 
-    /* exit define mode and enter data mode */
-    // err = ncmpi_enddef(ncid); CHECK_ERR
 
     /* I/O amount so far */
-    err = ncmpi_inq_get_size (ncid, &metadata_size);
+    err = driver.inq_get_size (ncid, &metadata_size);
     CHECK_ERR
-    err = ncmpi_inq_file_info (ncid, &info_used);
+    err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
     open_timing += MPI_Wtime () - timing;
 
@@ -1120,43 +1109,43 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     /* read 7 fixed-size variables */
 
     /* int maxLevelEdgeTop(nEdges) */
-    err = ncmpi_iget_varn (ncid, 8, decom.contig_nreqs[1], fix_starts_D2, fix_counts_D2,
+    err = IGET_VARN (ncid, 8, decom.contig_nreqs[1], fix_starts_D2, fix_counts_D2,
                            D2_fix_int_buf, nelems[1], MPI_INT, NULL);
     CHECK_ERR
     my_nreqs += decom.contig_nreqs[1];
 
     /* int maxLevelEdgeBot(nEdges) */
-    err = ncmpi_iget_varn (ncid, 37, decom.contig_nreqs[1], fix_starts_D2, fix_counts_D2,
+    err = IGET_VARN (ncid, 37, decom.contig_nreqs[1], fix_starts_D2, fix_counts_D2,
                            D2_fix_int_buf + nelems[1], nelems[1], MPI_INT, NULL);
     CHECK_ERR
     my_nreqs += decom.contig_nreqs[1];
 
     /* int edgeMask(nEdges, nVertLevels) */
-    err = ncmpi_iget_varn (ncid, 10, decom.contig_nreqs[3], fix_starts_D4, fix_counts_D4,
+    err = IGET_VARN (ncid, 10, decom.contig_nreqs[3], fix_starts_D4, fix_counts_D4,
                            D4_fix_int_buf, nelems[3], MPI_INT, NULL);
     CHECK_ERR
     my_nreqs += decom.contig_nreqs[3];
 
     /* int cellMask(nCells, nVertLevels) */
-    err = ncmpi_iget_varn (ncid, 11, decom.contig_nreqs[2], fix_starts_D3, fix_counts_D3,
+    err = IGET_VARN (ncid, 11, decom.contig_nreqs[2], fix_starts_D3, fix_counts_D3,
                            D3_fix_int_buf, nelems[2], MPI_INT, NULL);
     CHECK_ERR
     my_nreqs += decom.contig_nreqs[2];
 
     /* int vertexMask(nVertices, nVertLevels) */
-    err = ncmpi_iget_varn (ncid, 12, decom.contig_nreqs[4], fix_starts_D5, fix_counts_D5,
+    err = IGET_VARN (ncid, 12, decom.contig_nreqs[4], fix_starts_D5, fix_counts_D5,
                            D5_fix_int_buf, nelems[4], MPI_INT, NULL);
     CHECK_ERR
     my_nreqs += decom.contig_nreqs[4];
 
     /* double bottomDepth(nCells)  */
-    err = ncmpi_iget_varn (ncid, 35, decom.contig_nreqs[0], fix_starts_D1, fix_counts_D1,
+    err = IGET_VARN (ncid, 35, decom.contig_nreqs[0], fix_starts_D1, fix_counts_D1,
                            D1_fix_dbl_buf, nelems[0], MPI_DOUBLE, NULL);
     CHECK_ERR
     my_nreqs += decom.contig_nreqs[0];
 
     /* int maxLevelCell(nCells) */
-    err = ncmpi_iget_varn (ncid, 36, decom.contig_nreqs[0], fix_starts_D1, fix_counts_D1,
+    err = IGET_VARN (ncid, 36, decom.contig_nreqs[0], fix_starts_D1, fix_counts_D1,
                            D1_fix_int_buf, nelems[0], MPI_INT, NULL);
     CHECK_ERR
     my_nreqs += decom.contig_nreqs[0];
@@ -1229,7 +1218,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
 
         rec_buf_ptr = D1_rec_dbl_buf;
         for (j = 0; j < nD1_rec_2d_vars; j++) {
-            err = ncmpi_iget_varn (ncid, D1_rec_2d_varids[j], decom.contig_nreqs[0], starts_D1,
+            err = IGET_VARN (ncid, D1_rec_2d_varids[j], decom.contig_nreqs[0], starts_D1,
                                    counts_D1, rec_buf_ptr, nelems[0], MPI_DOUBLE, NULL);
             CHECK_ERR
             /*for(int k=0;k<nD1_rec_2d_vars;k++){
@@ -1247,7 +1236,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
 
         rec_buf_ptr = D6_rec_dbl_buf;
         for (j = 0; j < nD6_rec_3d_vars; j++) {
-            err = ncmpi_iget_varn (ncid, D6_rec_3d_varids[j], decom.contig_nreqs[5], starts_D6,
+            err = IGET_VARN (ncid, D6_rec_3d_varids[j], decom.contig_nreqs[5], starts_D6,
                                    counts_D6, rec_buf_ptr, nelems[5], MPI_DOUBLE, NULL);
             CHECK_ERR
             rec_buf_ptr += nelems[5];
@@ -1261,7 +1250,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
 
         rec_buf_ptr = D3_rec_dbl_buf;
         for (j = 0; j < nD3_rec_3d_vars; j++) {
-            err = ncmpi_iget_varn (ncid, D3_rec_3d_varids[j], decom.contig_nreqs[2], starts_D3,
+            err = IGET_VARN (ncid, D3_rec_3d_varids[j], decom.contig_nreqs[2], starts_D3,
                                    counts_D3, rec_buf_ptr, nelems[2], MPI_DOUBLE, NULL);
             CHECK_ERR
             rec_buf_ptr += nelems[2];
@@ -1275,7 +1264,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
 
         rec_buf_ptr = D4_rec_dbl_buf;
         for (j = 0; j < nD4_rec_3d_vars; j++) {
-            err = ncmpi_iget_varn (ncid, D4_rec_3d_varids[j], decom.contig_nreqs[3], starts_D4,
+            err = IGET_VARN (ncid, D4_rec_3d_varids[j], decom.contig_nreqs[3], starts_D4,
                                    counts_D4, rec_buf_ptr, nelems[3], MPI_DOUBLE, NULL);
             CHECK_ERR
             rec_buf_ptr += nelems[3];
@@ -1289,7 +1278,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
 
         rec_buf_ptr = D5_rec_dbl_buf;
         for (j = 0; j < nD5_rec_3d_vars; j++) {
-            err = ncmpi_iget_varn (ncid, D5_rec_3d_varids[j], decom.contig_nreqs[4], starts_D5,
+            err = IGET_VARN (ncid, D5_rec_3d_varids[j], decom.contig_nreqs[4], starts_D5,
                                    counts_D5, rec_buf_ptr, nelems[4], MPI_DOUBLE, NULL);
             CHECK_ERR
             rec_buf_ptr += nelems[4];
@@ -1303,7 +1292,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     MPI_Barrier (comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    err = ncmpi_wait_all (ncid, NC_REQ_ALL, NULL, NULL);
+    err = driver.wait (ncid);
     CHECK_ERR
 
     wait_timing += MPI_Wtime () - timing;
@@ -1311,12 +1300,11 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     MPI_Barrier (comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    err = ncmpi_inq_get_size (ncid, &total_size);
+    err = driver.inq_get_size (ncid, &total_size);
     CHECK_ERR
     get_size = total_size - metadata_size;
-    err      = ncmpi_buffer_detach (ncid);
-    CHECK_ERR
-    err = ncmpi_close (ncid);
+
+    err = driver.close (ncid);
     CHECK_ERR
     close_timing += MPI_Wtime () - timing;
 
@@ -1394,7 +1382,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     total_timing = max_timing;
 
     /* check if there is any PnetCDF internal malloc residue */
-    err = ncmpi_inq_malloc_size (&malloc_size);
+    err = driver.inq_malloc_size (&malloc_size);
     if (err == NC_NOERR) {
         MPI_Reduce (&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, comm);
         if (rank == 0 && sum_size > 0) {
@@ -1403,7 +1391,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
                     sum_size);
         }
     }
-    ncmpi_inq_malloc_max_size (&m_alloc);
+    driver.inq_malloc_max_size (&m_alloc);
     MPI_Reduce (&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
         printf ("History output file                = %s\n", outfile.c_str ());
@@ -1416,8 +1404,8 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
         printf ("Max number of requests             = %lld\n", max_nreqs);
         printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
-        printf ("Max Time of ncmpi_iget_varn        = %.4f sec\n", post_timing);
-        printf ("Max Time of ncmpi_wait_all         = %.4f sec\n", wait_timing);
+        printf ("Max Time of IGET_VARN        = %.4f sec\n", post_timing);
+        printf ("Max Time of driver.wait         = %.4f sec\n", wait_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
