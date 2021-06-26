@@ -279,7 +279,7 @@ int main (int argc, char **argv) {
         decom.disps[i]       = NULL;
         decom.raw_offsets[i] = NULL;
     }
-    if (cfg.strate == log) {
+    if (cfg.strate == blob) {
         err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
                            decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens,
                            decom.raw_nreqs, decom.raw_offsets);
