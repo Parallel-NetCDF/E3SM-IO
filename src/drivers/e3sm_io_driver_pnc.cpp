@@ -46,12 +46,6 @@ int e3sm_io_driver_pnc::create (std::string path, MPI_Comm comm, MPI_Info info, 
         MPI_Info_set (info, "nc_zip_comm_unit", "chunk");
     }
 
-    if (cfg->num_group > 1) {
-        char ng[32];
-        sprintf (ng, "%d", cfg->num_group);
-        MPI_Info_set (info, "nc_num_subfiles", ng);
-    }
-
     err = ncmpi_create (comm, path.c_str (), NC_CLOBBER | NC_64BIT_DATA, info, fid);
     CHECK_NCERR
 
