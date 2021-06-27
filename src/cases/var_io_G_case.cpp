@@ -603,85 +603,71 @@ int run_varn_G_case (e3sm_io_config &cfg,
             CHECK_ERR
 
             my_nreqs += 7; /* 7 record variables */
+
+            /* write 34 record variables */
+            
+            /* 4 D1 record variables: double (Time, nCells) */
+            for (j = 0; j < xnreqs[0]; j++) starts_D1[j][0] = rec_no;
+            rec_buf_ptr = D1_rec_dbl_buf;
+            for (j = 0; j < nD1_rec_2d_vars; j++) {
+                err = IPUT_VARN (ncid, D1_rec_2d_varids[j], xnreqs[0], starts_D1, counts_D1,
+                                rec_buf_ptr, nelems[0], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                rec_buf_ptr += nelems[0];
+                my_nreqs += xnreqs[0];
+                if (rec_no == 0) nvars_D[0]++;
+            }
+
+            /* 4 D6 record variables: double (Time, nCells, nVertLevelsP1) */
+            for (j = 0; j < xnreqs[5]; j++) starts_D6[j][0] = rec_no;
+            rec_buf_ptr = D6_rec_dbl_buf;
+            for (j = 0; j < nD6_rec_3d_vars; j++) {
+                err = IPUT_VARN (ncid, D6_rec_3d_varids[j], xnreqs[5], starts_D6, counts_D6,
+                                rec_buf_ptr, nelems[5], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                rec_buf_ptr += nelems[5];
+                my_nreqs += xnreqs[5];
+                if (rec_no == 0) nvars_D[5]++;
+            }
+
+            /* 24 D3 record variables: double (Time, nCells, nVertLevels) */
+            for (j = 0; j < xnreqs[2]; j++) starts_D3[j][0] = rec_no;
+            rec_buf_ptr = D3_rec_dbl_buf;
+            for (j = 0; j < nD3_rec_3d_vars; j++) {
+                err = IPUT_VARN (ncid, D3_rec_3d_varids[j], xnreqs[2], starts_D3, counts_D3,
+                                rec_buf_ptr, nelems[2], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                rec_buf_ptr += nelems[2];
+                my_nreqs += xnreqs[2];
+                if (rec_no == 0) nvars_D[2]++;
+            }
+
+            /* 1 D4 record variable: double (Time, nEdges, nVertLevels) */
+            for (j = 0; j < xnreqs[3]; j++) starts_D4[j][0] = rec_no;
+            rec_buf_ptr = D4_rec_dbl_buf;
+            for (j = 0; j < nD4_rec_3d_vars; j++) {
+                err = IPUT_VARN (ncid, D4_rec_3d_varids[j], xnreqs[3], starts_D4, counts_D4,
+                                rec_buf_ptr, nelems[3], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                rec_buf_ptr += nelems[3];
+                my_nreqs += xnreqs[3];
+                if (rec_no == 0) nvars_D[3]++;
+            }
+
+            /* 1 D5 record variable: double (Time, nVertices, nVertLevels) */
+            for (j = 0; j < xnreqs[4]; j++) starts_D5[j][0] = rec_no;
+            rec_buf_ptr = D5_rec_dbl_buf;
+            for (j = 0; j < nD5_rec_3d_vars; j++) {
+                err = IPUT_VARN (ncid, D5_rec_3d_varids[j], xnreqs[4], starts_D5, counts_D5,
+                                rec_buf_ptr, nelems[4], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                rec_buf_ptr += nelems[4];
+                my_nreqs += xnreqs[4];
+                if (rec_no == 0) nvars_D[4]++;
+            }
         }
     }
 
-    /* write 34 record variables */
-
-    /* 4 D1 record variables: double (Time, nCells) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < xnreqs[0]; j++) starts_D1[j][0] = rec_no;
-
-        rec_buf_ptr = D1_rec_dbl_buf;
-        for (j = 0; j < nD1_rec_2d_vars; j++) {
-            err = IPUT_VARN (ncid, D1_rec_2d_varids[j], xnreqs[0], starts_D1, counts_D1,
-                             rec_buf_ptr, nelems[0], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            rec_buf_ptr += nelems[0];
-            my_nreqs += xnreqs[0];
-            if (rec_no == 0) nvars_D[0]++;
-        }
-    }
-
-    /* 4 D6 record variables: double (Time, nCells, nVertLevelsP1) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < xnreqs[5]; j++) starts_D6[j][0] = rec_no;
-
-        rec_buf_ptr = D6_rec_dbl_buf;
-        for (j = 0; j < nD6_rec_3d_vars; j++) {
-            err = IPUT_VARN (ncid, D6_rec_3d_varids[j], xnreqs[5], starts_D6, counts_D6,
-                             rec_buf_ptr, nelems[5], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            rec_buf_ptr += nelems[5];
-            my_nreqs += xnreqs[5];
-            if (rec_no == 0) nvars_D[5]++;
-        }
-    }
-
-    /* 24 D3 record variables: double (Time, nCells, nVertLevels) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < xnreqs[2]; j++) starts_D3[j][0] = rec_no;
-
-        rec_buf_ptr = D3_rec_dbl_buf;
-        for (j = 0; j < nD3_rec_3d_vars; j++) {
-            err = IPUT_VARN (ncid, D3_rec_3d_varids[j], xnreqs[2], starts_D3, counts_D3,
-                             rec_buf_ptr, nelems[2], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            rec_buf_ptr += nelems[2];
-            my_nreqs += xnreqs[2];
-            if (rec_no == 0) nvars_D[2]++;
-        }
-    }
-
-    /* 1 D4 record variable: double (Time, nEdges, nVertLevels) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < xnreqs[3]; j++) starts_D4[j][0] = rec_no;
-
-        rec_buf_ptr = D4_rec_dbl_buf;
-        for (j = 0; j < nD4_rec_3d_vars; j++) {
-            err = IPUT_VARN (ncid, D4_rec_3d_varids[j], xnreqs[3], starts_D4, counts_D4,
-                             rec_buf_ptr, nelems[3], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            rec_buf_ptr += nelems[3];
-            my_nreqs += xnreqs[3];
-            if (rec_no == 0) nvars_D[3]++;
-        }
-    }
-
-    /* 1 D5 record variable: double (Time, nVertices, nVertLevels) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < xnreqs[4]; j++) starts_D5[j][0] = rec_no;
-
-        rec_buf_ptr = D5_rec_dbl_buf;
-        for (j = 0; j < nD5_rec_3d_vars; j++) {
-            err = IPUT_VARN (ncid, D5_rec_3d_varids[j], xnreqs[4], starts_D5, counts_D5,
-                             rec_buf_ptr, nelems[4], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            rec_buf_ptr += nelems[4];
-            my_nreqs += xnreqs[4];
-            if (rec_no == 0) nvars_D[4]++;
-        }
-    }
     total_nreqs += my_nreqs;
 
     post_timing += MPI_Wtime () - timing;
@@ -1207,84 +1193,71 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
             CHECK_ERR
 
             my_nreqs += 7; /* 7 record variables */
+
+            /* read 34 record variables */
+
+            /* 4 D1 record variables: double (Time, nCells) */
+            for (j = 0; j < decom.contig_nreqs[0]; j++) starts_D1[j][0] = rec_no;
+            rec_buf_ptr = D1_rec_dbl_buf;
+            for (j = 0; j < nD1_rec_2d_vars; j++) {
+                err = IGET_VARN (ncid, D1_rec_2d_varids[j], decom.contig_nreqs[0], starts_D1,
+                                    counts_D1, rec_buf_ptr, nelems[0], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                /*for(int k=0;k<nD1_rec_2d_vars;k++){
+                    printf("Rank: %d, start=[%lld, %lld], count = [%lld, %lld]\n", rank,
+                starts_D1[k][0], starts_D1[k][1], counts_D1[k][0], counts_D1[k][1]); fflush(stdout);
+                }*/
+                rec_buf_ptr += nelems[0];
+                my_nreqs += decom.contig_nreqs[0];
+            }
+
+            /* 4 D6 record variables: double (Time, nCells, nVertLevelsP1) */
+            for (j = 0; j < decom.contig_nreqs[5]; j++) starts_D6[j][0] = rec_no;
+            rec_buf_ptr = D6_rec_dbl_buf;
+            for (j = 0; j < nD6_rec_3d_vars; j++) {
+                err = IGET_VARN (ncid, D6_rec_3d_varids[j], decom.contig_nreqs[5], starts_D6,
+                                    counts_D6, rec_buf_ptr, nelems[5], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                rec_buf_ptr += nelems[5];
+                my_nreqs += decom.contig_nreqs[5];
+            }
+
+            /* 24 D3 record variables: double (Time, nCells, nVertLevels) */
+            for (j = 0; j < decom.contig_nreqs[2]; j++) starts_D3[j][0] = rec_no;
+            rec_buf_ptr = D3_rec_dbl_buf;
+            for (j = 0; j < nD3_rec_3d_vars; j++) {
+                err = IGET_VARN (ncid, D3_rec_3d_varids[j], decom.contig_nreqs[2], starts_D3,
+                                    counts_D3, rec_buf_ptr, nelems[2], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                rec_buf_ptr += nelems[2];
+                my_nreqs += decom.contig_nreqs[2];
+            }
+
+            /* 1 D4 record variable: double (Time, nEdges, nVertLevels) */
+            for (j = 0; j < decom.contig_nreqs[3]; j++) starts_D4[j][0] = rec_no;
+
+            rec_buf_ptr = D4_rec_dbl_buf;
+            for (j = 0; j < nD4_rec_3d_vars; j++) {
+                err = IGET_VARN (ncid, D4_rec_3d_varids[j], decom.contig_nreqs[3], starts_D4,
+                                    counts_D4, rec_buf_ptr, nelems[3], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                rec_buf_ptr += nelems[3];
+                my_nreqs += decom.contig_nreqs[3];
+            }
+
+            /* 1 D5 record variable: double (Time, nVertices, nVertLevels) */
+            for (j = 0; j < decom.contig_nreqs[4]; j++) starts_D5[j][0] = rec_no;
+            rec_buf_ptr = D5_rec_dbl_buf;
+            for (j = 0; j < nD5_rec_3d_vars; j++) {
+                err = IGET_VARN (ncid, D5_rec_3d_varids[j], decom.contig_nreqs[4], starts_D5,
+                                    counts_D5, rec_buf_ptr, nelems[4], MPI_DOUBLE, NULL);
+                CHECK_ERR
+                rec_buf_ptr += nelems[4];
+                my_nreqs += decom.contig_nreqs[4];
+            }
         }
     }
 
-    /* read 34 record variables */
-
-    /* 4 D1 record variables: double (Time, nCells) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < decom.contig_nreqs[0]; j++) starts_D1[j][0] = rec_no;
-
-        rec_buf_ptr = D1_rec_dbl_buf;
-        for (j = 0; j < nD1_rec_2d_vars; j++) {
-            err = IGET_VARN (ncid, D1_rec_2d_varids[j], decom.contig_nreqs[0], starts_D1,
-                                   counts_D1, rec_buf_ptr, nelems[0], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            /*for(int k=0;k<nD1_rec_2d_vars;k++){
-                printf("Rank: %d, start=[%lld, %lld], count = [%lld, %lld]\n", rank,
-            starts_D1[k][0], starts_D1[k][1], counts_D1[k][0], counts_D1[k][1]); fflush(stdout);
-            }*/
-            rec_buf_ptr += nelems[0];
-            my_nreqs += decom.contig_nreqs[0];
-        }
-    }
-
-    /* 4 D6 record variables: double (Time, nCells, nVertLevelsP1) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < decom.contig_nreqs[5]; j++) starts_D6[j][0] = rec_no;
-
-        rec_buf_ptr = D6_rec_dbl_buf;
-        for (j = 0; j < nD6_rec_3d_vars; j++) {
-            err = IGET_VARN (ncid, D6_rec_3d_varids[j], decom.contig_nreqs[5], starts_D6,
-                                   counts_D6, rec_buf_ptr, nelems[5], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            rec_buf_ptr += nelems[5];
-            my_nreqs += decom.contig_nreqs[5];
-        }
-    }
-
-    /* 24 D3 record variables: double (Time, nCells, nVertLevels) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < decom.contig_nreqs[2]; j++) starts_D3[j][0] = rec_no;
-
-        rec_buf_ptr = D3_rec_dbl_buf;
-        for (j = 0; j < nD3_rec_3d_vars; j++) {
-            err = IGET_VARN (ncid, D3_rec_3d_varids[j], decom.contig_nreqs[2], starts_D3,
-                                   counts_D3, rec_buf_ptr, nelems[2], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            rec_buf_ptr += nelems[2];
-            my_nreqs += decom.contig_nreqs[2];
-        }
-    }
-
-    /* 1 D4 record variable: double (Time, nEdges, nVertLevels) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < decom.contig_nreqs[3]; j++) starts_D4[j][0] = rec_no;
-
-        rec_buf_ptr = D4_rec_dbl_buf;
-        for (j = 0; j < nD4_rec_3d_vars; j++) {
-            err = IGET_VARN (ncid, D4_rec_3d_varids[j], decom.contig_nreqs[3], starts_D4,
-                                   counts_D4, rec_buf_ptr, nelems[3], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            rec_buf_ptr += nelems[3];
-            my_nreqs += decom.contig_nreqs[3];
-        }
-    }
-
-    /* 1 D5 record variable: double (Time, nVertices, nVertLevels) */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        for (j = 0; j < decom.contig_nreqs[4]; j++) starts_D5[j][0] = rec_no;
-
-        rec_buf_ptr = D5_rec_dbl_buf;
-        for (j = 0; j < nD5_rec_3d_vars; j++) {
-            err = IGET_VARN (ncid, D5_rec_3d_varids[j], decom.contig_nreqs[4], starts_D5,
-                                   counts_D5, rec_buf_ptr, nelems[4], MPI_DOUBLE, NULL);
-            CHECK_ERR
-            rec_buf_ptr += nelems[4];
-            my_nreqs += decom.contig_nreqs[4];
-        }
-    }
     total_nreqs += my_nreqs;
 
     post_timing += MPI_Wtime () - timing;
