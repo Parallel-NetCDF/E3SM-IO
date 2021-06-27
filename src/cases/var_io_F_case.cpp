@@ -505,7 +505,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     if (cfg.nvars == 414)
         rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321 + 63) * gap;
     else
-        rec_buflen = nelems[1] * 20 + nelems[2] + (20 + 1) * gap;
+        rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
 
     rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
     for (i = 0; i < rec_buflen; i++) rec_buf[i] = rank + i;
@@ -695,9 +695,9 @@ int run_vard_F_case (e3sm_io_config &cfg,
         fix_buflen = rec_buflen = 1;
     else {
         if (cfg.nvars == 414)
-            rec_buflen = nelems[1] * 321 + nelems[2] * 63;
+            rec_buflen = nelems[1] * 323 + nelems[2] * 63;
         else
-            rec_buflen = nelems[1] * 20 + nelems[2];
+            rec_buflen = nelems[1] * 22 + nelems[2];
     }
 
     /* write first 3 MPI_DOUBLE fixed-size variables in one vard call */
@@ -1028,7 +1028,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
     if (cfg.nvars == 414)
         rec_buflen = nelems[1] * 323 + nelems[2] * 63 + (323 + 63) * gap;
     else
-        rec_buflen = nelems[1] * 22 + nelems[2] + (20 + 1) * gap;
+        rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
 
     if (rec_bufp != NULL) {
         rec_buf = rec_bufp;
@@ -1471,7 +1471,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     if (cfg.nvars == 414)
         rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321 + 63) * gap;
     else
-        rec_buflen = nelems[1] * 20 + nelems[2] + (20 + 1) * gap;
+        rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
 
     rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
     if (rec_bufp != NULL) { *rec_bufp = rec_buf; }
