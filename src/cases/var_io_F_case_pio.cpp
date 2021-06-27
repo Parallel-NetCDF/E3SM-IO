@@ -433,7 +433,7 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     if (cfg.nvars == 414)
         rec_buflen = nelems[1] * 323 + nelems[2] * 63 + (323 + 63) * gap;
     else
-        rec_buflen = nelems[1] * 22 + nelems[2] + (20 + 1) * gap;
+        rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
 
     if (rec_bufp != NULL) {
         rec_buf = rec_bufp;
