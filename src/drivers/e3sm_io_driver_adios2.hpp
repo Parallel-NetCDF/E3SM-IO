@@ -30,7 +30,7 @@ inline adios2_type mpi_type_to_adios2_type (MPI_Datatype mpitype) {
         case MPI_LONG_LONG:
             return adios2_type_int64_t;
         case MPI_CHAR:
-            return adios2_type_uint8_t;
+            return adios2_type_string;
         default:
             printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, mpitype);
             DEBUG_ABORT
