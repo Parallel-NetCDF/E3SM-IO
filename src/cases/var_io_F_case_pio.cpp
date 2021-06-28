@@ -560,10 +560,12 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     timing = MPI_Wtime ();
 
     // Write pio scalar vars (one time)
-    // TODO: only the first subfile contain nproc
-    // nproc
-    err = driver.put_varl (ncid, piovars[5], MPI_LONG_LONG, &(cfg.np), nb);
-    CHECK_ERR
+    
+    // Nproc only written by rank 0
+    if (cfg.rank == 0) {
+        err = driver.put_varl (ncid, piovars[5], MPI_LONG_LONG, &(cfg.np), nb);
+        CHECK_ERR
+    }
 
     i           = 0;
     dbl_buf_ptr = dbl_buf;
