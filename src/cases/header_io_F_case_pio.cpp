@@ -137,7 +137,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     // PIO attributes
     k   = 256;
-    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "/__e3sm_io__/fillmode", MPI_INT, 1, &k);
+    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "/__pio__/fillmode", MPI_INT, 1, &k);
     CHECK_ERR
 
     /* define dimensions */
@@ -158,7 +158,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     for (j = 0; j < 5; j++) {
         int piodecomid[] = {0, 1, 1, 1, 2};
 
-        sprintf (name, "/__e3sm_io__/decomp/%d", (j + 512));
+        sprintf (name, "/__pio__/decomp/%d", (j + 512));
         err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
                                     piovars + j);
         CHECK_ERR
@@ -174,7 +174,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     }
 
     // TODO: only the first subfile contain nproc
-    err = driver.def_local_var (ncid, "/__e3sm_io__/info/nproc", MPI_INT, 0, NULL, piovars + (j++));
+    err = driver.def_local_var (ncid, "/__pio__/info/nproc", MPI_INT, 0, NULL, piovars + (j++));
     CHECK_ERR
 
     /* define variables */
@@ -5994,7 +5994,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     // PIO attributes
     k   = 256;
-    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "/__e3sm_io__/fillmode", MPI_INT, 1, &k);
+    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "/__pio__/fillmode", MPI_INT, 1, &k);
     CHECK_ERR
 
     /* define dimensions */
@@ -6015,7 +6015,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     for (j = 0; j < 5; j++) {
         int piodecomid[] = {0, 1, 1, 1, 2};
         k                = 6;
-        sprintf (name, "/__e3sm_io__/decomp/%d", (j + 512));
+        sprintf (name, "/__pio__/decomp/%d", (j + 512));
         err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
                                     piovars + j);
         CHECK_ERR
@@ -6029,7 +6029,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     }
 
     // TODO: only the first subfile contain nproc
-    err = driver.def_local_var (ncid, "/__e3sm_io__/info/nproc", MPI_INT, 0, NULL, piovars + (j++));
+    err = driver.def_local_var (ncid, "/__pio__/info/nproc", MPI_INT, 0, NULL, piovars + (j++));
     CHECK_ERR
 
     i = 0;
