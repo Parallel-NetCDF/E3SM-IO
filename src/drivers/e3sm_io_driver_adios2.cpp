@@ -363,7 +363,7 @@ int e3sm_io_driver_adios2::def_dim (int fid, std::string name, MPI_Offset size, 
     adios2_file *fp = this->files[fid];
     adios2_variable *dp;
 
-    dp = adios2_define_variable (fp->iop, ("/__pio__/dim/" + name).c_str (), adios2_type_int64_t, 0,
+    dp = adios2_define_variable (fp->iop, ("/__pio__/dim/" + name).c_str (), adios2_type_uint64_t, 0,
                                  NULL, NULL, NULL, adios2_constant_dims_true);
     CHECK_APTR (dp)
 
