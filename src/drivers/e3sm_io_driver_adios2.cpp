@@ -301,7 +301,9 @@ int e3sm_io_driver_adios2::def_local_var (
     int i;
     adios2_variable *dp;
     size_t dims[E3SM_IO_DRIVER_MAX_RANK];
+    size_t *ldim;
     size_t opidx;
+    adios2_type dtype = mpi_type_to_adios2_type (type);
 
     for (i = 0; i < ndim; i++) {
         dims[i] = (size_t)dsize[i];
@@ -309,8 +311,13 @@ int e3sm_io_driver_adios2::def_local_var (
         if (dims[i] == NC_UNLIMITED) { dims[i] = 1; }
     }
 
-    dp = adios2_define_variable (fp->iop, name.c_str (), mpi_type_to_adios2_type (type),
-                                 (size_t)ndim, NULL, NULL, dims, adios2_constant_dims_false);
+    if (dtype == adios2_type_string) {
+        ldim = NULL;
+    } else {
+        ldim = dims;
+    }
+    dp = adios2_define_variable (fp->iop, name.c_str (), dtype, (size_t)ndim, NULL, NULL, ldim,
+                                 adios2_constant_dims_false);
     CHECK_APTR (dp)
 
     if (fp->op) {
@@ -356,9 +363,8 @@ int e3sm_io_driver_adios2::def_dim (int fid, std::string name, MPI_Offset size, 
     adios2_file *fp = this->files[fid];
     adios2_variable *dp;
 
-    dp =
-        adios2_define_variable (fp->iop, ("/__pio__/dim/" + name).c_str (), adios2_type_int64_t,
-                                0, NULL, NULL, NULL, adios2_constant_dims_true);
+    dp = adios2_define_variable (fp->iop, ("/__pio__/dim/" + name).c_str (), adios2_type_int64_t, 0,
+                                 NULL, NULL, NULL, adios2_constant_dims_true);
     CHECK_APTR (dp)
 
     *dimid = fp->dsizes.size ();
@@ -476,13 +482,17 @@ int e3sm_io_driver_adios2::put_att (
     adios2_file *fp = this->files[fid];
     adios2_variable *did;
     adios2_attribute *aid;
+    adios2_type atype = mpi_type_to_adios2_type (type);
 
     // adios2 can't create empty attr
     if (size == 0) goto err_out;
 
     if (vid == E3SM_IO_GLOBAL_ATTR) {
-        aid = adios2_define_attribute_array (fp->iop, name.c_str (), mpi_type_to_adios2_type (type),
-                                             buf, (size_t)size);
+        if (atype == adios2_type_string) {
+            aid = adios2_define_attribute (fp->iop, name.c_str (), atype, buf);
+        } else {
+            aid = adios2_define_attribute_array (fp->iop, name.c_str (), atype, buf, (size_t)size);
+        }
         CHECK_APTR (aid);
     } else {
         char vname[1024];
@@ -492,9 +502,12 @@ int e3sm_io_driver_adios2::put_att (
         aerr = adios2_variable_name (vname, &namesize, did);
         CHECK_AERR
         vname[namesize] = '\0';
-
-        aid = adios2_define_variable_attribute_array (
-            fp->iop, name.c_str (), mpi_type_to_adios2_type (type), buf, (size_t)size, vname, "/");
+        if (atype == adios2_type_string) {
+            aid = adios2_define_variable_attribute (fp->iop, name.c_str (), atype, buf, vname, "/");
+        } else {
+            aid = adios2_define_variable_attribute_array (fp->iop, name.c_str (), atype, buf,
+                                                          (size_t)size, vname, "/");
+        }
         CHECK_APTR (aid)
     }
 
