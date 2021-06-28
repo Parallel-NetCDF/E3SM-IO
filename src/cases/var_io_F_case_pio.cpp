@@ -529,7 +529,12 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     targetfname = std::string (cfg.targetdir) + '/' + outfile;
 
     /* create a new CDF-5 file for writing */
-    err = driver.create (targetfname, cfg.io_comm, cfg.info, &ncid);
+    if (cfg.filepernode) {
+        err = driver.create (targetfname + "." + std::to_string (cfg.node_id), cfg.node_comm,
+                             cfg.info, &ncid);
+    } else {
+        err = driver.create (targetfname, cfg.io_comm, cfg.info, &ncid);
+    }
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
