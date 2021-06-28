@@ -540,12 +540,12 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     /* define dimensions, variables, and attributes */
     if (cfg.nvars == 414) {
         /* for h0 file */
-        err = def_F_case_h0_pio (driver, decom, ncid, decom.dims[2], cfg.nvars, decomids, varids,
+        err = def_F_case_h0_pio (driver, cfg, decom, ncid, decom.dims[2], cfg.nvars, decomids, varids,
                                  piovars);
         CHECK_ERR
     } else {
         /* for h1 file */
-        err = def_F_case_h1_pio (driver, decom, ncid, decom.dims[2], cfg.nvars, decomids, varids,
+        err = def_F_case_h1_pio (driver, cfg, decom, ncid, decom.dims[2], cfg.nvars, decomids, varids,
                                  piovars);
         CHECK_ERR
     }
