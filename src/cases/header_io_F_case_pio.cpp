@@ -103,6 +103,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     char name[128];
 
     /* global attributes: */
+    /*
     iattr = 4;
     err   = e3sm_io_pio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
@@ -134,10 +135,54 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "time_period_freq", 5, "day_5");
     CHECK_ERR
+    */
 
     // PIO attributes
     k   = 256;
     err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "/__pio__/fillmode", MPI_INT, 1, &k);
+    CHECK_ERR
+
+    // Sub-file 0 only attributes
+    // TODO: retrieve real attribute content
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/Conventions", 6, "CF-1.7");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/case", 33, "ADIOS_FC5AV1C-H01A_ne120_oRRS18v3");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/contact", 35, "e3sm-data-support@listserv.llnl.gov");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/git_version", 10, "025f820fce");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/history", 28, "created on 06/10/21 11:59:48");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/hostname", 8, "cori-knl");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/initial_file", 99, "/global/cfs/cdirs/e3sm/inputdata/atm/cam/inic/homme/cami_mam3_Linoz_0000-01-ne120np4_L72_c160318.nc");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/institution", 660, "LLNL (Lawrence Livermore National Laboratory, Livermore, CA 94550, USA); ANL (Argonne National Laboratory, Argonne, IL 60439, USA); BNL (Brookhaven National Laboratory, Upton, NY 11973, USA); LANL (Los Alamos National Laboratory, Los Alamos, NM 87545, USA); LBNL (Lawrence Berkeley National Laboratory, Berkeley, CA 94720, USA); ORNL (Oak Ridge National Laboratory, Oak Ridge, TN 37831, USA); PNNL (Pacific Northwest National Laboratory, Richland, WA 99352, USA); SNL (Sandia National Laboratories, Albuquerque, NM 87185, USA). Mailing address: LLNL Climate Program, c/o David C. Bader, Principal Investigator, L-103, 7000 East Avenue, Livermore, CA 94550, USA");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/institution_id", 12, "E3SM-Project");
+    CHECK_ERR
+    k = 120;
+    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/ne", MPI_INT, 1, &k);
+    CHECK_ERR
+    k = 21600;
+    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/np", MPI_INT, 1, &k);
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/product", 12, "model-output");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/realm", 5, "atmos");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/source", 21, "E3SM Atmosphere Model");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/source_id", 10, "025f820fce");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/time_period_freq", 5, "day_5");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/title", 28, "EAM History file information");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/topography_file", 96, "/global/cfs/cdirs/e3sm/inputdata/atm/cam/topo/USGS-gtopo30_ne120np4_16xdel2-PFC-consistentSGH.nc");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/username", 4, "dqwu");
     CHECK_ERR
 
     /* define dimensions */
