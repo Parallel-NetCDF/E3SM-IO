@@ -92,6 +92,7 @@ static void usage (char *argv0) {
         "       [-i target_dir] Path to directory containing the input files\n"
         "       [-a api] Underlying API to test (pnc (default), hdf5, hdf5_logvol, hdf5_multi, "
         "adios, adios_bp3)\n"
+        "       [-x strategy] I/O strategy used to write E3SM variables (canonical (default), log, blob)\n"
         "       [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) "
         "(default))\n"
         "       [-z filter] Apply the filter if supported by the underlying API (none (default), "
@@ -137,7 +138,7 @@ int main (int argc, char **argv) {
     cfg.io_stride      = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:S:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:x:")) != EOF) switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -193,7 +194,7 @@ int main (int argc, char **argv) {
                 }
                 break;
                 */
-            case 'S':
+            case 'x':
                 if (strcmp (optarg, "canonical") == 0) {
                     cfg.strate = canonical;
                 } else if (strcmp (optarg, "log") == 0) {
