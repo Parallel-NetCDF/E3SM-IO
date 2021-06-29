@@ -64,6 +64,7 @@ typedef struct e3sm_io_config {
     MPI_Comm io_comm;
     MPI_Info info;
     int num_iotasks;
+    int num_group;
 
     char *targetdir;
     char *datadir;

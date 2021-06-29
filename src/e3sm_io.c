@@ -88,6 +88,7 @@ static void usage (char *argv0) {
         "       [-f num] File number to run in F case (-1 (both) (default), 0, 1)\n"
         "       [-r num] Number of records (default 1)\n"
         "       [-s num] Stride between IO tasks (default 1)\n"
+        "       [-g num] Number of IO groups (subfiles) (default 1)\n"
         "       [-o output_dir] Output directory name (default ./)\n"
         "       [-i target_dir] Path to directory containing the input files\n"
         "       [-a api] Underlying API to test (pnetcdf (default), hdf5_ra, hdf5_log, hdf5_mv, "
@@ -126,6 +127,7 @@ int main (int argc, char **argv) {
     cfg.io_comm        = MPI_COMM_WORLD;
     cfg.info           = MPI_INFO_NULL;
     cfg.num_iotasks    = cfg.np;
+    cfg.num_group      = 1;
     cfg.targetdir      = targetdir;
     cfg.datadir        = datadir;
     cfg.cfgpath        = cfgpath;
@@ -146,7 +148,7 @@ int main (int argc, char **argv) {
     cfg.io_stride      = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:x:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:x:g:")) != EOF) switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -211,6 +213,7 @@ int main (int argc, char **argv) {
                     RET_ERR ("Unknown I/O strategy")
                 }
                 break;
+
             case 'o':
                 strncpy (cfg.targetdir, optarg, E3SM_IO_MAX_PATH);
                 break;
@@ -237,6 +240,9 @@ int main (int argc, char **argv) {
                 break;
             case 'f':
                 cfg.hx = atoi (optarg);
+                break;
+            case 'g':
+                cfg.num_group = atoi (optarg);
                 break;
             case 'c':
                 cfg.chunksize = atoll (optarg);
