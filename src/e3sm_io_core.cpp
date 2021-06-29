@@ -32,7 +32,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_TOTAL)
 
     switch (cfg->api) {
-        case pnc:
+        case pnetcdf:
             driver = new e3sm_io_driver_pnc (cfg);
             break;
         case hdf5_native:
