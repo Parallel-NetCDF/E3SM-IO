@@ -90,7 +90,7 @@ static void usage (char *argv0) {
         "       [-s num] Stride between IO tasks (default 1)\n"
         "       [-o output_dir] Output directory name (default ./)\n"
         "       [-i target_dir] Path to directory containing the input files\n"
-        "       [-a api] Underlying API to test (pnc (default), hdf5, hdf5_logvol, hdf5_multi, "
+        "       [-a api] Underlying API to test (pnetcdf (default), hdf5, hdf5_logvol, hdf5_multi, "
         "adios, adios_bp3)\n"
         "       [-x strategy] I/O strategy used to write E3SM variables (canonical (default), log, blob)\n"
         "       [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) "
@@ -127,7 +127,7 @@ int main (int argc, char **argv) {
     cfg.rd             = 0;
     cfg.nvars          = 0;
     cfg.strate         = canonical;
-    cfg.api            = pnc;
+    cfg.api            = pnetcdf;
     cfg.chunksize      = 0;
     cfg.filter         = none;
     cfg.vard           = 0;
@@ -152,8 +152,8 @@ int main (int argc, char **argv) {
                 cfg.io_stride = atoi (optarg);
                 break;
             case 'a':
-                if (strcmp (optarg, "pnc") == 0) {
-                    cfg.api = pnc;
+                if (strcmp (optarg, "pnetcdf") == 0) {
+                    cfg.api = pnetcdf;
                 }
 #ifdef ENABLE_HDF5
                 else if (strcmp (optarg, "hdf5") == 0) {
