@@ -51,8 +51,7 @@ typedef enum e3sm_io_api {
     hdf5_ra,
     hdf5_mv,
     hdf5_log,
-    adios,
-    adios_bp3
+    adios
 } e3sm_io_api;
 
 typedef enum e3sm_io_strate { canonical, blob, log } e3sm_io_strate;

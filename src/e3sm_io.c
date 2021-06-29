@@ -90,8 +90,8 @@ static void usage (char *argv0) {
         "       [-s num] Stride between IO tasks (default 1)\n"
         "       [-o output_dir] Output directory name (default ./)\n"
         "       [-i target_dir] Path to directory containing the input files\n"
-        "       [-a api] Underlying API to test (pnetcdf (default), hdf5, hdf5_logvol, hdf5_multi, "
-        "adios, adios_bp3)\n"
+        "       [-a api] Underlying API to test (pnetcdf (default), hdf5_ra, hdf5_log, hdf5_mv, "
+        "adios)\n"
         "       [-x strategy] I/O strategy used to write E3SM variables (canonical (default), log, blob)\n"
         "       [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) "
         "(default))\n"
@@ -175,8 +175,6 @@ int main (int argc, char **argv) {
 #ifdef ENABLE_ADIOS2
                 else if (strcmp (optarg, "adios") == 0) {
                     cfg.api = adios;
-                } else if (strcmp (optarg, "adios_bp3") == 0) {
-                    cfg.api = adios_bp3;
                 }
 #endif
                 else {

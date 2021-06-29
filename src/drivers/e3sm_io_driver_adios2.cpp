@@ -110,11 +110,7 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
 
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
-    if (cfg->api == adios_bp3) {
-        aerr = adios2_set_engine (fp->iop, "BP3");
-    } else {
-        aerr = adios2_set_engine (fp->iop, "BP4");
-    }
+    aerr = adios2_set_engine (fp->iop, "BP3");
     CHECK_AERR
     aerr = adios2_set_parameter (fp->iop, "substreams", "1");
     CHECK_AERR
@@ -144,11 +140,9 @@ int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info,
 
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
-    if (cfg->api == adios_bp3) {
-        aerr = adios2_set_engine (fp->iop, "BP3");
-    } else {
-        aerr = adios2_set_engine (fp->iop, "BP4");
-    }
+
+    aerr = adios2_set_engine (fp->iop, "BP3");
+    CHECK_AERR
     aerr = adios2_set_parameter (fp->iop, "substreams", "1");
     CHECK_AERR
     aerr = adios2_set_parameter (fp->iop, "CollectiveMetadata", "OFF");
