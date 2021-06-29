@@ -52,6 +52,7 @@ err_out:;
 }
 
 inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
+                                   e3sm_io_config &cfg,
                                    std::map<int, std::string> &dnames,
                                    e3sm_io_decom &decom,
                                    int decomid,
@@ -98,31 +99,34 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
             // err = driver.put_att (fid, var->data, "_FillValue", var->type, 1, cbuf);
             // CHECK_ERR
 
-            ibuf = var->decomp_id + 512;
-            err  = driver.put_att (fid, var->data, "__e3sm_io__/decomp", MPI_INT, 1, &ibuf);
-            CHECK_ERR
+            // PIO attributes only in the first subfile
+            if (cfg.node_id == 0) {
+                ibuf = var->decomp_id + 512;
+                err  = driver.put_att (fid, var->data, "__e3sm_io__/decomp", MPI_INT, 1, &ibuf);
+                CHECK_ERR
 
-            cbufp = cbuf;
-            ret   = sprintf (cbufp, "{%s", dnames[dimids[0]].c_str ());
-            cbufp += ret;
-            for (i = 1; i < ndim; i++) {
-                ret = sprintf (cbufp, ", %s", dnames[dimids[i]].c_str ());
+                cbufp = cbuf;
+                ret   = sprintf (cbufp, "{%s", dnames[dimids[0]].c_str ());
                 cbufp += ret;
+                for (i = 1; i < ndim; i++) {
+                    ret = sprintf (cbufp, ", %s", dnames[dimids[i]].c_str ());
+                    cbufp += ret;
+                }
+                err = driver.put_att (fid, var->data, "__e3sm_io__/dims", MPI_CHAR, strlen (cbuf),
+                                      cbuf);
+                CHECK_ERR
+
+                err = driver.put_att (fid, var->data, "__e3sm_io__/ncop", MPI_CHAR, 7,
+                                      (void *)"darray");
+                CHECK_ERR
+
+                ibuf = 5;
+                err  = driver.put_att (fid, var->data, "__e3sm_io__/nctype", MPI_INT, 1, &ibuf);
+                CHECK_ERR
+
+                err = driver.put_att (fid, var->data, "__e3sm_io__/ndims", MPI_INT, 1, &ndim);
+                CHECK_ERR
             }
-            err =
-                driver.put_att (fid, var->data, "__e3sm_io__/dims", MPI_CHAR, strlen (cbuf), cbuf);
-            CHECK_ERR
-
-            err =
-                driver.put_att (fid, var->data, "__e3sm_io__/ncop", MPI_CHAR, 7, (void *)"darray");
-            CHECK_ERR
-
-            ibuf = 5;
-            err  = driver.put_att (fid, var->data, "__e3sm_io__/nctype", MPI_INT, 1, &ibuf);
-            CHECK_ERR
-
-            err = driver.put_att (fid, var->data, "__e3sm_io__/ndims", MPI_INT, 1, &ndim);
-            CHECK_ERR
         }
     } else {
         std::vector<MPI_Offset> dsize (ndim);
@@ -143,31 +147,34 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
 
         // Attributes for non-constant small vars
         if (ndim > 0) {
-            ibuf = (int)mpi_type_to_adios2_type (type);
-            err  = driver.put_att (fid, var->data, "__e3sm_io__/adiostype", MPI_INT, 1, &ibuf);
-            CHECK_ERR
+            // PIO attributes only in the first subfile
+            if (cfg.node_id == 0) {
+                ibuf = (int)mpi_type_to_adios2_type (type);
+                err  = driver.put_att (fid, var->data, "__e3sm_io__/adiostype", MPI_INT, 1, &ibuf);
+                CHECK_ERR
 
-            cbufp = cbuf;
-            ret   = sprintf (cbufp, "{%s", dnames[dimids[0]].c_str ());
-            cbufp += ret;
-            for (i = 1; i < ndim; i++) {
-                ret = sprintf (cbufp, ", %s", dnames[dimids[i]].c_str ());
+                cbufp = cbuf;
+                ret   = sprintf (cbufp, "{%s", dnames[dimids[0]].c_str ());
                 cbufp += ret;
+                for (i = 1; i < ndim; i++) {
+                    ret = sprintf (cbufp, ", %s", dnames[dimids[i]].c_str ());
+                    cbufp += ret;
+                }
+                err = driver.put_att (fid, var->data, "__e3sm_io__/dims", MPI_CHAR, strlen (cbuf),
+                                      cbuf);
+                CHECK_ERR
+
+                err = driver.put_att (fid, var->data, "__e3sm_io__/ncop", MPI_CHAR, 7,
+                                      (void *)"put_var");
+                CHECK_ERR
+
+                ibuf = (int)mpitype2nctype (type);
+                err  = driver.put_att (fid, var->data, "__e3sm_io__/nctype", MPI_INT, 1, &ibuf);
+                CHECK_ERR
+
+                err = driver.put_att (fid, var->data, "__e3sm_io__/ndims", MPI_INT, 1, &ndim);
+                CHECK_ERR
             }
-            err =
-                driver.put_att (fid, var->data, "__e3sm_io__/dims", MPI_CHAR, strlen (cbuf), cbuf);
-            CHECK_ERR
-
-            err =
-                driver.put_att (fid, var->data, "__e3sm_io__/ncop", MPI_CHAR, 7, (void *)"put_var");
-            CHECK_ERR
-
-            ibuf = (int)mpitype2nctype (type);
-            err  = driver.put_att (fid, var->data, "__e3sm_io__/nctype", MPI_INT, 1, &ibuf);
-            CHECK_ERR
-
-            err = driver.put_att (fid, var->data, "__e3sm_io__/ndims", MPI_INT, 1, &ndim);
-            CHECK_ERR
         }
 
         var->decomp_id  = -1;

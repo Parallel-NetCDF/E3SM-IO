@@ -135,9 +135,10 @@ int main (int argc, char **argv) {
     cfg.two_buf        = 0;
     cfg.non_contig_buf = 0;
     cfg.io_stride      = 1;
+    cfg.filepernode    = 0;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:S:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:S:l")) != EOF) switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -182,17 +183,10 @@ int main (int argc, char **argv) {
                     RET_ERR ("Unknown API")
                 }
                 break;
-                /*
+
             case 'l':
-                if (strcmp (optarg, "contig") == 0) {
-                    cfg.layout = contig;
-                } else if (strcmp (optarg, "chunk") == 0) {
-                    cfg.layout = chunk;
-                } else {
-                    RET_ERR ("Unknown layout")
-                }
+                cfg.filepernode = 1;
                 break;
-                */
             case 'S':
                 if (strcmp (optarg, "canonical") == 0) {
                     cfg.strate = canonical;
@@ -255,7 +249,7 @@ int main (int argc, char **argv) {
     }
     strncpy (cfg.cfgpath, argv[optind], E3SM_IO_MAX_PATH);
 
-    if((cfg.strate==log) && (cfg.api!=hdf5_logvol)){
+    if ((cfg.strate == log) && (cfg.api != hdf5_logvol)) {
         ERR_OUT ("Selected API does not support log-based I/O")
     }
 
@@ -288,6 +282,46 @@ int main (int argc, char **argv) {
     }
     CHECK_ERR
 
+    // Create node-local I/O communicator
+    if (cfg.filepernode) {
+        int is_node_head;
+
+        if (cfg.strate != blob) { RET_ERR ("Subfiling only available to blob strategy") }
+        
+        err = MPI_Comm_split_type (cfg.io_comm, MPI_COMM_TYPE_SHARED, cfg.rank, MPI_INFO_NULL,
+                                   &(cfg.node_comm));
+        CHECK_MPIERR
+
+        /* Simulate 2 nodes split for debugging purpose 
+            err = MPI_Comm_split (cfg.io_comm, cfg.rank & 1, cfg.rank, &(cfg.node_comm));
+            CHECK_MPIERR
+        */
+       
+        err = MPI_Comm_size (cfg.node_comm, &(cfg.node_np));
+        CHECK_MPIERR
+        err = MPI_Comm_rank (cfg.node_comm, &(cfg.node_rank));
+        CHECK_MPIERR
+
+        if (cfg.node_rank == 0) {
+            is_node_head = 1;
+        } else {
+            is_node_head = 0;
+        }
+        cfg.node_id = 0;  // Exscan won't assign for rank 0, initialize to 0
+        err         = MPI_Exscan (&is_node_head, &(cfg.node_id), 1, MPI_INT, MPI_SUM, cfg.io_comm);
+        CHECK_MPIERR
+
+        err = MPI_Bcast (&(cfg.node_id), 1, MPI_INT, 0, cfg.node_comm);
+        CHECK_MPIERR
+
+        err = MPI_Allreduce (&(cfg.node_id), &(cfg.num_node), 1, MPI_INT, MPI_MAX, cfg.node_comm);
+        CHECK_MPIERR
+        cfg.num_node++;
+    } else {
+        cfg.node_id   = 0;
+        cfg.node_comm = NULL;
+    }
+
     err = MPI_Info_create (&(cfg.info));
     CHECK_MPIERR
     nerrs += set_info (&cfg, &decom);
@@ -299,6 +333,9 @@ err_out:;
     if (cfg.info != MPI_INFO_NULL) MPI_Info_free (&(cfg.info));
     if (cfg.io_comm != MPI_COMM_WORLD && cfg.io_comm != MPI_COMM_NULL) {
         MPI_Comm_free (&(cfg.io_comm));
+    }
+    if (cfg.node_comm != MPI_COMM_WORLD && cfg.node_comm != MPI_COMM_NULL) {
+        MPI_Comm_free (&(cfg.node_comm));
     }
 
     // Free decom
