@@ -112,7 +112,9 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
     CHECK_APTR (fp->iop)
     aerr = adios2_set_engine (fp->iop, "BP3");
     CHECK_AERR
-    aerr = adios2_set_parameter (fp->iop, "substreams", "1");
+
+    sprintf (ng, "%d", cfg->num_group);
+    aerr = adios2_set_parameter (fp->iop, "substreams", ng);
     CHECK_AERR
     aerr = adios2_set_parameter (fp->iop, "CollectiveMetadata", "OFF");
     CHECK_AERR
