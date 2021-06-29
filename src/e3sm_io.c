@@ -156,17 +156,17 @@ int main (int argc, char **argv) {
                     cfg.api = pnetcdf;
                 }
 #ifdef ENABLE_HDF5
-                else if (strcmp (optarg, "hdf5") == 0) {
-                    cfg.api = hdf5_native;
-                } else if (strcmp (optarg, "hdf5_multi") == 0) {
+                else if (strcmp (optarg, "hdf5_ra") == 0) {
+                    cfg.api = hdf5_ra;
+                } else if (strcmp (optarg, "hdf5_mv") == 0) {
 #ifdef HDF5_HAVE_DWRITE_MULTI
-                    cfg.api = hdf5_multi;
+                    cfg.api = hdf5_mv;
 #else
                     RET_ERR ("The HDF5 used does not support multi-dataset write")
 #endif
-                } else if (strcmp (optarg, "hdf5_logvol") == 0) {
+                } else if (strcmp (optarg, "hdf5_log") == 0) {
 #ifdef ENABLE_LOGVOL
-                    cfg.api = hdf5_logvol;
+                    cfg.api = hdf5_log;
 #else
                     RET_ERR ("Log VOL support was not enabled in this build");
 #endif
@@ -256,7 +256,7 @@ int main (int argc, char **argv) {
     }
     strncpy (cfg.cfgpath, argv[optind], E3SM_IO_MAX_PATH);
 
-    if((cfg.strate==log) && (cfg.api!=hdf5_logvol)){
+    if((cfg.strate==log) && (cfg.api!=hdf5_log)){
         ERR_OUT ("Selected API does not support log-based I/O")
     }
 
