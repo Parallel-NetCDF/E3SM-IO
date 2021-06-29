@@ -239,8 +239,15 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-s num] Stride between IO tasks (default 1)
        [-o output_dir] Output directory name (default ./)
        [-i target_dir] Path to directory containing the input files
-       [-a api] Underlying API to test (pnetcdf (default), hdf5_ra, hdf5_log, hdf5_mv, adios)
+              pnetcdf:     PnetCDF library
+              hdf5_ra:     HDF5 library's native VOL with rearranger in E3SM
+              hdf5_log:    HDF5 library with Log I/O VOL
+              hdf5_ra:     HDF5 library's experimental multi-dataset write function with rearranger in E3SM
+              adios:       ADIOS2 library using BP3 format
        [-x strategy] I/O strategy used to write E3SM variables (canonical (default), log, blob)
+              canonical:   Store E3SM variables as is in canonical layout
+              log:         Store E3SM variables as is in log-based storage layout
+              blob:        Flatten E3SM variables into 1-dimensional data blocks. Record decomposition information in other variables and attributes
        [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) (default))
        [-z filter] Apply the filter if supported by the underlying API (none (default), deflate)
        FILE: Name of input netCDF file describing data decompositions
