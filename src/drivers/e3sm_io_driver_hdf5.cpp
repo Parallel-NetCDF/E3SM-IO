@@ -67,7 +67,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
 
     for (i = 0; i < E3SM_IO_DRIVER_MAX_RANK; i++) { one[i] = 1; }
 
-    if (cfg->api == hdf5_logvol) {
+    if (cfg->api == hdf5_log) {
 #ifdef ENABLE_LOGVOL
         this->use_logvol = true;
         env              = getenv ("E3SM_IO_HDF5_USE_LOGVOL_WRITEN");
@@ -77,7 +77,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
 #else
         throw "Log VOL support was not enabled in this build";
 #endif
-    } else if (cfg->api == hdf5_multi) {
+    } else if (cfg->api == hdf5_mv) {
 #ifdef HDF5_HAVE_DWRITE_MULTI
         this->use_dwrite_multi = true;
 #else
