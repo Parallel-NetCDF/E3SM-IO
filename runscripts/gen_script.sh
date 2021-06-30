@@ -21,7 +21,7 @@ if [[ "$HOSTNAME_PREFIX" == "cori" ]]; then
     ADIOS2_LIB_PATH=/global/homes/k/khl7265/.local/adios2/2.7.1
     OUTPATH_ROOT=/global/cscratch1/sd/khl7265/FS_64_1M/E3SM
     INFILE=/global/cscratch1/sd/wkliao/FS_1M_32/ND_1951_256K.1.h5
-    ACC=844
+    ACC=m844
     QUEUE=regular
     SCRIPT=cori
     NODE_TYPE=haswell

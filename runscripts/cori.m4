@@ -25,6 +25,8 @@ HDF5_LIB_PATH=EXP_HDF5_LIB_PATH
 HDF5_LIB_DATE="EXP_HDF5_LIB_DATE"
 ADIOS2_LIB_PATH=EXP_ADIOS2_LIB_PATH
 ADIOS2_LIB_DATE="EXP_ADIOS2_LIB_DATE"
+LOGVOL_LIB_PATH=EXP_LOGVOL_LIB_PATH
+LOGVOL_LIB_DATE="EXP_LOGVOL_LIB_DATE"
 PNC_LIB_PATH=EXP_PNC_LIB_PATH
 NREC=EXP_RECS
 PPN=EXP_PPN
@@ -71,7 +73,7 @@ do
     done
 done
 
-export LD_LIBRARY_PATH=${HDF5_LIB_PATH}/lib:${PNC_LIB_PATH}/lib:${ADIOS2_LIB_PATH}/lib64:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${HDF5_LIB_PATH}/lib:${PNC_LIB_PATH}/lib:${ADIOS2_LIB_PATH}/lib64:${LOGVOL_LIB_PATH}/lib:${LD_LIBRARY_PATH}
 export PNETCDF_SHOW_PERFORMANCE_INFO=1
 #export PNETCDF_DEFAULT_CHUNK_DIM="ncol : 14563 ; nbnd : 2 ; Time : 1 ; ilev : 73 ; lev : 72 ; chars : 64 ;nCells : 16384 ; nEdges : 16384 ; nVertices : 16384 ; nVertLevelsP1 : 81 ; nVertLevels : 80 ; StrLen : 64 ;"
 export PNETCDF_HINTS="nc_zip_delay_init=1;nc_zip_nrec=1;nc_zip_buffer_size=0"
@@ -121,9 +123,13 @@ do
                         if [[ "${CUR_HDF5_DATE}" != "${HDF5_LIB_DATE}" ]]; then
                             echo "Warning: libhdf5.so changed after submission"
                         fi
-                        CUR_ADIOS2_DATE=$(stat -c %Y ${ADIOS2_LIB_PATH}/lib/libadios2_c_mpi.so.2.7.1)
+                        CUR_ADIOS2_DATE=$(stat -c %Y ${ADIOS2_LIB_PATH}/lib/libadios2_c_mpi.so)
                         if [[ "${CUR_ADIOS2_DATE}" != "${ADIOS2_LIB_DATE}" ]]; then
-                            echo "Warning: libADIOS2.so changed after submission"
+                            echo "Warning: libadios2_c_mpi.so changed after submission"
+                        fi
+                        CUR_LOGVOL_DATE=$(stat -c %Y ${LOGVOL_LIB_PATH}/lib/libH5VL_log.so)
+                        if [[ "${CUR_LOGVOL_DATE}" != "${LOGVOL_LIB_DATE}" ]]; then
+                            echo "Warning: libH5VL_log.so changed after submission"
                         fi
 
                         echo "#%$: exp: e3sm_io"
