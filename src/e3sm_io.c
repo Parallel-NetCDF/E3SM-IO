@@ -146,6 +146,11 @@ int main (int argc, char **argv) {
     cfg.two_buf        = 0;
     cfg.non_contig_buf = 0;
     cfg.io_stride      = 1;
+    for (i = 0; i < MAX_NUM_DECOMP; i++) {
+        decom.blocklens[i]   = NULL;
+        decom.disps[i]       = NULL;
+        decom.raw_offsets[i] = NULL;
+    }
 
     /* command-line arguments */
     while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:x:g:")) != EOF) switch (i) {
@@ -284,11 +289,6 @@ int main (int argc, char **argv) {
     if (cfg.datadir[0] != '\0') { PRINT_MSG (1, "Input folder name =%s\n", cfg.datadir); }
 
     /* read request information from decompositions 1, 2 and 3 */
-    for (i = 0; i < MAX_NUM_DECOMP; i++) {
-        decom.blocklens[i]   = NULL;
-        decom.disps[i]       = NULL;
-        decom.raw_offsets[i] = NULL;
-    }
     if (cfg.strate == blob) {
         err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
                            decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens,
