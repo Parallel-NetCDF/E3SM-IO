@@ -49,9 +49,11 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
         std::vector<adios2_variable *> dids;
         std::vector<int> ndims;
         std::vector<size_t> dsizes;
-        std::vector<adios2_variable*> ddids;
+        std::vector<adios2_variable *> ddids;
         MPI_Offset recsize = 0;
         adios2_operator *op;
+        MPI_Offset putsize = 0;
+        MPI_Offset getsize = 0;
     } adios2_file;
     std::vector<adios2_file *> files;
     double tsel, twrite, tread, text;

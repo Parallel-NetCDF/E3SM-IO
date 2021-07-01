@@ -12,10 +12,6 @@
 //
 #include <cstring>
 //
-#include <dirent.h>
-#include <sys/stat.h>
-#include <unistd.h>
-//
 #include <adios2_c.h>
 #include <mpi.h>
 //
@@ -48,11 +44,15 @@ size_t adios2_type_size (adios2_type type) {
     switch (type) {
         case adios2_type_int32_t:
             return 4;
+        case adios2_type_int64_t:
+            return 4;
         case adios2_type_float:
             return 4;
         case adios2_type_double:
-            return 9;
+            return 8;
         case adios2_type_uint8_t:
+            return 1;
+        case adios2_type_string:
             return 1;
         default:
             printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, type);
@@ -195,51 +195,25 @@ int e3sm_io_driver_adios2::inq_file_info (int fid, MPI_Info *info) {
     return 0;
 }
 
-static MPI_Offset get_dir_size (std::string path) {
-    DIR *dir;
-    struct dirent *dit;
-    struct stat st;
-    long size             = 0;
-    MPI_Offset total_size = 0;
-    std::string subpath;
-
-    dir = opendir (path.c_str ());
-    if (dir) {
-        while ((dit = readdir (dir)) != NULL) {
-            if ((strcmp (dit->d_name, ".") == 0) || (strcmp (dit->d_name, "..") == 0)) continue;
-
-            subpath = path + '/' + std::string (dit->d_name);
-            if (lstat (subpath.c_str (), &st) != 0) continue;
-            size = st.st_size;
-
-            if (S_ISDIR (st.st_mode)) {
-                total_size += get_dir_size (subpath.c_str ()) + size;
-            } else {
-                total_size += (MPI_Offset)size;
-            }
-        }
-        closedir (dir);
-    } else {  // Try again as file
-        struct stat file_stat;
-        stat (path.c_str (), &file_stat);
-        total_size = (MPI_Offset) (file_stat.st_size);
-    }
-
-    return total_size;
-}
-
 int e3sm_io_driver_adios2::inq_put_size (int fid, MPI_Offset *size) {
     int nerrs = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
 
-    *size = get_dir_size (fp->path);
+    *size = fp->putsize;
 
 err_out:;
     return nerrs;
 }
 int e3sm_io_driver_adios2::inq_get_size (int fid, MPI_Offset *size) {
-    return this->inq_put_size (fid, size);
+    int nerrs = 0;
+    adios2_error aerr;
+    adios2_file *fp = this->files[fid];
+
+    *size = fp->getsize;
+
+err_out:;
+    return nerrs;
 }
 int e3sm_io_driver_adios2::inq_malloc_size (MPI_Offset *size) {
     *size = 0;
@@ -359,8 +333,8 @@ int e3sm_io_driver_adios2::def_dim (int fid, std::string name, MPI_Offset size, 
     adios2_file *fp = this->files[fid];
     adios2_variable *dp;
 
-    dp = adios2_define_variable (fp->iop, ("/__pio__/dim/" + name).c_str (), adios2_type_uint64_t, 0,
-                                 NULL, NULL, NULL, adios2_constant_dims_true);
+    dp = adios2_define_variable (fp->iop, ("/__pio__/dim/" + name).c_str (), adios2_type_uint64_t,
+                                 0, NULL, NULL, NULL, adios2_constant_dims_true);
     CHECK_APTR (dp)
 
     *dimid = fp->dsizes.size ();
@@ -479,6 +453,7 @@ int e3sm_io_driver_adios2::put_att (
     adios2_variable *did;
     adios2_attribute *aid;
     adios2_type atype = mpi_type_to_adios2_type (type);
+    size_t esize;
 
     // adios2 can't create empty attr
     if (size == 0) goto err_out;
@@ -507,6 +482,9 @@ int e3sm_io_driver_adios2::put_att (
         CHECK_APTR (aid)
     }
 
+    esize = adios2_type_size (atype);
+    fp->putsize += size * esize;
+
 err_out:;
     return nerrs;
 }
@@ -517,7 +495,8 @@ int e3sm_io_driver_adios2::get_att (int fid, int vid, std::string name, void *bu
     adios2_file *fp = this->files[fid];
     adios2_variable *did;
     adios2_attribute *aid;
-    size_t asize;
+    adios2_type atype;
+    size_t asize, esize;
 
     if (vid == E3SM_IO_GLOBAL_ATTR) {
         aid = adios2_inquire_attribute (fp->iop, name.c_str ());
@@ -539,6 +518,12 @@ int e3sm_io_driver_adios2::get_att (int fid, int vid, std::string name, void *bu
     aerr = adios2_attribute_data (buf, &asize, aid);
     CHECK_AERR
 
+    aerr = adios2_attribute_type (&atype, aid);
+    CHECK_AERR
+    esize = adios2_type_size (atype);
+
+    fp->getsize += asize * esize;
+
 err_out:;
     return nerrs;
 }
@@ -553,6 +538,8 @@ int e3sm_io_driver_adios2::put_varl (
     adios2_variable *did;
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
+    size_t putsize, esize;
+    adios2_type atype;
     double ts, te;
 
     did = fp->dids[vid];
@@ -581,6 +568,14 @@ int e3sm_io_driver_adios2::put_varl (
     CHECK_AERR
     this->twrite += MPI_Wtime () - te;
 
+    aerr = adios2_variable_type (&atype, did);
+    CHECK_AERR
+    esize = adios2_type_size (atype);
+
+    aerr = adios2_selection_size (&putsize, did);
+    CHECK_AERR
+    fp->putsize += putsize * esize;
+
 err_out:;
     return nerrs;
 }
@@ -600,6 +595,8 @@ int e3sm_io_driver_adios2::put_vara (int fid,
     adios2_variable *did;
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
+    size_t putsize, esize;
+    adios2_type atype;
     double ts, te;
 
     did  = fp->dids[vid];
@@ -608,10 +605,13 @@ int e3sm_io_driver_adios2::put_vara (int fid,
     ts = MPI_Wtime ();
     if (start) {
         if (count) {
+            putsize = 1;
             for (i = 0; i < ndim; i++) {
                 astart[i] = (size_t)start[i];
                 ablock[i] = (size_t)count[i];
+                putsize *= count[i];
             }
+            fp->putsize += putsize;
         } else {
             for (i = 0; i < ndim; i++) {
                 astart[i] = (size_t)start[i];
@@ -654,6 +654,14 @@ int e3sm_io_driver_adios2::put_vara (int fid,
     CHECK_AERR
     this->twrite += MPI_Wtime () - te;
 
+    aerr = adios2_variable_type (&atype, did);
+    CHECK_AERR
+    esize = adios2_type_size (atype);
+
+    aerr = adios2_selection_size (&putsize, did);
+    CHECK_AERR
+    fp->putsize += putsize * esize;
+
 err_out:;
     return nerrs;
 }
@@ -678,6 +686,7 @@ int e3sm_io_driver_adios2::put_vars (int fid,
         ablock[E3SM_IO_DRIVER_MAX_RANK], dims[E3SM_IO_DRIVER_MAX_RANK];
     char *bufp;
     adios2_mode iomode;
+    size_t putsize;
     double ts, te;
 
     did  = fp->dids[vid];
@@ -750,6 +759,10 @@ int e3sm_io_driver_adios2::put_vars (int fid,
                 astart[i - 1] += stride[i - 1];
             }
         }
+
+        aerr = adios2_selection_size (&putsize, did);
+        CHECK_AERR
+        fp->putsize += putsize * esize;
     }
 
 err_out:;
@@ -769,6 +782,7 @@ int e3sm_io_driver_adios2::put_varn (int fid,
     int i, j;
     double ts, te;
     size_t esize, rsize, rsize_old = 0;
+    size_t putsize;
     int ndim;
     adios2_type atype;
     adios2_variable *did;
@@ -837,6 +851,10 @@ int e3sm_io_driver_adios2::put_varn (int fid,
 
             twrite += MPI_Wtime () - te;
             bufp += rsize;
+
+            aerr = adios2_selection_size (&putsize, did);
+            CHECK_AERR
+            fp->putsize += putsize * esize;
         }
     }
 
@@ -870,6 +888,8 @@ int e3sm_io_driver_adios2::get_vara (int fid,
     adios2_variable *did;
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
+    size_t getsize, esize;
+    adios2_type atype;
     double ts, te;
 
     did  = fp->dids[vid];
@@ -920,6 +940,14 @@ int e3sm_io_driver_adios2::get_vara (int fid,
     CHECK_AERR
     this->twrite += MPI_Wtime () - te;
 
+    aerr = adios2_variable_type (&atype, did);
+    CHECK_AERR
+    esize = adios2_type_size (atype);
+
+    aerr = adios2_selection_size (&getsize, did);
+    CHECK_AERR
+    fp->getsize += getsize * esize;
+
 err_out:;
     return nerrs;
 }
@@ -943,6 +971,7 @@ int e3sm_io_driver_adios2::get_vars (int fid,
         ablock[E3SM_IO_DRIVER_MAX_RANK], dims[E3SM_IO_DRIVER_MAX_RANK];
     char *bufp;
     adios2_mode iomode;
+    size_t getsize;
     double ts, te;
 
     did  = fp->dids[vid];
@@ -1011,6 +1040,10 @@ int e3sm_io_driver_adios2::get_vars (int fid,
                 astart[i - 1] += stride[i - 1];
             }
         }
+
+        aerr = adios2_selection_size (&getsize, did);
+        CHECK_AERR
+        fp->getsize += getsize * esize;
     }
 
 err_out:;
@@ -1030,6 +1063,7 @@ int e3sm_io_driver_adios2::get_varn (int fid,
     int i, j;
     double ts, te;
     size_t esize, rsize, rsize_old = 0;
+    size_t getsize;
     int ndim;
     adios2_type atype;
     adios2_variable *did;
@@ -1094,6 +1128,10 @@ int e3sm_io_driver_adios2::get_varn (int fid,
 
             twrite += MPI_Wtime () - te;
             bufp += rsize;
+
+            aerr = adios2_selection_size (&getsize, did);
+            CHECK_AERR
+            fp->getsize += getsize * esize;
         }
     }
 
