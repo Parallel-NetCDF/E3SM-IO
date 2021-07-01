@@ -382,6 +382,9 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     int index;
     Index_order *index_order;
     int total_blocks;
+    hid_t tid = -1;
+    MPI_Offset putsize;
+    MPI_Offset **count;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -516,7 +519,15 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_CPY)
     /* The folowing code is to place dummy H5Dwrite for collective call.*/
 
+    tid     = H5Dget_type (did);
+    putsize = H5Tget_size (tid);
+    for (count = counts; count < counts + nreq; count++) {
+        for (i = 0; i < ndim; i++) { putsize *= *count[i]; }
+    }
+    fp->putsize += putsize;
+
 err_out:;
+    if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
     if (msid >= 0) H5Sclose (msid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
@@ -546,6 +557,9 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
     hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
     hsize_t start[H5S_MAX_RANK], block[H5S_MAX_RANK];
     int total_blocks;
+    hid_t tid = -1;
+    MPI_Offset getsize;
+    MPI_Offset **count;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -636,7 +650,15 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
         dsid = msid = -1;
     }
 
+    tid     = H5Dget_type (did);
+    getsize = H5Tget_size (tid);
+    for (count = counts; count < counts + nreq; count++) {
+        for (i = 0; i < ndim; i++) { getsize *= *count[i]; }
+    }
+    fp->getsize += getsize;
+
 err_out:;
+    if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
     if (msid >= 0) H5Sclose (msid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
