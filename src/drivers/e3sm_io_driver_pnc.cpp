@@ -10,6 +10,8 @@
 #include <config.h>
 #endif
 //
+#include <sys/stat.h>
+//
 #include <pnetcdf.h>
 //
 #include <e3sm_io.h>
@@ -91,6 +93,20 @@ int e3sm_io_driver_pnc::inq_file_info (int fid, MPI_Info *info) {
 
     err = ncmpi_inq_file_info (fid, info);
     CHECK_NCERR
+
+err_out:;
+    return nerrs;
+}
+
+int e3sm_io_driver_pnc::inq_file_size (std::string path, MPI_Offset *size) {
+    int nerrs = 0;
+    int err;
+    struct stat file_stat;
+
+    err = stat (path.c_str (), &file_stat);
+    CHECK_ERR
+
+    *size = (MPI_Offset) (file_stat.st_size);
 
 err_out:;
     return nerrs;

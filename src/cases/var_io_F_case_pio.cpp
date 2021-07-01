@@ -383,7 +383,7 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     double *dbl_buf = NULL, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing, max_timing;
-    MPI_Offset tmp, metadata_size, put_size, total_size, max_nreqs, total_nreqs;
+    MPI_Offset tmp, metadata_size, put_size, total_size, fsize, max_nreqs, total_nreqs;
     MPI_Offset **starts_D2 = NULL, **counts_D2 = NULL;
     MPI_Offset **starts_D3 = NULL, **counts_D3 = NULL;
     MPI_Info info_used = MPI_INFO_NULL;
@@ -552,6 +552,7 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     /* I/O amount so far */
     err = driver.inq_put_size (ncid, &metadata_size);
     CHECK_ERR
+    
     err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
     open_timing += MPI_Wtime () - timing;
@@ -813,6 +814,11 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     err = driver.inq_put_size (ncid, &total_size);
     CHECK_ERR
     put_size = total_size - metadata_size;
+    if (cfg.rank == 0){
+        err = driver.inq_file_size(targetfname, &fsize);
+        CHECK_ERR
+    }
+
     err      = driver.close (ncid);
     CHECK_ERR
     close_timing += MPI_Wtime () - timing;
@@ -870,6 +876,8 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
         int nvars_noD = cfg.nvars;
         for (i = 0; i < 3; i++) nvars_noD -= nvars_D[i];
         printf ("History output file                = %s\n", outfile.c_str ());
+        printf ("Output file size                 = %.2f MiB = %.2f GiB\n",
+                (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("No. variables use no decomposition = %3d\n", nvars_noD);
         printf ("No. variables use decomposition D1 = %3d\n", nvars_D[0]);
         printf ("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
