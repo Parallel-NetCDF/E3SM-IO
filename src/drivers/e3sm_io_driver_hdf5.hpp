@@ -32,6 +32,9 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
         std::vector<hid_t> dids;
         std::vector<hsize_t> dsizes;
         MPI_Offset recsize = 0;
+        MPI_Offset putsize = 0;
+        MPI_Offset getsize = 0;
+
 #ifndef HDF5_HAVE_DWRITE_MULTI
         typedef struct H5D_rw_multi_t {
             hid_t dset_id;       /* dataset ID */

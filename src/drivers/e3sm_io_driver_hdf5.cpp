@@ -320,7 +320,7 @@ int e3sm_io_driver_hdf5::def_var (
     for (i = 0; i < ndim; i++) { dims[i] = mdims[i] = fp->dsizes[dimids[i]]; }
     if (ndim) {
         if ((cfg->chunksize > 0) || (dims[0] == H5S_UNLIMITED)) {
-            csize = H5Tget_size (mpi_type_to_hdf5_type(type));
+            csize = H5Tget_size (mpi_type_to_hdf5_type (type));
             for (i = 0; i < ndim; i++) {
                 if (csize < cfg->chunksize) {
                     cdim[i] = mdims[i];
@@ -494,7 +494,9 @@ err_out:;
 int e3sm_io_driver_hdf5::put_att (
     int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) {
     int nerrs = 0;
+    int err;
     herr_t herr;
+    int esize;
     hdf5_file *fp = this->files[fid];
     hid_t asid = -1, aid = -1;
     hid_t did;
@@ -524,16 +526,24 @@ int e3sm_io_driver_hdf5::put_att (
     herr = H5Awrite (aid, mpi_type_to_hdf5_type (type), buf);
     CHECK_HERR
 
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
+
+    err = MPI_Type_size (type, &esize);
+    CHECK_MPIERR
+    fp->putsize += asize * esize;
+
 err_out:;
     if (asid >= 0) H5Sclose (asid);
     if (aid >= 0) H5Aclose (aid);
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
+
     return nerrs;
 }
 
 int e3sm_io_driver_hdf5::get_att (int fid, int vid, std::string name, void *buf) {
     int nerrs = 0;
     herr_t herr;
+    int err;
+    int esize;
     hdf5_file *fp = this->files[fid];
     hid_t asid = -1, aid = -1;
     hid_t did;
@@ -555,11 +565,19 @@ int e3sm_io_driver_hdf5::get_att (int fid, int vid, std::string name, void *buf)
     herr = H5Aread (aid, tid, buf);
     CHECK_HERR
 
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
+
+    asid = H5Aget_space (aid);
+    CHECK_HID (asid)
+    H5Sget_simple_extent_dims (asid, &asize, NULL);
+    esize = H5Tget_size (tid);
+    fp->getsize += asize * esize;
+
 err_out:;
     if (asid >= 0) H5Sclose (asid);
     if (aid >= 0) H5Aclose (aid);
     if (tid >= 0) H5Tclose (tid);
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
+
     return nerrs;
 }
 
@@ -590,6 +608,8 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
     hid_t dxplid;
     hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
+    hid_t tid = -1;
+    MPI_Offset putsize;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -694,7 +714,13 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
+    tid     = H5Dget_type (did);
+    putsize = H5Tget_size (tid);
+    for (i = 0; i < ndim; i++) { putsize *= hblock[i]; }
+    fp->putsize += putsize;
+
 err_out:;
+    if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
 #ifdef ENABLE_LOGVOL
     if (!(this->use_logvol)) {
@@ -727,6 +753,8 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
     hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK],
         hstride[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
+    hid_t tid = -1;
+    MPI_Offset putsize;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -816,7 +844,13 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
+    tid     = H5Dget_type (did);
+    putsize = H5Tget_size (tid);
+    for (i = 0; i < ndim; i++) { putsize *= hblock[i]; }
+    fp->putsize += putsize;
+
 err_out:;
+    if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
 #ifdef ENABLE_LOGVOL
     if (!(this->use_logvol)) {
@@ -865,6 +899,9 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
     hsize_t **hstarts = NULL, **hcounts = NULL;
     hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
+    hid_t tid = -1;
+    MPI_Offset putsize;
+    MPI_Offset **count;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -1003,7 +1040,15 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
         }
     }
 
+    tid     = H5Dget_type (did);
+    putsize = H5Tget_size (tid);
+    for (count = counts; count < counts + nreq; count++) {
+        for (i = 0; i < ndim; i++) { putsize *= *count[i]; }
+    }
+    fp->putsize += putsize;
+
 err_out:;
+    if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
 #ifdef ENABLE_LOGVOL
     if (!(this->use_logvol)) {
@@ -1047,6 +1092,8 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
     hid_t dxplid;
     hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
+    hid_t tid = -1;
+    MPI_Offset getsize;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -1130,7 +1177,13 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
     }
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
 
+    tid     = H5Dget_type (did);
+    getsize = H5Tget_size (tid);
+    for (i = 0; i < ndim; i++) { getsize *= hblock[i]; }
+    fp->getsize += getsize;
+
 err_out:;
+    if (tid >= 0) H5Sclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
 #ifdef ENABLE_LOGVOL
     if (!(this->use_logvol)) {
@@ -1161,6 +1214,8 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
     hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK],
         hstride[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
+    hid_t tid = -1;
+    MPI_Offset getsize;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -1230,7 +1285,14 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
         dsid = msid = -1;
     }
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
+
+    tid     = H5Dget_type (did);
+    getsize = H5Tget_size (tid);
+    for (i = 0; i < ndim; i++) { getsize *= hblock[i]; }
+    fp->getsize += getsize;
+
 err_out:;
+    if (tid >= 0) H5Sclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
 #ifdef ENABLE_LOGVOL
     if (!(this->use_logvol)) {
@@ -1280,6 +1342,9 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
     hsize_t **hstarts = NULL, **hcounts = NULL;
     hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
+    hid_t tid = -1;
+    MPI_Offset getsize;
+    MPI_Offset **count;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -1395,7 +1460,15 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
         }
     }
 
+    tid     = H5Dget_type (did);
+    getsize = H5Tget_size (tid);
+    for (count = counts; count < counts + nreq; count++) {
+        for (i = 0; i < ndim; i++) { getsize *= *count[i]; }
+    }
+    fp->getsize += getsize;
+
 err_out:;
+    if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
 #ifdef ENABLE_LOGVOL
     if (!(this->use_logvol)) {
