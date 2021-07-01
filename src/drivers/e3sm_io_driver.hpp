@@ -14,10 +14,11 @@ class e3sm_io_driver {
 
    public:
     e3sm_io_driver (e3sm_io_config *cfg) : cfg (cfg) {};
-    virtual ~e3sm_io_driver (){   };
+    virtual ~e3sm_io_driver () {};
     virtual int create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) = 0;
     virtual int open (std::string path, MPI_Comm comm, MPI_Info info, int *fid)   = 0;
     virtual int close (int fid)                                                   = 0;
+    virtual int inq_file_size (std::string path, MPI_Offset *size)                = 0;
     virtual int inq_file_info (int fid, MPI_Info *info)                           = 0;
     virtual int inq_put_size (int fid, MPI_Offset *size)                          = 0;
     virtual int inq_get_size (int fid, MPI_Offset *size)                          = 0;

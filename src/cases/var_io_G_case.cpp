@@ -210,7 +210,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     double *D1_fix_dbl_buf;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing, max_timing;
-    MPI_Offset tmp, metadata_size, put_size, total_size, total_nreqs, max_nreqs;
+    MPI_Offset tmp, metadata_size, put_size, total_size, fsize, total_nreqs, max_nreqs;
     MPI_Offset **fix_starts_D1, **fix_counts_D1;
     MPI_Offset **fix_starts_D2, **fix_counts_D2;
     MPI_Offset **fix_starts_D3, **fix_counts_D3;
@@ -686,6 +686,10 @@ int run_varn_G_case (e3sm_io_config &cfg,
     err = driver.inq_put_size (ncid, &total_size);
     CHECK_ERR
     put_size = total_size - metadata_size;
+    if (cfg.rank == 0){
+        err = driver.inq_file_size(outfname, &fsize);
+        CHECK_ERR
+    }
 
     err = driver.close (ncid);
     CHECK_ERR
@@ -782,6 +786,8 @@ int run_varn_G_case (e3sm_io_config &cfg,
         int nvars_noD = cfg.nvars;
         for (i = 0; i < 6; i++) nvars_noD -= nvars_D[i];
         printf ("History output file                = %s\n", outfile.c_str ());
+        printf ("Output file size                 = %.2f MiB = %.2f GiB\n",
+                (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("No. variables use no decomposition = %3d\n", nvars_noD);
         printf ("No. variables use decomposition D1 = %3d\n", nvars_D[0]);
         printf ("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
@@ -844,7 +850,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     double *D1_fix_dbl_buf;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing, max_timing;
-    MPI_Offset tmp, metadata_size, get_size, total_size, total_nreqs, max_nreqs;
+    MPI_Offset tmp, metadata_size, get_size, total_size, fsize, total_nreqs, max_nreqs;
     MPI_Offset **fix_starts_D1, **fix_counts_D1;
     MPI_Offset **fix_starts_D2, **fix_counts_D2;
     MPI_Offset **fix_starts_D3, **fix_counts_D3;
@@ -1276,6 +1282,10 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     err = driver.inq_get_size (ncid, &total_size);
     CHECK_ERR
     get_size = total_size - metadata_size;
+    if (cfg.rank == 0){
+        err = driver.inq_file_size(outfname, &fsize);
+        CHECK_ERR
+    }
 
     err = driver.close (ncid);
     CHECK_ERR
@@ -1368,6 +1378,8 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     MPI_Reduce (&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
         printf ("History output file                = %s\n", outfile.c_str ());
+        printf ("Input file size                 = %.2f MiB = %.2f GiB\n",
+                (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                 (float)max_alloc / 1048576);
         printf ("Total number of variables          = %d\n", cfg.nvars);

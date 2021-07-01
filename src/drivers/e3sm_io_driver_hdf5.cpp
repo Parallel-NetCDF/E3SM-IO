@@ -240,6 +240,19 @@ err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return nerrs;
 }
+int e3sm_io_driver_hdf5::inq_file_size (std::string path, MPI_Offset *size) {
+    int nerrs = 0;
+    int err;
+    struct stat file_stat;
+
+    err = stat (path.c_str (), &file_stat);
+    CHECK_ERR
+
+    *size = (MPI_Offset) (file_stat.st_size);
+
+err_out:;
+    return nerrs;
+}
 int e3sm_io_driver_hdf5::inq_put_size (int fid, MPI_Offset *size) {
     int nerrs = 0;
     herr_t herr;

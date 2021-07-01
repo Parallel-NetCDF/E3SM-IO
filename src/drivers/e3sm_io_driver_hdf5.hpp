@@ -84,6 +84,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     int open (std::string path, MPI_Comm comm, MPI_Info info, int *fid);
     int close (int fid);
     int inq_file_info (int fid, MPI_Info *info);
+    int inq_file_size (std::string path, MPI_Offset *size);
     int inq_put_size (int fid, MPI_Offset *size);
     int inq_get_size (int fid, MPI_Offset *size);
     int inq_malloc_size (MPI_Offset *size);
