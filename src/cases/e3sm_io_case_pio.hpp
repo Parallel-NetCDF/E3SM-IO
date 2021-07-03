@@ -99,7 +99,7 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
             // CHECK_ERR
 
             ibuf = var->decomp_id + 512;
-            err  = driver.put_att (fid, var->data, "__e3sm_io__/decomp", MPI_INT, 1, &ibuf, coll);
+            err  = driver.put_att (fid, var->data, "__e3sm_io__/decomp", MPI_INT, 1, &ibuf, master);
             CHECK_ERR
 
             cbufp = cbuf;
@@ -110,18 +110,18 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
                 cbufp += ret;
             }
             err =
-                driver.put_att (fid, var->data, "__e3sm_io__/dims", MPI_CHAR, strlen (cbuf), cbuf, coll);
+                driver.put_att (fid, var->data, "__e3sm_io__/dims", MPI_CHAR, strlen (cbuf), cbuf, master);
             CHECK_ERR
 
             err =
-                driver.put_att (fid, var->data, "__e3sm_io__/ncop", MPI_CHAR, 7, (void *)"darray", coll);
+                driver.put_att (fid, var->data, "__e3sm_io__/ncop", MPI_CHAR, 7, (void *)"darray", master);
             CHECK_ERR
 
             ibuf = 5;
-            err  = driver.put_att (fid, var->data, "__e3sm_io__/nctype", MPI_INT, 1, &ibuf, coll);
+            err  = driver.put_att (fid, var->data, "__e3sm_io__/nctype", MPI_INT, 1, &ibuf, master);
             CHECK_ERR
 
-            err = driver.put_att (fid, var->data, "__e3sm_io__/ndims", MPI_INT, 1, &ndim, coll);
+            err = driver.put_att (fid, var->data, "__e3sm_io__/ndims", MPI_INT, 1, &ndim, master);
             CHECK_ERR
         }
     } else {
@@ -144,7 +144,7 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
         // Attributes for non-constant small vars
         if (ndim > 0) {
             ibuf = (int)mpi_type_to_adios2_type (type);
-            err  = driver.put_att (fid, var->data, "__e3sm_io__/adiostype", MPI_INT, 1, &ibuf, coll);
+            err  = driver.put_att (fid, var->data, "__e3sm_io__/adiostype", MPI_INT, 1, &ibuf, master);
             CHECK_ERR
 
             cbufp = cbuf;
@@ -155,18 +155,18 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
                 cbufp += ret;
             }
             err =
-                driver.put_att (fid, var->data, "__e3sm_io__/dims", MPI_CHAR, strlen (cbuf), cbuf, coll);
+                driver.put_att (fid, var->data, "__e3sm_io__/dims", MPI_CHAR, strlen (cbuf), cbuf, master);
             CHECK_ERR
 
             err =
-                driver.put_att (fid, var->data, "__e3sm_io__/ncop", MPI_CHAR, 7, (void *)"put_var", coll);
+                driver.put_att (fid, var->data, "__e3sm_io__/ncop", MPI_CHAR, 7, (void *)"put_var", master);
             CHECK_ERR
 
             ibuf = (int)mpitype2nctype (type);
-            err  = driver.put_att (fid, var->data, "__e3sm_io__/nctype", MPI_INT, 1, &ibuf, coll);
+            err  = driver.put_att (fid, var->data, "__e3sm_io__/nctype", MPI_INT, 1, &ibuf, master);
             CHECK_ERR
 
-            err = driver.put_att (fid, var->data, "__e3sm_io__/ndims", MPI_INT, 1, &ndim, coll);
+            err = driver.put_att (fid, var->data, "__e3sm_io__/ndims", MPI_INT, 1, &ndim, master);
             CHECK_ERR
         }
 
