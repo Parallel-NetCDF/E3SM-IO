@@ -18,9 +18,10 @@
 #include <e3sm_io_driver.hpp>
 #include <e3sm_io_err.h>
 
-#define PUT_ATT_TEXT(F, D, N, S, B)     driver.put_att (F, D, N, MPI_CHAR, S, (void *)B);
-#define PUT_ATT_FLOAT(F, D, N, T, S, B) driver.put_att (F, D, N, MPI_FLOAT, S, (float *)B);
-#define PUT_ATT_INT(F, D, N, T, S, B)   driver.put_att (F, D, N, MPI_FLOAT, S, (int *)B);
+#define PUT_ATT_TEXT(F, D, N, S, B)     driver.put_att (F, D, N, MPI_CHAR, S, (void *)B, coll);
+#define PUT_ATT_FLOAT(F, D, N, T, S, B) driver.put_att (F, D, N, MPI_FLOAT, S, (float *)B, coll);
+#define PUT_ATT_INT(F, D, N, T, S, B)   driver.put_att (F, D, N, MPI_FLOAT, S, (int *)B, coll);
+#define PUT_ATT(F, D, N, T, S, B)   driver.put_att (F, D, N, T, S, B, coll);
 
 #define GET_ATT_TEXT(F, D, N, S, B)     driver.get_att (F, D, N, (void *)attbuf);
 #define GET_ATT_FLOAT(F, D, N, T, S, B) driver.get_att (F, D, N, (float *)attbuf);
@@ -92,9 +93,9 @@ int def_F_case_h0 (e3sm_io_driver &driver,
 
     /* global attributes: */
     iattr = 4;
-    err   = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
+    err   = PUT_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
+    err = PUT_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "Conventions", 6, "CF-1.0");
     CHECK_ERR
@@ -10899,9 +10900,9 @@ int def_F_case_h1 (e3sm_io_driver &driver,
 
     /* global attributes: */
     iattr = 4;
-    err   = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
+    err   = PUT_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
+    err = PUT_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "Conventions", 6, "CF-1.0");
     CHECK_ERR

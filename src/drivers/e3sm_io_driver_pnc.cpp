@@ -307,7 +307,7 @@ err_out:;
 }
 
 int e3sm_io_driver_pnc::put_att (
-    int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) {
+    int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf, e3sm_io_op_mode mode) {
     int err, nerrs = 0;
 
     if (vid == E3SM_IO_GLOBAL_ATTR) { vid = NC_GLOBAL; }

@@ -38,7 +38,7 @@ class e3sm_io_driver {
     virtual int redef (int fid)                                                              = 0;
     virtual int wait (int fid)                                                               = 0;
     virtual int put_att (
-        int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf)      = 0;
+        int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf, e3sm_io_op_mode mode)      = 0;
     virtual int get_att (int fid, int vid, std::string name, void *buf)                         = 0;
     virtual int put_varl (int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) = 0;
     virtual int put_vara (int fid,

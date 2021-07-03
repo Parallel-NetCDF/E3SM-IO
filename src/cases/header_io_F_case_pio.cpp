@@ -28,6 +28,7 @@
 #define PUT_ATT_FLOAT(F, D, N, T, S, B) \
     e3sm_io_pio_put_att (driver, F, D, N, MPI_FLOAT, S, (float *)B);
 #define PUT_ATT_INT(F, D, N, T, S, B) e3sm_io_pio_put_att (driver, F, D, N, MPI_FLOAT, S, (int *)B);
+#define PUT_ATT(F, D, N, T, S, B) e3sm_io_pio_put_att (driver, F, D, N, T, S, (int *)B);
 
 #define GET_ATT_TEXT(F, D, N, S, B)     driver.get_att (F, D, N, (void *)attbuf);
 #define GET_ATT_FLOAT(F, D, N, T, S, B) driver.get_att (F, D, N, (float *)attbuf);
@@ -139,7 +140,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     // PIO attributes
     k   = 256;
-    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "/__pio__/fillmode", MPI_INT, 1, &k);
+    err = PUT_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "/__pio__/fillmode", MPI_INT, 1, &k);
     CHECK_ERR
 
     // Sub-file 0 only attributes
@@ -163,10 +164,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/institution_id", 12, "E3SM-Project");
     CHECK_ERR
     k = 120;
-    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/ne", MPI_INT, 1, &k);
+    err = PUT_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/ne", MPI_INT, 1, &k);
     CHECK_ERR
     k = 21600;
-    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/np", MPI_INT, 1, &k);
+    err = PUT_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/np", MPI_INT, 1, &k);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/product", 12, "model-output");
     CHECK_ERR
@@ -207,14 +208,14 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
         err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
                                     piovars + j);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
+        err = PUT_ATT (ncid, piovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
                               decom.dims + piodecomid[j]);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
+        err = PUT_ATT (ncid, piovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
         CHECK_ERR
 
         k   = 6;
-        err = driver.put_att (ncid, piovars[j], "piotype", MPI_INT, 1, &k);
+        err = PUT_ATT (ncid, piovars[j], "piotype", MPI_INT, 1, &k);
         CHECK_ERR
     }
 
@@ -6039,7 +6040,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     // PIO attributes
     k   = 256;
-    err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "/__pio__/fillmode", MPI_INT, 1, &k);
+    err = PUT_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "/__pio__/fillmode", MPI_INT, 1, &k);
     CHECK_ERR
 
     /* define dimensions */
@@ -6064,12 +6065,12 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
         err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
                                     piovars + j);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
+        err = PUT_ATT (ncid, piovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
                               decom.dims + piodecomid[j]);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
+        err = PUT_ATT (ncid, piovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "piotype", MPI_INT, 1, &k);
+        err = PUT_ATT (ncid, piovars[j], "piotype", MPI_INT, 1, &k);
         CHECK_ERR
     }
 
