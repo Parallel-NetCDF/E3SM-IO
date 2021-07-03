@@ -6,7 +6,7 @@
 
 #define E3SM_IO_DRIVER_MAX_RANK 32
 
-typedef enum e3sm_io_op_mode { coll, indep, nb, nbe } e3sm_io_op_mode;
+typedef enum e3sm_io_op_mode { coll, indep, nb, nbe, master } e3sm_io_op_mode;
 
 class e3sm_io_driver {
    protected:

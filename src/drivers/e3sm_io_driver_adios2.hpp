@@ -54,6 +54,7 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
         adios2_operator *op;
         MPI_Offset putsize = 0;
         MPI_Offset getsize = 0;
+        int rank;
     } adios2_file;
     std::vector<adios2_file *> files;
     double tsel, twrite, tread, text;

@@ -90,6 +90,7 @@ e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {
 
 int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int nerrs = 0;
+    int err;
     adios2_error aerr;
     adios2_file *fp;
     char ng[32];
@@ -124,6 +125,8 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
     CHECK_AERR
     fp->ep   = NULL;
     fp->read = 0;
+    err = MPI_Comm_rank(comm, &(fp->rank));
+    CHECK_MPIERR
 
     *fid = this->files.size ();
     this->files.push_back (fp);
@@ -506,32 +509,34 @@ int e3sm_io_driver_adios2::put_att (
     // adios2 can't create empty attr
     if (size == 0) goto err_out;
 
-    if (vid == E3SM_IO_GLOBAL_ATTR) {
-        if (atype == adios2_type_string) {
-            aid = adios2_define_attribute (fp->iop, name.c_str (), atype, buf);
+    if((fp->rank == 0) || (mode != master)){
+        if (vid == E3SM_IO_GLOBAL_ATTR) {
+            if (atype == adios2_type_string) {
+                aid = adios2_define_attribute (fp->iop, name.c_str (), atype, buf);
+            } else {
+                aid = adios2_define_attribute_array (fp->iop, name.c_str (), atype, buf, (size_t)size);
+            }
+            CHECK_APTR (aid);
         } else {
-            aid = adios2_define_attribute_array (fp->iop, name.c_str (), atype, buf, (size_t)size);
-        }
-        CHECK_APTR (aid);
-    } else {
-        char vname[1024];
-        size_t namesize = 1024;
+            char vname[1024];
+            size_t namesize = 1024;
 
-        did  = fp->dids[vid];
-        aerr = adios2_variable_name (vname, &namesize, did);
-        CHECK_AERR
-        vname[namesize] = '\0';
-        if (atype == adios2_type_string) {
-            aid = adios2_define_variable_attribute (fp->iop, name.c_str (), atype, buf, vname, "/");
-        } else {
-            aid = adios2_define_variable_attribute_array (fp->iop, name.c_str (), atype, buf,
-                                                          (size_t)size, vname, "/");
+            did  = fp->dids[vid];
+            aerr = adios2_variable_name (vname, &namesize, did);
+            CHECK_AERR
+            vname[namesize] = '\0';
+            if (atype == adios2_type_string) {
+                aid = adios2_define_variable_attribute (fp->iop, name.c_str (), atype, buf, vname, "/");
+            } else {
+                aid = adios2_define_variable_attribute_array (fp->iop, name.c_str (), atype, buf,
+                                                            (size_t)size, vname, "/");
+            }
+            CHECK_APTR (aid)
         }
-        CHECK_APTR (aid)
+
+        esize = adios2_type_size (atype);
+        fp->putsize += size * esize;
     }
-
-    esize = adios2_type_size (atype);
-    fp->putsize += size * esize;
 
 err_out:;
     return nerrs;
