@@ -558,6 +558,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODABS, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, AODABS, "standard_name", 72, "atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles");
+    CHECK_ERR
     varids[i++] = AODABS;
 
     dimids[0] = dim_time;
@@ -831,6 +833,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, AODVIS, "long_name", 28, "Aerosol optical depth 550 nm");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AODVIS, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, AODVIS, "standard_name", 61, "atmosphere_optical_thickness_due_to_ambient_aerosol_particles");
     CHECK_ERR
     varids[i++] = AODVIS;
 
@@ -1497,6 +1501,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLDS, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, FLDS, "standard_name", 40, "surface_downwelling_longwave_flux_in_air");
+    CHECK_ERR
     varids[i++] = FLDS;
 
     dimids[0] = dim_time;
@@ -1588,6 +1594,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUTC, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, FLUTC, "standard_name", 45, "toa_outgoing_longwave_flux_assuming_clear_sky"); 
+    CHECK_ERR
     varids[i++] = FLUTC;
 
     dimids[0] = dim_time;
@@ -1667,6 +1675,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDS, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, FSDS, "standard_name", 41, "surface_downwelling_shortwave_flux_in_air"); 
+    CHECK_ERR
     varids[i++] = FSDS;
 
     dimids[0] = dim_time;
@@ -1681,6 +1691,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, FSDSC, "long_name", 42, "Clearsky downwelling solar flux at surface");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDSC, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, FSDSC, "standard_name", 60, "surface_downwelling_shortwave_flux_in_air_assuming_clear_sky"); 
     CHECK_ERR
     varids[i++] = FSDSC;
 
@@ -1788,6 +1800,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSUTOA, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, FSUTOA, "standard_name", 27, "toa_outgoing_shortwave_flux"); 
+    CHECK_ERR
     varids[i++] = FSUTOA;
 
     dimids[0] = dim_time;
@@ -1803,6 +1817,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
                         "Clearsky upwelling solar flux at top of atmosphere");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSUTOAC, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, FSUTOAC, "standard_name", 46, "toa_outgoing_shortwave_flux_assuming_clear_sky"); 
     CHECK_ERR
     varids[i++] = FSUTOAC;
 
@@ -1945,6 +1961,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LHFLX, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, LHFLX, "standard_name", 31, "surface_upward_latent_heat_flux"); 
+    CHECK_ERR
     varids[i++] = LHFLX;
 
     dimids[0] = dim_time;
@@ -2081,6 +2099,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, LWCF, "long_name", 22, "Longwave cloud forcing");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LWCF, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, LWCF, "standard_name", 35, "toa_longwave_cloud_radiative_effect"); 
     CHECK_ERR
     varids[i++] = LWCF;
 
@@ -2334,6 +2354,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OMEGA, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, OMEGA, "standard_name", 35, "lagrangian_tendency_of_air_pressure"); 
+    CHECK_ERR
     varids[i++] = OMEGA;
 
     dimids[0] = dim_time;
@@ -2455,6 +2477,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PS, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, PS, "standard_name", 20, "surface_air_pressure"); 
+    CHECK_ERR
     varids[i++] = PS;
 
     dimids[0] = dim_time;
@@ -2467,6 +2491,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, PSL, "long_name", 18, "Sea level pressure");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PSL, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, PSL, "standard_name", 30, "air_pressure_at_mean_sea_level"); 
     CHECK_ERR
     varids[i++] = PSL;
 
@@ -2499,6 +2525,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QFLX, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, QFLX, "standard_name", 29, "water_evapotranspiration_flux"); 
+    CHECK_ERR
     varids[i++] = QFLX;
 
     dimids[0] = dim_time;
@@ -2511,6 +2539,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, QREFHT, "long_name", 25, "Reference height humidity");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QREFHT, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, QREFHT, "standard_name", 17, "specific_humidity"); 
     CHECK_ERR
     varids[i++] = QREFHT;
 
@@ -2594,6 +2624,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, RELHUM, "long_name", 17, "Relative humidity");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, RELHUM, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, RELHUM, "standard_name", 17, "relative_humidity"); 
     CHECK_ERR
     varids[i++] = RELHUM;
 
@@ -3028,6 +3060,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SHFLX, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, SHFLX, "standard_name", 33, "surface_upward_sensible_heat_flux"); 
+    CHECK_ERR
     varids[i++] = SHFLX;
 
     dimids[0] = dim_time;
@@ -3214,6 +3248,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOLIN, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, SOLIN, "standard_name", 27, "toa_incoming_shortwave_flux"); 
+    CHECK_ERR
     varids[i++] = SOLIN;
 
     dimids[0] = dim_time;
@@ -3271,6 +3307,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SWCF, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, SWCF, "standard_name", 36, "toa_shortwave_cloud_radiative_effect"); 
+    CHECK_ERR
     varids[i++] = SWCF;
 
     dimids[0] = dim_time;
@@ -3286,6 +3324,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, T, "long_name", 11, "Temperature");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, T, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, T, "standard_name", 15, "air_temperature"); 
     CHECK_ERR
     varids[i++] = T;
 
@@ -3369,6 +3409,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TGCLDCWP, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, TGCLDCWP, "standard_name", 48, "atmosphere_mass_content_of_cloud_condensed_water"); 
+    CHECK_ERR
     varids[i++] = TGCLDCWP;
 
     dimids[0] = dim_time;
@@ -3382,6 +3424,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TGCLDIWP, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, TGCLDIWP, "standard_name", 36, "atmosphere_mass_content_of_cloud_ice"); 
+    CHECK_ERR
     varids[i++] = TGCLDIWP;
 
     dimids[0] = dim_time;
@@ -3394,6 +3438,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, TGCLDLWP, "long_name", 38, "Total grid-box cloud liquid water path");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TGCLDLWP, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, TGCLDLWP, "standard_name", 45, "atmosphere_mass_content_of_cloud_liquid_water"); 
     CHECK_ERR
     varids[i++] = TGCLDLWP;
 
@@ -3422,6 +3468,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TMQ, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, TMQ, "standard_name", 38, "atmosphere_mass_content_of_water_vapor"); 
+    CHECK_ERR
     varids[i++] = TMQ;
 
     dimids[0] = dim_time;
@@ -3434,6 +3482,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, TREFHT, "long_name", 28, "Reference height temperature");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TREFHT, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, TREFHT, "standard_name", 15, "air_temperature"); 
     CHECK_ERR
     varids[i++] = TREFHT;
 
@@ -3481,6 +3531,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, TS, "long_name", 31, "Surface temperature (radiative)");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TS, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, TS, "standard_name", 19, "surface_temperature"); 
     CHECK_ERR
     varids[i++] = TS;
 
@@ -3581,6 +3633,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, U, "standard_name", 13, "eastward_wind"); 
+    CHECK_ERR
     varids[i++] = U;
 
     dimids[0] = dim_time;
@@ -3593,6 +3647,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, U10, "long_name", 14, "10m wind speed");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U10, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, U10, "standard_name", 10, "wind_speed"); 
     CHECK_ERR
     varids[i++] = U10;
 
@@ -3625,6 +3681,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, V, "long_name", 15, "Meridional wind");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, V, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, V, "standard_name", 14, "northward_wind"); 
     CHECK_ERR
     varids[i++] = V;
 
@@ -3760,6 +3818,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = PUT_ATT_TEXT (ncid, Z3, "long_name", 37, "Geopotential Height (above sea level)");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Z3, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = PUT_ATT_TEXT (ncid, Z3, "standard_name", 19, "geopotential_height"); 
     CHECK_ERR
     varids[i++] = Z3;
 
