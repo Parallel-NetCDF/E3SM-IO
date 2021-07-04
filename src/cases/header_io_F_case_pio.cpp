@@ -1493,6 +1493,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "FLDS", MPI_FLOAT, 2,
                                   dimids, &FLDS);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLDS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLDS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLDS, "units", 4, "W/m2");
@@ -1510,6 +1514,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "FLNS", MPI_FLOAT, 2,
                                   dimids, &FLNS);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNS, "units", 4, "W/m2");
@@ -1524,6 +1532,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "FLNSC", MPI_FLOAT, 2,
                                   dimids, &FLNSC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNSC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNSC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1540,6 +1552,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "FLNT", MPI_FLOAT, 2,
                                   dimids, &FLNT);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNT, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNT, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNT, "units", 4, "W/m2");
@@ -1554,6 +1570,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "FLNTC", MPI_FLOAT, 2,
                                   dimids, &FLNTC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNTC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNTC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1570,6 +1590,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "FLUT", MPI_FLOAT, 2,
                                   dimids, &FLUT);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLUT, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLUT, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUT, "units", 4, "W/m2");
@@ -1584,6 +1608,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "FLUTC", MPI_FLOAT, 2,
                                   dimids, &FLUTC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLUTC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLUTC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1667,6 +1695,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "FSDS", MPI_FLOAT, 2,
                                   dimids, &FSDS);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSDS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSDS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDS, "units", 4, "W/m2");
@@ -1683,6 +1715,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "FSDSC", MPI_FLOAT, 2,
                                   dimids, &FSDSC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSDSC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSDSC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1701,6 +1737,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "FSNS", MPI_FLOAT, 2,
                                   dimids, &FSNS);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNS, "units", 4, "W/m2");
@@ -1715,6 +1755,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "FSNSC", MPI_FLOAT, 2,
                                   dimids, &FSNSC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNSC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNSC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1731,6 +1775,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "FSNT", MPI_FLOAT, 2,
                                   dimids, &FSNT);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNT, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNT, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNT, "units", 4, "W/m2");
@@ -1745,6 +1793,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "FSNTC", MPI_FLOAT, 2,
                                   dimids, &FSNTC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1761,6 +1813,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "FSNTOA", MPI_FLOAT, 2,
                                   dimids, &FSNTOA);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTOA, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTOA, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOA, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOA, "units", 4, "W/m2");
@@ -1775,6 +1831,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "FSNTOAC", MPI_FLOAT, 2,
                                   dimids, &FSNTOAC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTOAC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTOAC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOAC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1792,6 +1852,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "FSUTOA", MPI_FLOAT, 2,
                                   dimids, &FSUTOA);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSUTOA, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSUTOA, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSUTOA, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSUTOA, "units", 4, "W/m2");
@@ -1808,6 +1872,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "FSUTOAC", MPI_FLOAT, 2,
                                   dimids, &FSUTOAC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSUTOAC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSUTOAC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSUTOAC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -2091,6 +2159,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "LWCF", MPI_FLOAT, 2,
                                   dimids, &LWCF);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, LWCF, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -2550,6 +2620,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "QRL", MPI_FLOAT, 3,
                                   dimids, &QRL);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, QRL, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
     err = PUT_ATT_INT (ncid, QRL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QRL, "Sampling_Sequence", 8, "rad_lwsw");
@@ -2567,6 +2639,8 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[2] = dim_ncol;
     err = DEF_VAR (ncid, "QRS", MPI_FLOAT, 3,
                                   dimids, &QRS);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, QRS, _FillValue, MPI_FLOAT, 1, &fillv);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, QRS, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
@@ -3240,6 +3314,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     err = DEF_VAR (ncid, "SOLIN", MPI_FLOAT, 2,
                                   dimids, &SOLIN);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, SOLIN, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, SOLIN, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOLIN, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOLIN, "units", 4, "W/m2");
@@ -3298,6 +3376,10 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err = DEF_VAR (ncid, "SWCF", MPI_FLOAT, 2,
                                   dimids, &SWCF);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, SWCF, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, SWCF, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
