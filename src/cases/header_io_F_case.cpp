@@ -1308,6 +1308,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FLDS", MPI_FLOAT, 2, dimids, &FLDS);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLDS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLDS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLDS, "units", 4, "W/m2");
@@ -1324,6 +1328,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FLNS", MPI_FLOAT, 2, dimids, &FLNS);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNS, "units", 4, "W/m2");
@@ -1337,6 +1345,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FLNSC", MPI_FLOAT, 2, dimids, &FLNSC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNSC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNSC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1352,6 +1364,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FLNT", MPI_FLOAT, 2, dimids, &FLNT);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNT, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNT, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNT, "units", 4, "W/m2");
@@ -1365,6 +1381,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FLNTC", MPI_FLOAT, 2, dimids, &FLNTC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNTC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLNTC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1380,6 +1400,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FLUT", MPI_FLOAT, 2, dimids, &FLUT);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLUT, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLUT, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUT, "units", 4, "W/m2");
@@ -1393,6 +1417,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FLUTC", MPI_FLOAT, 2, dimids, &FLUTC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLUTC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FLUTC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1471,6 +1499,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FSDS", MPI_FLOAT, 2, dimids, &FSDS);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSDS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSDS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDS, "units", 4, "W/m2");
@@ -1487,6 +1519,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FSDSC", MPI_FLOAT, 2, dimids, &FSDSC);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSDSC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSDSC, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDSC, "units", 4, "W/m2");
@@ -1500,6 +1536,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FSNS", MPI_FLOAT, 2, dimids, &FSNS);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1517,6 +1557,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FSNSC", MPI_FLOAT, 2, dimids, &FSNSC);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNSC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNSC, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNSC, "units", 4, "W/m2");
@@ -1530,6 +1574,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FSNT", MPI_FLOAT, 2, dimids, &FSNT);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNT, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNT, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1545,6 +1593,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FSNTC", MPI_FLOAT, 2, dimids, &FSNTC);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTC, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTC, "units", 4, "W/m2");
@@ -1559,6 +1611,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FSNTOA", MPI_FLOAT, 2, dimids, &FSNTOA);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTOA, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTOA, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOA, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOA, "units", 4, "W/m2");
@@ -1572,6 +1628,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "FSNTOAC", MPI_FLOAT, 2, dimids, &FSNTOAC);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTOAC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, FSNTOAC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOAC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -1867,6 +1927,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "LWCF", MPI_FLOAT, 2, dimids, &LWCF);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, LWCF, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, LWCF, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -2297,6 +2361,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[2] = dim_ncol;
     err       = driver.def_var (ncid, "QRL", MPI_FLOAT, 3, dimids, &QRL);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, QRL, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, QRL, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_INT (ncid, QRL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QRL, "Sampling_Sequence", 8, "rad_lwsw");
@@ -2313,6 +2381,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
     err       = driver.def_var (ncid, "QRS", MPI_FLOAT, 3, dimids, &QRS);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, QRS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, QRS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, QRS, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
@@ -2921,6 +2993,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "SOLIN", MPI_FLOAT, 2, dimids, &SOLIN);
     CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, SOLIN, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, SOLIN, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOLIN, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOLIN, "units", 4, "W/m2");
@@ -2975,6 +3051,10 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = driver.def_var (ncid, "SWCF", MPI_FLOAT, 2, dimids, &SWCF);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, SWCF, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = PUT_ATT_FLOAT (ncid, SWCF, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -5925,6 +6005,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODABS, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, AODABS, "standard_name", 72, "atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles");
+    CHECK_ERR
     varids[i++] = AODABS;
 
     dimids[0] = dim_time;
@@ -5935,7 +6017,7 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_FLOAT (ncid, AODABSBC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, AODABSBC, "long_name", 48,
+    err = GET_ATT_TEXT (ncid, AODABSBC, "long_name", 47,
                         "Aerosol absorption optical depth 550 nm from BC");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODABSBC, "cell_methods", 10, "time: mean");
@@ -5964,7 +6046,7 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_FLOAT (ncid, AODBC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, AODBC, "long_name", 37, "Aerosol optical depth 550 nm from BC");
+    err = GET_ATT_TEXT (ncid, AODBC, "long_name", 36, "Aerosol optical depth 550 nm from BC");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODBC, "cell_methods", 10, "time: mean");
     CHECK_ERR
@@ -6180,6 +6262,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, AODVIS, "long_name", 28, "Aerosol optical depth 550 nm");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, AODVIS, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, AODVIS, "standard_name", 61, "atmosphere_optical_thickness_due_to_ambient_aerosol_particles");
     CHECK_ERR
     varids[i++] = AODVIS;
 
@@ -6793,6 +6877,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FLDS", MPI_FLOAT, 2, dimids, &FLDS);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLDS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLDS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLDS, "units", 4, "W/m2");
@@ -6801,11 +6889,17 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLDS, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, FLDS, "standard_name", 40, "surface_downwelling_longwave_flux_in_air");
+    CHECK_ERR
     varids[i++] = FLDS;
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FLNS", MPI_FLOAT, 2, dimids, &FLNS);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLNS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLNS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6821,6 +6915,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FLNSC", MPI_FLOAT, 2, dimids, &FLNSC);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLNSC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLNSC, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNSC, "units", 4, "W/m2");
@@ -6834,6 +6932,10 @@ int ncid,           /* file ID */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FLNT", MPI_FLOAT, 2, dimids, &FLNT);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLNT, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLNT, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6849,6 +6951,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FLNTC", MPI_FLOAT, 2, dimids, &FLNTC);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLNTC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLNTC, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLNTC, "units", 4, "W/m2");
@@ -6862,6 +6968,10 @@ int ncid,           /* file ID */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FLUT", MPI_FLOAT, 2, dimids, &FLUT);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLUT, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLUT, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLUT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6877,6 +6987,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FLUTC", MPI_FLOAT, 2, dimids, &FLUTC);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLUTC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FLUTC, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLUTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLUTC, "units", 4, "W/m2");
@@ -6885,6 +6999,8 @@ int ncid,           /* file ID */
                         "Clearsky upwelling longwave flux at top of model");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FLUTC, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, FLUTC, "standard_name", 45, "toa_outgoing_longwave_flux_assuming_clear_sky"); 
     CHECK_ERR
     varids[i++] = FLUTC;
 
@@ -6952,6 +7068,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FSDS", MPI_FLOAT, 2, dimids, &FSDS);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSDS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSDS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSDS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSDS, "units", 4, "W/m2");
@@ -6960,11 +7080,17 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSDS, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, FSDS, "standard_name", 41, "surface_downwelling_shortwave_flux_in_air"); 
+    CHECK_ERR
     varids[i++] = FSDS;
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FSDSC", MPI_FLOAT, 2, dimids, &FSDSC);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSDSC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSDSC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSDSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -6980,6 +7106,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FSNS", MPI_FLOAT, 2, dimids, &FSNS);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNS, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNS, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNS, "units", 4, "W/m2");
@@ -6988,11 +7118,17 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNS, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, FSDSC, "standard_name", 60, "surface_downwelling_shortwave_flux_in_air_assuming_clear_sky"); 
+    CHECK_ERR
     varids[i++] = FSNS;
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FSNSC", MPI_FLOAT, 2, dimids, &FSNSC);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNSC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNSC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNSC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -7008,6 +7144,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FSNT", MPI_FLOAT, 2, dimids, &FSNT);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNT, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNT, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNT, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNT, "units", 4, "W/m2");
@@ -7021,6 +7161,10 @@ int ncid,           /* file ID */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FSNTC", MPI_FLOAT, 2, dimids, &FSNTC);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNTC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNTC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNTC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -7036,6 +7180,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FSNTOA", MPI_FLOAT, 2, dimids, &FSNTOA);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNTOA, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNTOA, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNTOA, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNTOA, "units", 4, "W/m2");
@@ -7049,6 +7197,10 @@ int ncid,           /* file ID */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "FSNTOAC", MPI_FLOAT, 2, dimids, &FSNTOAC);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNTOAC, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, FSNTOAC, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSNTOAC, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
@@ -7073,6 +7225,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSUTOA, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, FSUTOA, "standard_name", 27, "toa_outgoing_shortwave_flux"); 
+    CHECK_ERR
     varids[i++] = FSUTOA;
 
     dimids[0] = dim_time;
@@ -7087,6 +7241,8 @@ int ncid,           /* file ID */
                         "Clearsky upwelling solar flux at top of atmosphere");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, FSUTOAC, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, FSUTOAC, "standard_name", 46, "toa_outgoing_shortwave_flux_assuming_clear_sky"); 
     CHECK_ERR
     varids[i++] = FSUTOAC;
 
@@ -7219,6 +7375,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LHFLX, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, LHFLX, "standard_name", 31, "surface_upward_latent_heat_flux"); 
+    CHECK_ERR
     varids[i++] = LHFLX;
 
     dimids[0] = dim_time;
@@ -7339,6 +7497,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "LWCF", MPI_FLOAT, 2, dimids, &LWCF);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, LWCF, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, LWCF, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, LWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LWCF, "units", 4, "W/m2");
@@ -7346,6 +7508,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, LWCF, "long_name", 22, "Longwave cloud forcing");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, LWCF, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, LWCF, "standard_name", 35, "toa_longwave_cloud_radiative_effect"); 
     CHECK_ERR
     varids[i++] = LWCF;
 
@@ -7584,6 +7748,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, OMEGA, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, OMEGA, "standard_name", 35, "lagrangian_tendency_of_air_pressure"); 
+    CHECK_ERR
     varids[i++] = OMEGA;
 
     dimids[0] = dim_time;
@@ -7696,6 +7862,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PS, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, PS, "standard_name", 20, "surface_air_pressure"); 
+    CHECK_ERR
     varids[i++] = PS;
 
     dimids[0] = dim_time;
@@ -7707,6 +7875,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, PSL, "long_name", 18, "Sea level pressure");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, PSL, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, PSL, "standard_name", 30, "air_pressure_at_mean_sea_level"); 
     CHECK_ERR
     varids[i++] = PSL;
 
@@ -7737,6 +7907,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, QFLX, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, QFLX, "standard_name", 29, "water_evapotranspiration_flux"); 
+    CHECK_ERR
     varids[i++] = QFLX;
 
     dimids[0] = dim_time;
@@ -7749,12 +7921,18 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, QREFHT, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, QREFHT, "standard_name", 17, "specific_humidity"); 
+    CHECK_ERR
     varids[i++] = QREFHT;
 
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
     err       = INQ_VID (ncid, "QRL", MPI_FLOAT, 3, dimids, &QRL);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, QRL, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, QRL, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_INT (ncid, QRL, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
@@ -7772,6 +7950,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
     err       = INQ_VID (ncid, "QRS", MPI_FLOAT, 3, dimids, &QRS);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, QRS, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, QRS, "missing_value", MPI_FLOAT, 1, &missv);
     CHECK_ERR
     err = GET_ATT_INT (ncid, QRS, "mdims", MPI_INT, 1, &mdims);
     CHECK_ERR
@@ -7826,6 +8008,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, RELHUM, "long_name", 17, "Relative humidity");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, RELHUM, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, RELHUM, "standard_name", 17, "relative_humidity"); 
     CHECK_ERR
     varids[i++] = RELHUM;
 
@@ -8211,6 +8395,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SHFLX, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, SHFLX, "standard_name", 33, "surface_upward_sensible_heat_flux"); 
+    CHECK_ERR
     varids[i++] = SHFLX;
 
     dimids[0] = dim_time;
@@ -8376,6 +8562,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "SOLIN", MPI_FLOAT, 2, dimids, &SOLIN);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, SOLIN, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, SOLIN, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, SOLIN, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SOLIN, "units", 4, "W/m2");
@@ -8383,6 +8573,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, SOLIN, "long_name", 16, "Solar insolation");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SOLIN, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, SOLIN, "standard_name", 27, "toa_incoming_shortwave_flux"); 
     CHECK_ERR
     varids[i++] = SOLIN;
 
@@ -8429,6 +8621,10 @@ int ncid,           /* file ID */
     dimids[1] = dim_ncol;
     err       = INQ_VID (ncid, "SWCF", MPI_FLOAT, 2, dimids, &SWCF);
     CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, SWCF, _FillValue, MPI_FLOAT, 1, &fillv);
+    CHECK_ERR
+    err = GET_ATT_FLOAT (ncid, SWCF, "missing_value", MPI_FLOAT, 1, &missv);
+    CHECK_ERR
     err = GET_ATT_TEXT (ncid, SWCF, "Sampling_Sequence", 8, "rad_lwsw");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SWCF, "units", 4, "W/m2");
@@ -8436,6 +8632,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, SWCF, "long_name", 23, "Shortwave cloud forcing");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, SWCF, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, SWCF, "standard_name", 36, "toa_shortwave_cloud_radiative_effect"); 
     CHECK_ERR
     varids[i++] = SWCF;
 
@@ -8451,6 +8649,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, T, "long_name", 11, "Temperature");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, T, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, T, "standard_name", 15, "air_temperature"); 
     CHECK_ERR
     varids[i++] = T;
 
@@ -8513,6 +8713,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TGCLDCWP, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, TGCLDCWP, "standard_name", 48, "atmosphere_mass_content_of_cloud_condensed_water"); 
+    CHECK_ERR
     varids[i++] = TGCLDCWP;
 
     dimids[0] = dim_time;
@@ -8525,6 +8727,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TGCLDIWP, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, TGCLDIWP, "standard_name", 36, "atmosphere_mass_content_of_cloud_ice"); 
+    CHECK_ERR
     varids[i++] = TGCLDIWP;
 
     dimids[0] = dim_time;
@@ -8536,6 +8740,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, TGCLDLWP, "long_name", 38, "Total grid-box cloud liquid water path");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TGCLDLWP, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, TGCLDLWP, "standard_name", 45, "atmosphere_mass_content_of_cloud_liquid_water"); 
     CHECK_ERR
     varids[i++] = TGCLDLWP;
 
@@ -8562,6 +8768,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TMQ, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, TMQ, "standard_name", 38, "atmosphere_mass_content_of_water_vapor"); 
+    CHECK_ERR
     varids[i++] = TMQ;
 
     dimids[0] = dim_time;
@@ -8573,6 +8781,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, TREFHT, "long_name", 28, "Reference height temperature");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TREFHT, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, TREFHT, "standard_name", 15, "air_temperature"); 
     CHECK_ERR
     varids[i++] = TREFHT;
 
@@ -8617,6 +8827,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, TS, "long_name", 31, "Surface temperature (radiative)");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, TS, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, TS, "standard_name", 19, "surface_temperature"); 
     CHECK_ERR
     varids[i++] = TS;
 
@@ -8710,6 +8922,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, U, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, U, "standard_name", 13, "eastward_wind"); 
+    CHECK_ERR
     varids[i++] = U;
 
     dimids[0] = dim_time;
@@ -8721,6 +8935,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, U10, "long_name", 14, "10m wind speed");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, U10, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, U10, "standard_name", 10, "wind_speed"); 
     CHECK_ERR
     varids[i++] = U10;
 
@@ -8751,6 +8967,8 @@ int ncid,           /* file ID */
     err = GET_ATT_TEXT (ncid, V, "long_name", 15, "Meridional wind");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, V, "cell_methods", 10, "time: mean");
+    CHECK_ERR
+    err = GET_ATT_TEXT (ncid, V, "standard_name", 14, "northward_wind"); 
     CHECK_ERR
     varids[i++] = V;
 
@@ -8878,6 +9096,8 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, Z3, "cell_methods", 10, "time: mean");
     CHECK_ERR
+    err = GET_ATT_TEXT (ncid, Z3, "standard_name", 19, "geopotential_height"); 
+    CHECK_ERR
     varids[i++] = Z3;
 
     dimids[0] = dim_time;
@@ -8951,7 +9171,7 @@ int ncid,           /* file ID */
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a1_sfgaex1, "units", 7, "kg/m2/s");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, bc_a1_sfgaex1, "long_name", 51,
+    err = GET_ATT_TEXT (ncid, bc_a1_sfgaex1, "long_name", 50,
                         "bc_a1 gas-aerosol-exchange primary column tendency");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, bc_a1_sfgaex1, "cell_methods", 10, "time: mean");
