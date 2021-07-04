@@ -146,6 +146,7 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
         err = MPI_Type_size(type, &esize);
         CHECK_MPIERR
         vsize *= esize;
+        vsize += esize * 2; // Add 2 elements
         err = driver.def_local_var (fid, name, MPI_BYTE, 1, &vsize, &(var->data));
         CHECK_ERR
 

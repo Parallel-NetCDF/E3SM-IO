@@ -421,7 +421,7 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
 
     /* allocate and initialize write buffer for small variables */
     dbl_buflen = nelems[1] * 2 + nelems[0] + 3 * decom.dims[2][0] + 3 * (decom.dims[2][0] + 1) + 8 +
-                 2 + 20 * gap;
+                 2 + 20 * gap + 27 * 2;
     if (dbl_bufp != NULL) {
         dbl_buf = dbl_bufp;
     } else {
