@@ -130,6 +130,7 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
     } else {
         std::vector<MPI_Offset> dsize (ndim);
         MPI_Offset vsize = 1;
+        int esize;
 
         for (i = j = 0; i < ndim; i++) {
             err = driver.inq_dimlen (fid, dimids[i], &(dsize[j]));
@@ -141,7 +142,11 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
 
         // flatten into 1 dim
         for (i = 0; i < j; i++) { vsize *= dsize[i]; }
-        err = driver.def_local_var (fid, name, type, 1, &vsize, &(var->data));
+        // Convert into byte array
+        err = MPI_Type_size(type, &esize);
+        CHECK_MPIERR
+        vsize *= esize;
+        err = driver.def_local_var (fid, name, MPI_BYTE, 1, &vsize, &(var->data));
         CHECK_ERR
 
         // Attributes for non-constant small vars
