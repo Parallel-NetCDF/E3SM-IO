@@ -20,6 +20,7 @@
 #include <e3sm_io_driver.hpp>
 
 int def_F_case_h0_pio (e3sm_io_driver &driver,
+                       e3sm_io_config &cfg,
                        e3sm_io_decom &decom,
                        int ncid,                 /* file ID */
                        const MPI_Offset dims[2], /* dimension sizes */
@@ -29,6 +30,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
                        int *piovars);
 
 int def_F_case_h1_pio (e3sm_io_driver &driver,
+                       e3sm_io_config &cfg,            
                        e3sm_io_decom &decom,
                        int ncid,                 /* file ID */
                        const MPI_Offset dims[2], /* dimension sizes */
