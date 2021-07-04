@@ -28,6 +28,8 @@ inline nc_type mpitype2nctype (MPI_Datatype type) {
             return NC_DOUBLE;
         case MPI_CHAR:
             return NC_CHAR;
+        case MPI_BYTE:
+            return NC_BYTE;
         default:
             throw "Unsupported datatype";
     }

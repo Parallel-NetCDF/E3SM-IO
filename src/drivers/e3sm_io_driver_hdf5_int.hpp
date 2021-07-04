@@ -69,6 +69,8 @@ static inline hid_t mpi_type_to_hdf5_type (MPI_Datatype mpitype) {
             return H5T_NATIVE_DOUBLE;
         case MPI_CHAR:
             return H5T_NATIVE_CHAR;
+        case MPI_BYTE:
+            return H5T_NATIVE_UINT8;
         default:
             printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, mpitype);
             DEBUG_ABORT
