@@ -36,11 +36,14 @@
 
 #define INQ_VID(F, N, T, S, B, V) driver.inq_var (F, N, V);
 
+#define DEF_VAR(F, N, T, ND, D, V) e3sm_io_pio_define_var (driver, cfg, dnames, decom, decomids[i], F, N, T, ND, D, V);
+
 static char attbuf[4096];
 
 /*----< def_F_case_h0_pio() >----------------------------------------------------*/
 int def_F_case_h0_pio (e3sm_io_driver &driver,
-                       e3sm_io_decom &decom,
+                       e3sm_io_config &cfg,
+                       e3sm_io_decom &decom,                       
                        int ncid,                 /* file ID */
                        const MPI_Offset dims[2], /* dimension sizes */
                        int nvars,                /* number of variables */
@@ -226,7 +229,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     i = 0;
 
     dimids[0] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "lat", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "lat", MPI_DOUBLE, 1,
                                   dimids, &lat);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lat, "long_name", 8, "latitude");
@@ -236,7 +239,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = lat;
 
     dimids[0] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "lon", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "lon", MPI_DOUBLE, 1,
                                   dimids, &lon);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lon, "long_name", 9, "longitude");
@@ -246,7 +249,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = lon;
 
     dimids[0] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "area", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "area", MPI_DOUBLE, 1,
                                   dimids, &area);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, area, "long_name", 14, "gll grid areas");
@@ -254,7 +257,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = area;
 
     dimids[0] = dim_lev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "lev", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "lev", MPI_DOUBLE, 1,
                                   dimids, &lev);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lev, "long_name", 38, "hybrid level at midpoints (1000*(A+B))");
@@ -271,7 +274,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = lev;
 
     dimids[0] = dim_lev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "hyam", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "hyam", MPI_DOUBLE, 1,
                                   dimids, &hyam);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hyam, "long_name", 39, "hybrid A coefficient at layer midpoints");
@@ -279,7 +282,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = hyam;
 
     dimids[0] = dim_lev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "hybm", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "hybm", MPI_DOUBLE, 1,
                                   dimids, &hybm);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hybm, "long_name", 39, "hybrid B coefficient at layer midpoints");
@@ -287,7 +290,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = hybm;
 
     dimids[0] = dim_lev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "P0", MPI_DOUBLE, 0,
+    err = DEF_VAR (ncid, "P0", MPI_DOUBLE, 0,
                                   NULL, &P0);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, P0, "long_name", 18, "reference pressure");
@@ -297,7 +300,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = P0;
 
     dimids[0] = dim_ilev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ilev", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "ilev", MPI_DOUBLE, 1,
                                   dimids, &ilev);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ilev, "long_name", 39, "hybrid level at interfaces (1000*(A+B))");
@@ -314,7 +317,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = ilev;
 
     dimids[0] = dim_ilev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "hyai", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "hyai", MPI_DOUBLE, 1,
                                   dimids, &hyai);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hyai, "long_name", 40, "hybrid A coefficient at layer interfaces");
@@ -322,7 +325,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = hyai;
 
     dimids[0] = dim_ilev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "hybi", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "hybi", MPI_DOUBLE, 1,
                                   dimids, &hybi);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hybi, "long_name", 40, "hybrid B coefficient at layer interfaces");
@@ -330,7 +333,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = hybi;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "time", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "time", MPI_DOUBLE, 1,
                                   dimids, &time);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, time, "long_name", 4, "time");
@@ -344,7 +347,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = time;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "date", MPI_INT, 1,
+    err = DEF_VAR (ncid, "date", MPI_INT, 1,
                                   dimids, &date);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, date, "long_name", 23, "current date (YYYYMMDD)");
@@ -352,7 +355,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = date;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "datesec", MPI_INT, 1,
+    err = DEF_VAR (ncid, "datesec", MPI_INT, 1,
                                   dimids, &datesec);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, datesec, "long_name", 31, "current seconds of current date");
@@ -361,7 +364,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_nbnd;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "time_bnds", MPI_DOUBLE,
+    err = DEF_VAR (ncid, "time_bnds", MPI_DOUBLE,
                                   2, dimids, &time_bnds);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, time_bnds, "long_name", 23, "time interval endpoints");
@@ -370,46 +373,46 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "date_written",
+    err       = DEF_VAR (ncid, "date_written",
                                   MPI_CHAR, 2, dimids, &date_written);
     CHECK_ERR
     varids[i++] = date_written;
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "time_written",
+    err       = DEF_VAR (ncid, "time_written",
                                   MPI_CHAR, 2, dimids, &time_written);
     CHECK_ERR
     varids[i++] = time_written;
 
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ndbase", MPI_INT, 0,
+    err = DEF_VAR (ncid, "ndbase", MPI_INT, 0,
                                   NULL, &ndbase);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ndbase, "long_name", 8, "base day");
     CHECK_ERR
     varids[i++] = ndbase;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nsbase", MPI_INT, 0,
+    err = DEF_VAR (ncid, "nsbase", MPI_INT, 0,
                                   NULL, &nsbase);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nsbase, "long_name", 19, "seconds of base day");
     CHECK_ERR
     varids[i++] = nsbase;
 
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nbdate", MPI_INT, 0,
+    err = DEF_VAR (ncid, "nbdate", MPI_INT, 0,
                                   NULL, &nbdate);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nbdate, "long_name", 20, "base date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = nbdate;
 
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nbsec", MPI_INT, 0,
+    err = DEF_VAR (ncid, "nbsec", MPI_INT, 0,
                                   NULL, &nbsec);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nbsec, "long_name", 20, "seconds of base date");
     CHECK_ERR
     varids[i++] = nbsec;
 
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mdt", MPI_INT, 0, NULL,
+    err = DEF_VAR (ncid, "mdt", MPI_INT, 0, NULL,
                                   &mdt);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mdt, "long_name", 8, "timestep");
@@ -419,7 +422,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = mdt;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ndcur", MPI_INT, 1,
+    err = DEF_VAR (ncid, "ndcur", MPI_INT, 1,
                                   dimids, &ndcur);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ndcur, "long_name", 27, "current day (from base day)");
@@ -427,7 +430,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = ndcur;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nscur", MPI_INT, 1,
+    err = DEF_VAR (ncid, "nscur", MPI_INT, 1,
                                   dimids, &nscur);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nscur, "long_name", 30, "current seconds of current day");
@@ -435,7 +438,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = nscur;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "co2vmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "co2vmr", MPI_DOUBLE, 1,
                                   dimids, &co2vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, co2vmr, "long_name", 23, "co2 volume mixing ratio");
@@ -443,7 +446,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = co2vmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ch4vmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "ch4vmr", MPI_DOUBLE, 1,
                                   dimids, &ch4vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ch4vmr, "long_name", 23, "ch4 volume mixing ratio");
@@ -451,7 +454,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = ch4vmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "n2ovmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "n2ovmr", MPI_DOUBLE, 1,
                                   dimids, &n2ovmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, n2ovmr, "long_name", 23, "n2o volume mixing ratio");
@@ -459,7 +462,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = n2ovmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "f11vmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "f11vmr", MPI_DOUBLE, 1,
                                   dimids, &f11vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, f11vmr, "long_name", 23, "f11 volume mixing ratio");
@@ -467,7 +470,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = f11vmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "f12vmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "f12vmr", MPI_DOUBLE, 1,
                                   dimids, &f12vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, f12vmr, "long_name", 23, "f12 volume mixing ratio");
@@ -475,7 +478,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = f12vmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "sol_tsi", MPI_DOUBLE,
+    err = DEF_VAR (ncid, "sol_tsi", MPI_DOUBLE,
                                   1, dimids, &sol_tsi);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, sol_tsi, "long_name", 22, "total solar irradiance");
@@ -485,7 +488,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     varids[i++] = sol_tsi;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nsteph", MPI_INT, 1,
+    err = DEF_VAR (ncid, "nsteph", MPI_INT, 1,
                                   dimids, &nsteph);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nsteph, "long_name", 16, "current timestep");
@@ -494,7 +497,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AEROD_v", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AEROD_v", MPI_FLOAT, 2,
                                   dimids, &AEROD_v);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AEROD_v, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -513,7 +516,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ANRAIN", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "ANRAIN", MPI_FLOAT, 3,
                                   dimids, &ANRAIN);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, ANRAIN, "mdims", MPI_INT, 1, &mdims);
@@ -529,7 +532,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ANSNOW", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "ANSNOW", MPI_FLOAT, 3,
                                   dimids, &ANSNOW);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, ANSNOW, "mdims", MPI_INT, 1, &mdims);
@@ -544,7 +547,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODABS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODABS", MPI_FLOAT, 2,
                                   dimids, &AODABS);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODABS, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -559,7 +562,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODABSBC", MPI_FLOAT,
+    err = DEF_VAR (ncid, "AODABSBC", MPI_FLOAT,
                                   2, dimids, &AODABSBC);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODABSBC, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -575,7 +578,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODALL", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODALL", MPI_FLOAT, 2,
                                   dimids, &AODALL);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODALL, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -590,7 +593,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODBC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODBC", MPI_FLOAT, 2,
                                   dimids, &AODBC);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODBC, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -605,7 +608,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODDUST", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODDUST", MPI_FLOAT, 2,
                                   dimids, &AODDUST);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODDUST, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -620,7 +623,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODDUST1", MPI_FLOAT,
+    err = DEF_VAR (ncid, "AODDUST1", MPI_FLOAT,
                                   2, dimids, &AODDUST1);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODDUST1, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -636,7 +639,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODDUST3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "AODDUST3", MPI_FLOAT,
                                   2, dimids, &AODDUST3);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODDUST3, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -652,7 +655,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODDUST4", MPI_FLOAT,
+    err = DEF_VAR (ncid, "AODDUST4", MPI_FLOAT,
                                   2, dimids, &AODDUST4);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODDUST4, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -668,7 +671,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODMODE1", MPI_FLOAT,
+    err = DEF_VAR (ncid, "AODMODE1", MPI_FLOAT,
                                   2, dimids, &AODMODE1);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODMODE1, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -683,7 +686,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODMODE2", MPI_FLOAT,
+    err = DEF_VAR (ncid, "AODMODE2", MPI_FLOAT,
                                   2, dimids, &AODMODE2);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODMODE2, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -698,7 +701,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODMODE3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "AODMODE3", MPI_FLOAT,
                                   2, dimids, &AODMODE3);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODMODE3, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -713,7 +716,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODMODE4", MPI_FLOAT,
+    err = DEF_VAR (ncid, "AODMODE4", MPI_FLOAT,
                                   2, dimids, &AODMODE4);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODMODE4, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -728,7 +731,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODNIR", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODNIR", MPI_FLOAT, 2,
                                   dimids, &AODNIR);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODNIR, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -743,7 +746,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODPOM", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODPOM", MPI_FLOAT, 2,
                                   dimids, &AODPOM);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODPOM, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -758,7 +761,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODSO4", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODSO4", MPI_FLOAT, 2,
                                   dimids, &AODSO4);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODSO4, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -773,7 +776,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODSOA", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODSOA", MPI_FLOAT, 2,
                                   dimids, &AODSOA);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODSOA, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -788,7 +791,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODSS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODSS", MPI_FLOAT, 2,
                                   dimids, &AODSS);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODSS, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -803,7 +806,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODUV", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODUV", MPI_FLOAT, 2,
                                   dimids, &AODUV);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODUV, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -818,7 +821,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AODVIS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AODVIS", MPI_FLOAT, 2,
                                   dimids, &AODVIS);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, AODVIS, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -834,7 +837,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AQRAIN", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "AQRAIN", MPI_FLOAT, 3,
                                   dimids, &AQRAIN);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, AQRAIN, "mdims", MPI_INT, 1, &mdims);
@@ -850,7 +853,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AQSNOW", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "AQSNOW", MPI_FLOAT, 3,
                                   dimids, &AQSNOW);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, AQSNOW, "mdims", MPI_INT, 1, &mdims);
@@ -865,7 +868,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AQ_DMS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AQ_DMS", MPI_FLOAT, 2,
                                   dimids, &AQ_DMS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_DMS, "units", 7, "kg/m2/s");
@@ -878,7 +881,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AQ_H2O2", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AQ_H2O2", MPI_FLOAT, 2,
                                   dimids, &AQ_H2O2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_H2O2, "units", 7, "kg/m2/s");
@@ -891,7 +894,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AQ_H2SO4", MPI_FLOAT,
+    err = DEF_VAR (ncid, "AQ_H2SO4", MPI_FLOAT,
                                   2, dimids, &AQ_H2SO4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_H2SO4, "units", 7, "kg/m2/s");
@@ -905,7 +908,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AQ_O3", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AQ_O3", MPI_FLOAT, 2,
                                   dimids, &AQ_O3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_O3, "units", 7, "kg/m2/s");
@@ -918,7 +921,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AQ_SO2", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AQ_SO2", MPI_FLOAT, 2,
                                   dimids, &AQ_SO2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_SO2, "units", 7, "kg/m2/s");
@@ -931,7 +934,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AQ_SOAG", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "AQ_SOAG", MPI_FLOAT, 2,
                                   dimids, &AQ_SOAG);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, AQ_SOAG, "units", 7, "kg/m2/s");
@@ -945,7 +948,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AREI", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "AREI", MPI_FLOAT, 3,
                                   dimids, &AREI);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, AREI, "mdims", MPI_INT, 1, &mdims);
@@ -961,7 +964,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AREL", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "AREL", MPI_FLOAT, 3,
                                   dimids, &AREL);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, AREL, "mdims", MPI_INT, 1, &mdims);
@@ -977,7 +980,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AWNC", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "AWNC", MPI_FLOAT, 3,
                                   dimids, &AWNC);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, AWNC, "mdims", MPI_INT, 1, &mdims);
@@ -993,7 +996,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "AWNI", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "AWNI", MPI_FLOAT, 3,
                                   dimids, &AWNI);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, AWNI, "mdims", MPI_INT, 1, &mdims);
@@ -1008,7 +1011,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "BURDEN1", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "BURDEN1", MPI_FLOAT, 2,
                                   dimids, &BURDEN1);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, BURDEN1, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -1025,7 +1028,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "BURDEN2", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "BURDEN2", MPI_FLOAT, 2,
                                   dimids, &BURDEN2);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, BURDEN2, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -1042,7 +1045,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "BURDEN3", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "BURDEN3", MPI_FLOAT, 2,
                                   dimids, &BURDEN3);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, BURDEN3, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -1059,7 +1062,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "BURDEN4", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "BURDEN4", MPI_FLOAT, 2,
                                   dimids, &BURDEN4);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, BURDEN4, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -1077,7 +1080,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CCN3", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "CCN3", MPI_FLOAT, 3,
                                   dimids, &CCN3);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, CCN3, "mdims", MPI_INT, 1, &mdims);
@@ -1092,7 +1095,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CDNUMC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "CDNUMC", MPI_FLOAT, 2,
                                   dimids, &CDNUMC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CDNUMC, "units", 4, "1/m2");
@@ -1106,7 +1109,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLDHGH", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "CLDHGH", MPI_FLOAT, 2,
                                   dimids, &CLDHGH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDHGH, "units", 8, "fraction");
@@ -1120,7 +1123,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLDICE", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "CLDICE", MPI_FLOAT, 3,
                                   dimids, &CLDICE);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, CLDICE, "mdims", MPI_INT, 1, &mdims);
@@ -1138,7 +1141,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLDLIQ", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "CLDLIQ", MPI_FLOAT, 3,
                                   dimids, &CLDLIQ);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, CLDLIQ, "mdims", MPI_INT, 1, &mdims);
@@ -1155,7 +1158,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLDLOW", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "CLDLOW", MPI_FLOAT, 2,
                                   dimids, &CLDLOW);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDLOW, "units", 8, "fraction");
@@ -1168,7 +1171,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLDMED", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "CLDMED", MPI_FLOAT, 2,
                                   dimids, &CLDMED);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDMED, "units", 8, "fraction");
@@ -1181,7 +1184,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLDTOT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "CLDTOT", MPI_FLOAT, 2,
                                   dimids, &CLDTOT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDTOT, "units", 8, "fraction");
@@ -1195,7 +1198,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLOUD", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "CLOUD", MPI_FLOAT, 3,
                                   dimids, &CLOUD);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, CLOUD, "mdims", MPI_INT, 1, &mdims);
@@ -1211,7 +1214,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLOUDFRAC_CLUBB",
+    err       = DEF_VAR (ncid, "CLOUDFRAC_CLUBB",
                                   MPI_FLOAT, 3, dimids, &CLOUDFRAC_CLUBB);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, CLOUDFRAC_CLUBB, "mdims", MPI_INT, 1, &mdims);
@@ -1227,7 +1230,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CONCLD", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "CONCLD", MPI_FLOAT, 3,
                                   dimids, &CONCLD);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, CONCLD, "mdims", MPI_INT, 1, &mdims);
@@ -1243,7 +1246,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DCQ", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "DCQ", MPI_FLOAT, 3,
                                   dimids, &DCQ);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, DCQ, "mdims", MPI_INT, 1, &mdims);
@@ -1258,7 +1261,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DF_DMS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "DF_DMS", MPI_FLOAT, 2,
                                   dimids, &DF_DMS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_DMS, "units", 7, "kg/m2/s");
@@ -1271,7 +1274,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DF_H2O2", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "DF_H2O2", MPI_FLOAT, 2,
                                   dimids, &DF_H2O2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_H2O2, "units", 7, "kg/m2/s");
@@ -1284,7 +1287,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DF_H2SO4", MPI_FLOAT,
+    err = DEF_VAR (ncid, "DF_H2SO4", MPI_FLOAT,
                                   2, dimids, &DF_H2SO4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_H2SO4, "units", 7, "kg/m2/s");
@@ -1297,7 +1300,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DF_O3", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "DF_O3", MPI_FLOAT, 2,
                                   dimids, &DF_O3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_O3, "units", 7, "kg/m2/s");
@@ -1310,7 +1313,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DF_SO2", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "DF_SO2", MPI_FLOAT, 2,
                                   dimids, &DF_SO2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_SO2, "units", 7, "kg/m2/s");
@@ -1323,7 +1326,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DF_SOAG", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "DF_SOAG", MPI_FLOAT, 2,
                                   dimids, &DF_SOAG);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DF_SOAG, "units", 7, "kg/m2/s");
@@ -1336,7 +1339,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DMS_SRF", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "DMS_SRF", MPI_FLOAT, 2,
                                   dimids, &DMS_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DMS_SRF, "units", 7, "mol/mol");
@@ -1349,7 +1352,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DP_KCLDBASE",
+    err       = DEF_VAR (ncid, "DP_KCLDBASE",
                                   MPI_FLOAT, 2, dimids, &DP_KCLDBASE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DP_KCLDBASE, "units", 1, "1");
@@ -1362,7 +1365,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DP_MFUP_MAX",
+    err       = DEF_VAR (ncid, "DP_MFUP_MAX",
                                   MPI_FLOAT, 2, dimids, &DP_MFUP_MAX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DP_MFUP_MAX, "units", 5, "kg/m2");
@@ -1376,7 +1379,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DP_WCLDBASE",
+    err       = DEF_VAR (ncid, "DP_WCLDBASE",
                                   MPI_FLOAT, 2, dimids, &DP_WCLDBASE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DP_WCLDBASE, "units", 3, "m/s");
@@ -1390,7 +1393,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DSTSFMBL", MPI_FLOAT,
+    err = DEF_VAR (ncid, "DSTSFMBL", MPI_FLOAT,
                                   2, dimids, &DSTSFMBL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DSTSFMBL, "units", 7, "kg/m2/s");
@@ -1404,7 +1407,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DTCOND", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "DTCOND", MPI_FLOAT, 3,
                                   dimids, &DTCOND);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, DTCOND, "mdims", MPI_INT, 1, &mdims);
@@ -1419,7 +1422,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DTENDTH", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "DTENDTH", MPI_FLOAT, 2,
                                   dimids, &DTENDTH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DTENDTH, "units", 4, "W/m2");
@@ -1433,7 +1436,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "DTENDTQ", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "DTENDTQ", MPI_FLOAT, 2,
                                   dimids, &DTENDTQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, DTENDTQ, "units", 7, "kg/m2/s");
@@ -1448,7 +1451,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "EXTINCT", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "EXTINCT", MPI_FLOAT, 3,
                                   dimids, &EXTINCT);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, EXTINCT, "mdims", MPI_INT, 1, &mdims);
@@ -1468,7 +1471,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FICE", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "FICE", MPI_FLOAT, 3,
                                   dimids, &FICE);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, FICE, "mdims", MPI_INT, 1, &mdims);
@@ -1483,7 +1486,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FLDS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FLDS", MPI_FLOAT, 2,
                                   dimids, &FLDS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLDS, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1498,7 +1501,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FLNS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FLNS", MPI_FLOAT, 2,
                                   dimids, &FLNS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNS, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1513,7 +1516,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FLNSC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FLNSC", MPI_FLOAT, 2,
                                   dimids, &FLNSC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNSC, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1528,7 +1531,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FLNT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FLNT", MPI_FLOAT, 2,
                                   dimids, &FLNT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNT, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1543,7 +1546,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FLNTC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FLNTC", MPI_FLOAT, 2,
                                   dimids, &FLNTC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNTC, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1558,7 +1561,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FLUT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FLUT", MPI_FLOAT, 2,
                                   dimids, &FLUT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUT, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1573,7 +1576,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FLUTC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FLUTC", MPI_FLOAT, 2,
                                   dimids, &FLUTC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLUTC, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1590,7 +1593,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FREQI", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "FREQI", MPI_FLOAT, 3,
                                   dimids, &FREQI);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, FREQI, "mdims", MPI_INT, 1, &mdims);
@@ -1606,7 +1609,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FREQL", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "FREQL", MPI_FLOAT, 3,
                                   dimids, &FREQL);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, FREQL, "mdims", MPI_INT, 1, &mdims);
@@ -1622,7 +1625,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FREQR", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "FREQR", MPI_FLOAT, 3,
                                   dimids, &FREQR);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, FREQR, "mdims", MPI_INT, 1, &mdims);
@@ -1638,7 +1641,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FREQS", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "FREQS", MPI_FLOAT, 3,
                                   dimids, &FREQS);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, FREQS, "mdims", MPI_INT, 1, &mdims);
@@ -1653,7 +1656,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSDS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSDS", MPI_FLOAT, 2,
                                   dimids, &FSDS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDS, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1668,7 +1671,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSDSC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSDSC", MPI_FLOAT, 2,
                                   dimids, &FSDSC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSDSC, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1683,7 +1686,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSNS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSNS", MPI_FLOAT, 2,
                                   dimids, &FSNS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNS, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1698,7 +1701,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSNSC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSNSC", MPI_FLOAT, 2,
                                   dimids, &FSNSC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNSC, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1713,7 +1716,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSNT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSNT", MPI_FLOAT, 2,
                                   dimids, &FSNT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNT, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1728,7 +1731,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSNTC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSNTC", MPI_FLOAT, 2,
                                   dimids, &FSNTC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTC, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1743,7 +1746,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSNTOA", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSNTOA", MPI_FLOAT, 2,
                                   dimids, &FSNTOA);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOA, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1758,7 +1761,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSNTOAC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSNTOAC", MPI_FLOAT, 2,
                                   dimids, &FSNTOAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSNTOAC, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1774,7 +1777,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSUTOA", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSUTOA", MPI_FLOAT, 2,
                                   dimids, &FSUTOA);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSUTOA, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1789,7 +1792,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FSUTOAC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FSUTOAC", MPI_FLOAT, 2,
                                   dimids, &FSUTOAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FSUTOAC, "Sampling_Sequence", 8, "rad_lwsw");
@@ -1805,7 +1808,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "F_eff", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "F_eff", MPI_FLOAT, 2,
                                   dimids, &F_eff);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, F_eff, "units", 1, "1");
@@ -1819,7 +1822,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "H2O2_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "H2O2_SRF", MPI_FLOAT,
                                   2, dimids, &H2O2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, H2O2_SRF, "units", 7, "mol/mol");
@@ -1832,7 +1835,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "H2SO4_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "H2SO4_SRF", MPI_FLOAT,
                                   2, dimids, &H2SO4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, H2SO4_SRF, "units", 7, "mol/mol");
@@ -1845,7 +1848,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "H2SO4_sfgaex1",
+    err       = DEF_VAR (ncid, "H2SO4_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &H2SO4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, H2SO4_sfgaex1, "units", 7, "kg/m2/s");
@@ -1859,7 +1862,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ICEFRAC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "ICEFRAC", MPI_FLOAT, 2,
                                   dimids, &ICEFRAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ICEFRAC, "units", 8, "fraction");
@@ -1873,7 +1876,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ICIMR", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "ICIMR", MPI_FLOAT, 3,
                                   dimids, &ICIMR);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, ICIMR, "mdims", MPI_INT, 1, &mdims);
@@ -1889,7 +1892,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ICWMR", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "ICWMR", MPI_FLOAT, 3,
                                   dimids, &ICWMR);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, ICWMR, "mdims", MPI_INT, 1, &mdims);
@@ -1905,7 +1908,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "IWC", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "IWC", MPI_FLOAT, 3,
                                   dimids, &IWC);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, IWC, "mdims", MPI_INT, 1, &mdims);
@@ -1920,7 +1923,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LANDFRAC", MPI_FLOAT,
+    err = DEF_VAR (ncid, "LANDFRAC", MPI_FLOAT,
                                   2, dimids, &LANDFRAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LANDFRAC, "units", 8, "fraction");
@@ -1933,7 +1936,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LHFLX", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "LHFLX", MPI_FLOAT, 2,
                                   dimids, &LHFLX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LHFLX, "units", 4, "W/m2");
@@ -1947,7 +1950,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LINOZ_DO3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "LINOZ_DO3", MPI_FLOAT,
                                   3, dimids, &LINOZ_DO3);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, LINOZ_DO3, "mdims", MPI_INT, 1, &mdims);
@@ -1964,7 +1967,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LINOZ_DO3_PSC",
+    err       = DEF_VAR (ncid, "LINOZ_DO3_PSC",
                                   MPI_FLOAT, 3, dimids, &LINOZ_DO3_PSC);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, LINOZ_DO3_PSC, "mdims", MPI_INT, 1, &mdims);
@@ -1981,7 +1984,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LINOZ_O3CLIM",
+    err       = DEF_VAR (ncid, "LINOZ_O3CLIM",
                                   MPI_FLOAT, 3, dimids, &LINOZ_O3CLIM);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, LINOZ_O3CLIM, "mdims", MPI_INT, 1, &mdims);
@@ -1997,7 +2000,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LINOZ_O3COL",
+    err       = DEF_VAR (ncid, "LINOZ_O3COL",
                                   MPI_FLOAT, 3, dimids, &LINOZ_O3COL);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, LINOZ_O3COL, "mdims", MPI_INT, 1, &mdims);
@@ -2012,7 +2015,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LINOZ_SFCSINK",
+    err       = DEF_VAR (ncid, "LINOZ_SFCSINK",
                                   MPI_FLOAT, 2, dimids, &LINOZ_SFCSINK);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LINOZ_SFCSINK, "units", 8, "Tg/yr/m2");
@@ -2027,7 +2030,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LINOZ_SSO3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "LINOZ_SSO3", MPI_FLOAT,
                                   3, dimids, &LINOZ_SSO3);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, LINOZ_SSO3, "mdims", MPI_INT, 1, &mdims);
@@ -2042,7 +2045,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LINOZ_SZA", MPI_FLOAT,
+    err = DEF_VAR (ncid, "LINOZ_SZA", MPI_FLOAT,
                                   2, dimids, &LINOZ_SZA);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LINOZ_SZA, "units", 7, "degrees");
@@ -2055,7 +2058,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LND_MBL", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "LND_MBL", MPI_FLOAT, 2,
                                   dimids, &LND_MBL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LND_MBL, "units", 4, "frac");
@@ -2068,7 +2071,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LWCF", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "LWCF", MPI_FLOAT, 2,
                                   dimids, &LWCF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LWCF, "Sampling_Sequence", 8, "rad_lwsw");
@@ -2084,7 +2087,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Mass_bc", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "Mass_bc", MPI_FLOAT, 3,
                                   dimids, &Mass_bc);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, Mass_bc, "mdims", MPI_INT, 1, &mdims);
@@ -2101,7 +2104,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Mass_dst", MPI_FLOAT,
+    err = DEF_VAR (ncid, "Mass_dst", MPI_FLOAT,
                                   3, dimids, &Mass_dst);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, Mass_dst, "mdims", MPI_INT, 1, &mdims);
@@ -2118,7 +2121,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Mass_mom", MPI_FLOAT,
+    err = DEF_VAR (ncid, "Mass_mom", MPI_FLOAT,
                                   3, dimids, &Mass_mom);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, Mass_mom, "mdims", MPI_INT, 1, &mdims);
@@ -2136,7 +2139,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Mass_ncl", MPI_FLOAT,
+    err = DEF_VAR (ncid, "Mass_ncl", MPI_FLOAT,
                                   3, dimids, &Mass_ncl);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, Mass_ncl, "mdims", MPI_INT, 1, &mdims);
@@ -2153,7 +2156,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Mass_pom", MPI_FLOAT,
+    err = DEF_VAR (ncid, "Mass_pom", MPI_FLOAT,
                                   3, dimids, &Mass_pom);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, Mass_pom, "mdims", MPI_INT, 1, &mdims);
@@ -2170,7 +2173,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Mass_so4", MPI_FLOAT,
+    err = DEF_VAR (ncid, "Mass_so4", MPI_FLOAT,
                                   3, dimids, &Mass_so4);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, Mass_so4, "mdims", MPI_INT, 1, &mdims);
@@ -2187,7 +2190,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Mass_soa", MPI_FLOAT,
+    err = DEF_VAR (ncid, "Mass_soa", MPI_FLOAT,
                                   3, dimids, &Mass_soa);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, Mass_soa, "mdims", MPI_INT, 1, &mdims);
@@ -2204,7 +2207,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "NUMICE", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "NUMICE", MPI_FLOAT, 3,
                                   dimids, &NUMICE);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, NUMICE, "mdims", MPI_INT, 1, &mdims);
@@ -2222,7 +2225,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "NUMLIQ", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "NUMLIQ", MPI_FLOAT, 3,
                                   dimids, &NUMLIQ);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, NUMLIQ, "mdims", MPI_INT, 1, &mdims);
@@ -2240,7 +2243,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "NUMRAI", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "NUMRAI", MPI_FLOAT, 3,
                                   dimids, &NUMRAI);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, NUMRAI, "mdims", MPI_INT, 1, &mdims);
@@ -2258,7 +2261,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "NUMSNO", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "NUMSNO", MPI_FLOAT, 3,
                                   dimids, &NUMSNO);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, NUMSNO, "mdims", MPI_INT, 1, &mdims);
@@ -2276,7 +2279,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "O3", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "O3", MPI_FLOAT, 3,
                                   dimids, &O3);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, O3, "mdims", MPI_INT, 1, &mdims);
@@ -2293,7 +2296,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "O3_SRF", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "O3_SRF", MPI_FLOAT, 2,
                                   dimids, &O3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, O3_SRF, "units", 7, "mol/mol");
@@ -2306,7 +2309,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "OCNFRAC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "OCNFRAC", MPI_FLOAT, 2,
                                   dimids, &OCNFRAC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OCNFRAC, "units", 8, "fraction");
@@ -2320,7 +2323,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "OMEGA", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "OMEGA", MPI_FLOAT, 3,
                                   dimids, &OMEGA);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, OMEGA, "mdims", MPI_INT, 1, &mdims);
@@ -2335,7 +2338,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "OMEGA500", MPI_FLOAT,
+    err = DEF_VAR (ncid, "OMEGA500", MPI_FLOAT,
                                   2, dimids, &OMEGA500);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OMEGA500, "units", 4, "Pa/s");
@@ -2350,7 +2353,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "OMEGAT", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "OMEGAT", MPI_FLOAT, 3,
                                   dimids, &OMEGAT);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, OMEGAT, "mdims", MPI_INT, 1, &mdims);
@@ -2365,7 +2368,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PBLH", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PBLH", MPI_FLOAT, 2,
                                   dimids, &PBLH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PBLH, "units", 1, "m");
@@ -2378,7 +2381,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PHIS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PHIS", MPI_FLOAT, 2,
                                   dimids, &PHIS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PHIS, "units", 5, "m2/s2");
@@ -2389,7 +2392,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PRECC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PRECC", MPI_FLOAT, 2,
                                   dimids, &PRECC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECC, "units", 3, "m/s");
@@ -2402,7 +2405,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PRECL", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PRECL", MPI_FLOAT, 2,
                                   dimids, &PRECL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECL, "units", 3, "m/s");
@@ -2416,7 +2419,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PRECSC", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PRECSC", MPI_FLOAT, 2,
                                   dimids, &PRECSC);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECSC, "units", 3, "m/s");
@@ -2429,7 +2432,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PRECSL", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PRECSL", MPI_FLOAT, 2,
                                   dimids, &PRECSL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECSL, "units", 3, "m/s");
@@ -2443,7 +2446,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PS", MPI_FLOAT, 2,
                                   dimids, &PS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PS, "units", 2, "Pa");
@@ -2456,7 +2459,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PSL", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PSL", MPI_FLOAT, 2,
                                   dimids, &PSL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PSL, "units", 2, "Pa");
@@ -2470,7 +2473,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Q", MPI_FLOAT, 3,
+    err       = DEF_VAR (ncid, "Q", MPI_FLOAT, 3,
                                   dimids, &Q);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, Q, "mdims", MPI_INT, 1, &mdims);
@@ -2487,7 +2490,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "QFLX", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "QFLX", MPI_FLOAT, 2,
                                   dimids, &QFLX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QFLX, "units", 7, "kg/m2/s");
@@ -2500,7 +2503,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "QREFHT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "QREFHT", MPI_FLOAT, 2,
                                   dimids, &QREFHT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, QREFHT, "units", 5, "kg/kg");
@@ -2514,7 +2517,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "QRL", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "QRL", MPI_FLOAT, 3,
                                   dimids, &QRL);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, QRL, "mdims", MPI_INT, 1, &mdims);
@@ -2532,7 +2535,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "QRS", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "QRS", MPI_FLOAT, 3,
                                   dimids, &QRS);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, QRS, "mdims", MPI_INT, 1, &mdims);
@@ -2550,7 +2553,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "RAINQM", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "RAINQM", MPI_FLOAT, 3,
                                   dimids, &RAINQM);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, RAINQM, "mdims", MPI_INT, 1, &mdims);
@@ -2567,7 +2570,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "RAM1", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "RAM1", MPI_FLOAT, 2,
                                   dimids, &RAM1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, RAM1, "units", 4, "frac");
@@ -2581,7 +2584,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "RELHUM", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "RELHUM", MPI_FLOAT, 3,
                                   dimids, &RELHUM);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, RELHUM, "mdims", MPI_INT, 1, &mdims);
@@ -2597,7 +2600,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     /* 
         dimids[0] = dim_time;
         dimids[1] = dim_ncol;
-        err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SCO", MPI_FLOAT, 2,
+        err = DEF_VAR (ncid, "SCO", MPI_FLOAT, 2,
                                       dimids, &SCO);
         CHECK_ERR
         err = PUT_ATT_TEXT (ncid, SCO, "units", 3, "DU");
@@ -2613,7 +2616,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFDMS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SFDMS", MPI_FLOAT, 2,
                                   dimids, &SFDMS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFDMS, "units", 7, "kg/m2/s");
@@ -2626,7 +2629,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFH2O2", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SFH2O2", MPI_FLOAT, 2,
                                   dimids, &SFH2O2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFH2O2, "units", 7, "kg/m2/s");
@@ -2639,7 +2642,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFH2SO4", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SFH2SO4", MPI_FLOAT, 2,
                                   dimids, &SFH2SO4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFH2SO4, "units", 7, "kg/m2/s");
@@ -2652,7 +2655,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFO3", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SFO3", MPI_FLOAT, 2,
                                   dimids, &SFO3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFO3, "units", 7, "kg/m2/s");
@@ -2665,7 +2668,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFSO2", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SFSO2", MPI_FLOAT, 2,
                                   dimids, &SFSO2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFSO2, "units", 7, "kg/m2/s");
@@ -2678,7 +2681,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFSOAG", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SFSOAG", MPI_FLOAT, 2,
                                   dimids, &SFSOAG);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFSOAG, "units", 7, "kg/m2/s");
@@ -2691,7 +2694,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFbc_a1", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SFbc_a1", MPI_FLOAT, 2,
                                   dimids, &SFbc_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFbc_a1, "units", 7, "kg/m2/s");
@@ -2704,7 +2707,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFbc_a3", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SFbc_a3", MPI_FLOAT, 2,
                                   dimids, &SFbc_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFbc_a3, "units", 7, "kg/m2/s");
@@ -2717,7 +2720,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFbc_a4", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SFbc_a4", MPI_FLOAT, 2,
                                   dimids, &SFbc_a4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFbc_a4, "units", 7, "kg/m2/s");
@@ -2730,7 +2733,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFdst_a1", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFdst_a1", MPI_FLOAT,
                                   2, dimids, &SFdst_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFdst_a1, "units", 7, "kg/m2/s");
@@ -2743,7 +2746,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFdst_a3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFdst_a3", MPI_FLOAT,
                                   2, dimids, &SFdst_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFdst_a3, "units", 7, "kg/m2/s");
@@ -2756,7 +2759,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFmom_a1", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFmom_a1", MPI_FLOAT,
                                   2, dimids, &SFmom_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFmom_a1, "units", 7, "kg/m2/s");
@@ -2769,7 +2772,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFmom_a2", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFmom_a2", MPI_FLOAT,
                                   2, dimids, &SFmom_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFmom_a2, "units", 7, "kg/m2/s");
@@ -2782,7 +2785,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFmom_a3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFmom_a3", MPI_FLOAT,
                                   2, dimids, &SFmom_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFmom_a3, "units", 7, "kg/m2/s");
@@ -2795,7 +2798,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFmom_a4", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFmom_a4", MPI_FLOAT,
                                   2, dimids, &SFmom_a4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFmom_a4, "units", 7, "kg/m2/s");
@@ -2808,7 +2811,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFncl_a1", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFncl_a1", MPI_FLOAT,
                                   2, dimids, &SFncl_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFncl_a1, "units", 7, "kg/m2/s");
@@ -2821,7 +2824,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFncl_a2", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFncl_a2", MPI_FLOAT,
                                   2, dimids, &SFncl_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFncl_a2, "units", 7, "kg/m2/s");
@@ -2834,7 +2837,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFncl_a3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFncl_a3", MPI_FLOAT,
                                   2, dimids, &SFncl_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFncl_a3, "units", 7, "kg/m2/s");
@@ -2847,7 +2850,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFnum_a1", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFnum_a1", MPI_FLOAT,
                                   2, dimids, &SFnum_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFnum_a1, "units", 7, " 1/m2/s");
@@ -2860,7 +2863,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFnum_a2", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFnum_a2", MPI_FLOAT,
                                   2, dimids, &SFnum_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFnum_a2, "units", 7, " 1/m2/s");
@@ -2873,7 +2876,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFnum_a3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFnum_a3", MPI_FLOAT,
                                   2, dimids, &SFnum_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFnum_a3, "units", 7, " 1/m2/s");
@@ -2886,7 +2889,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFnum_a4", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFnum_a4", MPI_FLOAT,
                                   2, dimids, &SFnum_a4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFnum_a4, "units", 7, " 1/m2/s");
@@ -2899,7 +2902,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFpom_a1", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFpom_a1", MPI_FLOAT,
                                   2, dimids, &SFpom_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFpom_a1, "units", 7, "kg/m2/s");
@@ -2912,7 +2915,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFpom_a3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFpom_a3", MPI_FLOAT,
                                   2, dimids, &SFpom_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFpom_a3, "units", 7, "kg/m2/s");
@@ -2925,7 +2928,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFpom_a4", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFpom_a4", MPI_FLOAT,
                                   2, dimids, &SFpom_a4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFpom_a4, "units", 7, "kg/m2/s");
@@ -2938,7 +2941,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFso4_a1", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFso4_a1", MPI_FLOAT,
                                   2, dimids, &SFso4_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFso4_a1, "units", 7, "kg/m2/s");
@@ -2951,7 +2954,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFso4_a2", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFso4_a2", MPI_FLOAT,
                                   2, dimids, &SFso4_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFso4_a2, "units", 7, "kg/m2/s");
@@ -2964,7 +2967,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFso4_a3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFso4_a3", MPI_FLOAT,
                                   2, dimids, &SFso4_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFso4_a3, "units", 7, "kg/m2/s");
@@ -2977,7 +2980,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFsoa_a1", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFsoa_a1", MPI_FLOAT,
                                   2, dimids, &SFsoa_a1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFsoa_a1, "units", 7, "kg/m2/s");
@@ -2990,7 +2993,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFsoa_a2", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFsoa_a2", MPI_FLOAT,
                                   2, dimids, &SFsoa_a2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFsoa_a2, "units", 7, "kg/m2/s");
@@ -3003,7 +3006,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SFsoa_a3", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SFsoa_a3", MPI_FLOAT,
                                   2, dimids, &SFsoa_a3);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SFsoa_a3, "units", 7, "kg/m2/s");
@@ -3016,7 +3019,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SHFLX", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SHFLX", MPI_FLOAT, 2,
                                   dimids, &SHFLX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SHFLX, "units", 4, "W/m2");
@@ -3029,7 +3032,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SH_KCLDBASE",
+    err       = DEF_VAR (ncid, "SH_KCLDBASE",
                                   MPI_FLOAT, 2, dimids, &SH_KCLDBASE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SH_KCLDBASE, "units", 1, "1");
@@ -3042,7 +3045,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SH_MFUP_MAX",
+    err       = DEF_VAR (ncid, "SH_MFUP_MAX",
                                   MPI_FLOAT, 2, dimids, &SH_MFUP_MAX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SH_MFUP_MAX, "units", 5, "kg/m2");
@@ -3056,7 +3059,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SH_WCLDBASE",
+    err       = DEF_VAR (ncid, "SH_WCLDBASE",
                                   MPI_FLOAT, 2, dimids, &SH_WCLDBASE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SH_WCLDBASE, "units", 3, "m/s");
@@ -3070,7 +3073,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SNOWHICE", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SNOWHICE", MPI_FLOAT,
                                   2, dimids, &SNOWHICE);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SNOWHICE, "units", 1, "m");
@@ -3083,7 +3086,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SNOWHLND", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SNOWHLND", MPI_FLOAT,
                                   2, dimids, &SNOWHLND);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SNOWHLND, "units", 1, "m");
@@ -3097,7 +3100,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SNOWQM", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "SNOWQM", MPI_FLOAT, 3,
                                   dimids, &SNOWQM);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, SNOWQM, "mdims", MPI_INT, 1, &mdims);
@@ -3115,7 +3118,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SO2", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "SO2", MPI_FLOAT, 3,
                                   dimids, &SO2);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, SO2, "mdims", MPI_INT, 1, &mdims);
@@ -3132,7 +3135,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SO2_CLXF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SO2_CLXF", MPI_FLOAT,
                                   2, dimids, &SO2_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SO2_CLXF, "units", 11, "molec/cm2/s");
@@ -3146,7 +3149,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SO2_SRF", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SO2_SRF", MPI_FLOAT, 2,
                                   dimids, &SO2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SO2_SRF, "units", 7, "mol/mol");
@@ -3159,7 +3162,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SOAG_CLXF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SOAG_CLXF", MPI_FLOAT,
                                   2, dimids, &SOAG_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOAG_CLXF, "units", 11, "molec/cm2/s");
@@ -3173,7 +3176,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SOAG_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SOAG_SRF", MPI_FLOAT,
                                   2, dimids, &SOAG_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOAG_SRF, "units", 7, "mol/mol");
@@ -3186,7 +3189,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SOAG_sfgaex1",
+    err       = DEF_VAR (ncid, "SOAG_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &SOAG_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOAG_sfgaex1, "units", 7, "kg/m2/s");
@@ -3200,7 +3203,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SOLIN", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SOLIN", MPI_FLOAT, 2,
                                   dimids, &SOLIN);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SOLIN, "Sampling_Sequence", 8, "rad_lwsw");
@@ -3215,7 +3218,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SSAVIS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SSAVIS", MPI_FLOAT, 2,
                                   dimids, &SSAVIS);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, SSAVIS, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -3230,7 +3233,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SSTSFMBL", MPI_FLOAT,
+    err = DEF_VAR (ncid, "SSTSFMBL", MPI_FLOAT,
                                   2, dimids, &SSTSFMBL);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SSTSFMBL, "units", 7, "kg/m2/s");
@@ -3243,7 +3246,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SSTSFMBL_OM",
+    err       = DEF_VAR (ncid, "SSTSFMBL_OM",
                                   MPI_FLOAT, 2, dimids, &SSTSFMBL_OM);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SSTSFMBL_OM, "units", 7, "kg/m2/s");
@@ -3257,7 +3260,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SWCF", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SWCF", MPI_FLOAT, 2,
                                   dimids, &SWCF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SWCF, "Sampling_Sequence", 8, "rad_lwsw");
@@ -3273,7 +3276,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "T", MPI_FLOAT, 3,
+    err       = DEF_VAR (ncid, "T", MPI_FLOAT, 3,
                                   dimids, &T);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, T, "mdims", MPI_INT, 1, &mdims);
@@ -3288,7 +3291,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TAUGWX", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TAUGWX", MPI_FLOAT, 2,
                                   dimids, &TAUGWX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TAUGWX, "units", 4, "N/m2");
@@ -3301,7 +3304,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TAUGWY", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TAUGWY", MPI_FLOAT, 2,
                                   dimids, &TAUGWY);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TAUGWY, "units", 4, "N/m2");
@@ -3314,7 +3317,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TAUX", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TAUX", MPI_FLOAT, 2,
                                   dimids, &TAUX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TAUX, "units", 4, "N/m2");
@@ -3327,7 +3330,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TAUY", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TAUY", MPI_FLOAT, 2,
                                   dimids, &TAUY);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TAUY, "units", 4, "N/m2");
@@ -3341,7 +3344,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     /*
         dimids[0] = dim_time;
         dimids[1] = dim_ncol;
-        err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TCO", MPI_FLOAT, 2,
+        err = DEF_VAR (ncid, "TCO", MPI_FLOAT, 2,
                                       dimids, &TCO);
         CHECK_ERR
         err = PUT_ATT_TEXT (ncid, TCO, "units", 2, "DU");
@@ -3356,7 +3359,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TGCLDCWP", MPI_FLOAT,
+    err = DEF_VAR (ncid, "TGCLDCWP", MPI_FLOAT,
                                   2, dimids, &TGCLDCWP);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TGCLDCWP, "units", 5, "kg/m2");
@@ -3370,7 +3373,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TGCLDIWP", MPI_FLOAT,
+    err = DEF_VAR (ncid, "TGCLDIWP", MPI_FLOAT,
                                   2, dimids, &TGCLDIWP);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TGCLDIWP, "units", 5, "kg/m2");
@@ -3383,7 +3386,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TGCLDLWP", MPI_FLOAT,
+    err = DEF_VAR (ncid, "TGCLDLWP", MPI_FLOAT,
                                   2, dimids, &TGCLDLWP);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TGCLDLWP, "units", 5, "kg/m2");
@@ -3396,7 +3399,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TH7001000", MPI_FLOAT,
+    err = DEF_VAR (ncid, "TH7001000", MPI_FLOAT,
                                   2, dimids, &TH7001000);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TH7001000, "units", 1, "K");
@@ -3409,7 +3412,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TMQ", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TMQ", MPI_FLOAT, 2,
                                   dimids, &TMQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TMQ, "units", 5, "kg/m2");
@@ -3423,7 +3426,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TREFHT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TREFHT", MPI_FLOAT, 2,
                                   dimids, &TREFHT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TREFHT, "units", 1, "K");
@@ -3436,7 +3439,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TROP_P", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TROP_P", MPI_FLOAT, 2,
                                   dimids, &TROP_P);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, TROP_P, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -3453,7 +3456,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TROP_T", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TROP_T", MPI_FLOAT, 2,
                                   dimids, &TROP_T);
     CHECK_ERR
     err = PUT_ATT_FLOAT (ncid, TROP_T, _FillValue, MPI_FLOAT, 1, &fillv);
@@ -3470,7 +3473,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TS", MPI_FLOAT, 2,
                                   dimids, &TS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TS, "units", 1, "K");
@@ -3483,7 +3486,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TSMN", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TSMN", MPI_FLOAT, 2,
                                   dimids, &TSMN);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TSMN, "units", 1, "K");
@@ -3497,7 +3500,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TSMX", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TSMX", MPI_FLOAT, 2,
                                   dimids, &TSMX);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TSMX, "units", 1, "K");
@@ -3511,7 +3514,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TUH", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TUH", MPI_FLOAT, 2,
                                   dimids, &TUH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TUH, "units", 3, "W/m");
@@ -3524,7 +3527,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TUQ", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TUQ", MPI_FLOAT, 2,
                                   dimids, &TUQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TUQ, "units", 6, "kg/m/s");
@@ -3538,7 +3541,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TVH", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TVH", MPI_FLOAT, 2,
                                   dimids, &TVH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TVH, "units", 3, "W/m");
@@ -3552,7 +3555,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TVQ", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TVQ", MPI_FLOAT, 2,
                                   dimids, &TVQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TVQ, "units", 6, "kg/m/s");
@@ -3567,7 +3570,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "U", MPI_FLOAT, 3,
+    err       = DEF_VAR (ncid, "U", MPI_FLOAT, 3,
                                   dimids, &U);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, U, "mdims", MPI_INT, 1, &mdims);
@@ -3582,7 +3585,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "U10", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "U10", MPI_FLOAT, 2,
                                   dimids, &U10);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U10, "units", 3, "m/s");
@@ -3596,7 +3599,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "UU", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "UU", MPI_FLOAT, 3,
                                   dimids, &UU);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, UU, "mdims", MPI_INT, 1, &mdims);
@@ -3612,7 +3615,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "V", MPI_FLOAT, 3,
+    err       = DEF_VAR (ncid, "V", MPI_FLOAT, 3,
                                   dimids, &V);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, V, "mdims", MPI_INT, 1, &mdims);
@@ -3628,7 +3631,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "VQ", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "VQ", MPI_FLOAT, 3,
                                   dimids, &VQ);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, VQ, "mdims", MPI_INT, 1, &mdims);
@@ -3644,7 +3647,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "VT", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "VT", MPI_FLOAT, 3,
                                   dimids, &VT);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, VT, "mdims", MPI_INT, 1, &mdims);
@@ -3660,7 +3663,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "VU", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "VU", MPI_FLOAT, 3,
                                   dimids, &VU);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, VU, "mdims", MPI_INT, 1, &mdims);
@@ -3676,7 +3679,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "VV", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "VV", MPI_FLOAT, 3,
                                   dimids, &VV);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, VV, "mdims", MPI_INT, 1, &mdims);
@@ -3691,7 +3694,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "WD_H2O2", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "WD_H2O2", MPI_FLOAT, 2,
                                   dimids, &WD_H2O2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, WD_H2O2, "units", 4, "kg/s");
@@ -3704,7 +3707,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "WD_H2SO4", MPI_FLOAT,
+    err = DEF_VAR (ncid, "WD_H2SO4", MPI_FLOAT,
                                   2, dimids, &WD_H2SO4);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, WD_H2SO4, "units", 4, "kg/s");
@@ -3717,7 +3720,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "WD_SO2", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "WD_SO2", MPI_FLOAT, 2,
                                   dimids, &WD_SO2);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, WD_SO2, "units", 4, "kg/s");
@@ -3731,7 +3734,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "WSUB", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "WSUB", MPI_FLOAT, 3,
                                   dimids, &WSUB);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, WSUB, "mdims", MPI_INT, 1, &mdims);
@@ -3747,7 +3750,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Z3", MPI_FLOAT, 3,
+    err = DEF_VAR (ncid, "Z3", MPI_FLOAT, 3,
                                   dimids, &Z3);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, Z3, "mdims", MPI_INT, 1, &mdims);
@@ -3763,7 +3766,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "aero_water", MPI_FLOAT,
+    err = DEF_VAR (ncid, "aero_water", MPI_FLOAT,
                                   3, dimids, &aero_water);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, aero_water, "mdims", MPI_INT, 1, &mdims);
@@ -3779,7 +3782,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "airFV", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "airFV", MPI_FLOAT, 2,
                                   dimids, &airFV);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, airFV, "units", 4, "frac");
@@ -3792,7 +3795,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a1DDF", MPI_FLOAT,
                                   2, dimids, &bc_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a1DDF, "units", 7, "kg/m2/s");
@@ -3806,7 +3809,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a1SFWET", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a1SFWET", MPI_FLOAT,
                                   2, dimids, &bc_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a1SFWET, "units", 7, "kg/m2/s");
@@ -3819,7 +3822,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a1_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a1_SRF", MPI_FLOAT,
                                   2, dimids, &bc_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a1_SRF, "units", 5, "kg/kg");
@@ -3832,7 +3835,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a1_sfgaex1",
+    err       = DEF_VAR (ncid, "bc_a1_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &bc_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a1_sfgaex1, "units", 7, "kg/m2/s");
@@ -3846,7 +3849,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a3DDF", MPI_FLOAT,
                                   2, dimids, &bc_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a3DDF, "units", 7, "kg/m2/s");
@@ -3860,7 +3863,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a3SFWET", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a3SFWET", MPI_FLOAT,
                                   2, dimids, &bc_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a3SFWET, "units", 7, "kg/m2/s");
@@ -3873,7 +3876,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a3_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a3_SRF", MPI_FLOAT,
                                   2, dimids, &bc_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a3_SRF, "units", 5, "kg/kg");
@@ -3886,7 +3889,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a4DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a4DDF", MPI_FLOAT,
                                   2, dimids, &bc_a4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4DDF, "units", 7, "kg/m2/s");
@@ -3900,7 +3903,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a4SFWET", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a4SFWET", MPI_FLOAT,
                                   2, dimids, &bc_a4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4SFWET, "units", 7, "kg/m2/s");
@@ -3913,7 +3916,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a4_CLXF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a4_CLXF", MPI_FLOAT,
                                   2, dimids, &bc_a4_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4_CLXF, "units", 11, "molec/cm2/s");
@@ -3927,7 +3930,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a4_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_a4_SRF", MPI_FLOAT,
                                   2, dimids, &bc_a4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4_SRF, "units", 5, "kg/kg");
@@ -3940,7 +3943,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_a4_sfgaex1",
+    err       = DEF_VAR (ncid, "bc_a4_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &bc_a4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_a4_sfgaex1, "units", 7, "kg/m2/s");
@@ -3954,7 +3957,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_c1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_c1DDF", MPI_FLOAT,
                                   2, dimids, &bc_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c1DDF, "units", 7, "kg/m2/s");
@@ -3968,7 +3971,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_c1SFWET", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_c1SFWET", MPI_FLOAT,
                                   2, dimids, &bc_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c1SFWET, "units", 7, "kg/m2/s");
@@ -3981,7 +3984,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_c3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_c3DDF", MPI_FLOAT,
                                   2, dimids, &bc_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c3DDF, "units", 7, "kg/m2/s");
@@ -3995,7 +3998,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_c3SFWET", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_c3SFWET", MPI_FLOAT,
                                   2, dimids, &bc_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c3SFWET, "units", 7, "kg/m2/s");
@@ -4008,7 +4011,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_c4DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_c4DDF", MPI_FLOAT,
                                   2, dimids, &bc_c4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c4DDF, "units", 7, "kg/m2/s");
@@ -4022,7 +4025,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "bc_c4SFWET", MPI_FLOAT,
+    err = DEF_VAR (ncid, "bc_c4SFWET", MPI_FLOAT,
                                   2, dimids, &bc_c4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, bc_c4SFWET, "units", 7, "kg/m2/s");
@@ -4035,7 +4038,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "chla", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "chla", MPI_FLOAT, 2,
                                   dimids, &chla);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, chla, "units", 6, "mg L-1");
@@ -4048,7 +4051,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_a1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "dst_a1DDF", MPI_FLOAT,
                                   2, dimids, &dst_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a1DDF, "units", 7, "kg/m2/s");
@@ -4062,7 +4065,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_a1SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "dst_a1SF", MPI_FLOAT,
                                   2, dimids, &dst_a1SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a1SF, "units", 7, "kg/m2/s");
@@ -4075,7 +4078,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_a1SFWET",
+    err       = DEF_VAR (ncid, "dst_a1SFWET",
                                   MPI_FLOAT, 2, dimids, &dst_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a1SFWET, "units", 7, "kg/m2/s");
@@ -4088,7 +4091,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_a1_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "dst_a1_SRF", MPI_FLOAT,
                                   2, dimids, &dst_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a1_SRF, "units", 5, "kg/kg");
@@ -4101,7 +4104,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_a3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "dst_a3DDF", MPI_FLOAT,
                                   2, dimids, &dst_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a3DDF, "units", 7, "kg/m2/s");
@@ -4115,7 +4118,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_a3SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "dst_a3SF", MPI_FLOAT,
                                   2, dimids, &dst_a3SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a3SF, "units", 7, "kg/m2/s");
@@ -4128,7 +4131,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_a3SFWET",
+    err       = DEF_VAR (ncid, "dst_a3SFWET",
                                   MPI_FLOAT, 2, dimids, &dst_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a3SFWET, "units", 7, "kg/m2/s");
@@ -4141,7 +4144,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_a3_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "dst_a3_SRF", MPI_FLOAT,
                                   2, dimids, &dst_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_a3_SRF, "units", 5, "kg/kg");
@@ -4154,7 +4157,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_c1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "dst_c1DDF", MPI_FLOAT,
                                   2, dimids, &dst_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_c1DDF, "units", 7, "kg/m2/s");
@@ -4168,7 +4171,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_c1SFWET",
+    err       = DEF_VAR (ncid, "dst_c1SFWET",
                                   MPI_FLOAT, 2, dimids, &dst_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_c1SFWET, "units", 7, "kg/m2/s");
@@ -4182,7 +4185,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_c3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "dst_c3DDF", MPI_FLOAT,
                                   2, dimids, &dst_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_c3DDF, "units", 7, "kg/m2/s");
@@ -4196,7 +4199,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "dst_c3SFWET",
+    err       = DEF_VAR (ncid, "dst_c3SFWET",
                                   MPI_FLOAT, 2, dimids, &dst_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, dst_c3SFWET, "units", 7, "kg/m2/s");
@@ -4211,7 +4214,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "hstobie_linoz",
+    err       = DEF_VAR (ncid, "hstobie_linoz",
                                   MPI_FLOAT, 3, dimids, &hstobie_linoz);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, hstobie_linoz, "mdims", MPI_INT, 1, &mdims);
@@ -4224,7 +4227,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mlip", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "mlip", MPI_FLOAT, 2,
                                   dimids, &mlip);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mlip, "units", 4, "uM C");
@@ -4237,7 +4240,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a1DDF", MPI_FLOAT,
                                   2, dimids, &mom_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1DDF, "units", 7, "kg/m2/s");
@@ -4251,7 +4254,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a1SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a1SF", MPI_FLOAT,
                                   2, dimids, &mom_a1SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1SF, "units", 7, "kg/m2/s");
@@ -4264,7 +4267,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a1SFWET",
+    err       = DEF_VAR (ncid, "mom_a1SFWET",
                                   MPI_FLOAT, 2, dimids, &mom_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1SFWET, "units", 7, "kg/m2/s");
@@ -4277,7 +4280,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a1_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a1_SRF", MPI_FLOAT,
                                   2, dimids, &mom_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1_SRF, "units", 5, "kg/kg");
@@ -4290,7 +4293,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a1_sfgaex1",
+    err       = DEF_VAR (ncid, "mom_a1_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &mom_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a1_sfgaex1, "units", 7, "kg/m2/s");
@@ -4304,7 +4307,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a2DDF", MPI_FLOAT,
                                   2, dimids, &mom_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a2DDF, "units", 7, "kg/m2/s");
@@ -4318,7 +4321,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a2SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a2SF", MPI_FLOAT,
                                   2, dimids, &mom_a2SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a2SF, "units", 7, "kg/m2/s");
@@ -4331,7 +4334,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a2SFWET",
+    err       = DEF_VAR (ncid, "mom_a2SFWET",
                                   MPI_FLOAT, 2, dimids, &mom_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a2SFWET, "units", 7, "kg/m2/s");
@@ -4344,7 +4347,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a2_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a2_SRF", MPI_FLOAT,
                                   2, dimids, &mom_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a2_SRF, "units", 5, "kg/kg");
@@ -4357,7 +4360,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a3DDF", MPI_FLOAT,
                                   2, dimids, &mom_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a3DDF, "units", 7, "kg/m2/s");
@@ -4371,7 +4374,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a3SFWET",
+    err       = DEF_VAR (ncid, "mom_a3SFWET",
                                   MPI_FLOAT, 2, dimids, &mom_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a3SFWET, "units", 7, "kg/m2/s");
@@ -4384,7 +4387,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a3_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a3_SRF", MPI_FLOAT,
                                   2, dimids, &mom_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a3_SRF, "units", 5, "kg/kg");
@@ -4397,7 +4400,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a4DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a4DDF", MPI_FLOAT,
                                   2, dimids, &mom_a4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4DDF, "units", 7, "kg/m2/s");
@@ -4411,7 +4414,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a4SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a4SF", MPI_FLOAT,
                                   2, dimids, &mom_a4SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4SF, "units", 7, "kg/m2/s");
@@ -4424,7 +4427,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a4SFWET",
+    err       = DEF_VAR (ncid, "mom_a4SFWET",
                                   MPI_FLOAT, 2, dimids, &mom_a4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4SFWET, "units", 7, "kg/m2/s");
@@ -4437,7 +4440,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a4_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_a4_SRF", MPI_FLOAT,
                                   2, dimids, &mom_a4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4_SRF, "units", 5, "kg/kg");
@@ -4450,7 +4453,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_a4_sfgaex1",
+    err       = DEF_VAR (ncid, "mom_a4_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &mom_a4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_a4_sfgaex1, "units", 7, "kg/m2/s");
@@ -4464,7 +4467,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_c1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_c1DDF", MPI_FLOAT,
                                   2, dimids, &mom_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c1DDF, "units", 7, "kg/m2/s");
@@ -4478,7 +4481,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_c1SFWET",
+    err       = DEF_VAR (ncid, "mom_c1SFWET",
                                   MPI_FLOAT, 2, dimids, &mom_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c1SFWET, "units", 7, "kg/m2/s");
@@ -4492,7 +4495,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_c2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_c2DDF", MPI_FLOAT,
                                   2, dimids, &mom_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c2DDF, "units", 7, "kg/m2/s");
@@ -4506,7 +4509,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_c2SFWET",
+    err       = DEF_VAR (ncid, "mom_c2SFWET",
                                   MPI_FLOAT, 2, dimids, &mom_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c2SFWET, "units", 7, "kg/m2/s");
@@ -4520,7 +4523,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_c3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_c3DDF", MPI_FLOAT,
                                   2, dimids, &mom_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c3DDF, "units", 7, "kg/m2/s");
@@ -4534,7 +4537,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_c3SFWET",
+    err       = DEF_VAR (ncid, "mom_c3SFWET",
                                   MPI_FLOAT, 2, dimids, &mom_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c3SFWET, "units", 7, "kg/m2/s");
@@ -4548,7 +4551,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_c4DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "mom_c4DDF", MPI_FLOAT,
                                   2, dimids, &mom_c4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c4DDF, "units", 7, "kg/m2/s");
@@ -4562,7 +4565,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mom_c4SFWET",
+    err       = DEF_VAR (ncid, "mom_c4SFWET",
                                   MPI_FLOAT, 2, dimids, &mom_c4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mom_c4SFWET, "units", 7, "kg/m2/s");
@@ -4576,7 +4579,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mpoly", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "mpoly", MPI_FLOAT, 2,
                                   dimids, &mpoly);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mpoly, "units", 4, "uM C");
@@ -4589,7 +4592,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mprot", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "mprot", MPI_FLOAT, 2,
                                   dimids, &mprot);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mprot, "units", 4, "uM C");
@@ -4602,7 +4605,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_a1DDF", MPI_FLOAT,
                                   2, dimids, &ncl_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a1DDF, "units", 7, "kg/m2/s");
@@ -4616,7 +4619,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a1SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_a1SF", MPI_FLOAT,
                                   2, dimids, &ncl_a1SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a1SF, "units", 7, "kg/m2/s");
@@ -4629,7 +4632,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a1SFWET",
+    err       = DEF_VAR (ncid, "ncl_a1SFWET",
                                   MPI_FLOAT, 2, dimids, &ncl_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a1SFWET, "units", 7, "kg/m2/s");
@@ -4642,7 +4645,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a1_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_a1_SRF", MPI_FLOAT,
                                   2, dimids, &ncl_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a1_SRF, "units", 5, "kg/kg");
@@ -4655,7 +4658,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_a2DDF", MPI_FLOAT,
                                   2, dimids, &ncl_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a2DDF, "units", 7, "kg/m2/s");
@@ -4669,7 +4672,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a2SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_a2SF", MPI_FLOAT,
                                   2, dimids, &ncl_a2SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a2SF, "units", 7, "kg/m2/s");
@@ -4682,7 +4685,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a2SFWET",
+    err       = DEF_VAR (ncid, "ncl_a2SFWET",
                                   MPI_FLOAT, 2, dimids, &ncl_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a2SFWET, "units", 7, "kg/m2/s");
@@ -4695,7 +4698,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a2_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_a2_SRF", MPI_FLOAT,
                                   2, dimids, &ncl_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a2_SRF, "units", 5, "kg/kg");
@@ -4708,7 +4711,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_a3DDF", MPI_FLOAT,
                                   2, dimids, &ncl_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a3DDF, "units", 7, "kg/m2/s");
@@ -4722,7 +4725,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a3SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_a3SF", MPI_FLOAT,
                                   2, dimids, &ncl_a3SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a3SF, "units", 7, "kg/m2/s");
@@ -4735,7 +4738,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a3SFWET",
+    err       = DEF_VAR (ncid, "ncl_a3SFWET",
                                   MPI_FLOAT, 2, dimids, &ncl_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a3SFWET, "units", 7, "kg/m2/s");
@@ -4748,7 +4751,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_a3_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_a3_SRF", MPI_FLOAT,
                                   2, dimids, &ncl_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_a3_SRF, "units", 5, "kg/kg");
@@ -4761,7 +4764,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_c1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_c1DDF", MPI_FLOAT,
                                   2, dimids, &ncl_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c1DDF, "units", 7, "kg/m2/s");
@@ -4775,7 +4778,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_c1SFWET",
+    err       = DEF_VAR (ncid, "ncl_c1SFWET",
                                   MPI_FLOAT, 2, dimids, &ncl_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c1SFWET, "units", 7, "kg/m2/s");
@@ -4789,7 +4792,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_c2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_c2DDF", MPI_FLOAT,
                                   2, dimids, &ncl_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c2DDF, "units", 7, "kg/m2/s");
@@ -4803,7 +4806,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_c2SFWET",
+    err       = DEF_VAR (ncid, "ncl_c2SFWET",
                                   MPI_FLOAT, 2, dimids, &ncl_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c2SFWET, "units", 7, "kg/m2/s");
@@ -4817,7 +4820,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_c3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "ncl_c3DDF", MPI_FLOAT,
                                   2, dimids, &ncl_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c3DDF, "units", 7, "kg/m2/s");
@@ -4831,7 +4834,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ncl_c3SFWET",
+    err       = DEF_VAR (ncid, "ncl_c3SFWET",
                                   MPI_FLOAT, 2, dimids, &ncl_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ncl_c3SFWET, "units", 7, "kg/m2/s");
@@ -4845,7 +4848,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a1DDF", MPI_FLOAT,
                                   2, dimids, &num_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1DDF, "units", 7, " 1/m2/s");
@@ -4859,7 +4862,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a1SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a1SF", MPI_FLOAT,
                                   2, dimids, &num_a1SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1SF, "units", 7, "kg/m2/s");
@@ -4872,7 +4875,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a1SFWET",
+    err       = DEF_VAR (ncid, "num_a1SFWET",
                                   MPI_FLOAT, 2, dimids, &num_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1SFWET, "units", 7, " 1/m2/s");
@@ -4885,7 +4888,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a1_CLXF",
+    err       = DEF_VAR (ncid, "num_a1_CLXF",
                                   MPI_FLOAT, 2, dimids, &num_a1_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1_CLXF, "units", 11, "molec/cm2/s");
@@ -4899,7 +4902,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a1_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a1_SRF", MPI_FLOAT,
                                   2, dimids, &num_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1_SRF, "units", 5, " 1/kg");
@@ -4912,7 +4915,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a1_sfgaex1",
+    err       = DEF_VAR (ncid, "num_a1_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &num_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a1_sfgaex1, "units", 7, "kg/m2/s");
@@ -4926,7 +4929,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a2DDF", MPI_FLOAT,
                                   2, dimids, &num_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a2DDF, "units", 7, " 1/m2/s");
@@ -4940,7 +4943,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a2SFWET",
+    err       = DEF_VAR (ncid, "num_a2SFWET",
                                   MPI_FLOAT, 2, dimids, &num_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a2SFWET, "units", 7, " 1/m2/s");
@@ -4953,7 +4956,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a2_CLXF",
+    err       = DEF_VAR (ncid, "num_a2_CLXF",
                                   MPI_FLOAT, 2, dimids, &num_a2_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a2_CLXF, "units", 11, "molec/cm2/s");
@@ -4967,7 +4970,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a2_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a2_SRF", MPI_FLOAT,
                                   2, dimids, &num_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a2_SRF, "units", 5, " 1/kg");
@@ -4980,7 +4983,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a3DDF", MPI_FLOAT,
                                   2, dimids, &num_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a3DDF, "units", 7, " 1/m2/s");
@@ -4994,7 +4997,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a3SF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a3SF", MPI_FLOAT,
                                   2, dimids, &num_a3SF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a3SF, "units", 7, "kg/m2/s");
@@ -5007,7 +5010,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a3SFWET",
+    err       = DEF_VAR (ncid, "num_a3SFWET",
                                   MPI_FLOAT, 2, dimids, &num_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a3SFWET, "units", 7, " 1/m2/s");
@@ -5020,7 +5023,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a3_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a3_SRF", MPI_FLOAT,
                                   2, dimids, &num_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a3_SRF, "units", 5, " 1/kg");
@@ -5033,7 +5036,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a4DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a4DDF", MPI_FLOAT,
                                   2, dimids, &num_a4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4DDF, "units", 7, " 1/m2/s");
@@ -5047,7 +5050,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a4SFWET",
+    err       = DEF_VAR (ncid, "num_a4SFWET",
                                   MPI_FLOAT, 2, dimids, &num_a4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4SFWET, "units", 7, " 1/m2/s");
@@ -5060,7 +5063,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a4_CLXF",
+    err       = DEF_VAR (ncid, "num_a4_CLXF",
                                   MPI_FLOAT, 2, dimids, &num_a4_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4_CLXF, "units", 11, "molec/cm2/s");
@@ -5074,7 +5077,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a4_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_a4_SRF", MPI_FLOAT,
                                   2, dimids, &num_a4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4_SRF, "units", 5, " 1/kg");
@@ -5087,7 +5090,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_a4_sfgaex1",
+    err       = DEF_VAR (ncid, "num_a4_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &num_a4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_a4_sfgaex1, "units", 7, "kg/m2/s");
@@ -5101,7 +5104,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_c1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_c1DDF", MPI_FLOAT,
                                   2, dimids, &num_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c1DDF, "units", 7, " 1/m2/s");
@@ -5115,7 +5118,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_c1SFWET",
+    err       = DEF_VAR (ncid, "num_c1SFWET",
                                   MPI_FLOAT, 2, dimids, &num_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c1SFWET, "units", 7, " 1/m2/s");
@@ -5129,7 +5132,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_c2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_c2DDF", MPI_FLOAT,
                                   2, dimids, &num_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c2DDF, "units", 7, " 1/m2/s");
@@ -5143,7 +5146,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_c2SFWET",
+    err       = DEF_VAR (ncid, "num_c2SFWET",
                                   MPI_FLOAT, 2, dimids, &num_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c2SFWET, "units", 7, " 1/m2/s");
@@ -5157,7 +5160,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_c3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_c3DDF", MPI_FLOAT,
                                   2, dimids, &num_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c3DDF, "units", 7, " 1/m2/s");
@@ -5171,7 +5174,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_c3SFWET",
+    err       = DEF_VAR (ncid, "num_c3SFWET",
                                   MPI_FLOAT, 2, dimids, &num_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c3SFWET, "units", 7, " 1/m2/s");
@@ -5185,7 +5188,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_c4DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "num_c4DDF", MPI_FLOAT,
                                   2, dimids, &num_c4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c4DDF, "units", 7, " 1/m2/s");
@@ -5199,7 +5202,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "num_c4SFWET",
+    err       = DEF_VAR (ncid, "num_c4SFWET",
                                   MPI_FLOAT, 2, dimids, &num_c4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, num_c4SFWET, "units", 7, " 1/m2/s");
@@ -5213,7 +5216,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "pom_a1DDF", MPI_FLOAT,
                                   2, dimids, &pom_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a1DDF, "units", 7, "kg/m2/s");
@@ -5227,7 +5230,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a1SFWET",
+    err       = DEF_VAR (ncid, "pom_a1SFWET",
                                   MPI_FLOAT, 2, dimids, &pom_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a1SFWET, "units", 7, "kg/m2/s");
@@ -5240,7 +5243,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a1_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "pom_a1_SRF", MPI_FLOAT,
                                   2, dimids, &pom_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a1_SRF, "units", 5, "kg/kg");
@@ -5253,7 +5256,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a1_sfgaex1",
+    err       = DEF_VAR (ncid, "pom_a1_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &pom_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a1_sfgaex1, "units", 7, "kg/m2/s");
@@ -5267,7 +5270,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "pom_a3DDF", MPI_FLOAT,
                                   2, dimids, &pom_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a3DDF, "units", 7, "kg/m2/s");
@@ -5281,7 +5284,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a3SFWET",
+    err       = DEF_VAR (ncid, "pom_a3SFWET",
                                   MPI_FLOAT, 2, dimids, &pom_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a3SFWET, "units", 7, "kg/m2/s");
@@ -5294,7 +5297,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a3_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "pom_a3_SRF", MPI_FLOAT,
                                   2, dimids, &pom_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a3_SRF, "units", 5, "kg/kg");
@@ -5307,7 +5310,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a4DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "pom_a4DDF", MPI_FLOAT,
                                   2, dimids, &pom_a4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4DDF, "units", 7, "kg/m2/s");
@@ -5321,7 +5324,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a4SFWET",
+    err       = DEF_VAR (ncid, "pom_a4SFWET",
                                   MPI_FLOAT, 2, dimids, &pom_a4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4SFWET, "units", 7, "kg/m2/s");
@@ -5334,7 +5337,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a4_CLXF",
+    err       = DEF_VAR (ncid, "pom_a4_CLXF",
                                   MPI_FLOAT, 2, dimids, &pom_a4_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4_CLXF, "units", 11, "molec/cm2/s");
@@ -5348,7 +5351,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a4_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "pom_a4_SRF", MPI_FLOAT,
                                   2, dimids, &pom_a4_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4_SRF, "units", 5, "kg/kg");
@@ -5361,7 +5364,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_a4_sfgaex1",
+    err       = DEF_VAR (ncid, "pom_a4_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &pom_a4_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_a4_sfgaex1, "units", 7, "kg/m2/s");
@@ -5375,7 +5378,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_c1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "pom_c1DDF", MPI_FLOAT,
                                   2, dimids, &pom_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c1DDF, "units", 7, "kg/m2/s");
@@ -5389,7 +5392,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_c1SFWET",
+    err       = DEF_VAR (ncid, "pom_c1SFWET",
                                   MPI_FLOAT, 2, dimids, &pom_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c1SFWET, "units", 7, "kg/m2/s");
@@ -5403,7 +5406,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_c3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "pom_c3DDF", MPI_FLOAT,
                                   2, dimids, &pom_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c3DDF, "units", 7, "kg/m2/s");
@@ -5417,7 +5420,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_c3SFWET",
+    err       = DEF_VAR (ncid, "pom_c3SFWET",
                                   MPI_FLOAT, 2, dimids, &pom_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c3SFWET, "units", 7, "kg/m2/s");
@@ -5431,7 +5434,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_c4DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "pom_c4DDF", MPI_FLOAT,
                                   2, dimids, &pom_c4DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c4DDF, "units", 7, "kg/m2/s");
@@ -5445,7 +5448,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "pom_c4SFWET",
+    err       = DEF_VAR (ncid, "pom_c4SFWET",
                                   MPI_FLOAT, 2, dimids, &pom_c4SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, pom_c4SFWET, "units", 7, "kg/m2/s");
@@ -5459,7 +5462,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "so4_a1DDF", MPI_FLOAT,
                                   2, dimids, &so4_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1DDF, "units", 7, "kg/m2/s");
@@ -5473,7 +5476,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a1SFWET",
+    err       = DEF_VAR (ncid, "so4_a1SFWET",
                                   MPI_FLOAT, 2, dimids, &so4_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1SFWET, "units", 7, "kg/m2/s");
@@ -5486,7 +5489,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a1_CLXF",
+    err       = DEF_VAR (ncid, "so4_a1_CLXF",
                                   MPI_FLOAT, 2, dimids, &so4_a1_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1_CLXF, "units", 11, "molec/cm2/s");
@@ -5500,7 +5503,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a1_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "so4_a1_SRF", MPI_FLOAT,
                                   2, dimids, &so4_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1_SRF, "units", 5, "kg/kg");
@@ -5513,7 +5516,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a1_sfgaex1",
+    err       = DEF_VAR (ncid, "so4_a1_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &so4_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a1_sfgaex1, "units", 7, "kg/m2/s");
@@ -5527,7 +5530,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "so4_a2DDF", MPI_FLOAT,
                                   2, dimids, &so4_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2DDF, "units", 7, "kg/m2/s");
@@ -5541,7 +5544,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a2SFWET",
+    err       = DEF_VAR (ncid, "so4_a2SFWET",
                                   MPI_FLOAT, 2, dimids, &so4_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2SFWET, "units", 7, "kg/m2/s");
@@ -5554,7 +5557,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a2_CLXF",
+    err       = DEF_VAR (ncid, "so4_a2_CLXF",
                                   MPI_FLOAT, 2, dimids, &so4_a2_CLXF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2_CLXF, "units", 11, "molec/cm2/s");
@@ -5568,7 +5571,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a2_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "so4_a2_SRF", MPI_FLOAT,
                                   2, dimids, &so4_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2_SRF, "units", 5, "kg/kg");
@@ -5581,7 +5584,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a2_sfgaex1",
+    err       = DEF_VAR (ncid, "so4_a2_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &so4_a2_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a2_sfgaex1, "units", 7, "kg/m2/s");
@@ -5595,7 +5598,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "so4_a3DDF", MPI_FLOAT,
                                   2, dimids, &so4_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a3DDF, "units", 7, "kg/m2/s");
@@ -5609,7 +5612,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a3SFWET",
+    err       = DEF_VAR (ncid, "so4_a3SFWET",
                                   MPI_FLOAT, 2, dimids, &so4_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a3SFWET, "units", 7, "kg/m2/s");
@@ -5622,7 +5625,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a3_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "so4_a3_SRF", MPI_FLOAT,
                                   2, dimids, &so4_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a3_SRF, "units", 5, "kg/kg");
@@ -5635,7 +5638,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_a3_sfgaex1",
+    err       = DEF_VAR (ncid, "so4_a3_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &so4_a3_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_a3_sfgaex1, "units", 7, "kg/m2/s");
@@ -5649,7 +5652,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_c1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "so4_c1DDF", MPI_FLOAT,
                                   2, dimids, &so4_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c1DDF, "units", 7, "kg/m2/s");
@@ -5663,7 +5666,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_c1SFWET",
+    err       = DEF_VAR (ncid, "so4_c1SFWET",
                                   MPI_FLOAT, 2, dimids, &so4_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c1SFWET, "units", 7, "kg/m2/s");
@@ -5677,7 +5680,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_c2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "so4_c2DDF", MPI_FLOAT,
                                   2, dimids, &so4_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c2DDF, "units", 7, "kg/m2/s");
@@ -5691,7 +5694,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_c2SFWET",
+    err       = DEF_VAR (ncid, "so4_c2SFWET",
                                   MPI_FLOAT, 2, dimids, &so4_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c2SFWET, "units", 7, "kg/m2/s");
@@ -5705,7 +5708,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_c3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "so4_c3DDF", MPI_FLOAT,
                                   2, dimids, &so4_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c3DDF, "units", 7, "kg/m2/s");
@@ -5719,7 +5722,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "so4_c3SFWET",
+    err       = DEF_VAR (ncid, "so4_c3SFWET",
                                   MPI_FLOAT, 2, dimids, &so4_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, so4_c3SFWET, "units", 7, "kg/m2/s");
@@ -5733,7 +5736,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "soa_a1DDF", MPI_FLOAT,
                                   2, dimids, &soa_a1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a1DDF, "units", 7, "kg/m2/s");
@@ -5747,7 +5750,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a1SFWET",
+    err       = DEF_VAR (ncid, "soa_a1SFWET",
                                   MPI_FLOAT, 2, dimids, &soa_a1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a1SFWET, "units", 7, "kg/m2/s");
@@ -5760,7 +5763,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a1_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "soa_a1_SRF", MPI_FLOAT,
                                   2, dimids, &soa_a1_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a1_SRF, "units", 5, "kg/kg");
@@ -5773,7 +5776,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a1_sfgaex1",
+    err       = DEF_VAR (ncid, "soa_a1_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &soa_a1_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a1_sfgaex1, "units", 7, "kg/m2/s");
@@ -5787,7 +5790,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "soa_a2DDF", MPI_FLOAT,
                                   2, dimids, &soa_a2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a2DDF, "units", 7, "kg/m2/s");
@@ -5801,7 +5804,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a2SFWET",
+    err       = DEF_VAR (ncid, "soa_a2SFWET",
                                   MPI_FLOAT, 2, dimids, &soa_a2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a2SFWET, "units", 7, "kg/m2/s");
@@ -5814,7 +5817,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a2_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "soa_a2_SRF", MPI_FLOAT,
                                   2, dimids, &soa_a2_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a2_SRF, "units", 5, "kg/kg");
@@ -5827,7 +5830,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a2_sfgaex1",
+    err       = DEF_VAR (ncid, "soa_a2_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &soa_a2_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a2_sfgaex1, "units", 7, "kg/m2/s");
@@ -5841,7 +5844,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "soa_a3DDF", MPI_FLOAT,
                                   2, dimids, &soa_a3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a3DDF, "units", 7, "kg/m2/s");
@@ -5855,7 +5858,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a3SFWET",
+    err       = DEF_VAR (ncid, "soa_a3SFWET",
                                   MPI_FLOAT, 2, dimids, &soa_a3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a3SFWET, "units", 7, "kg/m2/s");
@@ -5868,7 +5871,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a3_SRF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "soa_a3_SRF", MPI_FLOAT,
                                   2, dimids, &soa_a3_SRF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a3_SRF, "units", 5, "kg/kg");
@@ -5881,7 +5884,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_a3_sfgaex1",
+    err       = DEF_VAR (ncid, "soa_a3_sfgaex1",
                                   MPI_FLOAT, 2, dimids, &soa_a3_sfgaex1);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_a3_sfgaex1, "units", 7, "kg/m2/s");
@@ -5895,7 +5898,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_c1DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "soa_c1DDF", MPI_FLOAT,
                                   2, dimids, &soa_c1DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c1DDF, "units", 7, "kg/m2/s");
@@ -5909,7 +5912,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_c1SFWET",
+    err       = DEF_VAR (ncid, "soa_c1SFWET",
                                   MPI_FLOAT, 2, dimids, &soa_c1SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c1SFWET, "units", 7, "kg/m2/s");
@@ -5923,7 +5926,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_c2DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "soa_c2DDF", MPI_FLOAT,
                                   2, dimids, &soa_c2DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c2DDF, "units", 7, "kg/m2/s");
@@ -5937,7 +5940,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_c2SFWET",
+    err       = DEF_VAR (ncid, "soa_c2SFWET",
                                   MPI_FLOAT, 2, dimids, &soa_c2SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c2SFWET, "units", 7, "kg/m2/s");
@@ -5951,7 +5954,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_c3DDF", MPI_FLOAT,
+    err = DEF_VAR (ncid, "soa_c3DDF", MPI_FLOAT,
                                   2, dimids, &soa_c3DDF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c3DDF, "units", 7, "kg/m2/s");
@@ -5965,7 +5968,7 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "soa_c3SFWET",
+    err       = DEF_VAR (ncid, "soa_c3SFWET",
                                   MPI_FLOAT, 2, dimids, &soa_c3SFWET);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, soa_c3SFWET, "units", 7, "kg/m2/s");
@@ -5985,6 +5988,7 @@ err_out:
 
 /*----< def_F_case_h1_pio() >----------------------------------------------------*/
 int def_F_case_h1_pio (e3sm_io_driver &driver,
+                       e3sm_io_config &cfg,
                        e3sm_io_decom &decom,
                        int ncid,                 /* file ID */
                        const MPI_Offset dims[2], /* dimension sizes */
@@ -6080,7 +6084,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     i = 0;
     /* define variables */
     dimids[0] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "lat", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "lat", MPI_DOUBLE, 1,
                                   dimids, &lat);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lat, "long_name", 8, "latitude");
@@ -6090,7 +6094,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = lat;
 
     dimids[0] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "lon", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "lon", MPI_DOUBLE, 1,
                                   dimids, &lon);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lon, "long_name", 9, "longitude");
@@ -6100,7 +6104,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = lon;
 
     dimids[0] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "area", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "area", MPI_DOUBLE, 1,
                                   dimids, &area);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, area, "long_name", 14, "gll grid areas");
@@ -6108,7 +6112,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = area;
 
     dimids[0] = dim_lev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "lev", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "lev", MPI_DOUBLE, 1,
                                   dimids, &lev);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, lev, "long_name", 38, "hybrid level at midpoints (1000*(A+B))");
@@ -6125,7 +6129,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = lev;
 
     dimids[0] = dim_lev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "hyam", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "hyam", MPI_DOUBLE, 1,
                                   dimids, &hyam);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hyam, "long_name", 39, "hybrid A coefficient at layer midpoints");
@@ -6133,7 +6137,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = hyam;
 
     dimids[0] = dim_lev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "hybm", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "hybm", MPI_DOUBLE, 1,
                                   dimids, &hybm);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hybm, "long_name", 39, "hybrid B coefficient at layer midpoints");
@@ -6141,7 +6145,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = hybm;
 
     dimids[0] = dim_lev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "P0", MPI_DOUBLE, 0,
+    err = DEF_VAR (ncid, "P0", MPI_DOUBLE, 0,
                                   NULL, &P0);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, P0, "long_name", 18, "reference pressure");
@@ -6151,7 +6155,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = P0;
 
     dimids[0] = dim_ilev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ilev", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "ilev", MPI_DOUBLE, 1,
                                   dimids, &ilev);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ilev, "long_name", 39, "hybrid level at interfaces (1000*(A+B))");
@@ -6168,7 +6172,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = ilev;
 
     dimids[0] = dim_ilev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "hyai", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "hyai", MPI_DOUBLE, 1,
                                   dimids, &hyai);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hyai, "long_name", 40, "hybrid A coefficient at layer interfaces");
@@ -6176,7 +6180,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = hyai;
 
     dimids[0] = dim_ilev;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "hybi", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "hybi", MPI_DOUBLE, 1,
                                   dimids, &hybi);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, hybi, "long_name", 40, "hybrid B coefficient at layer interfaces");
@@ -6184,7 +6188,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = hybi;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "time", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "time", MPI_DOUBLE, 1,
                                   dimids, &time);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, time, "long_name", 4, "time");
@@ -6198,7 +6202,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = time;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "date", MPI_INT, 1,
+    err = DEF_VAR (ncid, "date", MPI_INT, 1,
                                   dimids, &date);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, date, "long_name", 23, "current date (YYYYMMDD)");
@@ -6206,7 +6210,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = date;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "datesec", MPI_INT, 1,
+    err = DEF_VAR (ncid, "datesec", MPI_INT, 1,
                                   dimids, &datesec);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, datesec, "long_name", 31, "current seconds of current date");
@@ -6215,7 +6219,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_nbnd;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "time_bnds", MPI_DOUBLE,
+    err = DEF_VAR (ncid, "time_bnds", MPI_DOUBLE,
                                   2, dimids, &time_bnds);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, time_bnds, "long_name", 23, "time interval endpoints");
@@ -6224,46 +6228,46 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "date_written",
+    err       = DEF_VAR (ncid, "date_written",
                                   MPI_CHAR, 2, dimids, &date_written);
     CHECK_ERR
     varids[i++] = date_written;
 
     dimids[0] = dim_time;
     dimids[1] = dim_chars;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "time_written",
+    err       = DEF_VAR (ncid, "time_written",
                                   MPI_CHAR, 2, dimids, &time_written);
     CHECK_ERR
     varids[i++] = time_written;
 
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ndbase", MPI_INT, 0,
+    err = DEF_VAR (ncid, "ndbase", MPI_INT, 0,
                                   NULL, &ndbase);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ndbase, "long_name", 8, "base day");
     CHECK_ERR
     varids[i++] = ndbase;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nsbase", MPI_INT, 0,
+    err = DEF_VAR (ncid, "nsbase", MPI_INT, 0,
                                   NULL, &nsbase);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nsbase, "long_name", 19, "seconds of base day");
     CHECK_ERR
     varids[i++] = nsbase;
 
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nbdate", MPI_INT, 0,
+    err = DEF_VAR (ncid, "nbdate", MPI_INT, 0,
                                   NULL, &nbdate);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nbdate, "long_name", 20, "base date (YYYYMMDD)");
     CHECK_ERR
     varids[i++] = nbdate;
 
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nbsec", MPI_INT, 0,
+    err = DEF_VAR (ncid, "nbsec", MPI_INT, 0,
                                   NULL, &nbsec);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nbsec, "long_name", 20, "seconds of base date");
     CHECK_ERR
     varids[i++] = nbsec;
 
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "mdt", MPI_INT, 0, NULL,
+    err = DEF_VAR (ncid, "mdt", MPI_INT, 0, NULL,
                                   &mdt);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, mdt, "long_name", 8, "timestep");
@@ -6273,7 +6277,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = mdt;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ndcur", MPI_INT, 1,
+    err = DEF_VAR (ncid, "ndcur", MPI_INT, 1,
                                   dimids, &ndcur);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ndcur, "long_name", 27, "current day (from base day)");
@@ -6281,7 +6285,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = ndcur;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nscur", MPI_INT, 1,
+    err = DEF_VAR (ncid, "nscur", MPI_INT, 1,
                                   dimids, &nscur);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nscur, "long_name", 30, "current seconds of current day");
@@ -6289,7 +6293,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = nscur;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "co2vmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "co2vmr", MPI_DOUBLE, 1,
                                   dimids, &co2vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, co2vmr, "long_name", 23, "co2 volume mixing ratio");
@@ -6297,7 +6301,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = co2vmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "ch4vmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "ch4vmr", MPI_DOUBLE, 1,
                                   dimids, &ch4vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, ch4vmr, "long_name", 23, "ch4 volume mixing ratio");
@@ -6305,7 +6309,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = ch4vmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "n2ovmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "n2ovmr", MPI_DOUBLE, 1,
                                   dimids, &n2ovmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, n2ovmr, "long_name", 23, "n2o volume mixing ratio");
@@ -6313,7 +6317,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = n2ovmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "f11vmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "f11vmr", MPI_DOUBLE, 1,
                                   dimids, &f11vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, f11vmr, "long_name", 23, "f11 volume mixing ratio");
@@ -6321,7 +6325,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = f11vmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "f12vmr", MPI_DOUBLE, 1,
+    err = DEF_VAR (ncid, "f12vmr", MPI_DOUBLE, 1,
                                   dimids, &f12vmr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, f12vmr, "long_name", 23, "f12 volume mixing ratio");
@@ -6329,7 +6333,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = f12vmr;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "sol_tsi", MPI_DOUBLE,
+    err = DEF_VAR (ncid, "sol_tsi", MPI_DOUBLE,
                                   1, dimids, &sol_tsi);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, sol_tsi, "long_name", 22, "total solar irradiance");
@@ -6339,7 +6343,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     varids[i++] = sol_tsi;
 
     dimids[0] = dim_time;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "nsteph", MPI_INT, 1,
+    err = DEF_VAR (ncid, "nsteph", MPI_INT, 1,
                                   dimids, &nsteph);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, nsteph, "long_name", 16, "current timestep");
@@ -6348,7 +6352,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLDHGH", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "CLDHGH", MPI_FLOAT, 2,
                                   dimids, &CLDHGH);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDHGH, "units", 8, "fraction");
@@ -6359,7 +6363,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLDLOW", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "CLDLOW", MPI_FLOAT, 2,
                                   dimids, &CLDLOW);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDLOW, "units", 8, "fraction");
@@ -6370,7 +6374,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "CLDMED", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "CLDMED", MPI_FLOAT, 2,
                                   dimids, &CLDMED);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, CLDMED, "units", 8, "fraction");
@@ -6381,7 +6385,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "FLNT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "FLNT", MPI_FLOAT, 2,
                                   dimids, &FLNT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, FLNT, "Sampling_Sequence", 8, "rad_lwsw");
@@ -6394,7 +6398,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "LWCF", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "LWCF", MPI_FLOAT, 2,
                                   dimids, &LWCF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, LWCF, "Sampling_Sequence", 8, "rad_lwsw");
@@ -6407,7 +6411,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "OMEGA500", MPI_FLOAT,
+    err = DEF_VAR (ncid, "OMEGA500", MPI_FLOAT,
                                   2, dimids, &OMEGA500);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OMEGA500, "units", 4, "Pa/s");
@@ -6419,7 +6423,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "OMEGA850", MPI_FLOAT,
+    err = DEF_VAR (ncid, "OMEGA850", MPI_FLOAT,
                                   2, dimids, &OMEGA850);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, OMEGA850, "units", 4, "Pa/s");
@@ -6431,7 +6435,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PRECT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PRECT", MPI_FLOAT, 2,
                                   dimids, &PRECT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PRECT, "units", 3, "m/s");
@@ -6443,7 +6447,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "PS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "PS", MPI_FLOAT, 2,
                                   dimids, &PS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, PS, "units", 2, "Pa");
@@ -6454,7 +6458,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "SWCF", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "SWCF", MPI_FLOAT, 2,
                                   dimids, &SWCF);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, SWCF, "Sampling_Sequence", 8, "rad_lwsw");
@@ -6467,7 +6471,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "T850", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "T850", MPI_FLOAT, 2,
                                   dimids, &T850);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, T850, "units", 1, "K");
@@ -6478,7 +6482,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TMQ", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TMQ", MPI_FLOAT, 2,
                                   dimids, &TMQ);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TMQ, "units", 5, "kg/m2");
@@ -6490,7 +6494,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "TS", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "TS", MPI_FLOAT, 2,
                                   dimids, &TS);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, TS, "units", 1, "K");
@@ -6502,7 +6506,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    err       = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "U", MPI_FLOAT, 3,
+    err       = DEF_VAR (ncid, "U", MPI_FLOAT, 3,
                                   dimids, &U);
     CHECK_ERR
     err = PUT_ATT_INT (ncid, U, "mdims", MPI_INT, 1, &mdims);
@@ -6515,7 +6519,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "U250", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "U250", MPI_FLOAT, 2,
                                   dimids, &U250);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U250, "units", 3, "m/s");
@@ -6526,7 +6530,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "U850", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "U850", MPI_FLOAT, 2,
                                   dimids, &U850);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, U850, "units", 3, "m/s");
@@ -6537,7 +6541,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "UBOT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "UBOT", MPI_FLOAT, 2,
                                   dimids, &UBOT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, UBOT, "units", 3, "m/s");
@@ -6548,7 +6552,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "V250", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "V250", MPI_FLOAT, 2,
                                   dimids, &V250);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, V250, "units", 3, "m/s");
@@ -6560,7 +6564,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "V850", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "V850", MPI_FLOAT, 2,
                                   dimids, &V850);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, V850, "units", 3, "m/s");
@@ -6572,7 +6576,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "VBOT", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "VBOT", MPI_FLOAT, 2,
                                   dimids, &VBOT);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, VBOT, "units", 3, "m/s");
@@ -6583,7 +6587,7 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    err = e3sm_io_pio_define_var (driver, dnames, decom, decomids[i], ncid, "Z500", MPI_FLOAT, 2,
+    err = DEF_VAR (ncid, "Z500", MPI_FLOAT, 2,
                                   dimids, &Z500);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, Z500, "units", 1, "m");
