@@ -148,10 +148,10 @@ do
                         STARTTIME=`date +%s.%N`
 
                         if [ "$OP" = "w" ] ; then
-                            echo "srun -n ${NP} -t ${RTL} ./${APP} -k -o ${OUTDIR} -n -a ${API} -f ${HX} -r ${NREC} -x ${STRATE} ${INDIRARG} ${CONFIG}"
+                            echo "srun -n ${NP} --cpu_bind=cores -t ${RTL} ./${APP} -k -o ${OUTDIR} -n -a ${API} -f ${HX} -r ${NREC} -x ${STRATE} ${INDIRARG} ${CONFIG}"
                             srun -n ${NP} -t ${RTL} ./${APP} -k -o ${OUTDIR} -n -a ${API} -f ${HX} -r ${NREC} -x ${STRATE} ${INDIRARG} ${CONFIG}
                         else
-                            echo "srun -n ${NP} -t ${RTL} ./${APP} -k -o ${OUTDIR} -n -a ${API} -f ${HX} -r ${NREC} -x ${STRATE} ${INDIRARG} -R ${CONFIG}"
+                            echo "srun -n ${NP} --cpu_bind=cores -t ${RTL} ./${APP} -k -o ${OUTDIR} -n -a ${API} -f ${HX} -r ${NREC} -x ${STRATE} ${INDIRARG} -R ${CONFIG}"
                             srun -n ${NP} -t ${RTL} ./${APP} -k -o ${OUTDIR} -n -a ${API} -f ${HX} -r ${NREC} -x ${STRATE} ${INDIRARG} -R ${CONFIG}
                         fi
 
