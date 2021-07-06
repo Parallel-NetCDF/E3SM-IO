@@ -686,14 +686,15 @@ int run_varn_G_case (e3sm_io_config &cfg,
     err = driver.inq_put_size (ncid, &total_size);
     CHECK_ERR
     put_size = total_size - metadata_size;
-    if (cfg.rank == 0){
-        err = driver.inq_file_size(outfname, &fsize);
-        CHECK_ERR
-    }
 
     err = driver.close (ncid);
     CHECK_ERR
     close_timing += MPI_Wtime () - timing;
+
+    if (cfg.rank == 0){
+        err = driver.inq_file_size(outfname, &fsize);
+        CHECK_ERR
+    }
 
     if (dummy_double_buf != NULL) free (dummy_double_buf);
 
@@ -1282,14 +1283,15 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     err = driver.inq_get_size (ncid, &total_size);
     CHECK_ERR
     get_size = total_size - metadata_size;
-    if (cfg.rank == 0){
-        err = driver.inq_file_size(outfname, &fsize);
-        CHECK_ERR
-    }
 
     err = driver.close (ncid);
     CHECK_ERR
     close_timing += MPI_Wtime () - timing;
+
+    if (cfg.rank == 0){
+        err = driver.inq_file_size(outfname, &fsize);
+        CHECK_ERR
+    }
 
     if (decom.contig_nreqs[0] > 0) {
         free (fix_starts_D1[0]);
