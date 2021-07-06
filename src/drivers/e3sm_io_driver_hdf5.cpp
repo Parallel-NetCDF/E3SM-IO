@@ -130,6 +130,7 @@ e3sm_io_driver_hdf5::~e3sm_io_driver_hdf5 () {
 
 int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int nerrs = 0;
+    int err;
     herr_t herr;
     hid_t faplid;
     hdf5_file *fp;
@@ -137,6 +138,9 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     fp = new hdf5_file (*this);
+
+    err = MPI_Comm_rank (comm, &(fp->rank));
+    CHECK_MPIERR
 
     faplid = H5Pcreate (H5P_FILE_ACCESS);
     CHECK_HID (faplid)
@@ -166,6 +170,7 @@ err_out:;
 
 int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int nerrs = 0;
+    int err;
     herr_t herr;
     hid_t faplid;
     hdf5_file *fp;
@@ -173,6 +178,9 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     fp = new hdf5_file (*this);
+
+    err = MPI_Comm_rank (comm, &(fp->rank));
+    CHECK_MPIERR
 
     faplid = H5Pcreate (H5P_FILE_ACCESS);
     CHECK_HID (faplid)
@@ -528,9 +536,11 @@ int e3sm_io_driver_hdf5::put_att (
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 
-    err = MPI_Type_size (type, &esize);
-    CHECK_MPIERR
-    fp->putsize += asize * esize;
+    if (fp->rank == 0) {
+        err = MPI_Type_size (type, &esize);
+        CHECK_MPIERR
+        fp->putsize += asize * esize;
+    }
 
 err_out:;
     if (asid >= 0) H5Sclose (asid);
