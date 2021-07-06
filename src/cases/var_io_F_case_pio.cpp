@@ -884,8 +884,10 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
         printf ("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
         printf ("No. variables use decomposition D3 = %3d\n", nvars_D[2]);
         printf ("Total number of variables          = %3d\n", cfg.nvars);
-        printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
+        if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
+            printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                 (float)max_alloc / 1048576);
+        }
         printf ("Total write amount                 = %.2f MiB = %.2f GiB\n",
                 (double)total_size / 1048576, (double)total_size / 1073741824);
         printf ("Total number of requests           = %lld\n", total_nreqs);
