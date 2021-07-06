@@ -34,6 +34,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
         MPI_Offset recsize = 0;
         MPI_Offset putsize = 0;
         MPI_Offset getsize = 0;
+        int rank;
 
 #ifndef HDF5_HAVE_DWRITE_MULTI
         typedef struct H5D_rw_multi_t {

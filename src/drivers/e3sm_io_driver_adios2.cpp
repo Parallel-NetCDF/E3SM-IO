@@ -90,12 +90,15 @@ e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {
 
 int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int nerrs = 0;
+    int err;
     adios2_error aerr;
     adios2_file *fp;
     char ng[32];
 
     fp       = new adios2_file ();
     fp->path = std::string (path);
+    err      = MPI_Comm_rank (comm, &(fp->rank));
+    CHECK_MPIERR
 
     fp->adp = adios2_init (comm, "");
     CHECK_APTR (fp->adp)
@@ -134,12 +137,15 @@ err_out:;
 
 int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int nerrs = 0;
+    int err;
     adios2_error aerr;
     adios2_file *fp;
     adios2_step_status stat;
 
     fp       = new adios2_file ();
     fp->path = std::string (path);
+    err      = MPI_Comm_rank (comm, &(fp->rank));
+    CHECK_MPIERR
 
     fp->adp = adios2_init (comm, "");
     CHECK_APTR (fp->adp)
@@ -176,8 +182,8 @@ int e3sm_io_driver_adios2::close (int fid) {
     adios2_bool result;
 
     if (fp->ep) {
-        //aerr = adios2_end_step (fp->ep);
-        //CHECK_AERR
+        // aerr = adios2_end_step (fp->ep);
+        // CHECK_AERR
 
         aerr = adios2_close (fp->ep);
         CHECK_AERR
@@ -532,8 +538,10 @@ int e3sm_io_driver_adios2::put_att (
         CHECK_APTR (aid)
     }
 
-    esize = adios2_type_size (atype);
-    fp->putsize += size * esize;
+    if (fp->rank == 0) {
+        esize = adios2_type_size (atype);
+        fp->putsize += size * esize;
+    }
 
 err_out:;
     return nerrs;
