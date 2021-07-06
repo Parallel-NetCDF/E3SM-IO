@@ -895,7 +895,9 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
         printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
         printf ("Max Time of IPUT_VARN              = %.4f sec\n", post_timing);
-        printf ("Max Time of WAIT_ALL_REQS          = %.4f sec\n", wait_timing);
+        if(dynamic_cast<e3sm_io_driver_adios2*>(&driver)){
+            printf ("Max Time of WAIT_ALL_REQS          = %.4f sec\n", wait_timing);
+        }
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",

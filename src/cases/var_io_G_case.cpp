@@ -24,6 +24,7 @@
 #include <e3sm_io_err.h>
 #include <e3sm_io_driver.hpp>
 #include <e3sm_io_driver_pnc.hpp>
+#include <e3sm_io_driver_adios2.hpp>
 
 #define IPUT_VAR_DOUBLE(F, D, B, R)            driver.put_vara (F, D, MPI_DOUBLE, NULL, NULL, B, nb);
 #define IPUT_VAR_FLOAT(F, D, B, R)             driver.put_vara (F, D, MPI_FLOAT, NULL, NULL, B, nb);
@@ -809,7 +810,9 @@ int run_varn_G_case (e3sm_io_config &cfg,
         printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
         printf ("Max Time of IPUT_VARN              = %.4f sec\n", post_timing);
-        printf ("Max Time of driver.wait         = %.4f sec\n", wait_timing);
+        if(dynamic_cast<e3sm_io_driver_adios2*>(&driver)){
+            printf ("Max Time of driver.wait         = %.4f sec\n", wait_timing);
+        }
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -1397,7 +1400,9 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
         printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
         printf ("Max Time of IGET_VARN        = %.4f sec\n", post_timing);
-        printf ("Max Time of driver.wait         = %.4f sec\n", wait_timing);
+        if(dynamic_cast<e3sm_io_driver_adios2*>(&driver)){
+            printf ("Max Time of driver.wait         = %.4f sec\n", wait_timing);
+        }
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
