@@ -23,38 +23,38 @@
 #include <e3sm_io_err.h>
 
 #include <e3sm_io_case_F.hpp>
-#include <e3sm_io_case_F_pio.hpp>
-#include <e3sm_io_case_pio.hpp>
+#include <e3sm_io_case_F_scorpio.hpp>
+#include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
 
-#define IPUT_VAR_DOUBLE(F, D, B, R) e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_DOUBLE, B, nb);
-#define IPUT_VAR_FLOAT(F, D, B, R)  e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_FLOAT, B, nb);
-#define IPUT_VAR_INT(F, D, B, R)    e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_INT, B, nb);
-#define IPUT_VAR_CHAR(F, D, B, R)   e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_CHAR, B, nb);
+#define IPUT_VAR_DOUBLE(F, D, B, R) e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_DOUBLE, B, nb);
+#define IPUT_VAR_FLOAT(F, D, B, R)  e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_FLOAT, B, nb);
+#define IPUT_VAR_INT(F, D, B, R)    e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_INT, B, nb);
+#define IPUT_VAR_CHAR(F, D, B, R)   e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_CHAR, B, nb);
 #define IPUT_VAR1_DOUBLE(F, D, S, B, R) \
-    e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_DOUBLE, B, nb);
+    e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_DOUBLE, B, nb);
 #define IPUT_VAR1_FLOAT(F, D, S, B, R) \
-    e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_FLOAT, B, nb);
-#define IPUT_VAR1_INT(F, D, S, B, R)  e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_INT, B, nb);
-#define IPUT_VAR1_CHAR(F, D, S, B, R) e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_CHAR, B, nb);
+    e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_FLOAT, B, nb);
+#define IPUT_VAR1_INT(F, D, S, B, R)  e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_INT, B, nb);
+#define IPUT_VAR1_CHAR(F, D, S, B, R) e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_CHAR, B, nb);
 #define IPUT_VARA_DOUBLE(F, D, S, C, B, R) \
-    e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_DOUBLE, B, nb);
+    e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_DOUBLE, B, nb);
 #define IPUT_VARA_FLOAT(F, D, S, C, B, R) \
-    e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_FLOAT, B, nb);
+    e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_FLOAT, B, nb);
 #define IPUT_VARA_INT(F, D, S, C, B, R) \
-    e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_INT, B, nb);
+    e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_INT, B, nb);
 #define IPUT_VARA_CHAR(F, D, S, C, B, R) \
-    e3sm_io_pio_write_var (driver, rec_no, F, D, MPI_CHAR, B, nb);
+    e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_CHAR, B, nb);
 #define IPUT_VARN(F, D, N, S, C, B, BC, BT, R) \
-    e3sm_io_pio_write_var (driver, rec_no, F, D, BT, B, nb);
+    e3sm_io_scorpio_write_var (driver, rec_no, F, D, BT, B, nb);
 
 #define WAIT_ALL_REQS(F, D, B, R) driver.wait (F);
 
 /*----< write_small_vars_F_case() >------------------------------------------*/
-static int write_small_vars_F_case_pio (e3sm_io_driver &driver,
+static int write_small_vars_F_case_scorpio (e3sm_io_driver &driver,
                                         int ncid,
                                         int vid, /* starting variable ID */
-                                        e3sm_io_pio_var *varids,
+                                        e3sm_io_scorpio_var *varids,
                                         int rec_no,
                                         int gap,
                                         MPI_Offset lev,
@@ -363,7 +363,7 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
     for (j = 0; j < num; j++) { decomids[vid + j] = k - 1; }
 
 /*----< run_varn_F_case() >--------------------------------------------------*/
-int run_varn_F_case_pio (e3sm_io_config &cfg,
+int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                          e3sm_io_decom &decom,
                          e3sm_io_driver &driver,
                          std::string outfile, /* output file name */
@@ -375,8 +375,8 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     std::string targetfname;
     char *txt_buf_ptr;
     int i, j, k, err, nerrs = 0, rank, ncid, cmode, nvars_D[3];
-    e3sm_io_pio_var *varids;
-    int piovars[6];
+    e3sm_io_scorpio_var *varids;
+    int scorpiovars[6];
     int rec_no, gap = 0, my_nreqs, *int_buf_ptr, xnreqs[3];
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
@@ -404,7 +404,7 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
 
     if (cfg.non_contig_buf) gap = 10;
 
-    varids = (e3sm_io_pio_var *)malloc (cfg.nvars * sizeof (e3sm_io_pio_var));
+    varids = (e3sm_io_scorpio_var *)malloc (cfg.nvars * sizeof (e3sm_io_scorpio_var));
     decomids.resize (cfg.nvars);
 
     for (i = 0; i < 3; i++) {
@@ -535,13 +535,13 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     /* define dimensions, variables, and attributes */
     if (cfg.nvars == 414) {
         /* for h0 file */
-        err = def_F_case_h0_pio (driver, cfg, decom, ncid, decom.dims[2], cfg.nvars, decomids, varids,
-                                 piovars);
+        err = def_F_case_h0_scorpio (driver, cfg, decom, ncid, decom.dims[2], cfg.nvars, decomids, varids,
+                                 scorpiovars);
         CHECK_ERR
     } else {
         /* for h1 file */
-        err = def_F_case_h1_pio (driver, cfg, decom, ncid, decom.dims[2], cfg.nvars, decomids, varids,
-                                 piovars);
+        err = def_F_case_h1_scorpio (driver, cfg, decom, ncid, decom.dims[2], cfg.nvars, decomids, varids,
+                                 scorpiovars);
         CHECK_ERR
     }
 
@@ -564,7 +564,7 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     
     // Nproc only written by rank 0
     if (cfg.rank == 0) {
-        err = driver.put_varl (ncid, piovars[5], MPI_LONG_LONG, &(cfg.np), nb);
+        err = driver.put_varl (ncid, scorpiovars[5], MPI_LONG_LONG, &(cfg.np), nb);
         CHECK_ERR
     }
 
@@ -638,7 +638,7 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
         for (j = 0; j < 5; j++) {
             int piodecomid[] = {0, 1, 1, 1, 2};
 
-            err = driver.put_varl (ncid, piovars[j], MPI_LONG_LONG,
+            err = driver.put_varl (ncid, scorpiovars[j], MPI_LONG_LONG,
                                    decom.raw_offsets[piodecomid[j]], nb);
             CHECK_ERR
         }
@@ -652,7 +652,7 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
         if (rank == 0) {
             my_nreqs += 27;
             /* post nonblocking requests using IPUT_VARN() */
-            err = write_small_vars_F_case_pio (driver, ncid, i, varids, rec_no, gap,
+            err = write_small_vars_F_case_scorpio (driver, ncid, i, varids, rec_no, gap,
                                                decom.dims[2][0], decom.dims[2][0] + 1, 2, 8,
                                                &int_buf_ptr, &txt_buf_ptr, &dbl_buf_ptr);
             CHECK_ERR

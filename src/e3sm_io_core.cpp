@@ -64,7 +64,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 tcase = new e3sm_io_case_F ();
                 break;
             case blob:
-                tcase = new e3sm_io_case_F_pio ();
+                tcase = new e3sm_io_case_F_scorpio ();
                 break;
         }
     } else if (decom->num_decomp == 6) {
