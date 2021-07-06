@@ -22,6 +22,7 @@
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 #include <e3sm_io_driver.hpp>
+#include <e3sm_io_driver_pnc.hpp>
 
 #define IPUT_VAR_DOUBLE(F, D, B, R)            driver.put_vara (F, D, MPI_DOUBLE, NULL, NULL, B, nb);
 #define IPUT_VAR_FLOAT(F, D, B, R)             driver.put_vara (F, D, MPI_FLOAT, NULL, NULL, B, nb);
@@ -798,8 +799,10 @@ int run_vard_F_case (e3sm_io_config &cfg,
         printf ("History output file                = %s\n", outfile.c_str ());
         printf ("Output file size                 = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
-        printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
+        if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
+            printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                 (float)max_alloc / 1048576);
+        }
         printf ("Total number of variables          = %d\n", cfg.nvars);
         printf ("Total write amount                 = %.2f MiB = %.2f GiB\n",
                 (double)total_size / 1048576, (double)total_size / 1073741824);
@@ -1388,8 +1391,10 @@ int run_varn_F_case (e3sm_io_config &cfg,
         printf ("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
         printf ("No. variables use decomposition D3 = %3d\n", nvars_D[2]);
         printf ("Total number of variables          = %3d\n", cfg.nvars);
-        printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
+        if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
+            printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                 (float)max_alloc / 1048576);
+        }
         printf ("Total write amount                 = %.2f MiB = %.2f GiB\n",
                 (double)total_size / 1048576, (double)total_size / 1073741824);
         printf ("Total number of requests           = %lld\n", total_nreqs);
@@ -1827,8 +1832,10 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
         printf ("History output file                = %s\n", outfile.c_str ());
         printf ("Input file size                 = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
-        printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
+        if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
+            printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                 (float)max_alloc / 1048576);
+        }
         printf ("Total number of variables          = %d\n", cfg.nvars);
         printf ("Total read amount                  = %.2f MiB = %.2f GiB\n",
                 (double)total_size / 1048576, (double)total_size / 1073741824);
