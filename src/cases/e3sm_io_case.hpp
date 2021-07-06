@@ -50,10 +50,10 @@ class e3sm_io_case_G : public e3sm_io_case {
     int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
 };
 
-class e3sm_io_case_F_pio : public e3sm_io_case_F {
+class e3sm_io_case_F_scorpio : public e3sm_io_case_F {
    public:
-    e3sm_io_case_F_pio ();
-    ~e3sm_io_case_F_pio ();
+    e3sm_io_case_F_scorpio ();
+    ~e3sm_io_case_F_scorpio ();
     int load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
     int wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
     int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);

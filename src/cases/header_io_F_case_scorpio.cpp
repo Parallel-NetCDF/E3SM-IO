@@ -20,14 +20,14 @@
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 
-#include <e3sm_io_case_F_pio.hpp>
-#include <e3sm_io_case_pio.hpp>
+#include <e3sm_io_case_F_scorpio.hpp>
+#include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
 
-#define PUT_ATT_TEXT(F, D, N, S, B) e3sm_io_pio_put_att (driver, F, D, N, MPI_CHAR, S, (void *)B);
+#define PUT_ATT_TEXT(F, D, N, S, B) e3sm_io_scorpio_put_att (driver, F, D, N, MPI_CHAR, S, (void *)B);
 #define PUT_ATT_FLOAT(F, D, N, T, S, B) \
-    e3sm_io_pio_put_att (driver, F, D, N, MPI_FLOAT, S, (float *)B);
-#define PUT_ATT_INT(F, D, N, T, S, B) e3sm_io_pio_put_att (driver, F, D, N, MPI_FLOAT, S, (int *)B);
+    e3sm_io_scorpio_put_att (driver, F, D, N, MPI_FLOAT, S, (float *)B);
+#define PUT_ATT_INT(F, D, N, T, S, B) e3sm_io_scorpio_put_att (driver, F, D, N, MPI_FLOAT, S, (int *)B);
 
 #define GET_ATT_TEXT(F, D, N, S, B)     driver.get_att (F, D, N, (void *)attbuf);
 #define GET_ATT_FLOAT(F, D, N, T, S, B) driver.get_att (F, D, N, (float *)attbuf);
@@ -36,23 +36,23 @@
 
 #define INQ_VID(F, N, T, S, B, V) driver.inq_var (F, N, V);
 
-#define DEF_VAR(F, N, T, ND, D, V) e3sm_io_pio_define_var (driver, cfg, dnames, decom, decomids[i], F, N, T, ND, D, V);
+#define DEF_VAR(F, N, T, ND, D, V) e3sm_io_scorpio_define_var (driver, cfg, dnames, decom, decomids[i], F, N, T, ND, D, V);
 
 static char attbuf[4096];
 
 /*----< def_F_case_h0_pio() >----------------------------------------------------*/
-int def_F_case_h0_pio (e3sm_io_driver &driver,
+int def_F_case_h0_scorpio (e3sm_io_driver &driver,
                        e3sm_io_config &cfg,
                        e3sm_io_decom &decom,                       
                        int ncid,                 /* file ID */
                        const MPI_Offset dims[2], /* dimension sizes */
                        int nvars,                /* number of variables */
                        std::vector<int> &decomids,
-                       e3sm_io_pio_var *varids, /* variable IDs */
-                       int *piovars) {
+                       e3sm_io_scorpio_var *varids, /* variable IDs */
+                       int *scorpiovars) {
     int err, nerrs = 0;
     /* Total 414 variables */
-    e3sm_io_pio_var lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date, datesec,
+    e3sm_io_scorpio_var lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date, datesec,
         time_bnds, date_written, time_written, ndbase, nsbase, nbdate, nbsec, mdt, ndcur, nscur,
         co2vmr, ch4vmr, n2ovmr, f11vmr, f12vmr, sol_tsi, nsteph, AEROD_v, ANRAIN, ANSNOW, AODABS,
         AODABSBC, AODALL, AODBC, AODDUST, AODDUST1, AODDUST3, AODDUST4, AODMODE1, AODMODE2,
@@ -108,9 +108,9 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     /* global attributes: */
     /*
     iattr = 4;
-    err   = e3sm_io_pio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
+    err   = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = e3sm_io_pio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
+    err = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "Conventions", 6, "CF-1.0");
     CHECK_ERR
@@ -189,17 +189,17 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
     CHECK_ERR
 
     /* define dimensions */
-    err = e3sm_io_pio_define_dim (driver, ncid, "ncol", dims[1], dnames, &dim_ncol);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "ncol", dims[1], dnames, &dim_ncol);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "time", NC_UNLIMITED, dnames, &dim_time);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "time", NC_UNLIMITED, dnames, &dim_time);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "nbnd", 2, dnames, &dim_nbnd);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "nbnd", 2, dnames, &dim_nbnd);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "chars", 8, dnames, &dim_chars);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "chars", 8, dnames, &dim_chars);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "lev", dims[0], dnames, &dim_lev);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "lev", dims[0], dnames, &dim_lev);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "ilev", dims[0] + 1, dnames, &dim_ilev);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "ilev", dims[0] + 1, dnames, &dim_ilev);
     CHECK_ERR
 
     /* define pio decom map variables */
@@ -208,21 +208,21 @@ int def_F_case_h0_pio (e3sm_io_driver &driver,
 
         sprintf (name, "/__pio__/decomp/%d", (j + 512));
         err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
-                                    piovars + j);
+                                    scorpiovars + j);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
+        err = driver.put_att (ncid, scorpiovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
                               decom.dims + piodecomid[j]);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
+        err = driver.put_att (ncid, scorpiovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
         CHECK_ERR
 
         k   = 6;
-        err = driver.put_att (ncid, piovars[j], "piotype", MPI_INT, 1, &k);
+        err = driver.put_att (ncid, scorpiovars[j], "piotype", MPI_INT, 1, &k);
         CHECK_ERR
     }
 
     // TODO: only the first subfile contain nproc
-    err = driver.def_local_var (ncid, "/__pio__/info/nproc", MPI_INT, 0, NULL, piovars + (j++));
+    err = driver.def_local_var (ncid, "/__pio__/info/nproc", MPI_INT, 0, NULL, scorpiovars + (j++));
     CHECK_ERR
 
     /* define variables */
@@ -6129,17 +6129,17 @@ err_out:
 }
 
 /*----< def_F_case_h1_pio() >----------------------------------------------------*/
-int def_F_case_h1_pio (e3sm_io_driver &driver,
+int def_F_case_h1_scorpio (e3sm_io_driver &driver,
                        e3sm_io_config &cfg,
                        e3sm_io_decom &decom,
                        int ncid,                 /* file ID */
                        const MPI_Offset dims[2], /* dimension sizes */
                        int nvars,                /* number of variables */
                        std::vector<int> &decomids,
-                       e3sm_io_pio_var *varids, /* variable IDs */
-                       int *piovars) {
+                       e3sm_io_scorpio_var *varids, /* variable IDs */
+                       int *scorpiovars) {
     /* Total 51 variables */
-    e3sm_io_pio_var lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date, datesec,
+    e3sm_io_scorpio_var lat, lon, area, lev, hyam, hybm, P0, ilev, hyai, hybi, time, date, datesec,
         time_bnds, date_written, time_written, ndbase, nsbase, nbdate, nbsec, mdt, ndcur, nscur,
         co2vmr, ch4vmr, n2ovmr, f11vmr, f12vmr, sol_tsi, nsteph, CLDHGH, CLDLOW, CLDMED, FLNT, LWCF,
         OMEGA500, OMEGA850, PRECT, PS, SWCF, T850, TMQ, TS, U, U250, U850, UBOT, V250, V850, VBOT,
@@ -6152,9 +6152,9 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
 
     /* global attributes: */
     iattr = 4;
-    err   = e3sm_io_pio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
+    err   = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = e3sm_io_pio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
+    err = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "Conventions", 6, "CF-1.0");
     CHECK_ERR
@@ -6189,17 +6189,17 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
     CHECK_ERR
 
     /* define dimensions */
-    err = e3sm_io_pio_define_dim (driver, ncid, "ncol", dims[1], dnames, &dim_ncol);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "ncol", dims[1], dnames, &dim_ncol);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "time", NC_UNLIMITED, dnames, &dim_time);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "time", NC_UNLIMITED, dnames, &dim_time);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "nbnd", 2, dnames, &dim_nbnd);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "nbnd", 2, dnames, &dim_nbnd);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "chars", 8, dnames, &dim_chars);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "chars", 8, dnames, &dim_chars);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "lev", dims[0], dnames, &dim_lev);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "lev", dims[0], dnames, &dim_lev);
     CHECK_ERR
-    err = e3sm_io_pio_define_dim (driver, ncid, "ilev", dims[0] + 1, dnames, &dim_ilev);
+    err = e3sm_io_scorpio_define_dim (driver, ncid, "ilev", dims[0] + 1, dnames, &dim_ilev);
     CHECK_ERR
 
     /* define pio decom map variables */
@@ -6208,19 +6208,19 @@ int def_F_case_h1_pio (e3sm_io_driver &driver,
         k                = 6;
         sprintf (name, "/__pio__/decomp/%d", (j + 512));
         err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
-                                    piovars + j);
+                                    scorpiovars + j);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
+        err = driver.put_att (ncid, scorpiovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
                               decom.dims + piodecomid[j]);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
+        err = driver.put_att (ncid, scorpiovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
         CHECK_ERR
-        err = driver.put_att (ncid, piovars[j], "piotype", MPI_INT, 1, &k);
+        err = driver.put_att (ncid, scorpiovars[j], "piotype", MPI_INT, 1, &k);
         CHECK_ERR
     }
 
     // TODO: only the first subfile contain nproc
-    err = driver.def_local_var (ncid, "/__pio__/info/nproc", MPI_INT, 0, NULL, piovars + (j++));
+    err = driver.def_local_var (ncid, "/__pio__/info/nproc", MPI_INT, 0, NULL, scorpiovars + (j++));
     CHECK_ERR
 
     i = 0;

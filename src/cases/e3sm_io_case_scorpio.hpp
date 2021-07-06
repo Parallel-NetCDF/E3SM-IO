@@ -25,16 +25,16 @@
 #include <e3sm_io_driver_adios2.hpp>
 #include <e3sm_io_driver_pnc.hpp>
 
-typedef struct e3sm_io_pio_var {
+typedef struct e3sm_io_scorpio_var {
     int data;
     int frame_id;
     int decomp_id;
     int fillval_id;
     MPI_Datatype type;
     int decomid;
-} e3sm_io_pio_var;
+} e3sm_io_scorpio_var;
 
-inline int e3sm_io_pio_define_dim (e3sm_io_driver &driver,
+inline int e3sm_io_scorpio_define_dim (e3sm_io_driver &driver,
                                    int fid,
                                    std::string name,
                                    MPI_Offset size,
@@ -51,7 +51,7 @@ err_out:;
     return nerrs;
 }
 
-inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
+inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                                    e3sm_io_config &cfg,
                                    std::map<int, std::string> &dnames,
                                    e3sm_io_decom &decom,
@@ -61,7 +61,7 @@ inline int e3sm_io_pio_define_var (e3sm_io_driver &driver,
                                    MPI_Datatype type,
                                    int ndim,
                                    int *dimids,
-                                   e3sm_io_pio_var *var) {
+                                   e3sm_io_scorpio_var *var) {
     int err, nerrs = 0;
     int i, j;
     char cbuf[64], *cbufp;
@@ -189,10 +189,10 @@ err_out:;
     return nerrs;
 }
 
-inline int e3sm_io_pio_write_var (e3sm_io_driver &driver,
+inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
                                   int frameid,
                                   int fid,
-                                  e3sm_io_pio_var &var,
+                                  e3sm_io_scorpio_var &var,
                                   MPI_Datatype type,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
@@ -220,7 +220,7 @@ err_out:;
     return nerrs;
 }
 
-inline int e3sm_io_pio_put_att (e3sm_io_driver &driver,
+inline int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
                                 int fid,
                                 int vid,
                                 std::string name,
@@ -230,9 +230,9 @@ inline int e3sm_io_pio_put_att (e3sm_io_driver &driver,
     return driver.put_att (fid, vid, name, type, size, buf);
 }
 
-inline int e3sm_io_pio_put_att (e3sm_io_driver &driver,
+inline int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
                                 int fid,
-                                e3sm_io_pio_var &var,
+                                e3sm_io_scorpio_var &var,
                                 std::string name,
                                 MPI_Datatype type,
                                 MPI_Offset size,
