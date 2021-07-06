@@ -176,8 +176,8 @@ int e3sm_io_driver_adios2::close (int fid) {
     adios2_bool result;
 
     if (fp->ep) {
-        aerr = adios2_end_step (fp->ep);
-        CHECK_AERR
+        //aerr = adios2_end_step (fp->ep);
+        //CHECK_AERR
 
         aerr = adios2_close (fp->ep);
         CHECK_AERR
@@ -475,6 +475,7 @@ int e3sm_io_driver_adios2::wait (int fid) {
     adios2_file *fp = this->files[fid];
     adios2_step_status stat;
 
+    /*
     aerr = adios2_end_step (fp->ep);
     CHECK_AERR
 
@@ -488,6 +489,7 @@ int e3sm_io_driver_adios2::wait (int fid) {
         aerr = adios2_begin_step (fp->ep, adios2_step_mode_update, -1, &stat);
     }
     CHECK_AERR
+    */
 
 err_out:;
     return nerrs;
