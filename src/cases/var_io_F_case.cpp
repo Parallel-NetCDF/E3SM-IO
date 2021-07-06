@@ -737,14 +737,15 @@ int run_vard_F_case (e3sm_io_config &cfg,
     err = driver.inq_put_size (ncid, &total_size);
     CHECK_ERR
     put_size = total_size - metadata_size;
-    if (cfg.rank == 0){
-        err = driver.inq_file_size(targetfname, &fsize);
-        CHECK_ERR
-    }
     err      = driver.close (ncid);
     CHECK_ERR
     close_timing = MPI_Wtime () - close_timing;
 
+    if (cfg.rank == 0){
+        err = driver.inq_file_size(targetfname, &fsize);
+        CHECK_ERR
+    }
+    
     for (j = 0; j < cfg.nrec; j++) MPI_Type_free (filetype_rec + j);
     free (filetype_rec);
     MPI_Type_free (&filetype_dbl);
@@ -1320,13 +1321,14 @@ int run_varn_F_case (e3sm_io_config &cfg,
     err = driver.inq_put_size (ncid, &total_size);
     CHECK_ERR
     put_size = total_size - metadata_size;
+    err      = driver.close (ncid);
+    CHECK_ERR
+    close_timing += MPI_Wtime () - timing;
+
     if (cfg.rank == 0){
         err = driver.inq_file_size(targetfname, &fsize);
         CHECK_ERR
     }
-    err      = driver.close (ncid);
-    CHECK_ERR
-    close_timing += MPI_Wtime () - timing;
 
     if (starts_D3 != NULL) {
         free (starts_D3[0]);
@@ -1766,13 +1768,14 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     err = driver.inq_get_size (ncid, &total_size);
     CHECK_ERR
     put_size = total_size - metadata_size;
+    err      = driver.close (ncid);
+    CHECK_ERR
+    close_timing += MPI_Wtime () - timing;
+
     if (cfg.rank == 0){
         err = driver.inq_file_size(targetfname, &fsize);
         CHECK_ERR
     }
-    err      = driver.close (ncid);
-    CHECK_ERR
-    close_timing += MPI_Wtime () - timing;
 
     if (starts_D3 != NULL) {
         free (starts_D3[0]);

@@ -814,14 +814,15 @@ int run_varn_F_case_pio (e3sm_io_config &cfg,
     err = driver.inq_put_size (ncid, &total_size);
     CHECK_ERR
     put_size = total_size - metadata_size;
-    if (cfg.rank == 0){
-        err = driver.inq_file_size(targetfname, &fsize);
-        CHECK_ERR
-    }
 
     err      = driver.close (ncid);
     CHECK_ERR
     close_timing += MPI_Wtime () - timing;
+
+    if (cfg.rank == 0){
+        err = driver.inq_file_size(targetfname, &fsize);
+        CHECK_ERR
+    }
 
     if (starts_D3 != NULL) {
         free (starts_D3[0]);
