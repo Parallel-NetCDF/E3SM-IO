@@ -238,10 +238,26 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   included in folder `datasets` named `g_case_cmpaso_16p.nc`.
 
 ### Run command:
-* An example run command using `mpiexec` and 16 MPI processes is:
-  ```
-    % mpiexec -n 16 ./e3sm_io -c datasets/f_case_866x72_16p.nc
-  ```
+* Example run commands using `mpiexec` and 16 MPI processes:
+  + Run write test with the default settings.
+    ```
+      % mpiexec -n 16 ./e3sm_io -o ${Output_File_Path} datasets/f_case_866x72_16p.nc
+    ```
+  + Using ADIOS2 APIs (if enabled) to run write test.
+    ```
+      % mpiexec -n 16 ./e3sm_io -a adios -o ${Output_File_Path} datasets/f_case_866x72_16p.nc
+    ```
+  + Run read the test using HDF5 API with rearranger in the E3SM benchmark.
+    ```
+      % ln -s ${Path_to_E3SM_F_Case_H0_File} ${Input_File_Path}_h0.h5
+      % ln -s ${Path_to_E3SM_F_Case_H1_File} ${Input_File_Path}_h1.h5
+      % mpiexec -n 16 ./e3sm_io -a hdf5_ra -i ${Input_File_Path}.h5 datasets/f_case_866x72_16p.nc
+  + Run read the test with PnetCDF and use the data read to run write test with ADIOS2.
+    ```
+      % ln -s ${Path_to_E3SM_F_Case_H0_File} ${Input_File_Path}_h0.nc
+      % ln -s ${Path_to_E3SM_F_Case_H1_File} ${Input_File_Path}_h1.nc
+      % mpiexec -n 16 ./e3sm_io -a adios -i ${Input_File_Path}.nc -o ${Output_File_Path} datasets/f_case_866x72_16p.nc
+    ```
 * The number of MPI processes used to run this benchmark can be different from
   the value of variable `decomp_nprocs` stored in the decomposition NetCDF
   file. For example, in file `f_case_866x72_16p.nc`, `decomp_nprocs` is 16, the
@@ -254,8 +270,8 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 * Command-line options:
   ```
     % ./e3sm_io -h
-    Usage: src/e3sm_io [OPTION]... FILE
-       [-h] Print help
+    Usage: ./src/e3sm_io [OPTION]... FILE
+       [-h] Print this help message
        [-v] Verbose mode
        [-k] Keep the output files when program exits
        [-d] Run test that uses PnetCDF vard API
@@ -270,7 +286,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-g num] Number of subfiles, used in blob I/O only (default: 1)
        [-i path] Enable read performance evaluation and set the input file
                  (folder) path
-       [-i path] Enable write performance evaluation and set the output file
+       [-o path] Enable write performance evaluation and set the output file
                  (folder) path
        [-a api]  I/O library name to perform write operation
            pnetcdf:   PnetCDF library (default)
@@ -289,6 +305,17 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
                  filter name (default: none)
        FILE: Name of input NetCDF file describing data decompositions
   ```
+* The API used in the read test is determined by the input file format.
+  The API selected by "-a" option is ignored except when reading HDF5 files
+  in which the selected API (hdf5_ra or hdf5_md) can affect the set of HDF5
+  APIs used.
+* The F case test involves 2 files. The E3SM benchmark will append `_h0` and 
+  `_h1` to the assigned path accordingly (see "Output files" section in the 
+  README file). If the path contains a file extension ('.'), `_h0` and `_h1` will be
+  inserted right before the file extension ('.').
+* If both read and write test is enabled. The benchmark will perform read test
+  first and use the data read in the write test. Otherwise, the benchmark will 
+  write out random data in the write test.
 * Current supported APIs and I/O strategies
   + **pnetcdf + canonical**
     * A single NetCDF file in CDF5 format will be created. All data objects and
@@ -449,17 +476,19 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 ```
 ### Output files
 * The above example command uses command-line option `-k` to keep the output
-  files (otherwise the default is to delete them when program exits.) For the
-  F case, each run of `e3sm_io` produces four output netCDF files named
-  `f_case_h0_vard.nc`, `f_case_h1_vard.nc`, `f_case_h0_varn.nc`, and
-  `f_case_h1_varn.nc`. Their file header (metadata) obtainable by command
-  `ncdump -h` from running the provided decomposition file
-  `f_case_866x72_16p.nc` is available in
-  [datasets/f_case_h0.txt](datasets/f_case_h0.txt), and
-  [datasets/f_case_h1.txt](datasets/f_case_h1.txt).
-* For the G case, there is one output file, namely `g_case_hist_varn.nc`, and
-  its file header can be found in
+  files (otherwise the default is to delete them when the program exits.) 
+  For the F case, each run of `e3sm_io` produces two output files name by 
+  user-assigned file name postfixed with `h0`, and `h1`.
+  The header of F case files from running the provided decomposition file
+  `f_case_866x72_16p.nc` using PnetCDF obtainable by command
+  `ncdump -h` is available in [datasets/f_case_h0.txt](datasets/f_case_h0.txt), 
+  and [datasets/f_case_h1.txt](datasets/f_case_h1.txt).
+* For the G case, there is one output file.
+  The header of G case file running the provided decomposition file 
+  `g_case_cmpaso_16p.nc` using PnetCDF can be found in
   [datasets/g_case_hist.txt](datasets/g_case_hist.txt).
+* ADIOS2 automatically append `.bp.dir` file extension to any path.
+  + When using ADIOS2, the output file will be postfixed with the `.bp.dir` extension.
 
 ### Current build status
 * [Travis CI ![Build Status](https://travis-ci.org/Parallel-NetCDF/E3SM-IO.svg?branch=master)](https://travis-ci.org/Parallel-NetCDF/E3SM-IO)

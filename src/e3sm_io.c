@@ -100,7 +100,7 @@ static void usage (char *argv0) {
 "       [-g num] Number of subfiles, used in blob I/O only (default: 1)\n"
 "       [-i path] Enable read performance evaluation and set the input file\n"
 "                 (folder) path\n"
-"       [-i path] Enable write performance evaluation and set the output file\n"
+"       [-o path] Enable write performance evaluation and set the output file\n"
 "                 (folder) path\n"
 "       [-a api]  I/O library name to perform write operation\n"
 "           pnetcdf:   PnetCDF library (default)\n"
