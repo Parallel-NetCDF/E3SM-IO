@@ -224,7 +224,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 * Command-line options:
   ```
     % ./e3sm_io -h
-    Usage: src/e3sm_io [OPTION]... FILE
+    Usage: ./e3sm_io [OPTION]... FILE
        [-h] Print help
        [-v] Verbose mode
        [-k] Keep the output files when program exits
@@ -240,6 +240,10 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-g num] Number of IO groups (subfiles) (default 1)
        [-o output_dir] Output directory name (default ./)
        [-i target_dir] Path to directory containing the input files
+              If set, E3SM I/O will read the data from the input files and write it out in the write test.
+              The input file must have the same configuration (decomposition file) as the test case and be written by the same underlying I/O library.
+              If not set, E3SM I/O will write out random data.
+       [-a api] Underlying API to test (pnetcdf (default), hdf5_ra, hdf5_log, hdf5_mv, adios)
               pnetcdf:     PnetCDF library
               hdf5_ra:     HDF5 library's native VOL with rearranger in E3SM
               hdf5_log:    HDF5 library with Log I/O VOL
@@ -250,7 +254,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
               log:         Store E3SM variables as is in log-based storage layout
               blob:        Flatten E3SM variables into 1-dimensional data blocks. Record decomposition information in other variables and attributes
        [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) (default))
-       [-z filter] Apply the filter if supported by the underlying API (none (default), deflate)
+       [-z filter] Apply the filter if supported by the underlying API (none (default), deflate) 
        FILE: Name of input netCDF file describing data decompositions
   ```
 * An example batch script file for running a job on Cori @NERSC with 8 KNL
