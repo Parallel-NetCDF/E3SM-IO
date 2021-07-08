@@ -26,6 +26,9 @@
 #include <e3sm_io_case_F_scorpio.hpp>
 #include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
+#ifdef ENABLE_ADIOS2
+#include <e3sm_io_driver_adios2.hpp>
+#endif
 
 #define IPUT_VAR_DOUBLE(F, D, B, R) e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_DOUBLE, B, nb);
 #define IPUT_VAR_FLOAT(F, D, B, R)  e3sm_io_scorpio_write_var (driver, rec_no, F, D, MPI_FLOAT, B, nb);
@@ -895,7 +898,10 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
         printf ("Max Time of IPUT_VARN              = %.4f sec\n", post_timing);
-        if(dynamic_cast<e3sm_io_driver_adios2*>(&driver)){
+#ifdef ENABLE_ADIOS2
+        if(dynamic_cast<e3sm_io_driver_adios2*>(&driver))
+#endif
+        {
             printf ("Max Time of WAIT_ALL_REQS          = %.4f sec\n", wait_timing);
         }
         printf ("Max Time of close                  = %.4f sec\n", close_timing);

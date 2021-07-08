@@ -50,6 +50,7 @@ class e3sm_io_case_G : public e3sm_io_case {
     int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
 };
 
+#ifdef ENABLE_ADIOS2
 class e3sm_io_case_F_scorpio : public e3sm_io_case_F {
    public:
     e3sm_io_case_F_scorpio ();
@@ -58,3 +59,4 @@ class e3sm_io_case_F_scorpio : public e3sm_io_case_F {
     int wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
     int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
 };
+#endif
