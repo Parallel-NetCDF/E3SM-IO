@@ -64,7 +64,12 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 tcase = new e3sm_io_case_F ();
                 break;
             case blob:
+#ifdef ENABLE_ADIOS2
                 tcase = new e3sm_io_case_F_scorpio ();
+#else
+                /* TODO: Add PnetCDF blob I/O method here */
+                goto err_out;
+#endif
                 break;
         }
     } else if (decom->num_decomp == 6) {
