@@ -166,7 +166,7 @@ AC_DEFUN([UD_PROG_M4],
                if test "x$ac_cv_m4_stdout" != x; then
                   M4FLAGS=-B10000
                fi
-               ${RM} -f conftest.err
+               rm -f conftest.err
                ;;
     esac
     if test "x$M4FLAGS" = x; then
