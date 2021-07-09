@@ -96,5 +96,5 @@ err_out:
 
     e3sm_io_print_profile (cfg);
 
-    return nerrs;
+    return (err != 0) ? err : nerrs;
 }
