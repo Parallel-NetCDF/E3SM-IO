@@ -114,6 +114,7 @@ extern int read_decomp (int verbose,
                         MPI_Offset raw_nreqs[],
                         MPI_Offset *raw_offsets[]);
 
+extern int blob_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern void print_info (MPI_Info *info_used);
 int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);
 #ifdef __cplusplus
