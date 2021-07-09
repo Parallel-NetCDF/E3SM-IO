@@ -87,33 +87,35 @@ typedef struct e3sm_io_config {
     int two_buf;
     int non_contig_buf;
     int io_stride;
+
+     int      num_subfiles; /* number of subfiles */
+     int      subfile_ID;   /* unqiue file identifier for subfiles */
+     MPI_Comm sub_comm;     /* communicator for a subfile */
+
 } e3sm_io_config;
 
+#define NVARS_DECOMP 5
+
 typedef struct e3sm_io_decom {
-    int num_decomp;
-    int contig_nreqs[MAX_NUM_DECOMP], *disps[MAX_NUM_DECOMP];
-    int *blocklens[MAX_NUM_DECOMP];
-    int ndims[MAX_NUM_DECOMP];
-    MPI_Offset dims[MAX_NUM_DECOMP][2];
-    MPI_Offset raw_nreqs[MAX_NUM_DECOMP];  // For pio output style
+    int  num_decomp;                   /* number of decompositions: 3 or 6 */
+    int  contig_nreqs[MAX_NUM_DECOMP];
+    int  max_nreqs[MAX_NUM_DECOMP];    /* max among processes */
+    int *disps[MAX_NUM_DECOMP];        /* starting request offsets of this proc */
+    int *blocklens[MAX_NUM_DECOMP];    /* length of each request */
+    int  ndims[MAX_NUM_DECOMP];
+    MPI_Offset dims[MAX_NUM_DECOMP][2];/* global dimension sizes of variables */
+    MPI_Offset nelems[MAX_NUM_DECOMP]; /* total no. array elements */
+    MPI_Offset start[MAX_NUM_DECOMP];  /* This proc's starting variable array index */
+    MPI_Offset count[MAX_NUM_DECOMP];  /* This proc's no. variable array elements */
+
+    MPI_Offset raw_nreqs[MAX_NUM_DECOMP];  /* For pio output style */
     MPI_Offset *raw_offsets[MAX_NUM_DECOMP];
 } e3sm_io_decom;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int read_decomp (int verbose,
-                        MPI_Comm io_comm,
-                        const char *infname,
-                        int *num_decomp,
-                        MPI_Offset dims[][2],
-                        int contig_nreqs[],
-                        int var_ndims[],
-                        int *disps[],
-                        int *blocklens[],
-                        MPI_Offset raw_nreqs[],
-                        MPI_Offset *raw_offsets[]);
-
+extern int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern int blob_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern void print_info (MPI_Info *info_used);
 int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);

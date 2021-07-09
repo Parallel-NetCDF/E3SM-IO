@@ -288,17 +288,8 @@ int main (int argc, char **argv) {
     PRINT_MSG (1, "Target folder name =%s\n", cfg.targetdir);
     if (cfg.datadir[0] != '\0') { PRINT_MSG (1, "Input folder name =%s\n", cfg.datadir); }
 
-    /* read request information from decompositions 1, 2 and 3 */
-    if (cfg.strategy == blob) {
-        err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
-                           decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens,
-                           decom.raw_nreqs, decom.raw_offsets);
-    } else {
-        // No need to generate simulated raw offsets in canonical strategy
-        err =
-            read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
-                         decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens, NULL, NULL);
-    }
+    /* read request information from decomposition file */
+    err = read_decomp(&cfg, &decom);
     CHECK_ERR
 
     err = MPI_Info_create (&(cfg.info));
