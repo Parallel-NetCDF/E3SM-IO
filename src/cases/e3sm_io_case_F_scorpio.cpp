@@ -40,7 +40,7 @@ int e3sm_io_case_F_scorpio::wr_test (e3sm_io_config &cfg,
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
         printf ("Input decomposition file           = %s\n", cfg.cfgpath);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file directory              = %s\n", cfg.targetdir);
+        printf ("Output file directory              = %s\n", cfg.targetfname);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
@@ -67,14 +67,14 @@ int e3sm_io_case_F_scorpio::wr_test (e3sm_io_config &cfg,
         if (cfg.hx == 0 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 414;
-            nerrs += run_varn_F_case_scorpio (cfg, decom, driver, "f_case_h0_varn.nc", this->dbl_buf_h0,
+            nerrs += run_varn_F_case_scorpio (cfg, decom, driver, this->dbl_buf_h0,
                                           this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
         }
 
         if (cfg.hx == 1 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 51;
-            nerrs += run_varn_F_case_scorpio (cfg, decom, driver, "f_case_h1_varn.nc", this->dbl_buf_h0,
+            nerrs += run_varn_F_case_scorpio (cfg, decom, driver, this->dbl_buf_h0,
                                           this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
         }
     }

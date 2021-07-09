@@ -43,7 +43,7 @@ int e3sm_io_case_G::wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
         printf ("Input decomposition file           = %s\n", cfg.cfgpath);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file directory              = %s\n", cfg.targetdir);
+        printf ("Output file directory              = %s\n", cfg.targetfname);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
@@ -68,7 +68,7 @@ int e3sm_io_case_G::wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         fflush (stdout);
 
         MPI_Barrier (cfg.io_comm);
-        nerrs += run_varn_G_case (cfg, decom, driver, "g_case_hist_varn.nc", this->D1_fix_int_buf,
+        nerrs += run_varn_G_case (cfg, decom, driver, this->D1_fix_int_buf,
                                   this->D2_fix_int_buf, this->D3_fix_int_buf, this->D4_fix_int_buf,
                                   this->D5_fix_int_buf, this->D1_rec_dbl_buf, this->D3_rec_dbl_buf,
                                   this->D4_rec_dbl_buf, this->D5_rec_dbl_buf, this->D6_rec_dbl_buf,
@@ -91,7 +91,7 @@ int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
         printf ("Input decomposition file           = %s\n", cfg.cfgpath);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file directory              = %s\n", cfg.targetdir);
+        printf ("Output file directory              = %s\n", cfg.targetfname);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
@@ -117,7 +117,7 @@ int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
 
         MPI_Barrier (cfg.io_comm);
         nerrs += run_varn_G_case_rd (
-            cfg, decom, driver, "g_case_hist_varn.nc", &(this->D1_fix_int_buf),
+            cfg, decom, driver, &(this->D1_fix_int_buf),
             &(this->D2_fix_int_buf), &(this->D3_fix_int_buf), &(this->D4_fix_int_buf),
             &(this->D5_fix_int_buf), &(this->D1_rec_dbl_buf), &(this->D3_rec_dbl_buf),
             &(this->D4_rec_dbl_buf), &(this->D5_rec_dbl_buf), &(this->D6_rec_dbl_buf),
@@ -134,24 +134,24 @@ int e3sm_io_case_G::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_i
 
     verbose     = cfg.verbose;
     cfg.verbose = -1;  // Disable output
-    // Swap datadir with targetdir temporarily
-    tmp           = cfg.targetdir;
-    cfg.targetdir = cfg.datadir;
-    cfg.datadir   = tmp;
+    // Swap datafname with targetfname temporarily
+    tmp           = cfg.targetfname;
+    cfg.targetfname = cfg.datafname;
+    cfg.datafname   = tmp;
 
     // Run dummy G case read for data
     MPI_Barrier (cfg.io_comm);
     nerrs += run_varn_G_case_rd (
-        cfg, decom, driver, "g_case_hist_varn.nc", &(this->D1_fix_int_buf), &(this->D2_fix_int_buf),
+        cfg, decom, driver, &(this->D1_fix_int_buf), &(this->D2_fix_int_buf),
         &(this->D3_fix_int_buf), &(this->D4_fix_int_buf), &(this->D5_fix_int_buf),
         &(this->D1_rec_dbl_buf), &(this->D3_rec_dbl_buf), &(this->D4_rec_dbl_buf),
         &(this->D5_rec_dbl_buf), &(this->D6_rec_dbl_buf), &(this->D1_fix_dbl_buf));
 
     cfg.verbose = verbose;
-    // Swap datadir and targetdir back
-    tmp           = cfg.targetdir;
-    cfg.targetdir = cfg.datadir;
-    cfg.datadir   = tmp;
+    // Swap datafname and targetfname back
+    tmp           = cfg.targetfname;
+    cfg.targetfname = cfg.datafname;
+    cfg.datafname   = tmp;
 
 err_out:;
     return nerrs;

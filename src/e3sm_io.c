@@ -89,8 +89,8 @@ static void usage (char *argv0) {
         "       [-r num] Number of records (default 1)\n"
         "       [-s num] Stride between IO tasks (default 1)\n"
         "       [-g num] Number of IO groups (subfiles) (default 1)\n"
-        "       [-o output_dir] Output directory name (default ./)\n"
-        "       [-i target_dir] Path to directory containing the input files\n"
+        "       [-o output_path] Output file path (default ./)\n"
+        "       [-i input_path] Path to the input files\n"
         "       [-a api] Underlying API to test (pnetcdf (default), hdf5_ra, hdf5_log, hdf5_mv, "
         "adios)\n"
         "              pnetcdf:     PnetCDF library\n"
@@ -115,8 +115,8 @@ static void usage (char *argv0) {
 int main (int argc, char **argv) {
     int err, nerrs = 0;
     int i;
-    char targetdir[E3SM_IO_MAX_PATH] = "./";
-    char datadir[E3SM_IO_MAX_PATH]   = "";
+    char targetfname[E3SM_IO_MAX_PATH] = "./";
+    char datafname[E3SM_IO_MAX_PATH]   = "";
     char cfgpath[E3SM_IO_MAX_PATH]   = "";
     e3sm_io_config cfg;
     e3sm_io_decom decom;
@@ -128,8 +128,8 @@ int main (int argc, char **argv) {
     cfg.info           = MPI_INFO_NULL;
     cfg.num_iotasks    = cfg.np;
     cfg.num_group      = 1;
-    cfg.targetdir      = targetdir;
-    cfg.datadir        = datadir;
+    cfg.targetfname      = targetfname;
+    cfg.datafname        = datafname;
     cfg.cfgpath        = cfgpath;
     cfg.hx             = -1;
     cfg.nrec           = 1;
@@ -220,10 +220,10 @@ int main (int argc, char **argv) {
                 break;
 
             case 'o':
-                strncpy (cfg.targetdir, optarg, E3SM_IO_MAX_PATH);
+                strncpy (cfg.targetfname, optarg, E3SM_IO_MAX_PATH);
                 break;
             case 'i':
-                strncpy (cfg.datadir, optarg, E3SM_IO_MAX_PATH);
+                strncpy (cfg.datafname, optarg, E3SM_IO_MAX_PATH);
                 break;
             case 'd':
                 cfg.vard = 1;
@@ -285,8 +285,8 @@ int main (int argc, char **argv) {
     if (!(cfg.wr || cfg.rd)) cfg.wr = 1;
 
     /* set the output folder name */
-    PRINT_MSG (1, "Target folder name =%s\n", cfg.targetdir);
-    if (cfg.datadir[0] != '\0') { PRINT_MSG (1, "Input folder name =%s\n", cfg.datadir); }
+    PRINT_MSG (1, "Target folder name =%s\n", cfg.targetfname);
+    if (cfg.datafname[0] != '\0') { PRINT_MSG (1, "Input folder name =%s\n", cfg.datafname); }
 
     /* read request information from decompositions 1, 2 and 3 */
     if (cfg.strate == blob) {
@@ -305,6 +305,13 @@ int main (int argc, char **argv) {
     CHECK_MPIERR
     nerrs += set_info (&cfg, &decom);
     CHECK_NERR
+
+    if (decom.num_decomp == 3) {
+        fprintf(targetfname,"./f_case");
+    }
+    else{
+        fprintf(targetfname,"./g_case");
+    }
 
     nerrs += e3sm_io_core (&cfg, &decom);
 

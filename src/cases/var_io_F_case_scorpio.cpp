@@ -366,7 +366,6 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
 int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                          e3sm_io_decom &decom,
                          e3sm_io_driver &driver,
-                         std::string outfile, /* output file name */
                          double *dbl_bufp,    /* buffer for fixed size double var */
                          itype *rec_bufp,     /* buffer for rec floating point var */
                          char *txt_buf,       /* buffer for char var */
@@ -526,7 +525,10 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     timing = MPI_Wtime ();
 
     /* set output file name */
-    targetfname = std::string (cfg.targetdir) + '/' + outfile;
+    if (cfg.nvars == 414)
+        targetfname = std::string (cfg.targetfname) + "_h0";
+    else
+        targetfname = std::string (cfg.targetfname) + "_h1";
 
     /* create a new CDF-5 file for writing */
     err = driver.create (targetfname, cfg.io_comm, cfg.info, &ncid);
@@ -876,7 +878,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (rank == 0) {
         int nvars_noD = cfg.nvars;
         for (i = 0; i < 3; i++) nvars_noD -= nvars_D[i];
-        printf ("History output file                = %s\n", outfile.c_str ());
+        printf ("History output file                = %s\n", targetfname.c_str ());
         printf ("Output file size                 = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("No. variables use no decomposition = %3d\n", nvars_noD);

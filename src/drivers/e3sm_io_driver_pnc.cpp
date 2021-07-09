@@ -54,7 +54,7 @@ int e3sm_io_driver_pnc::create (std::string path, MPI_Comm comm, MPI_Info info, 
         MPI_Info_set (info, "nc_num_subfiles", ng);
     }
 
-    err = ncmpi_create (comm, path.c_str (), NC_CLOBBER | NC_64BIT_DATA, info, fid);
+    err = ncmpi_create (comm, (path + ".nc").c_str (), NC_CLOBBER | NC_64BIT_DATA, info, fid);
     CHECK_NCERR
 
     put_buffer_size_limit = 10485760;
@@ -68,7 +68,7 @@ err_out:;
 int e3sm_io_driver_pnc::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err, nerrs = 0;
 
-    err = ncmpi_open (comm, path.c_str (), NC_64BIT_DATA, info, fid);
+    err = ncmpi_open (comm, (path + ".nc").c_str (), NC_64BIT_DATA, info, fid);
     CHECK_NCERR
 
 err_out:;

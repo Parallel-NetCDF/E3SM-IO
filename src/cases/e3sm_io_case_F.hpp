@@ -35,7 +35,6 @@ extern int inq_F_case_h1 (e3sm_io_driver &driver,
 extern int run_vard_F_case (e3sm_io_config &cfg,
                             e3sm_io_decom &decom,
                             e3sm_io_driver &driver,
-                            std::string outfile, /* output file name */
                             double *dbl_bufp,    /* buffer for fixed size double var */
                             itype *rec_bufp,     /* buffer for rec floating point var */
                             char *txt_buf,       /* buffer for char var */
@@ -44,7 +43,6 @@ extern int run_vard_F_case (e3sm_io_config &cfg,
 extern int run_varn_F_case (e3sm_io_config &cfg,
                             e3sm_io_decom &decom,
                             e3sm_io_driver &driver,
-                            std::string outfile, /* output file name */
                             double *dbl_bufp,    /* buffer for fixed size double var */
                             itype *rec_bufp,     /* buffer for rec floating point var */
                             char *txt_buf,       /* buffer for char var */
@@ -52,7 +50,6 @@ extern int run_varn_F_case (e3sm_io_config &cfg,
 extern int run_varn_F_case_rd (e3sm_io_config &cfg,
                                e3sm_io_decom &decom,
                                e3sm_io_driver &driver,
-                               std::string outfile, /* output file name */
                                double **dbl_bufp,   /* buffer for fixed size double var */
                                itype **rec_bufp,    /* buffer for rec floating point var */
                                char *txt_buf,       /* buffer for char var */

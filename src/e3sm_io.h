@@ -66,8 +66,8 @@ typedef struct e3sm_io_config {
     int num_iotasks;
     int num_group;
 
-    char *targetdir;
-    char *datadir;
+    char *targetfname;
+    char *datafname;
     char *cfgpath;
     int hx;
     int nrec;

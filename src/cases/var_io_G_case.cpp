@@ -191,7 +191,6 @@
 int run_varn_G_case (e3sm_io_config &cfg,
                      e3sm_io_decom &decom,
                      e3sm_io_driver &driver,
-                     std::string outfile,
                      int *D1_fix_int_bufp,    /* D1 fix int buffer */
                      int *D2_fix_int_bufp,    /* D2 fix int buffer */
                      int *D3_fix_int_bufp,    /* D3 fix int buffer */
@@ -474,7 +473,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     timing = MPI_Wtime ();
 
     /* set output file name */
-    outfname = std::string (cfg.targetdir) + '/' + outfile;
+    outfname = std::string (cfg.targetfname);
 
     /* create a new CDF-5 file for writing */
     err = driver.create (outfname, cfg.io_comm, cfg.info, &ncid);
@@ -790,7 +789,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     if (rank == 0) {
         int nvars_noD = cfg.nvars;
         for (i = 0; i < 6; i++) nvars_noD -= nvars_D[i];
-        printf ("History output file                = %s\n", outfile.c_str ());
+        printf ("History output file                = %s\n", outfname.c_str ());
         printf ("Output file size                 = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("No. variables use no decomposition = %3d\n", nvars_noD);
@@ -835,7 +834,6 @@ err_out:
 int run_varn_G_case_rd (e3sm_io_config &cfg,
                         e3sm_io_decom &decom,
                         e3sm_io_driver &driver,
-                        std::string outfile,
                         int **D1_fix_int_bufp,    /* D1 fix int buffer */
                         int **D2_fix_int_bufp,    /* D2 fix int buffer */
                         int **D3_fix_int_bufp,    /* D3 fix int buffer */
@@ -1084,7 +1082,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     timing = MPI_Wtime ();
 
     /* set output file name */
-    outfname = std::string (cfg.targetdir) + '/' + outfile;
+    outfname = std::string (cfg.targetfname);
 
     /* create a new CDF-5 file for writing */
     err = driver.open (outfname, comm, cfg.info, &ncid);
@@ -1386,7 +1384,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     driver.inq_malloc_max_size (&m_alloc);
     MPI_Reduce (&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf ("History output file                = %s\n", outfile.c_str ());
+        printf ("History output file                = %s\n", outfname.c_str ());
         printf ("Input file size                 = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
