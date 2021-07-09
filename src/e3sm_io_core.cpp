@@ -64,17 +64,31 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 tcase = new e3sm_io_case_F ();
                 break;
             case blob:
+                if (cfg->api == pnetcdf)
+                    tcase = new e3sm_io_case_F ();
 #ifdef ENABLE_ADIOS2
-                tcase = new e3sm_io_case_F_scorpio ();
-#else
-                /* TODO: Add PnetCDF blob I/O method here */
-                goto err_out;
+                else
+                    tcase = new e3sm_io_case_F_scorpio ();
 #endif
                 break;
         }
     } else if (decom->num_decomp == 6) {
         cfg->nvars = 52;
-        tcase      = new e3sm_io_case_G ();
+        switch (cfg->strategy) {
+            case canonical:
+                tcase = new e3sm_io_case_G ();
+                break;
+            case blob:
+                if (cfg->api == pnetcdf)
+                    tcase = new e3sm_io_case_G ();
+#ifdef ENABLE_ADIOS2
+/* TODO:
+                else
+                    tcase = new e3sm_io_case_G_scorpio ();
+*/
+#endif
+                break;
+        }
     } else {
         RET_ERR ("Unknown decom file")
     }

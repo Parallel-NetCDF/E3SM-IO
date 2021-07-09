@@ -16,7 +16,11 @@ CXX_SRCS =  var_io_F_case.cpp \
             e3sm_io_case_F.cpp \
             e3sm_io_case_G.cpp \
             header_io_F_case.cpp \
-            header_io_G_case.cpp 
+            header_io_G_case.cpp \
+            pnetcdf_blob_var_io_F_case.cpp \
+            blob_header_io_F_case.cpp \
+            pnetcdf_blob_var_io_G_case.cpp \
+            blob_header_io_G_case.cpp
 
 H_SRCS =    e3sm_io_case.hpp \
             e3sm_io_F_case.hpp \
