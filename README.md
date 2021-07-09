@@ -105,7 +105,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % tar -zxf v2.7.1.tar.gz
     % mkdir ADIOS2_BUILD
     % cd ADIOS2_BUILD
-    % cmake -DCMAKE_INSTALL_PREFIX=${HOME}/ADIOS2/2.7.1 -DADIOS2_USE_MPI=ON ../v2.7.1
+    % cmake -DCMAKE_INSTALL_PREFIX=${HOME}/ADIOS2/2.7.1 -DADIOS2_USE_MPI=ON ../ADIOS2-2.7.1
     % make -j 16
     % make -j 16 install
     ```
