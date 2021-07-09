@@ -136,7 +136,7 @@ int main (int argc, char **argv) {
     cfg.wr             = 0;
     cfg.rd             = 0;
     cfg.nvars          = 0;
-    cfg.strate         = canonical;
+    cfg.strategy       = canonical;
     cfg.api            = pnetcdf;
     cfg.chunksize      = 0;
     cfg.filter         = none;
@@ -209,11 +209,11 @@ int main (int argc, char **argv) {
                 */
             case 'x':
                 if (strcmp (optarg, "canonical") == 0) {
-                    cfg.strate = canonical;
+                    cfg.strategy = canonical;
                 } else if (strcmp (optarg, "log") == 0) {
-                    cfg.strate = log;
+                    cfg.strategy = log;
                 } else if (strcmp (optarg, "blob") == 0) {
-                    cfg.strate = blob;
+                    cfg.strategy = blob;
                 } else {
                     RET_ERR ("Unknown I/O strategy")
                 }
@@ -273,7 +273,7 @@ int main (int argc, char **argv) {
     }
     strncpy (cfg.cfgpath, argv[optind], E3SM_IO_MAX_PATH);
 
-    if((cfg.strate==log) && (cfg.api!=hdf5_log)){
+    if((cfg.strategy==log) && (cfg.api!=hdf5_log)){
         ERR_OUT ("Selected API does not support log-based I/O")
     }
 
@@ -289,7 +289,7 @@ int main (int argc, char **argv) {
     if (cfg.datadir[0] != '\0') { PRINT_MSG (1, "Input folder name =%s\n", cfg.datadir); }
 
     /* read request information from decompositions 1, 2 and 3 */
-    if (cfg.strate == blob) {
+    if (cfg.strategy == blob) {
         err = read_decomp (cfg.verbose, cfg.io_comm, cfg.cfgpath, &(decom.num_decomp), decom.dims,
                            decom.contig_nreqs, decom.ndims, decom.disps, decom.blocklens,
                            decom.raw_nreqs, decom.raw_offsets);

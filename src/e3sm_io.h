@@ -54,7 +54,7 @@ typedef enum e3sm_io_api {
     adios
 } e3sm_io_api;
 
-typedef enum e3sm_io_strate { canonical, blob, log } e3sm_io_strate;
+typedef enum e3sm_io_strategy { canonical, blob, log } e3sm_io_strategy;
 
 typedef enum e3sm_io_filter { none, deflate, bzip2 } e3sm_io_filter;
 
@@ -75,7 +75,7 @@ typedef struct e3sm_io_config {
     int rd;
     int nvars;
 
-    e3sm_io_strate strate;
+    e3sm_io_strategy strategy;
     e3sm_io_api api;
     e3sm_io_filter filter;
     size_t chunksize;

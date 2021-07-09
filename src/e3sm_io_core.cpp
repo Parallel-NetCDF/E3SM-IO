@@ -59,7 +59,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     /* F case has 3 decompositions, G case has 6 */
     if (decom->num_decomp == 3) {
         cfg->nvars = 414;
-        switch (cfg->strate) {
+        switch (cfg->strategy) {
             case canonical:
                 tcase = new e3sm_io_case_F ();
                 break;
