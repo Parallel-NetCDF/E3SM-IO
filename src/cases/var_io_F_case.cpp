@@ -507,7 +507,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
 
     /* allocate and initialize write buffer for large variables */
     if (cfg.nvars == 414)
-        rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321 + 63) * gap;
+        rec_buflen = nelems[1] * 323 + nelems[2] * 63 + (323 + 63) * gap;
     else
         rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
 
@@ -1028,8 +1028,11 @@ int run_varn_F_case (e3sm_io_config &cfg,
     if (cfg.verbose && rank == 0) printf ("nelems=%zd %zd %zd\n", nelems[0], nelems[1], nelems[2]);
 
     /* allocate and initialize write buffer for small variables */
-    dbl_buflen = nelems[1] * 2 + nelems[0] + 3 * decom.dims[2][0] + 3 * (decom.dims[2][0] + 1) + 8 +
-                 2 + 20 * gap;
+    dbl_buflen = nelems[1] * 2
+               + nelems[0]
+               + 3 * decom.dims[2][0]
+               + 3 * (decom.dims[2][0] + 1)
+               + 8 + 2 + 20 * gap;
     if (dbl_bufp != NULL) {
         dbl_buf = dbl_bufp;
     } else {
@@ -1482,8 +1485,11 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     if (cfg.verbose && rank == 0) printf ("nelems=%zd %zd %zd\n", nelems[0], nelems[1], nelems[2]);
 
     /* allocate and initialize write buffer for small variables */
-    dbl_buflen = nelems[1] * 2 + nelems[0] + 3 * decom.dims[2][0] + 3 * (decom.dims[2][0] + 1) + 8 +
-                 2 + 20 * gap;
+    dbl_buflen = nelems[1] * 2
+               + nelems[0]
+               + 3 * decom.dims[2][0]
+               + 3 * (decom.dims[2][0] + 1)
+               + 8 + 2 + 20 * gap;
 
     dbl_buf = (double *)malloc (dbl_buflen * sizeof (double));
     if (dbl_bufp != NULL) { *dbl_bufp = dbl_buf; }
@@ -1492,7 +1498,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
 
     /* allocate and initialize write buffer for large variables */
     if (cfg.nvars == 414)
-        rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321 + 63) * gap;
+        rec_buflen = nelems[1] * 323 + nelems[2] * 63 + (323 + 63) * gap;
     else
         rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
 
