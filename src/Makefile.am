@@ -39,3 +39,5 @@ BUILT_SOURCES = $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
 SUBDIRS = cases drivers
 DIST_SUBDIRS = cases drivers
 
+CLEANFILES = $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
+
