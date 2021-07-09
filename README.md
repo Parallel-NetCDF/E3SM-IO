@@ -47,7 +47,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 * (Optional) [Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
   + Experimental
   + Must have HDF5
-* (Optional) [ADIOS2 2.7.1](https://github.com/ornladios/ADIOS2.git)
+* (Optional) [ADIOS2 2.7.1](https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz)
   + Parallel I/O support (-DADIOS2_USE_MPI=ON) is required
 
 ### Building Steps
@@ -94,6 +94,22 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % make -j 16 install
     ```
     The VOL plugin library is now installed under the folder `${HOME}/Log_IO_VOL.`
+* (Optional) Build ADIOS2 with parallel I/O support
+  + Download and extract the ADIOS2 source code
+  + Configure ADIOS2 with MPI support enabled
+  + Run make install
+  + Example build commands are given below. This example will install
+    the ADIOS2 library under the folder `${HOME}/ADIOS2/2.7.1`.
+    ```
+    % wget https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz
+    % tar -zxf v2.7.1.tar.gz
+    % mkdir ADIOS2_BUILD
+    % cd ADIOS2_BUILD
+    % cmake -DCMAKE_INSTALL_PREFIX=${HOME}/ADIOS2/2.7.1 -DADIOS2_USE_MPI=ON ../v2.7.1
+    % make -j 16
+    % make -j 16 install
+    ```
+    The ADIOS2 library is now installed under the folder `${HOME}/ADIOS2/2.7.1.`
 * Build the E3SM-I/O benchmark
   + Clone this E3SM-I/O benchmark repository
   + Run command autoreconf -i
