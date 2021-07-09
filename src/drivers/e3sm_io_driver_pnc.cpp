@@ -61,7 +61,7 @@ err_out:
 int e3sm_io_driver_pnc::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err;
 
-    err = ncmpi_open (comm, path.c_str (), NC_64BIT_DATA, info, fid);
+    err = ncmpi_open (comm, (path + ".nc").c_str (), NC_64BIT_DATA, info, fid);
     CHECK_NCERR
 
 err_out:

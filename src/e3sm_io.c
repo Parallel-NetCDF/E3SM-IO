@@ -306,7 +306,7 @@ int main (int argc, char **argv) {
 
     /* the core of this benchmark */
     err = e3sm_io_core (&cfg, &decom);
-    if (err < 0) goto err_out;
+    CHECK_ERR
 
     timing[1] = MPI_Wtime() - timing[1];
 

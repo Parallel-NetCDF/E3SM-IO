@@ -154,7 +154,7 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
     }
 #endif
 
-    fp->id = H5Fcreate (path.c_str (), H5F_ACC_TRUNC, H5P_DEFAULT, faplid);
+    fp->id = H5Fcreate ((path + ".h5").c_str (), H5F_ACC_TRUNC, H5P_DEFAULT, faplid);
     CHECK_HID (fp->id)
 
     *fid = this->files.size ();
@@ -193,7 +193,7 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
     }
 #endif
 
-    fp->id = H5Fopen (path.c_str (), H5F_ACC_RDONLY, faplid);
+    fp->id = H5Fopen ((path + ".h5").c_str (), H5F_ACC_RDONLY, faplid);
     CHECK_HID (fp->id)
 
     *fid = this->files.size ();
