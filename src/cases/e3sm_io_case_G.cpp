@@ -31,8 +31,11 @@ e3sm_io_case_G::~e3sm_io_case_G () {
     if (this->D5_fix_int_buf != NULL) { free (this->D5_fix_int_buf); }
 }
 
-int e3sm_io_case_G::wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
-    int err, nerrs = 0;
+int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
+                            e3sm_io_decom  &decom,
+                            e3sm_io_driver &driver)
+{
+    int err=0, nerrs=0;
 
     PRINT_MSG (0, "number of requests for D1=%d D2=%d D3=%d D4=%d D5=%d D6=%d\n",
                decom.contig_nreqs[0], decom.contig_nreqs[1], decom.contig_nreqs[2],
@@ -44,31 +47,38 @@ int e3sm_io_case_G::wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         printf ("Input decomposition file           = %s\n", cfg.cfgpath);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
         printf ("Output file directory              = %s\n", cfg.targetdir);
-        printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
-                decom.dims[2][1]);
+        printf ("Variable dimensions (C order)      = %lld x %lld\n",
+                decom.dims[2][0], decom.dims[2][1]);
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
         printf ("Using noncontiguous write buffer   = %s\n", cfg.non_contig_buf ? "yes" : "no");
+        printf("==== Benchmarking G case ====\n");
+        if (cfg.strategy == blob)
+            printf("Using one-file-per-node blob I/O strategy\n");
+        else if (!cfg.vard)
+            printf("Using varn API\n");
+        printf("Variable written order: same as variables are defined\n");
     }
 
-    /* vard APIs require internal data type matches external one */
-    if (cfg.vard) {
+    if (cfg.api == pnetcdf && cfg.strategy == blob) {
+        /* construct metadata for blob I/O strategy */
+        err = blob_metadata(&cfg, &decom);
+        if (err != 0) goto err_out;
+
+        /* Use one-file-per-compute-node blob I/O strategy */
+        err = pnetcdf_blob_G_case(cfg, decom, driver, "g_case_blob.nc");
+        if (err != NC_NOERR) goto err_out;
+
+        if (cfg.sub_comm != MPI_COMM_NULL)
+            MPI_Comm_free(&cfg.sub_comm);
+    }
+    else if (cfg.vard) {
+        /* vard APIs require internal data type matches external one */
 #if REC_XTYPE != NC_FLOAT
         RET_ERR ("PnetCDF vard API requires internal and external data types match, skip\n");
 #endif
         RET_ERR ("Low level API not supported in g case\n");
     } else {
-        PRINT_MSG (0,
-                   "\n==== benchmarking G case writing using varn API ========================\n");
-
-        if (cfg.two_buf) {
-            PRINT_MSG (0, "Variable written order: 2D variables then 3D variables\n\n");
-        } else {
-            PRINT_MSG (0, "Variable written order: same as variables are defined\n\n");
-        }
-        fflush (stdout);
-
-        MPI_Barrier (cfg.io_comm);
-        nerrs += run_varn_G_case (cfg, decom, driver, "g_case_hist_varn.nc", this->D1_fix_int_buf,
+        err = run_varn_G_case (cfg, decom, driver, "g_case_hist_varn.nc", this->D1_fix_int_buf,
                                   this->D2_fix_int_buf, this->D3_fix_int_buf, this->D4_fix_int_buf,
                                   this->D5_fix_int_buf, this->D1_rec_dbl_buf, this->D3_rec_dbl_buf,
                                   this->D4_rec_dbl_buf, this->D5_rec_dbl_buf, this->D6_rec_dbl_buf,
@@ -76,7 +86,7 @@ int e3sm_io_case_G::wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
     }
 
 err_out:;
-    return nerrs;
+    return (err != 0) ? err : nerrs;
 }
 
 int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
@@ -106,12 +116,12 @@ int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         RET_ERR ("Low level API not supported in g case\n");
     } else {
         PRINT_MSG (0,
-                   "\n==== benchmarking G case writing using varn API ========================\n");
+                   "\n==== benchmarking G case reading using varn API ========================\n");
 
         if (cfg.two_buf) {
-            PRINT_MSG (0, "Variable written order: 2D variables then 3D variables\n\n");
+            PRINT_MSG (0, "Variable read order: 2D variables then 3D variables\n\n");
         } else {
-            PRINT_MSG (0, "Variable written order: same as variables are defined\n\n");
+            PRINT_MSG (0, "Variable read order: same as variables are defined\n\n");
         }
         fflush (stdout);
 
