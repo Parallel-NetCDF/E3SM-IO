@@ -35,8 +35,8 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
                             e3sm_io_decom  &decom,
                             e3sm_io_driver &driver)
 {
-    int err=0;
-
+    int err;
+    
     PRINT_MSG (0, "number of requests for D1=%d D2=%d D3=%d D4=%d D5=%d D6=%d\n",
                decom.contig_nreqs[0], decom.contig_nreqs[1], decom.contig_nreqs[2],
                decom.contig_nreqs[3], decom.contig_nreqs[4], decom.contig_nreqs[5]);
