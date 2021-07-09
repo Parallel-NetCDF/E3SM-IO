@@ -118,6 +118,7 @@ int main (int argc, char **argv) {
     char targetdir[E3SM_IO_MAX_PATH] = "./";
     char datadir[E3SM_IO_MAX_PATH]   = "";
     char cfgpath[E3SM_IO_MAX_PATH]   = "";
+    double timing[2], max_t[2];
     e3sm_io_config cfg;
     e3sm_io_decom decom;
 
@@ -146,6 +147,8 @@ int main (int argc, char **argv) {
     cfg.two_buf        = 0;
     cfg.non_contig_buf = 0;
     cfg.io_stride      = 1;
+    cfg.sub_comm       = MPI_COMM_NULL;
+
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
         decom.blocklens[i]   = NULL;
         decom.disps[i]       = NULL;
@@ -288,9 +291,16 @@ int main (int argc, char **argv) {
     PRINT_MSG (1, "Target folder name =%s\n", cfg.targetdir);
     if (cfg.datadir[0] != '\0') { PRINT_MSG (1, "Input folder name =%s\n", cfg.datadir); }
 
+    MPI_Barrier(MPI_COMM_WORLD);
+    timing[0] = MPI_Wtime();
+
     /* read request information from decomposition file */
     err = read_decomp(&cfg, &decom);
     CHECK_ERR
+
+    timing[0] = MPI_Wtime() - timing[0];
+    MPI_Barrier(MPI_COMM_WORLD);
+    timing[1] = MPI_Wtime();
 
     err = MPI_Info_create (&(cfg.info));
     CHECK_MPIERR
@@ -298,6 +308,12 @@ int main (int argc, char **argv) {
     CHECK_NERR
 
     nerrs += e3sm_io_core (&cfg, &decom);
+
+    timing[1] = MPI_Wtime() - timing[1];
+
+    MPI_Reduce(timing, max_t, 2, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    if (cfg.rank == 0)
+        printf("read_decomp=%.2f e3sm_io_core=%.2f\n", max_t[0],max_t[1]);
 
 err_out:;
     if (cfg.info != MPI_INFO_NULL) MPI_Info_free (&(cfg.info));
