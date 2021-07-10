@@ -95,6 +95,15 @@ typedef struct e3sm_io_config {
 
 } e3sm_io_config;
 
+
+/* NVARS_DECOMP is the number of new variables added to each subfile that
+ * describe a decomposition. For decomposition D*, they are:
+ * int   D*.nreqs(nblobs) ;
+ * int64 D*.blob_start(nblobs) ;
+ * int64 D*.blob_count(nblobs) ;
+ * int   D*.offsets(nblobs, D*.max_nreqs) ;
+ * int   D*.lengths(nblobs, D*.max_nreqs) ;
+ */
 #define NVARS_DECOMP 5
 
 typedef struct e3sm_io_decom {
