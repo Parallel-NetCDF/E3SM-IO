@@ -67,7 +67,7 @@ static int write_small_vars_F_case_scorpio (e3sm_io_driver &driver,
                                         int **int_buf,
                                         char **txt_buf,
                                         double **dbl_buf) {
-    int i, err, nerrs = 0;
+    int i, err=0;
     MPI_Offset start[2], count[2];
 
     /* scalar and small variables are written by rank 0 only */
@@ -377,10 +377,10 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
 {
     std::string targetfname;
     char *txt_buf_ptr;
-    int i, j, k, err, nerrs = 0, rank, ncid, cmode, nvars_D[3];
+    int i, j, k, err=0, rank, ncid, nvars_D[3];
     e3sm_io_scorpio_var *varids;
     int scorpiovars[6];
-    int rec_no, gap = 0, my_nreqs, *int_buf_ptr, xnreqs[3];
+    int rec_no=0, gap = 0, my_nreqs, *int_buf_ptr, xnreqs[3];
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
@@ -392,7 +392,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     MPI_Info info_used = MPI_INFO_NULL;
     MPI_Offset malloc_size, sum_size;
     MPI_Offset m_alloc = 0, max_alloc;
-    long long lbuf;
     std::vector<int> decomids;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
@@ -428,8 +427,9 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (dbl_bufp != NULL) {
         dbl_buf = dbl_bufp;
     } else {
+        size_t ii;
         dbl_buf = (double *)malloc (dbl_buflen * sizeof (double));
-        for (i = 0; i < dbl_buflen; i++) dbl_buf[i] = rank;
+        for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = rank;
     }
 
     /* allocate and initialize write buffer for large variables */
@@ -441,11 +441,12 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (rec_bufp != NULL) {
         rec_buf = rec_bufp;
     } else {
+        size_t ii;
         rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
 
-        for (i = 0; i < rec_buflen; i++) rec_buf[i] = rank;
-        for (i = 0; i < 10; i++) int_buf[i] = rank;
-        for (i = 0; i < 16; i++) txt_buf[i] = 'a' + rank;
+        for (i=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
+        for (i=0; ii<10; ii++) int_buf[ii] = rank;
+        for (i=0; ii<16; ii++) txt_buf[ii] = 'a' + rank;
     }
 
     // Assign decom ID
@@ -880,7 +881,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         int nvars_noD = cfg.nvars;
         for (i = 0; i < 3; i++) nvars_noD -= nvars_D[i];
         printf ("History output file                = %s\n", outfile.c_str ());
-        printf ("Output file size                 = %.2f MiB = %.2f GiB\n",
+        printf ("Output file size                   = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("No. variables use no decomposition = %3d\n", nvars_noD);
         printf ("No. variables use decomposition D1 = %3d\n", nvars_D[0]);
@@ -901,9 +902,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
 #ifdef ENABLE_ADIOS2
         if(dynamic_cast<e3sm_io_driver_adios2*>(&driver))
 #endif
-        {
-            printf ("Max Time of WAIT_ALL_REQS          = %.4f sec\n", wait_timing);
-        }
+        printf ("Max Time of write flushing         = %.4f sec\n", wait_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -913,11 +912,11 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         if (cfg.verbose) print_info (&info_used);
         printf ("-----------------------------------------------------------\n");
     }
+    fflush (stdout);
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
     if (!cfg.keep_outfile) unlink (targetfname.c_str ());
-    fflush (stdout);
-    MPI_Barrier (cfg.io_comm);
-    return nerrs;
+
+    return err;
 }
