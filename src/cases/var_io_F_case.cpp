@@ -441,10 +441,10 @@ int run_vard_F_case (e3sm_io_config &cfg,
                      e3sm_io_driver &driver)
 {
     char txt_buf[16], *txt_buf_ptr;
-    int i, j, k, err, rank, ncid, cmode, *varids;
+    int i, j, k, err, rank, ncid, *varids;
     int *var_blocklens, *buf_blocklens, my_nreqs, rec_no, gap = 0;
     int int_buf[10], *int_buf_ptr, xnreqs[3];
-    size_t fix_buflen, dbl_buflen, rec_buflen;
+    size_t ii, fix_buflen, dbl_buflen, rec_buflen;
     size_t nelems[3];
     itype *rec_buf;
     double *dbl_buf, *dbl_buf_ptr;
@@ -500,10 +500,10 @@ int run_vard_F_case (e3sm_io_config &cfg,
                  3 * (decom.dims[2][0] + 1) + 8 + 2 + 20 * gap;
 
     dbl_buf = (double *)malloc (dbl_buflen * sizeof (double));
-    for (i = 0; i < dbl_buflen; i++) dbl_buf[i] = rank + i;
+    for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = rank + ii;
 
-    for (i = 0; i < 10; i++) int_buf[i] = rank + i;
-    for (i = 0; i < 16; i++) txt_buf[i] = 'a' + rank + i;
+    for (ii=0; ii<10; ii++) int_buf[ii] = rank + ii;
+    for (ii=0; ii<16; ii++) txt_buf[ii] = 'a' + rank + ii;
 
     /* allocate and initialize write buffer for large variables */
     if (cfg.nvars == 414)
@@ -512,8 +512,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
         rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
 
     rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
-    for (i = 0; i < rec_buflen; i++) rec_buf[i] = rank + i;
-
+    for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = rank + ii;
     pre_timing = MPI_Wtime () - pre_timing;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
@@ -982,9 +981,9 @@ int run_varn_F_case (e3sm_io_config &cfg,
                      int *int_buf)        /* buffer for int var */
 {
     char *txt_buf_ptr;
-    int i, j, k, err, rank, ncid, cmode, *varids, nvars_D[3];
+    int i, j, k, err, rank, ncid, *varids, nvars_D[3];
     int rec_no, gap = 0, my_nreqs, *int_buf_ptr, xnreqs[3];
-    size_t dbl_buflen, rec_buflen, nelems[3];
+    size_t ii, dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
@@ -1032,7 +1031,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
         dbl_buf = dbl_bufp;
     } else {
         dbl_buf = (double *)malloc (dbl_buflen * sizeof (double));
-        for (i = 0; i < dbl_buflen; i++) dbl_buf[i] = rank;
+        for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = rank;
     }
 
     /* allocate and initialize write buffer for large variables */
@@ -1046,9 +1045,9 @@ int run_varn_F_case (e3sm_io_config &cfg,
     } else {
         rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
 
-        for (i = 0; i < rec_buflen; i++) rec_buf[i] = rank;
-        for (i = 0; i < 10; i++) int_buf[i] = rank;
-        for (i = 0; i < 16; i++) txt_buf[i] = 'a' + rank;
+        for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
+        for (ii=0; ii<10; ii++) int_buf[ii] = rank;
+        for (ii=0; ii<16; ii++) txt_buf[ii] = 'a' + rank;
     }
 
     pre_timing = MPI_Wtime () - pre_timing;
@@ -1439,7 +1438,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
                         int *int_buf)        /* buffer for int var */
 {
     char *txt_buf_ptr;
-    int i, j, k, err, rank, ncid, cmode, *varids, nreqs_D3_merged;
+    int i, j, k, err, rank, ncid, *varids;
     int rec_no, gap = 0, my_nreqs, *int_buf_ptr;
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf, *rec_buf_ptr;
