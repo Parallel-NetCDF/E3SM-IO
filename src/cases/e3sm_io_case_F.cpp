@@ -36,9 +36,9 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
     if ((cfg.verbose >= 0) && (cfg.rank == 0)) {
         printf ("Total number of MPI processes      = %d\n", cfg.np);
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
-        printf ("Input decomposition file           = %s\n", cfg.cfgpath);
+        printf ("Input decomposition file           = %s\n", cfg.cfg_path);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file directory              = %s\n", cfg.targetdir);
+        printf ("Output file/directory              = %s\n", cfg.out_path);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
@@ -66,14 +66,14 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
         /* Use one-file-per-compute-node blob I/O strategy */
         if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
             cfg.nvars = 414;
-            err = pnetcdf_blob_F_case(cfg, decom, driver, "f_case_h0_blob.nc");
+            err = pnetcdf_blob_F_case(cfg, decom, driver);
             CHECK_ERR
 
         }
 
         if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
             cfg.nvars = 51;
-            err = pnetcdf_blob_F_case(cfg, decom, driver, "f_case_h1_blob.nc");
+            err = pnetcdf_blob_F_case(cfg, decom, driver);
             CHECK_ERR
         }
 
@@ -87,25 +87,25 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
 #endif
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 414;
-            err = run_vard_F_case (cfg, decom, driver, "f_case_h0_vard.nc", this->dbl_buf_h0,
+            err = run_vard_F_case (cfg, decom, driver, this->dbl_buf_h0,
                                       this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
         }
 
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 51;
-            err = run_vard_F_case (cfg, decom, driver, "f_case_h1_vard.nc", this->dbl_buf_h0,
+            err = run_vard_F_case (cfg, decom, driver, this->dbl_buf_h0,
                                       this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
         }
     } else {
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 414;
-            err = run_varn_F_case (cfg, decom, driver, "f_case_h0_varn.nc", this->dbl_buf_h0,
+            err = run_varn_F_case (cfg, decom, driver, this->dbl_buf_h0,
                                       this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
         }
 
         if (cfg.hx == 1 || cfg.hx == -1) {
             cfg.nvars = 51;
-            err = run_varn_F_case (cfg, decom, driver, "f_case_h1_varn.nc", this->dbl_buf_h0,
+            err = run_varn_F_case (cfg, decom, driver, this->dbl_buf_h0,
                                       this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
         }
     }
@@ -125,9 +125,9 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
     if ((cfg.verbose >= 0) && (cfg.rank == 0)) {
         printf ("Total number of MPI processes      = %d\n", cfg.np);
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
-        printf ("Input decomposition file           = %s\n", cfg.cfgpath);
+        printf ("Input decomposition file           = %s\n", cfg.cfg_path);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file directory              = %s\n", cfg.targetdir);
+        printf ("Output file/directory              = %s\n", cfg.out_path);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
@@ -157,13 +157,13 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         if (cfg.hx == 0 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 414;
-            err = run_varn_F_case_rd(cfg, decom, driver, "f_case_h0_varn.nc", &(this->dbl_buf_h0),
+            err = run_varn_F_case_rd(cfg, decom, driver, &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
         }
         if (cfg.hx == 0 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 51;
-            err = run_varn_F_case_rd(cfg, decom, driver, "f_case_h1_varn.nc", &(this->dbl_buf_h0),
+            err = run_varn_F_case_rd(cfg, decom, driver, &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
         }
     }
@@ -176,14 +176,9 @@ err_out:
 
 int e3sm_io_case_F::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
     int err, verbose, nvar;
-    char *tmp;
 
     verbose = cfg.verbose;
     nvar    = cfg.nvars;
-    // Swap datadir with targetdir temporarily
-    tmp           = cfg.targetdir;
-    cfg.targetdir = cfg.datadir;
-    cfg.datadir   = tmp;
 
     cfg.verbose = -1;  // Disable output
 
@@ -191,24 +186,20 @@ int e3sm_io_case_F::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_i
     if (cfg.hx == 0 || cfg.hx == -1) {
         MPI_Barrier (cfg.io_comm);
         cfg.nvars = 414;
-        err = run_varn_F_case_rd (cfg, decom, driver, "f_case_h0_varn.nc", &(this->dbl_buf_h0),
+        err = run_varn_F_case_rd (cfg, decom, driver, &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
         CHECK_ERR
     }
     if (cfg.hx == 0 || cfg.hx == -1) {
         MPI_Barrier (cfg.io_comm);
         cfg.nvars = 51;
-        err += run_varn_F_case_rd (cfg, decom, driver, "f_case_h1_varn.nc", &(this->dbl_buf_h0),
+        err += run_varn_F_case_rd (cfg, decom, driver, &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
         CHECK_ERR
     }
 
     cfg.nvars   = nvar;
     cfg.verbose = verbose;
-    // Swap datadir and targetdir back
-    tmp           = cfg.targetdir;
-    cfg.targetdir = cfg.datadir;
-    cfg.datadir   = tmp;
 
 err_out:
     return err;

@@ -169,7 +169,7 @@
    }
 #endif
 #define FILE_CREATE(filename) { \
-    err = driver.create(targetfname, cfg.sub_comm, cfg.info, &ncid); \
+    err = driver.create(filename, cfg.sub_comm, cfg.info, &ncid); \
     CHECK_ERR \
 }
 #define FILE_CLOSE {            \
@@ -347,10 +347,9 @@ err_out:
 /*----< pnetcdf_blob_F_case() >----------------------------------------------*/
 int pnetcdf_blob_F_case(e3sm_io_config &cfg,
                         e3sm_io_decom  &decom,
-                        e3sm_io_driver &driver,
-                        std::string     outfile)  /* output file name */
+                        e3sm_io_driver &driver)
 {
-    char targetfname[1024];
+    char outfile[1024];
     int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, *varids;
     int rec_no, gap = 0, my_nreqs, num_decomp_vars;
     int contig_nreqs[MAX_NUM_DECOMP], nvars_D[MAX_NUM_DECOMP];
@@ -436,15 +435,14 @@ int pnetcdf_blob_F_case(e3sm_io_config &cfg,
     MPI_Barrier(cfg.sub_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
-    sprintf(targetfname, "%s/%s.%04d", cfg.targetdir, outfile.c_str(),
-            cfg.subfile_ID);
+    sprintf(outfile, "%s.%04d", cfg.out_path, cfg.subfile_ID);
 
     /* set output subfile name */
     if (cfg.verbose && sub_rank == 0)
-        printf("global_rank=%d sub_rank=%d targetfname=%s\n",global_rank,sub_rank,targetfname);
+        printf("global_rank=%d sub_rank=%d outfile=%s\n",global_rank,sub_rank,outfile);
 
     /* create the output file */
-    FILE_CREATE(targetfname)
+    FILE_CREATE(outfile)
 
     open_timing += MPI_Wtime() - timing;
 
@@ -782,7 +780,7 @@ int pnetcdf_blob_F_case(e3sm_io_config &cfg,
         printf("Max Time of file open/create       = %.4f sec\n",  open_timing);
         printf("Max Time of define variables       = %.4f sec\n",   def_timing);
         printf("Max Time of posting iput requests  = %.4f sec\n",  post_timing);
-        printf("Max Time of WAIT_ALL_REQS          = %.4f sec\n",  wait_timing);
+        printf("Max Time of write flushing         = %.4f sec\n",  wait_timing);
         printf("Max Time of close                  = %.4f sec\n", close_timing);
         printf("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -802,7 +800,7 @@ err_out:
 #endif
 
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
-    if (!cfg.keep_outfile && sub_rank == 0) unlink(targetfname);
+    if (!cfg.keep_outfile && sub_rank == 0) unlink(outfile);
     fflush(stdout);
 
     return err;

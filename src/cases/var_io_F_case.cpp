@@ -438,10 +438,8 @@ err_out:
 /*----< run_vard_F_case() >--------------------------------------------------*/
 int run_vard_F_case (e3sm_io_config &cfg,
                      e3sm_io_decom &decom,
-                     e3sm_io_driver &driver,
-                     std::string outfile) /* request's block lengths */
+                     e3sm_io_driver &driver)
 {
-    std::string targetfname;
     char txt_buf[16], *txt_buf_ptr;
     int i, j, k, err, rank, ncid, cmode, *varids;
     int *var_blocklens, *buf_blocklens, my_nreqs, rec_no, gap = 0;
@@ -521,11 +519,8 @@ int run_vard_F_case (e3sm_io_config &cfg,
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     open_timing = MPI_Wtime ();
 
-    /* set output file name */
-    targetfname = std::string (cfg.targetdir) + '/' + outfile;
-
     /* create a new CDF-5 file for writing */
-    err = driver.create (targetfname, cfg.io_comm, cfg.info, &ncid);
+    err = driver.create (cfg.out_path, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
@@ -748,7 +743,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     close_timing = MPI_Wtime () - close_timing;
 
     if (cfg.rank == 0){
-        err = driver.inq_file_size(targetfname, &fsize);
+        err = driver.inq_file_size(cfg.out_path, &fsize);
         CHECK_ERR
     }
     
@@ -801,8 +796,8 @@ int run_vard_F_case (e3sm_io_config &cfg,
     MPI_Reduce (&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, cfg.io_comm);
 
     if (rank == 0) {
-        printf ("History output file                = %s\n", outfile.c_str ());
-        printf ("Output file size                 = %.2f MiB = %.2f GiB\n",
+        printf ("History output file                = %s\n", cfg.out_path);
+        printf ("Output file size                   = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
             printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
@@ -829,7 +824,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (targetfname.c_str ());
+    if (!cfg.keep_outfile) unlink (cfg.out_path);
     return err;
 }
 
@@ -981,13 +976,11 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
 int run_varn_F_case (e3sm_io_config &cfg,
                      e3sm_io_decom &decom,
                      e3sm_io_driver &driver,
-                     std::string outfile, /* output file name */
                      double *dbl_bufp,    /* buffer for fixed size double var */
                      itype *rec_bufp,     /* buffer for rec floating point var */
                      char *txt_buf,       /* buffer for char var */
                      int *int_buf)        /* buffer for int var */
 {
-    std::string targetfname;
     char *txt_buf_ptr;
     int i, j, k, err, rank, ncid, cmode, *varids, nvars_D[3];
     int rec_no, gap = 0, my_nreqs, *int_buf_ptr, xnreqs[3];
@@ -1063,11 +1056,8 @@ int run_varn_F_case (e3sm_io_config &cfg,
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    /* set output file name */
-    targetfname = std::string (cfg.targetdir) + '/' + outfile;
-
     /* create a new CDF-5 file for writing */
-    err = driver.create (targetfname, cfg.io_comm, cfg.info, &ncid);
+    err = driver.create (cfg.out_path, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
@@ -1337,7 +1327,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
     close_timing += MPI_Wtime () - timing;
 
     if (cfg.rank == 0){
-        err = driver.inq_file_size(targetfname, &fsize);
+        err = driver.inq_file_size(cfg.out_path, &fsize);
         CHECK_ERR
     }
 
@@ -1391,8 +1381,8 @@ int run_varn_F_case (e3sm_io_config &cfg,
     if (rank == 0) {
         int nvars_noD = cfg.nvars;
         for (i = 0; i < 3; i++) nvars_noD -= nvars_D[i];
-        printf ("History output file                = %s\n", outfile.c_str ());
-        printf ("Output file size                 = %.2f MiB = %.2f GiB\n",
+        printf ("History output file                = %s\n", cfg.out_path);
+        printf ("Output file size                   = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("No. variables use no decomposition = %3d\n", nvars_noD);
         printf ("No. variables use decomposition D1 = %3d\n", nvars_D[0]);
@@ -1411,7 +1401,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
         printf ("Max Time of IPUT_VARN              = %.4f sec\n", post_timing);
         if (cfg.api == pnetcdf)
-            printf ("Max Time of WAIT_ALL_REQS          = %.4f sec\n", wait_timing);
+            printf ("Max Time of write flushing         = %.4f sec\n", wait_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -1424,7 +1414,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (targetfname.c_str ());
+    if (!cfg.keep_outfile) unlink (cfg.out_path);
     fflush (stdout);
     MPI_Barrier (cfg.io_comm);
     return err;
@@ -1443,13 +1433,11 @@ err_out:
 int run_varn_F_case_rd (e3sm_io_config &cfg,
                         e3sm_io_decom &decom,
                         e3sm_io_driver &driver,
-                        std::string outfile, /* request's block lengths */
                         double **dbl_bufp,   /* buffer for fixed size double var */
                         itype **rec_bufp,    /* buffer for rec floating point var */
                         char *txt_buf,       /* buffer for char var */
                         int *int_buf)        /* buffer for int var */
 {
-    std::string targetfname;
     char *txt_buf_ptr;
     int i, j, k, err, rank, ncid, cmode, *varids, nreqs_D3_merged;
     int rec_no, gap = 0, my_nreqs, *int_buf_ptr;
@@ -1496,9 +1484,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     dbl_buf = (double *)malloc (dbl_buflen * sizeof (double));
     if (dbl_bufp != NULL) { *dbl_bufp = dbl_buf; }
 
-    for (i = 0; i < dbl_buflen; i++) dbl_buf[i] = rank;
-
-    /* allocate and initialize write buffer for large variables */
+    /* allocate read buffer for large variables */
     if (cfg.nvars == 414)
         rec_buflen = nelems[1] * 323 + nelems[2] * 63 + (323 + 63) * gap;
     else
@@ -1507,12 +1493,6 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
     if (rec_bufp != NULL) { *rec_bufp = rec_buf; }
 
-    for (i = 0; i < rec_buflen; i++) rec_buf[i] = rank;
-
-    for (i = 0; i < 10; i++) int_buf[i] = rank;
-
-    for (i = 0; i < 16; i++) txt_buf[i] = 'a' + rank;
-
     varids = (int *)malloc (cfg.nvars * sizeof (int));
 
     pre_timing = MPI_Wtime () - pre_timing;
@@ -1520,14 +1500,11 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     MPI_Barrier (comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    /* set output file name */
-    targetfname = std::string (cfg.targetdir) + '/' + outfile;
-
-    /* create a new CDF-5 file for writing */
-    err = driver.open (targetfname.c_str (), comm, cfg.info, &ncid);
+    /* open input file for reading */
+    err = driver.open (cfg.in_path, comm, cfg.info, &ncid);
     CHECK_ERR
 
-    /* define dimensions, variables, and attributes */
+    /* inquire dimensions, variables, and attributes */
     if (cfg.nvars == 414) {
         /* for h0 file */
         err = inq_F_case_h0 (driver, ncid, decom.dims[2], cfg.nvars, varids);
@@ -1537,9 +1514,6 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
         err = inq_F_case_h1 (driver, ncid, decom.dims[2], cfg.nvars, varids);
         CHECK_ERR
     }
-
-    /* exit define mode and enter data mode */
-    // err = driver.enddef(ncid); CHECK_ERR
 
     /* I/O amount so far */
     err = driver.inq_get_size (ncid, &metadata_size);
@@ -1619,10 +1593,10 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
         int_buf_ptr = int_buf;
         txt_buf_ptr = txt_buf;
 
-        /* next 27 small variables are written by rank 0 only */
+        /* next 27 small variables are read by rank 0 only */
         if (rank == 0) {
             my_nreqs += 27;
-            /* post nonblocking requests using IPUT_VARN() */
+            /* post nonblocking requests using IGET_VARN() */
             err = read_small_vars_F_case (driver, ncid, i, varids, rec_no, gap, decom.dims[2][0],
                                           decom.dims[2][0] + 1, 2, 8, &int_buf_ptr, &txt_buf_ptr,
                                           &dbl_buf_ptr);
@@ -1790,7 +1764,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     close_timing += MPI_Wtime () - timing;
 
     if (cfg.rank == 0){
-        err = driver.inq_file_size(targetfname, &fsize);
+        err = driver.inq_file_size(cfg.in_path, &fsize);
         CHECK_ERR
     }
 
@@ -1841,8 +1815,8 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     driver.inq_malloc_max_size (&m_alloc);
     MPI_Reduce (&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf ("History output file                = %s\n", outfile.c_str ());
-        printf ("Input file size                 = %.2f MiB = %.2f GiB\n",
+        printf ("History input file                 = %s\n", cfg.in_path);
+        printf ("Input file size                    = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
             printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
@@ -1855,9 +1829,9 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
         printf ("Max number of requests             = %lld\n", max_nreqs);
         printf ("Max Time of open + metadata inquery = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
-        printf ("Max Time of IGET_VARN              = %.4f sec\n", post_timing);
+        printf ("Max Time of posting IGET_VARN      = %.4f sec\n", post_timing);
         if (cfg.api == pnetcdf)
-            printf ("Max Time of WAIT_ALL_REQS          = %.4f sec\n", wait_timing);
+            printf ("Max Time of read flushing          = %.4f sec\n", wait_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -1871,6 +1845,5 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (targetfname.c_str ());
     return err;
 }

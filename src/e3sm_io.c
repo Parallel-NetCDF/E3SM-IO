@@ -15,18 +15,16 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-/**/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> /* strcpy(), strncpy() */
-/**/
 #include <unistd.h> /* getopt() */
-/**/
+
 #include <mpi.h>
-/**/
+
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
-
 #include <e3sm_io_profile.hpp>
 
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
@@ -127,9 +125,6 @@ static void usage (char *argv0) {
 int main (int argc, char **argv) {
     int err;
     int i;
-    char targetdir[E3SM_IO_MAX_PATH] = "./";
-    char datadir[E3SM_IO_MAX_PATH]   = "";
-    char cfgpath[E3SM_IO_MAX_PATH]   = "";
     double timing[2], max_t[2];
     e3sm_io_config cfg;
     e3sm_io_decom decom;
@@ -141,9 +136,9 @@ int main (int argc, char **argv) {
     cfg.info           = MPI_INFO_NULL;
     cfg.num_iotasks    = cfg.np;
     cfg.num_group      = 1;
-    cfg.targetdir      = targetdir;
-    cfg.datadir        = datadir;
-    cfg.cfgpath        = cfgpath;
+    cfg.out_path[0]    = '\0';
+    cfg.in_path[0]     = '\0';
+    cfg.cfg_path[0]    = '\0';
     cfg.hx             = -1;
     cfg.nrec           = 1;
     cfg.wr             = 0;
@@ -168,7 +163,7 @@ int main (int argc, char **argv) {
     }
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtRWf:ha:x:g:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtf:ha:x:g:")) != EOF) switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -182,63 +177,59 @@ int main (int argc, char **argv) {
                 cfg.io_stride = atoi (optarg);
                 break;
             case 'a':
-                if (strcmp (optarg, "pnetcdf") == 0) {
+                if (strcmp (optarg, "pnetcdf") == 0)
                     cfg.api = pnetcdf;
-                }
 #ifdef ENABLE_HDF5
-                else if (strcmp (optarg, "hdf5_ra") == 0) {
+                else if (strcmp (optarg, "hdf5_ra") == 0)
                     cfg.api = hdf5_ra;
-                } else if (strcmp (optarg, "hdf5_md") == 0) {
+                else if (strcmp (optarg, "hdf5_md") == 0)
 #ifdef HDF5_HAVE_DWRITE_MULTI
                     cfg.api = hdf5_md;
 #else
                     ERR_OUT ("The HDF5 used does not support multi-dataset write")
 #endif
-                } else if (strcmp (optarg, "hdf5_log") == 0) {
+                else if (strcmp (optarg, "hdf5_log") == 0)
 #ifdef ENABLE_LOGVOL
                     cfg.api = hdf5_log;
 #else
-                    ERR_OUT ("Log VOL support was not enabled in this build");
+                    ERR_OUT ("Log VOL support was not enabled in this build")
 #endif
-                }
 #endif
 #ifdef ENABLE_ADIOS2
-                else if (strcmp (optarg, "adios") == 0) {
+                else if (strcmp (optarg, "adios") == 0)
                     cfg.api = adios;
-                }
 #endif
-                else {
+                else
                     ERR_OUT ("Unknown API")
-                }
                 break;
                 /*
             case 'l':
-                if (strcmp (optarg, "contig") == 0) {
+                if (strcmp (optarg, "contig") == 0)
                     cfg.layout = contig;
-                } else if (strcmp (optarg, "chunk") == 0) {
+                else if (strcmp (optarg, "chunk") == 0)
                     cfg.layout = chunk;
-                } else {
+                else
                     ERR_OUT ("Unknown layout")
-                }
                 break;
                 */
             case 'x':
-                if (strcmp (optarg, "canonical") == 0) {
+                if (strcmp (optarg, "canonical") == 0)
                     cfg.strategy = canonical;
-                } else if (strcmp (optarg, "log") == 0) {
+                else if (strcmp (optarg, "log") == 0)
                     cfg.strategy = log;
-                } else if (strcmp (optarg, "blob") == 0) {
+                else if (strcmp (optarg, "blob") == 0)
                     cfg.strategy = blob;
-                } else {
+                else
                     ERR_OUT ("Unknown I/O strategy")
-                }
                 break;
 
             case 'o':
-                strncpy (cfg.targetdir, optarg, E3SM_IO_MAX_PATH);
+                strncpy (cfg.out_path, optarg, E3SM_IO_MAX_PATH);
+                cfg.wr = 1;
                 break;
             case 'i':
-                strncpy (cfg.datadir, optarg, E3SM_IO_MAX_PATH);
+                strncpy (cfg.in_path, optarg, E3SM_IO_MAX_PATH);
+                cfg.rd = 1;
                 break;
             case 'd':
                 cfg.vard = 1;
@@ -252,12 +243,6 @@ int main (int argc, char **argv) {
             case 't':
                 cfg.two_buf = 1;
                 break;
-            case 'R':
-                cfg.rd = 1;
-                break;
-            case 'W':
-                cfg.wr = 1;
-                break;
             case 'f':
                 cfg.hx = atoi (optarg);
                 break;
@@ -268,13 +253,12 @@ int main (int argc, char **argv) {
                 cfg.chunksize = atoll (optarg);
                 break;
             case 'z':
-                if (strcmp (optarg, "deflate") == 0) {
+                if (strcmp (optarg, "deflate") == 0)
                     cfg.filter = deflate;
-                } else if (strcmp (optarg, "zlib") == 0) {
+                else if (strcmp (optarg, "zlib") == 0)
                     cfg.filter = deflate;
-                } else {
+                else
                     ERR_OUT ("Unknown filter")
-                }
                 break;
             case 'h':
             default:
@@ -282,26 +266,26 @@ int main (int argc, char **argv) {
                 goto err_out;
         }
 
-    if ((optind >= argc) || (argv[optind] == NULL)) { /* input file is mandatory */
-        if (!(cfg.rank)) usage (argv[0]);
+    if (optind >= argc || argv[optind] == NULL) { /* input file is mandatory */
+        if (!cfg.rank) usage (argv[0]);
         ERR_OUT ("Decomposition file not provided")
     }
-    strncpy (cfg.cfgpath, argv[optind], E3SM_IO_MAX_PATH);
+    strncpy (cfg.cfg_path, argv[optind], E3SM_IO_MAX_PATH);
 
-    if((cfg.strategy==log) && (cfg.api!=hdf5_log)){
+    /* neither command-line option -i or -o is used */
+    if (!cfg.wr && !cfg.rd)
+        ERR_OUT("Error: neither command-line option -i or -o is used")
+
+    if (cfg.strategy == log && cfg.api != hdf5_log)
         ERR_OUT ("Selected API does not support log-based I/O")
-    }
 
-    /* input file contains number of write requests and their file access
-     * offsets (per array element) */
-    PRINT_MSG (1, "input file name =%s\n", cfg.cfgpath);
+    /* input decomposition file contains number of write requests and their
+     * file access offsets (per array element) */
+    PRINT_MSG (1, "Input decomposition file name = %s\n", cfg.cfg_path);
 
-    /* neither command-line option -R or -W is used, run write */
-    if (!(cfg.wr || cfg.rd)) cfg.wr = 1;
-
-    /* set the output folder name */
-    PRINT_MSG (1, "Target folder name =%s\n", cfg.targetdir);
-    if (cfg.datadir[0] != '\0') { PRINT_MSG (1, "Input folder name =%s\n", cfg.datadir); }
+    /* print input and output file/folder names */
+    PRINT_MSG (1, "Input  data file/folder name = %s\n", cfg.in_path);
+    PRINT_MSG (1, "Output data file/folder name = %s\n", cfg.out_path);
 
     MPI_Barrier(MPI_COMM_WORLD);
     timing[0] = MPI_Wtime();
@@ -314,11 +298,13 @@ int main (int argc, char **argv) {
     MPI_Barrier(MPI_COMM_WORLD);
     timing[1] = MPI_Wtime();
 
+    /* set MPI-IO and PnetCDF hints */
     err = MPI_Info_create (&(cfg.info));
     CHECK_MPIERR
     err += set_info (&cfg, &decom);
     if (err < 0) goto err_out;
 
+    /* the core of this benchmark */
     err = e3sm_io_core (&cfg, &decom);
     if (err < 0) goto err_out;
 

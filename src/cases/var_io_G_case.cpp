@@ -191,7 +191,6 @@
 int run_varn_G_case (e3sm_io_config &cfg,
                      e3sm_io_decom &decom,
                      e3sm_io_driver &driver,
-                     std::string outfile,
                      int *D1_fix_int_bufp,    /* D1 fix int buffer */
                      int *D2_fix_int_bufp,    /* D2 fix int buffer */
                      int *D3_fix_int_bufp,    /* D3 fix int buffer */
@@ -204,7 +203,6 @@ int run_varn_G_case (e3sm_io_config &cfg,
                      double *D6_rec_dbl_bufp, /* D6 rec double buffer */
                      double *D1_fix_dbl_bufp) /* D1 fix double buffer */
 {
-    std::string outfname;
     int i, j, k, err, rank, ncid, cmode, *varids;
     int rec_no, my_nreqs, nvars_D[6];
     size_t rec_buflen, nelems[6];
@@ -473,11 +471,8 @@ int run_varn_G_case (e3sm_io_config &cfg,
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    /* set output file name */
-    outfname = std::string (cfg.targetdir) + '/' + outfile;
-
     /* create a new CDF-5 file for writing */
-    err = driver.create (outfname, cfg.io_comm, cfg.info, &ncid);
+    err = driver.create (cfg.out_path, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
@@ -696,7 +691,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     close_timing += MPI_Wtime () - timing;
 
     if (cfg.rank == 0){
-        err = driver.inq_file_size(outfname, &fsize);
+        err = driver.inq_file_size(cfg.out_path, &fsize);
         CHECK_ERR
     }
 
@@ -790,8 +785,8 @@ int run_varn_G_case (e3sm_io_config &cfg,
     if (rank == 0) {
         int nvars_noD = cfg.nvars;
         for (i = 0; i < 6; i++) nvars_noD -= nvars_D[i];
-        printf ("History output file                = %s\n", outfile.c_str ());
-        printf ("Output file size                 = %.2f MiB = %.2f GiB\n",
+        printf ("History output file                = %s\n", cfg.out_path);
+        printf ("Output file size                   = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("No. variables use no decomposition = %3d\n", nvars_noD);
         printf ("No. variables use decomposition D1 = %3d\n", nvars_D[0]);
@@ -813,7 +808,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
         printf ("Max Time of IPUT_VARN              = %.4f sec\n", post_timing);
         if (cfg.api == pnetcdf)
-            printf ("Max Time of driver.wait         = %.4f sec\n", wait_timing);
+            printf ("Max Time of write flushing         = %.4f sec\n", wait_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -827,7 +822,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (outfname.c_str ());
+    if (!cfg.keep_outfile) unlink (cfg.out_path);
     return err;
 }
 
@@ -835,7 +830,6 @@ err_out:
 int run_varn_G_case_rd (e3sm_io_config &cfg,
                         e3sm_io_decom &decom,
                         e3sm_io_driver &driver,
-                        std::string outfile,
                         int **D1_fix_int_bufp,    /* D1 fix int buffer */
                         int **D2_fix_int_bufp,    /* D2 fix int buffer */
                         int **D3_fix_int_bufp,    /* D3 fix int buffer */
@@ -848,7 +842,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
                         double **D6_rec_dbl_bufp, /* D6 rec double buffer */
                         double **D1_fix_dbl_bufp) /* D1 fix double buffer */
 {
-    std::string outfname;
+    std::string in_fname;
     int i, j, k, err, rank, ncid, cmode, *varids;
     int rec_no, my_nreqs;
     size_t rec_buflen, nelems[6];
@@ -982,7 +976,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     // nelems[0], nelems[1], nelems[2], nelems[3], nelems[4], nelems[5], rec_buflen);
     // fflush(stdout);
 
-    /* allocate and initialize write buffer for 7 fixed-size variables */
+    /* allocate read buffer for 7 fixed-size variables */
     /* int (nCells): maxLevelCell */
     if (nelems[0] > 0) {
         D1_fix_int_buf = (int *)malloc (nelems[0] * sizeof (int));
@@ -1031,7 +1025,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     } else
         D1_fix_dbl_buf = NULL;
 
-    /* allocate and initialize write buffer for 34 record variables */
+    /* allocate read buffer for 34 record variables */
     if (nelems[0] > 0) {
         rec_buflen     = nelems[0] * nD1_rec_2d_vars;
         D1_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
@@ -1072,10 +1066,6 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     } else
         D6_rec_dbl_buf = NULL;
 
-    /* initialize write buffer for 11 small variables */
-    for (i = 0; i < 80; i++) dummy_double_buf[i] = rank + i;
-    for (i = 0; i < 64; i++) dummy_char_buf[i] = 'a' + rank + i;
-
     varids = (int *)malloc (cfg.nvars * sizeof (int));
 
     pre_timing = MPI_Wtime () - pre_timing;
@@ -1083,11 +1073,8 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     MPI_Barrier (comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    /* set output file name */
-    outfname = std::string (cfg.targetdir) + '/' + outfile;
-
-    /* create a new CDF-5 file for writing */
-    err = driver.open (outfname, comm, cfg.info, &ncid);
+    /* open input file for reading */
+    err = driver.open (cfg.in_path, comm, cfg.info, &ncid);
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
@@ -1150,7 +1137,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     CHECK_ERR
     my_nreqs += decom.contig_nreqs[0];
 
-    /* next 11 small variables are written by rank 0 only */
+    /* next 11 small variables are read by rank 0 only */
     if (rank == 0) {
         count[0] = decom.dims[2][1]; /* dimension nVertLevels */
 
@@ -1296,7 +1283,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     close_timing += MPI_Wtime () - timing;
 
     if (cfg.rank == 0){
-        err = driver.inq_file_size(outfname, &fsize);
+        err = driver.inq_file_size(in_fname, &fsize);
         CHECK_ERR
     }
 
@@ -1386,8 +1373,8 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     driver.inq_malloc_max_size (&m_alloc);
     MPI_Reduce (&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     if (rank == 0) {
-        printf ("History output file                = %s\n", outfile.c_str ());
-        printf ("Input file size                 = %.2f MiB = %.2f GiB\n",
+        printf ("History input file                 = %s\n", cfg.in_path);
+        printf ("Input file size                    = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
             printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
@@ -1400,9 +1387,9 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
         printf ("Max number of requests             = %lld\n", max_nreqs);
         printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
         printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
-        printf ("Max Time of IGET_VARN        = %.4f sec\n", post_timing);
+        printf ("Max Time of posting IGET_VARN      = %.4f sec\n", post_timing);
         if (cfg.api == pnetcdf)
-            printf ("Max Time of driver.wait         = %.4f sec\n", wait_timing);
+            printf ("Max Time of read flushing.         = %.4f sec\n", wait_timing);
         printf ("Max Time of close                  = %.4f sec\n", close_timing);
         printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
         printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
@@ -1416,6 +1403,5 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (outfname.c_str ());
     return err;
 }

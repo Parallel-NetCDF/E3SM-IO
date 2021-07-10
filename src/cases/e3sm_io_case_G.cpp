@@ -44,9 +44,9 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
     if ((cfg.verbose >= 0) && (cfg.rank == 0)) {
         printf ("Total number of MPI processes      = %d\n", cfg.np);
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
-        printf ("Input decomposition file           = %s\n", cfg.cfgpath);
+        printf ("Input decomposition file           = %s\n", cfg.cfg_path);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file directory              = %s\n", cfg.targetdir);
+        printf ("Output file/directory              = %s\n", cfg.out_path);
         printf ("Variable dimensions (C order)      = %lld x %lld\n",
                 decom.dims[2][0], decom.dims[2][1]);
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
@@ -65,7 +65,7 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
         CHECK_ERR
 
         /* Use one-file-per-compute-node blob I/O strategy */
-        err = pnetcdf_blob_G_case(cfg, decom, driver, "g_case_blob.nc");
+        err = pnetcdf_blob_G_case(cfg, decom, driver);
         CHECK_ERR
 
         if (cfg.sub_comm != MPI_COMM_NULL)
@@ -78,7 +78,7 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
 #endif
         ERR_OUT ("Low level API not supported in g case\n");
     } else {
-        err = run_varn_G_case (cfg, decom, driver, "g_case_hist_varn.nc", this->D1_fix_int_buf,
+        err = run_varn_G_case (cfg, decom, driver, this->D1_fix_int_buf,
                                   this->D2_fix_int_buf, this->D3_fix_int_buf, this->D4_fix_int_buf,
                                   this->D5_fix_int_buf, this->D1_rec_dbl_buf, this->D3_rec_dbl_buf,
                                   this->D4_rec_dbl_buf, this->D5_rec_dbl_buf, this->D6_rec_dbl_buf,
@@ -100,9 +100,9 @@ int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
     if ((cfg.verbose >= 0) && (cfg.rank == 0)) {
         printf ("Total number of MPI processes      = %d\n", cfg.np);
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
-        printf ("Input decomposition file           = %s\n", cfg.cfgpath);
+        printf ("Input decomposition file           = %s\n", cfg.cfg_path);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file directory              = %s\n", cfg.targetdir);
+        printf ("Output file/directory              = %s\n", cfg.out_path);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
@@ -128,7 +128,7 @@ int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
 
         MPI_Barrier (cfg.io_comm);
         err = run_varn_G_case_rd (
-            cfg, decom, driver, "g_case_hist_varn.nc", &(this->D1_fix_int_buf),
+            cfg, decom, driver, &(this->D1_fix_int_buf),
             &(this->D2_fix_int_buf), &(this->D3_fix_int_buf), &(this->D4_fix_int_buf),
             &(this->D5_fix_int_buf), &(this->D1_rec_dbl_buf), &(this->D3_rec_dbl_buf),
             &(this->D4_rec_dbl_buf), &(this->D5_rec_dbl_buf), &(this->D6_rec_dbl_buf),
@@ -142,29 +142,20 @@ err_out:
 
 int e3sm_io_case_G::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
     int err, verbose;
-    char *tmp;
 
     verbose     = cfg.verbose;
     cfg.verbose = -1;  // Disable output
-    // Swap datadir with targetdir temporarily
-    tmp           = cfg.targetdir;
-    cfg.targetdir = cfg.datadir;
-    cfg.datadir   = tmp;
 
     // Run dummy G case read for data
     MPI_Barrier (cfg.io_comm);
     err = run_varn_G_case_rd (
-        cfg, decom, driver, "g_case_hist_varn.nc", &(this->D1_fix_int_buf), &(this->D2_fix_int_buf),
+        cfg, decom, driver, &(this->D1_fix_int_buf), &(this->D2_fix_int_buf),
         &(this->D3_fix_int_buf), &(this->D4_fix_int_buf), &(this->D5_fix_int_buf),
         &(this->D1_rec_dbl_buf), &(this->D3_rec_dbl_buf), &(this->D4_rec_dbl_buf),
         &(this->D5_rec_dbl_buf), &(this->D6_rec_dbl_buf), &(this->D1_fix_dbl_buf));
     CHECK_ERR
 
     cfg.verbose = verbose;
-    // Swap datadir and targetdir back
-    tmp           = cfg.targetdir;
-    cfg.targetdir = cfg.datadir;
-    cfg.datadir   = tmp;
 
 err_out:
     return err;

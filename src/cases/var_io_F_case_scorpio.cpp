@@ -529,7 +529,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     timing = MPI_Wtime ();
 
     /* set output file name */
-    targetfname = std::string (cfg.targetdir) + '/' + outfile;
+    targetfname = std::string (cfg.out_path) + '/' + outfile;
 
     /* create a new CDF-5 file for writing */
     err = driver.create (targetfname, cfg.io_comm, cfg.info, &ncid);

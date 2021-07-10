@@ -38,9 +38,9 @@ int e3sm_io_case_F_scorpio::wr_test (e3sm_io_config &cfg,
     if ((cfg.verbose >= 0) && (cfg.rank == 0)) {
         printf ("Total number of MPI processes      = %d\n", cfg.np);
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
-        printf ("Input decomposition file           = %s\n", cfg.cfgpath);
+        printf ("Input decomposition file           = %s\n", cfg.cfg_path);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file directory              = %s\n", cfg.targetdir);
+        printf ("Output file/directory              = %s\n", cfg.out_path);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
