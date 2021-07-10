@@ -49,7 +49,7 @@ typedef float itype; /* internal data type of buffer in memory */
 typedef enum e3sm_io_api {
     pnetcdf,
     hdf5_ra,
-    hdf5_mv,
+    hdf5_md,
     hdf5_log,
     adios
 } e3sm_io_api;

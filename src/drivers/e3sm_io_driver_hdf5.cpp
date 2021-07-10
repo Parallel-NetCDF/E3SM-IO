@@ -77,7 +77,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
 #else
         throw "Log VOL support was not enabled in this build";
 #endif
-    } else if (cfg->api == hdf5_mv) {
+    } else if (cfg->api == hdf5_md) {
 #ifdef HDF5_HAVE_DWRITE_MULTI
         this->use_dwrite_multi = true;
 #else

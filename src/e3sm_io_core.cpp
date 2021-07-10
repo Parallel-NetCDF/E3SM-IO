@@ -36,7 +36,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             driver = new e3sm_io_driver_pnc (cfg);
             break;
         case hdf5_ra:
-        case hdf5_mv:
+        case hdf5_md:
         case hdf5_log:
 #ifdef ENABLE_HDF5
             driver = new e3sm_io_driver_hdf5 (cfg);

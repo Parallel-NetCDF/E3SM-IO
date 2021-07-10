@@ -188,9 +188,9 @@ int main (int argc, char **argv) {
 #ifdef ENABLE_HDF5
                 else if (strcmp (optarg, "hdf5_ra") == 0) {
                     cfg.api = hdf5_ra;
-                } else if (strcmp (optarg, "hdf5_mv") == 0) {
+                } else if (strcmp (optarg, "hdf5_md") == 0) {
 #ifdef HDF5_HAVE_DWRITE_MULTI
-                    cfg.api = hdf5_mv;
+                    cfg.api = hdf5_md;
 #else
                     ERR_OUT ("The HDF5 used does not support multi-dataset write")
 #endif
