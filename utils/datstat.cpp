@@ -33,7 +33,7 @@
 
 #define CHECK_RET(A)                                          \
     {                                                         \
-        if (ret != A) { RET_ERR ("Unexpected return value") } \
+        if (ret != A) { ERR_OUT ("Unexpected return value") } \
     }
 
 /*----< add_decomp() >------------------------------------------------------------*/

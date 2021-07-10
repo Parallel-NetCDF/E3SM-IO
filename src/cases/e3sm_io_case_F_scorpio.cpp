@@ -22,7 +22,7 @@ int e3sm_io_case_F_scorpio::load_data (e3sm_io_config &cfg,
                                    e3sm_io_decom &decom,
                                    e3sm_io_driver &driver) {
     int err, nerrs = 0;
-    RET_ERR ("PIO case does not support reading")
+    ERR_OUT ("PIO case does not support reading")
 err_out:;
     return nerrs;
 }
@@ -51,7 +51,7 @@ int e3sm_io_case_F_scorpio::wr_test (e3sm_io_config &cfg,
 
     /* vard APIs require internal data type matches external one */
     if (cfg.vard) {
-        RET_ERR ("PIO case does not support vard API")
+        ERR_OUT ("PIO case does not support vard API")
     } else {
         PRINT_MSG (0,
                    "\n==== benchmarking PIO F case writing using varn API ========================\n");
@@ -87,7 +87,7 @@ int e3sm_io_case_F_scorpio::rd_test (e3sm_io_config &cfg,
                                  e3sm_io_decom &decom,
                                  e3sm_io_driver &driver) {
     int err, nerrs = 0;
-    RET_ERR ("PIO case does not support reading")
+    ERR_OUT ("PIO case does not support reading")
 err_out:;
     return nerrs;
 }

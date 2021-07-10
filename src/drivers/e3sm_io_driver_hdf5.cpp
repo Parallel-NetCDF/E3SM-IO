@@ -27,7 +27,7 @@
 #include <e3sm_io_profile.hpp>
 
 e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
-    int nerrs   = 0;
+    int err = 0;
     herr_t herr = 0;
     char *env   = NULL;
     int i;
@@ -111,11 +111,11 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    if (nerrs > 0) { throw "HDF5 driver init fail"; }
+    if (err < 0) { throw "HDF5 driver init fail"; }
 }
 e3sm_io_driver_hdf5::~e3sm_io_driver_hdf5 () {
     int rank;
-    int nerrs = 0;
+    int err = 0;
     double tsel_all, twrite_all, text_all, tcpy_all, tsort_all;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
@@ -129,8 +129,7 @@ e3sm_io_driver_hdf5::~e3sm_io_driver_hdf5 () {
 }
 
 int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
-    int nerrs = 0;
-    int err;
+    int err = 0;
     herr_t herr;
     hid_t faplid;
     hdf5_file *fp;
@@ -165,12 +164,11 @@ err_out:;
     if (faplid >= 0) { H5Pclose (faplid); }
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
-    int nerrs = 0;
-    int err;
+    int err = 0;
     herr_t herr;
     hid_t faplid;
     hdf5_file *fp;
@@ -205,11 +203,11 @@ err_out:;
     if (faplid >= 0) { H5Pclose (faplid); }
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::close (int fid) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
 
@@ -227,11 +225,11 @@ int e3sm_io_driver_hdf5::close (int fid) {
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::inq_file_info (int fid, MPI_Info *info) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     hid_t pid;
@@ -246,11 +244,10 @@ int e3sm_io_driver_hdf5::inq_file_info (int fid, MPI_Info *info) {
 err_out:;
     if (pid != -1) H5Pclose (pid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_hdf5::inq_file_size (std::string path, MPI_Offset *size) {
-    int nerrs = 0;
-    int err;
+    int err = 0;
     struct stat file_stat;
 
     err = stat (path.c_str (), &file_stat);
@@ -259,10 +256,10 @@ int e3sm_io_driver_hdf5::inq_file_size (std::string path, MPI_Offset *size) {
     *size = (MPI_Offset) (file_stat.st_size);
 
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_hdf5::inq_put_size (int fid, MPI_Offset *size) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     ssize_t namelen;
@@ -279,7 +276,7 @@ int e3sm_io_driver_hdf5::inq_put_size (int fid, MPI_Offset *size) {
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_hdf5::inq_get_size (int fid, MPI_Offset *size) {
     return this->inq_put_size (fid, size);
@@ -305,7 +302,7 @@ int e3sm_io_driver_hdf5::inq_rec_size (int fid, MPI_Offset *size) {
 
 int e3sm_io_driver_hdf5::def_var (
     int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     int i;
@@ -356,7 +353,7 @@ int e3sm_io_driver_hdf5::def_var (
                     CHECK_HERR
                     break;
                 default:
-                    RET_ERR ("Unknown filter")
+                    ERR_OUT ("Unknown filter")
             }
         }
     }
@@ -375,20 +372,20 @@ err_out:;
     if (sid != -1) H5Sclose (sid);
     if (dcplid != -1) H5Pclose (dcplid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_hdf5::def_local_var (
     int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) {
-    int nerrs = 0;
+    int err = 0;
 
-    RET_ERR ("HDF5 does not support local variables")
+    ERR_OUT ("HDF5 does not support local variables")
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::inq_var (int fid, std::string name, int *did) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     hid_t h5did;
@@ -403,7 +400,7 @@ int e3sm_io_driver_hdf5::inq_var (int fid, std::string name, int *did) {
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::inq_var_off (int fid, int vid, MPI_Offset *off) {
@@ -411,7 +408,7 @@ int e3sm_io_driver_hdf5::inq_var_off (int fid, int vid, MPI_Offset *off) {
     return 1;
 }
 int e3sm_io_driver_hdf5::def_dim (int fid, std::string name, MPI_Offset size, int *dimid) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     hid_t sid     = -1;
@@ -440,11 +437,11 @@ err_out:;
     if (aid != -1) H5Aclose (aid);
     if (sid != -1) H5Sclose (sid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::inq_dim (int fid, std::string name, int *dimid) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     hid_t aid     = -1;
@@ -465,7 +462,7 @@ int e3sm_io_driver_hdf5::inq_dim (int fid, std::string name, int *dimid) {
 err_out:;
     if (aid != -1) H5Aclose (aid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
@@ -482,27 +479,26 @@ int e3sm_io_driver_hdf5::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
 int e3sm_io_driver_hdf5::enddef (int fid) { return 0; }
 int e3sm_io_driver_hdf5::redef (int fid) { return 0; }
 int e3sm_io_driver_hdf5::wait (int fid) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
-    nerrs += fp->flush_multidatasets ();
-    CHECK_NERR
+    err = fp->flush_multidatasets ();
+    CHECK_ERR
 
     herr = H5Fflush (fp->id, H5F_SCOPE_GLOBAL);
     CHECK_HERR
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::put_att (
     int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) {
-    int nerrs = 0;
-    int err;
+    int err = 0;
     herr_t herr;
     int esize;
     hdf5_file *fp = this->files[fid];
@@ -546,13 +542,12 @@ err_out:;
     if (asid >= 0) H5Sclose (asid);
     if (aid >= 0) H5Aclose (aid);
 
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::get_att (int fid, int vid, std::string name, void *buf) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
-    int err;
     int esize;
     hdf5_file *fp = this->files[fid];
     hid_t asid = -1, aid = -1;
@@ -588,17 +583,17 @@ err_out:;
     if (aid >= 0) H5Aclose (aid);
     if (tid >= 0) H5Tclose (tid);
 
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::put_varl (
     int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
 
-    RET_ERR ("HDF5 does not support local variables")
+    ERR_OUT ("HDF5 does not support local variables")
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::put_vara (int fid,
@@ -608,7 +603,7 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
                                    MPI_Offset *count,
                                    void *buf,
                                    e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     int i;
@@ -741,7 +736,7 @@ err_out:;
 #endif
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::put_vars (int fid,
@@ -752,7 +747,7 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
                                    MPI_Offset *stride,
                                    void *buf,
                                    e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     int i;
@@ -870,7 +865,7 @@ err_out:;
     }
 #endif
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_hdf5::put_varn (int fid,
                                    int vid,
@@ -894,8 +889,7 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
                                           MPI_Offset **counts,
                                           void *buf,
                                           e3sm_io_op_mode mode) {
-    int err;
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     int i, j;
@@ -1071,7 +1065,7 @@ err_out:;
     }
 #endif
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::put_vard (int fid,
@@ -1092,7 +1086,7 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
                                    MPI_Offset *count,
                                    void *buf,
                                    e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     int i;
@@ -1203,7 +1197,7 @@ err_out:;
     }
 #endif
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_hdf5::get_vars (int fid,
                                    int vid,
@@ -1213,7 +1207,7 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
                                    MPI_Offset *stride,
                                    void *buf,
                                    e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     int i;
@@ -1312,7 +1306,7 @@ err_out:;
     }
 #endif
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::get_varn (int fid,
@@ -1337,8 +1331,7 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
                                           MPI_Offset **counts,
                                           void *buf,
                                           e3sm_io_op_mode mode) {
-    int err;
-    int nerrs = 0;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     int i, j;
@@ -1491,7 +1484,7 @@ err_out:;
     }
 #endif
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::get_vard (int fid,

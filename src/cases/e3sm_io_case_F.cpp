@@ -28,7 +28,7 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
                             e3sm_io_decom &decom,
                             e3sm_io_driver &driver)
 {
-    int err=0, nerrs=0, nvar;
+    int err=0, nvar;
 
     PRINT_MSG (0, "number of requests for D1=%d D2=%d D3=%d\n", decom.contig_nreqs[0],
                decom.contig_nreqs[1], decom.contig_nreqs[2]);
@@ -61,20 +61,20 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
     if (cfg.api == pnetcdf && cfg.strategy == blob) {
         /* construct metadata for blob I/O strategy */
         err = blob_metadata(&cfg, &decom);
-        if (err != 0) goto err_out;
+        CHECK_ERR
 
         /* Use one-file-per-compute-node blob I/O strategy */
         if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
             cfg.nvars = 414;
             err = pnetcdf_blob_F_case(cfg, decom, driver, "f_case_h0_blob.nc");
-            if (err != NC_NOERR) goto err_out;
+            CHECK_ERR
 
         }
 
         if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
             cfg.nvars = 51;
             err = pnetcdf_blob_F_case(cfg, decom, driver, "f_case_h1_blob.nc");
-            if (err != NC_NOERR) goto err_out;
+            CHECK_ERR
         }
 
         if (cfg.sub_comm != MPI_COMM_NULL)
@@ -83,7 +83,7 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
     else if (cfg.vard) {
         /* vard APIs require internal data type matches external one */
 #if REC_XTYPE != NC_FLOAT
-        RET_ERR ("PnetCDF vard API requires internal and external data types match, skip\n");
+        ERR_OUT ("PnetCDF vard API requires internal and external data types match, skip\n");
 #endif
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 414;
@@ -111,13 +111,13 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
     }
 
     cfg.nvars = nvar;
-err_out:;
-    return (err != 0) ? err : nerrs;
+
+err_out:
+    return err;
 }
 
 int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
-    int err, nerrs = 0;
-    int nvar;
+    int err, nvar;
 
     PRINT_MSG (0, "number of requests for D1=%d D2=%d D3=%d\n", decom.contig_nreqs[0],
                decom.contig_nreqs[1], decom.contig_nreqs[2]);
@@ -139,9 +139,9 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
     /* vard APIs require internal data type matches external one */
     if (cfg.vard) {
         //#if REC_XTYPE != NC_FLOAT
-        RET_ERR ("Low level API requires internal and external data types match, skip\n");
+        ERR_OUT ("Low level API requires internal and external data types match, skip\n");
         //#endif
-        RET_ERR ("Reading not supported for low-level API\n");
+        ERR_OUT ("Reading not supported for low-level API\n");
     } else {
         PRINT_MSG (
             0, "\n==== benchmarking F case writing using low level API ========================\n");
@@ -157,28 +157,25 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         if (cfg.hx == 0 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 414;
-            nerrs +=
-                run_varn_F_case_rd (cfg, decom, driver, "f_case_h0_varn.nc", &(this->dbl_buf_h0),
-                                    &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
+            err = run_varn_F_case_rd(cfg, decom, driver, "f_case_h0_varn.nc", &(this->dbl_buf_h0),
+                                     &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
         }
         if (cfg.hx == 0 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 51;
-            nerrs +=
-                run_varn_F_case_rd (cfg, decom, driver, "f_case_h1_varn.nc", &(this->dbl_buf_h0),
-                                    &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
+            err = run_varn_F_case_rd(cfg, decom, driver, "f_case_h1_varn.nc", &(this->dbl_buf_h0),
+                                     &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
         }
     }
 
     cfg.nvars = nvar;
 
-err_out:;
-    return nerrs;
+err_out:
+    return err;
 }
 
 int e3sm_io_case_F::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
-    int err, nerrs = 0;
-    int verbose, nvar;
+    int err, verbose, nvar;
     char *tmp;
 
     verbose = cfg.verbose;
@@ -194,14 +191,16 @@ int e3sm_io_case_F::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_i
     if (cfg.hx == 0 || cfg.hx == -1) {
         MPI_Barrier (cfg.io_comm);
         cfg.nvars = 414;
-        nerrs += run_varn_F_case_rd (cfg, decom, driver, "f_case_h0_varn.nc", &(this->dbl_buf_h0),
+        err = run_varn_F_case_rd (cfg, decom, driver, "f_case_h0_varn.nc", &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
+        CHECK_ERR
     }
     if (cfg.hx == 0 || cfg.hx == -1) {
         MPI_Barrier (cfg.io_comm);
         cfg.nvars = 51;
-        nerrs += run_varn_F_case_rd (cfg, decom, driver, "f_case_h1_varn.nc", &(this->dbl_buf_h0),
+        err += run_varn_F_case_rd (cfg, decom, driver, "f_case_h1_varn.nc", &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
+        CHECK_ERR
     }
 
     cfg.nvars   = nvar;
@@ -211,6 +210,6 @@ int e3sm_io_case_F::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_i
     cfg.targetdir = cfg.datadir;
     cfg.datadir   = tmp;
 
-err_out:;
-    return nerrs;
+err_out:
+    return err;
 }

@@ -77,7 +77,7 @@ static int write_small_vars_F_case (e3sm_io_driver &driver,
                                     int **int_buf,
                                     char **txt_buf,
                                     double **dbl_buf) {
-    int i, err, nerrs = 0;
+    int i, err;
     MPI_Offset start[2], count[2];
 
     /* scalar and small variables are written by rank 0 only */
@@ -224,6 +224,7 @@ static int write_small_vars_F_case (e3sm_io_driver &driver,
     err      = IPUT_VAR1_INT (ncid, varids[i++], start, *int_buf, NULL);
     CHECK_ERR
     *int_buf += 1;
+
 err_out:
     return err;
 }
@@ -242,7 +243,7 @@ static int read_small_vars_F_case (e3sm_io_driver &driver,
                                    int **int_buf,
                                    char **txt_buf,
                                    double **dbl_buf) {
-    int i, err, nerrs = 0;
+    int i, err;
     MPI_Offset start[2], count[2];
 
     /* scalar and small variables are written by rank 0 only */
@@ -389,6 +390,7 @@ static int read_small_vars_F_case (e3sm_io_driver &driver,
     err      = IGET_VAR1_INT (ncid, varids[i++], start, *int_buf, NULL);
     CHECK_ERR
     *int_buf += 1;
+
 err_out:
     return err;
 }
@@ -441,7 +443,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
 {
     std::string targetfname;
     char txt_buf[16], *txt_buf_ptr;
-    int i, j, k, err, nerrs                                   = 0, rank, ncid, cmode, *varids;
+    int i, j, k, err, rank, ncid, cmode, *varids;
     int *var_blocklens, *buf_blocklens, my_nreqs, rec_no, gap = 0;
     int int_buf[10], *int_buf_ptr, xnreqs[3];
     size_t fix_buflen, dbl_buflen, rec_buflen;
@@ -823,12 +825,12 @@ int run_vard_F_case (e3sm_io_config &cfg,
         if (cfg.verbose) print_info (&info_used);
         printf ("-----------------------------------------------------------\n");
     }
+    fflush (stdout);
+
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
     if (!cfg.keep_outfile) unlink (targetfname.c_str ());
-    fflush (stdout);
-    MPI_Barrier (cfg.io_comm);
-    return nerrs;
+    return err;
 }
 
 static inline void FIX_1D_VAR_STARTS_COUNTS (
@@ -987,7 +989,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
 {
     std::string targetfname;
     char *txt_buf_ptr;
-    int i, j, k, err, nerrs = 0, rank, ncid, cmode, *varids, nvars_D[3];
+    int i, j, k, err, rank, ncid, cmode, *varids, nvars_D[3];
     int rec_no, gap = 0, my_nreqs, *int_buf_ptr, xnreqs[3];
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
@@ -1425,7 +1427,7 @@ err_out:
     if (!cfg.keep_outfile) unlink (targetfname.c_str ());
     fflush (stdout);
     MPI_Barrier (cfg.io_comm);
-    return nerrs;
+    return err;
 }
 
 #define POST_VARN_RD(k, num, vid)                                                            \
@@ -1449,7 +1451,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
 {
     std::string targetfname;
     char *txt_buf_ptr;
-    int i, j, k, err, nerrs = 0, rank, ncid, cmode, *varids, nreqs_D3_merged;
+    int i, j, k, err, rank, ncid, cmode, *varids, nreqs_D3_merged;
     int rec_no, gap = 0, my_nreqs, *int_buf_ptr;
     size_t dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf, *rec_buf_ptr;
@@ -1865,10 +1867,10 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
         if (cfg.verbose) print_info (&info_used);
         printf ("-----------------------------------------------------------\n");
     }
+    fflush (stdout);
+
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
     if (!cfg.keep_outfile) unlink (targetfname.c_str ());
-    fflush (stdout);
-    MPI_Barrier (comm);
-    return nerrs;
+    return err;
 }

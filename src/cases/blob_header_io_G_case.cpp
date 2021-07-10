@@ -944,7 +944,7 @@ int blob_def_G_case(e3sm_io_config   &cfg,
 {
     /* Total 52 variables */
     int one=1, two=2, three=3, four=4, five=5, six=6;
-    int i, err, nerrs=0, nprocs, nprocs_ID, ndims, dimids[2], *varid;
+    int i, err, nprocs, nprocs_ID, ndims, dimids[2], *varid;
     int nelems_D[MAX_NUM_DECOMP], max_nreqs_dimid[MAX_NUM_DECOMP];
     int dim_Time, dim_nCells, dim_nEdges, dim_nVertices, dim_StrLen;
     int dim_nVertLevels, dim_nVertLevelsP1, dimids_D[MAX_NUM_DECOMP][3];
@@ -1408,6 +1408,6 @@ int blob_def_G_case(e3sm_io_config   &cfg,
         assert (varid - varids + 1 == cfg.nvars);
 
 err_out:
-    return nerrs;
+    return err;
 }
 

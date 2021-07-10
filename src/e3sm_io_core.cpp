@@ -41,18 +41,18 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 #ifdef ENABLE_HDF5
             driver = new e3sm_io_driver_hdf5 (cfg);
 #else
-            RET_ERR ("HDF5 support was not enabled in this build")
+            ERR_OUT ("HDF5 support was not enabled in this build")
 #endif
             break;
         case adios:
 #ifdef ENABLE_ADIOS2
             driver = new e3sm_io_driver_adios2 (cfg);
 #else
-            RET_ERR ("ADIOS2 support was not enabled in this build")
+            ERR_OUT ("ADIOS2 support was not enabled in this build")
 #endif
             break;
         default:
-            RET_ERR ("Unknown driver")
+            ERR_OUT ("Unknown driver")
             break;
     }
 
@@ -90,7 +90,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 break;
         }
     } else {
-        RET_ERR ("Unknown decom file")
+        ERR_OUT ("Unknown decom file")
     }
 
     if (cfg->wr) {

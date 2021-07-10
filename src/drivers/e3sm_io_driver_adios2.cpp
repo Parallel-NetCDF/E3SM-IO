@@ -28,7 +28,7 @@
     {                                                                 \
         if (aerr != adios2_error_none) {                              \
             printf ("Error at line %d in %s:\n", __LINE__, __FILE__); \
-            nerrs++;                                                  \
+            err = -1;                                                 \
             DEBUG_ABORT                                               \
             goto err_out;                                             \
         }                                                             \
@@ -38,7 +38,7 @@
     {                                                              \
         if (P == NULL) {                                           \
             printf ("Error in %s:%d: NULL\n", __FILE__, __LINE__); \
-            nerrs++;                                               \
+            err = -1;                                              \
             DEBUG_ABORT                                            \
             goto err_out;                                          \
         }                                                          \
@@ -70,7 +70,7 @@ e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_dri
 }
 
 e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {
-    int nerrs = 0;
+    int err = 0;
     int rank;
     double tsel_all, twrite_all, text_all;
 
@@ -89,8 +89,7 @@ e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {
 }
 
 int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
-    int nerrs = 0;
-    int err;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp;
     char ng[32];
@@ -132,12 +131,11 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
     this->files.push_back (fp);
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
-    int nerrs = 0;
-    int err;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp;
     adios2_step_status stat;
@@ -172,11 +170,11 @@ int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info,
     this->files.push_back (fp);
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::close (int fid) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_bool result;
@@ -197,7 +195,7 @@ int e3sm_io_driver_adios2::close (int fid) {
     delete fp;
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::inq_file_info (int fid, MPI_Info *info) {
@@ -206,24 +204,24 @@ int e3sm_io_driver_adios2::inq_file_info (int fid, MPI_Info *info) {
 }
 
 int e3sm_io_driver_adios2::inq_put_size (int fid, MPI_Offset *size) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
 
     *size = fp->putsize;
 
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_adios2::inq_get_size (int fid, MPI_Offset *size) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
 
     *size = fp->getsize;
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 inline MPI_Offset get_dir_size (std::string path) {
@@ -260,13 +258,13 @@ inline MPI_Offset get_dir_size (std::string path) {
 }
 
 int e3sm_io_driver_adios2::inq_file_size (std::string path, MPI_Offset *size) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
 
     *size = get_dir_size (path + ".bp.dir");
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::inq_malloc_size (MPI_Offset *size) {
@@ -287,7 +285,7 @@ int e3sm_io_driver_adios2::inq_rec_size (int fid, MPI_Offset *size) {
 
 int e3sm_io_driver_adios2::def_var (
     int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i;
@@ -315,11 +313,11 @@ int e3sm_io_driver_adios2::def_var (
     fp->ndims.push_back (ndim);
 
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_adios2::def_local_var (
     int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i;
@@ -354,10 +352,10 @@ int e3sm_io_driver_adios2::def_local_var (
     fp->ndims.push_back (ndim);
 
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_adios2::inq_var (int fid, std::string name, int *did) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_variable *dp;
@@ -374,7 +372,7 @@ int e3sm_io_driver_adios2::inq_var (int fid, std::string name, int *did) {
     fp->ndims.push_back (ndim);
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::inq_var_off (int fid, int vid, MPI_Offset *off) {
@@ -382,7 +380,7 @@ int e3sm_io_driver_adios2::inq_var_off (int fid, int vid, MPI_Offset *off) {
     return 1;
 }
 int e3sm_io_driver_adios2::def_dim (int fid, std::string name, MPI_Offset size, int *dimid) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_variable *dp;
@@ -395,10 +393,10 @@ int e3sm_io_driver_adios2::def_dim (int fid, std::string name, MPI_Offset size, 
     fp->dsizes.push_back ((size_t)size);
     fp->ddids.push_back (dp);
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_adios2::inq_dim (int fid, std::string name, int *dimid) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     MPI_Offset size;
@@ -408,12 +406,12 @@ int e3sm_io_driver_adios2::inq_dim (int fid, std::string name, int *dimid) {
 
     // Read must happen in data mode
     if (fp->ep == NULL) {
-        nerrs += this->enddef (fid);
-        CHECK_NERR
+        err = this->enddef (fid);
+        CHECK_ERR
         aerr = adios2_get (fp->ep, dp, &size, adios2_mode_sync);
         CHECK_AERR
-        nerrs += this->redef (fid);
-        CHECK_NERR
+        err = this->redef (fid);
+        CHECK_ERR
     } else {
         aerr = adios2_get (fp->ep, dp, &size, adios2_mode_sync);
         CHECK_AERR
@@ -423,7 +421,7 @@ int e3sm_io_driver_adios2::inq_dim (int fid, std::string name, int *dimid) {
     fp->dsizes.push_back ((size_t)size);
     fp->ddids.push_back (dp);
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
@@ -435,7 +433,7 @@ int e3sm_io_driver_adios2::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
 }
 
 int e3sm_io_driver_adios2::enddef (int fid) {
-    int nerrs = 0;
+    int err = 0;
     int i;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
@@ -460,11 +458,11 @@ int e3sm_io_driver_adios2::enddef (int fid) {
         }
     }
 
-err_out:;
-    return nerrs;
+err_out:
+    return err;
 }
 int e3sm_io_driver_adios2::redef (int fid) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
 
@@ -472,11 +470,11 @@ int e3sm_io_driver_adios2::redef (int fid) {
     CHECK_AERR
     fp->ep = NULL;
 
-err_out:;
-    return nerrs;
+err_out:
+    return err;
 }
 int e3sm_io_driver_adios2::wait (int fid) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_step_status stat;
@@ -497,13 +495,13 @@ int e3sm_io_driver_adios2::wait (int fid) {
     CHECK_AERR
     */
 
-err_out:;
-    return nerrs;
+err_out:
+    return err;
 }
 
 int e3sm_io_driver_adios2::put_att (
     int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_variable *did;
@@ -543,12 +541,12 @@ int e3sm_io_driver_adios2::put_att (
         fp->putsize += size * esize;
     }
 
-err_out:;
-    return nerrs;
+err_out:
+    return err;
 }
 
 int e3sm_io_driver_adios2::get_att (int fid, int vid, std::string name, void *buf) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_variable *did;
@@ -583,12 +581,12 @@ int e3sm_io_driver_adios2::get_att (int fid, int vid, std::string name, void *bu
     fp->getsize += asize * esize;
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::put_varl (
     int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i;
@@ -635,7 +633,7 @@ int e3sm_io_driver_adios2::put_varl (
     fp->putsize += putsize * esize;
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::put_vara (int fid,
@@ -645,7 +643,7 @@ int e3sm_io_driver_adios2::put_vara (int fid,
                                      MPI_Offset *count,
                                      void *buf,
                                      e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i;
@@ -721,7 +719,7 @@ int e3sm_io_driver_adios2::put_vara (int fid,
     fp->putsize += putsize * esize;
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::put_vars (int fid,
@@ -732,7 +730,7 @@ int e3sm_io_driver_adios2::put_vars (int fid,
                                      MPI_Offset *stride,
                                      void *buf,
                                      e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i;
@@ -824,7 +822,7 @@ int e3sm_io_driver_adios2::put_vars (int fid,
     }
 
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_adios2::put_varn (int fid,
                                      int vid,
@@ -834,7 +832,7 @@ int e3sm_io_driver_adios2::put_varn (int fid,
                                      MPI_Offset **counts,
                                      void *buf,
                                      e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i, j;
@@ -917,7 +915,7 @@ int e3sm_io_driver_adios2::put_varn (int fid,
     }
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::put_vard (int fid,
@@ -938,7 +936,7 @@ int e3sm_io_driver_adios2::get_vara (int fid,
                                      MPI_Offset *count,
                                      void *buf,
                                      e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i;
@@ -1007,7 +1005,7 @@ int e3sm_io_driver_adios2::get_vara (int fid,
     fp->getsize += getsize * esize;
 
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_adios2::get_vars (int fid,
                                      int vid,
@@ -1017,7 +1015,7 @@ int e3sm_io_driver_adios2::get_vars (int fid,
                                      MPI_Offset *stride,
                                      void *buf,
                                      e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i;
@@ -1105,7 +1103,7 @@ int e3sm_io_driver_adios2::get_vars (int fid,
     }
 
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_adios2::get_varn (int fid,
                                      int vid,
@@ -1115,7 +1113,7 @@ int e3sm_io_driver_adios2::get_varn (int fid,
                                      MPI_Offset **counts,
                                      void *buf,
                                      e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i, j;
@@ -1194,7 +1192,7 @@ int e3sm_io_driver_adios2::get_varn (int fid,
     }
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_adios2::get_vard (int fid,

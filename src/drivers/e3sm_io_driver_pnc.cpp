@@ -19,16 +19,15 @@
 
 #include <e3sm_io_driver_pnc.hpp>
 
-#define CHECK_NCERR                                                             \
-    {                                                                           \
-        if (err != NC_NOERR) {                                                  \
-            printf ("Error at line %d in %s:\n", __LINE__, __FILE__);           \
-            printf ("\t(%s) %s\n", ncmpi_strerrno (err), ncmpi_strerror (err)); \
-            err = -1;                                                           \
-            DEBUG_ABORT;                                                        \
-            goto err_out;                                                       \
-        }                                                                       \
-    }
+#define CHECK_NCERR {                                                       \
+    if (err != NC_NOERR) {                                                  \
+        printf ("Error in %s line %d function %s:\n", __FILE__, __LINE__,   \
+                __func__);                                                  \
+        printf ("\t(%s) %s\n", ncmpi_strerrno (err), ncmpi_strerror (err)); \
+        DEBUG_ABORT;                                                        \
+        goto err_out;                                                       \
+    }                                                                       \
+}
 
 e3sm_io_driver_pnc::e3sm_io_driver_pnc (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
     if ((cfg->chunksize != 0) && (cfg->filter != none)) {
@@ -39,7 +38,7 @@ e3sm_io_driver_pnc::e3sm_io_driver_pnc (e3sm_io_config *cfg) : e3sm_io_driver (c
 e3sm_io_driver_pnc::~e3sm_io_driver_pnc () {}
 
 int e3sm_io_driver_pnc::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
-    int err, nerrs = 0;
+    int err;
     MPI_Offset put_buffer_size_limit;
 
     // Use the zip driver for chunked I/O
@@ -62,21 +61,21 @@ int e3sm_io_driver_pnc::create (std::string path, MPI_Comm comm, MPI_Info info, 
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_open (comm, path.c_str (), NC_64BIT_DATA, info, fid);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::close (int fid) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_buffer_detach (fid);
     CHECK_NCERR
@@ -85,21 +84,20 @@ int e3sm_io_driver_pnc::close (int fid) {
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::inq_file_info (int fid, MPI_Info *info) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_inq_file_info (fid, info);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::inq_file_size (std::string path, MPI_Offset *size) {
-    int nerrs = 0;
     int err;
     struct stat file_stat;
 
@@ -109,60 +107,60 @@ int e3sm_io_driver_pnc::inq_file_size (std::string path, MPI_Offset *size) {
     *size = (MPI_Offset) (file_stat.st_size);
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::inq_put_size (int fid, MPI_Offset *size) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_inq_put_size (fid, size);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::inq_get_size (int fid, MPI_Offset *size) {
-    int err, nerrs = 0;
+    int err;
     err = ncmpi_inq_get_size (fid, size);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::inq_malloc_size (MPI_Offset *size) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_inq_malloc_size (size);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_pnc::inq_malloc_max_size (MPI_Offset *size) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_inq_malloc_max_size (size);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::inq_rec_size (int fid, MPI_Offset *size) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_inq_recsize (fid, size);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::def_var (
     int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did) {
-    int err, nerrs = 0;
+    int err;
     int i;
     MPI_Offset bufcounts;
     int cdim[E3SM_IO_DRIVER_MAX_RANK];
@@ -200,7 +198,7 @@ int e3sm_io_driver_pnc::def_var (
                     CHECK_NCERR
                     break;
                 default:
-                    RET_ERR ("Unknown filter")
+                    ERR_OUT ("Unknown filter")
             }
         }
     }
@@ -215,38 +213,41 @@ int e3sm_io_driver_pnc::def_var (
     this->var_ndims[*did]  = ndim;
 
 err_out:;
-    return nerrs;
+    return err;
 }
+
 int e3sm_io_driver_pnc::def_local_var (
     int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) {
-    int nerrs = 0;
+    int err;
 
-    RET_ERR ("PNC does not support local variables")
+    ERR_OUT ("PNC does not support local variables")
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::inq_var (int fid, std::string name, int *did) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_inq_varid (fid, name.c_str (), did);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
+
 int e3sm_io_driver_pnc::inq_var_off (int fid, int vid, MPI_Offset *off) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_inq_varoffset (fid, vid, off);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
+
 int e3sm_io_driver_pnc::def_dim (int fid, std::string name, MPI_Offset size, int *dimid) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_def_dim (fid, name.c_str (), size, dimid);
     CHECK_NCERR
@@ -255,10 +256,11 @@ int e3sm_io_driver_pnc::def_dim (int fid, std::string name, MPI_Offset size, int
     this->dim_lens[*dimid] = size;
 
 err_out:;
-    return nerrs;
+    return err;
 }
+
 int e3sm_io_driver_pnc::inq_dim (int fid, std::string name, int *dimid) {
-    int err, nerrs = 0;
+    int err;
     MPI_Offset size;
 
     err = ncmpi_inq_dimid (fid, name.c_str (), dimid);
@@ -271,44 +273,47 @@ int e3sm_io_driver_pnc::inq_dim (int fid, std::string name, int *dimid) {
     this->dim_lens[*dimid] = size;
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
     *size = this->dim_lens[dimid];
     return 0;
 }
+
 int e3sm_io_driver_pnc::enddef (int fid) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_enddef (fid);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
+
 int e3sm_io_driver_pnc::redef (int fid) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_redef (fid);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
+
 int e3sm_io_driver_pnc::wait (int fid) {
-    int err, nerrs = 0;
+    int err;
 
     err = ncmpi_wait_all (fid, NC_REQ_ALL, NULL, NULL);
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::put_att (
     int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) {
-    int err, nerrs = 0;
+    int err;
 
     if (vid == E3SM_IO_GLOBAL_ATTR) { vid = NC_GLOBAL; }
 
@@ -316,11 +321,11 @@ int e3sm_io_driver_pnc::put_att (
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::get_att (int fid, int vid, std::string name, void *buf) {
-    int err, nerrs = 0;
+    int err;
 
     if (vid == E3SM_IO_GLOBAL_ATTR) { vid = NC_GLOBAL; }
 
@@ -328,17 +333,17 @@ int e3sm_io_driver_pnc::get_att (int fid, int vid, std::string name, void *buf) 
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::put_varl (
     int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) {
-    int nerrs = 0;
+    int err;
 
-    RET_ERR ("PNC does not support local variables")
+    ERR_OUT ("PNC does not support local variables")
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::put_vara (int fid,
@@ -348,7 +353,7 @@ int e3sm_io_driver_pnc::put_vara (int fid,
                                   MPI_Offset *count,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err, nerrs = 0;
+    int err;
     int i;
     MPI_Offset bufcount;
 
@@ -425,7 +430,7 @@ int e3sm_io_driver_pnc::put_vara (int fid,
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 int e3sm_io_driver_pnc::put_vars (int fid,
                                   int vid,
@@ -435,7 +440,7 @@ int e3sm_io_driver_pnc::put_vars (int fid,
                                   MPI_Offset *stride,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err, nerrs = 0;
+    int err;
     int i;
     MPI_Offset bufcount;
 
@@ -464,8 +469,9 @@ int e3sm_io_driver_pnc::put_vars (int fid,
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
+
 int e3sm_io_driver_pnc::put_varn (int fid,
                                   int vid,
                                   MPI_Datatype type,
@@ -474,7 +480,7 @@ int e3sm_io_driver_pnc::put_varn (int fid,
                                   MPI_Offset **counts,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err = NC_NOERR, nerrs = 0;
+    int err = NC_NOERR;
     int i, j;
     MPI_Offset bufcount;
     MPI_Offset blockcount;
@@ -508,7 +514,7 @@ int e3sm_io_driver_pnc::put_varn (int fid,
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::put_vard (int fid,
@@ -518,7 +524,7 @@ int e3sm_io_driver_pnc::put_vard (int fid,
                                   MPI_Datatype ftype,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err, nerrs = 0;
+    int err;
 
     switch (mode) {
         case indep: {
@@ -535,7 +541,7 @@ int e3sm_io_driver_pnc::put_vard (int fid,
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::get_vara (int fid,
@@ -545,7 +551,7 @@ int e3sm_io_driver_pnc::get_vara (int fid,
                                   MPI_Offset *count,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err, nerrs = 0;
+    int err;
     int i;
     MPI_Offset bufcount;
 
@@ -610,8 +616,9 @@ int e3sm_io_driver_pnc::get_vara (int fid,
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
+
 int e3sm_io_driver_pnc::get_vars (int fid,
                                   int vid,
                                   MPI_Datatype type,
@@ -620,7 +627,7 @@ int e3sm_io_driver_pnc::get_vars (int fid,
                                   MPI_Offset *stride,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err, nerrs = 0;
+    int err;
     int i;
     MPI_Offset bufcount;
 
@@ -645,8 +652,9 @@ int e3sm_io_driver_pnc::get_vars (int fid,
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
+
 int e3sm_io_driver_pnc::get_varn (int fid,
                                   int vid,
                                   MPI_Datatype type,
@@ -655,7 +663,7 @@ int e3sm_io_driver_pnc::get_varn (int fid,
                                   MPI_Offset **counts,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err, nerrs = 0;
+    int err;
     int i, j;
     MPI_Offset bufcount;
     MPI_Offset blockcount;
@@ -685,7 +693,7 @@ int e3sm_io_driver_pnc::get_varn (int fid,
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_pnc::get_vard (int fid,
@@ -695,7 +703,7 @@ int e3sm_io_driver_pnc::get_vard (int fid,
                                   MPI_Datatype ftype,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
-    int err, nerrs = 0;
+    int err;
 
     switch (mode) {
         case indep: {
@@ -712,5 +720,6 @@ int e3sm_io_driver_pnc::get_vard (int fid,
     CHECK_NCERR
 
 err_out:;
-    return nerrs;
+    return err;
 }
+

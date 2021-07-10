@@ -35,7 +35,7 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
                             e3sm_io_decom  &decom,
                             e3sm_io_driver &driver)
 {
-    int err=0, nerrs=0;
+    int err=0;
 
     PRINT_MSG (0, "number of requests for D1=%d D2=%d D3=%d D4=%d D5=%d D6=%d\n",
                decom.contig_nreqs[0], decom.contig_nreqs[1], decom.contig_nreqs[2],
@@ -62,11 +62,11 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
     if (cfg.api == pnetcdf && cfg.strategy == blob) {
         /* construct metadata for blob I/O strategy */
         err = blob_metadata(&cfg, &decom);
-        if (err != 0) goto err_out;
+        CHECK_ERR
 
         /* Use one-file-per-compute-node blob I/O strategy */
         err = pnetcdf_blob_G_case(cfg, decom, driver, "g_case_blob.nc");
-        if (err != NC_NOERR) goto err_out;
+        CHECK_ERR
 
         if (cfg.sub_comm != MPI_COMM_NULL)
             MPI_Comm_free(&cfg.sub_comm);
@@ -74,23 +74,24 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
     else if (cfg.vard) {
         /* vard APIs require internal data type matches external one */
 #if REC_XTYPE != NC_FLOAT
-        RET_ERR ("PnetCDF vard API requires internal and external data types match, skip\n");
+        ERR_OUT ("PnetCDF vard API requires internal and external data types match, skip\n");
 #endif
-        RET_ERR ("Low level API not supported in g case\n");
+        ERR_OUT ("Low level API not supported in g case\n");
     } else {
         err = run_varn_G_case (cfg, decom, driver, "g_case_hist_varn.nc", this->D1_fix_int_buf,
                                   this->D2_fix_int_buf, this->D3_fix_int_buf, this->D4_fix_int_buf,
                                   this->D5_fix_int_buf, this->D1_rec_dbl_buf, this->D3_rec_dbl_buf,
                                   this->D4_rec_dbl_buf, this->D5_rec_dbl_buf, this->D6_rec_dbl_buf,
                                   this->D1_fix_dbl_buf);
+        CHECK_ERR
     }
 
-err_out:;
-    return (err != 0) ? err : nerrs;
+err_out:
+    return err;
 }
 
 int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
-    int err, nerrs = 0;
+    int err;
 
     PRINT_MSG (0, "number of requests for D1=%d D2=%d D3=%d D4=%d D5=%d D6=%d\n",
                decom.contig_nreqs[0], decom.contig_nreqs[1], decom.contig_nreqs[2],
@@ -111,9 +112,9 @@ int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
     /* vard APIs require internal data type matches external one */
     if (cfg.vard) {
 #if REC_XTYPE != NC_FLOAT
-        RET_ERR ("PnetCDF vard API requires internal and external data types match, skip\n");
+        ERR_OUT ("PnetCDF vard API requires internal and external data types match, skip\n");
 #endif
-        RET_ERR ("Low level API not supported in g case\n");
+        ERR_OUT ("Low level API not supported in g case\n");
     } else {
         PRINT_MSG (0,
                    "\n==== benchmarking G case reading using varn API ========================\n");
@@ -126,20 +127,21 @@ int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         fflush (stdout);
 
         MPI_Barrier (cfg.io_comm);
-        nerrs += run_varn_G_case_rd (
+        err = run_varn_G_case_rd (
             cfg, decom, driver, "g_case_hist_varn.nc", &(this->D1_fix_int_buf),
             &(this->D2_fix_int_buf), &(this->D3_fix_int_buf), &(this->D4_fix_int_buf),
             &(this->D5_fix_int_buf), &(this->D1_rec_dbl_buf), &(this->D3_rec_dbl_buf),
             &(this->D4_rec_dbl_buf), &(this->D5_rec_dbl_buf), &(this->D6_rec_dbl_buf),
             &(this->D1_fix_dbl_buf));
+        CHECK_ERR
     }
-err_out:;
-    return nerrs;
+
+err_out:
+    return err;
 }
 
 int e3sm_io_case_G::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
-    int err, nerrs = 0;
-    int verbose;
+    int err, verbose;
     char *tmp;
 
     verbose     = cfg.verbose;
@@ -151,11 +153,12 @@ int e3sm_io_case_G::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_i
 
     // Run dummy G case read for data
     MPI_Barrier (cfg.io_comm);
-    nerrs += run_varn_G_case_rd (
+    err = run_varn_G_case_rd (
         cfg, decom, driver, "g_case_hist_varn.nc", &(this->D1_fix_int_buf), &(this->D2_fix_int_buf),
         &(this->D3_fix_int_buf), &(this->D4_fix_int_buf), &(this->D5_fix_int_buf),
         &(this->D1_rec_dbl_buf), &(this->D3_rec_dbl_buf), &(this->D4_rec_dbl_buf),
         &(this->D5_rec_dbl_buf), &(this->D6_rec_dbl_buf), &(this->D1_fix_dbl_buf));
+    CHECK_ERR
 
     cfg.verbose = verbose;
     // Swap datadir and targetdir back
@@ -163,6 +166,6 @@ int e3sm_io_case_G::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_i
     cfg.targetdir = cfg.datadir;
     cfg.datadir   = tmp;
 
-err_out:;
-    return nerrs;
+err_out:
+    return err;
 }

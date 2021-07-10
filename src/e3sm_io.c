@@ -30,16 +30,26 @@
 #include <e3sm_io_profile.hpp>
 
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
-    int err, nerrs = 0;
+    int err;
     MPI_Offset estimated_nc_ibuf_size;
 
     /* set MPI-IO hints */
-    MPI_Info_set (cfg->info, "romio_cb_write", "enable");  /* collective write */
-    MPI_Info_set (cfg->info, "romio_no_indep_rw", "true"); /* no independent MPI-IO */
+
+    /* collective write */
+    err = MPI_Info_set (cfg->info, "romio_cb_write", "enable");
+    CHECK_MPIERR
+    /* no independent MPI-IO */
+    err = MPI_Info_set (cfg->info, "romio_no_indep_rw", "true");
+    CHECK_MPIERR
 
     /* set PnetCDF I/O hints */
-    MPI_Info_set (cfg->info, "nc_var_align_size", "1");     /* no gap between variables */
-    MPI_Info_set (cfg->info, "nc_in_place_swap", "enable"); /* in-place byte swap */
+
+    /* no gap between variables */
+    err = MPI_Info_set (cfg->info, "nc_var_align_size", "1");
+    CHECK_MPIERR
+    /* in-place byte swap */
+    err = MPI_Info_set (cfg->info, "nc_in_place_swap", "enable");
+    CHECK_MPIERR
 
     /* use total write amount to estimate nc_ibuf_size */
     estimated_nc_ibuf_size =
@@ -48,11 +58,12 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     if (estimated_nc_ibuf_size > 16777216) {
         char nc_ibuf_size_str[32];
         sprintf (nc_ibuf_size_str, "%lld", estimated_nc_ibuf_size);
-        MPI_Info_set (cfg->info, "nc_ibuf_size", nc_ibuf_size_str);
+        err = MPI_Info_set (cfg->info, "nc_ibuf_size", nc_ibuf_size_str);
+        CHECK_MPIERR
     }
 
-err_out:;
-    return nerrs;
+err_out:
+    return err;
 }
 
 /*----< print_info() >------------------------------------------------------*/
@@ -113,7 +124,7 @@ static void usage (char *argv0) {
 
 /*----< main() >-------------------------------------------------------------*/
 int main (int argc, char **argv) {
-    int err, nerrs = 0;
+    int err;
     int i;
     char targetdir[E3SM_IO_MAX_PATH] = "./";
     char datadir[E3SM_IO_MAX_PATH]   = "";
@@ -180,13 +191,13 @@ int main (int argc, char **argv) {
 #ifdef HDF5_HAVE_DWRITE_MULTI
                     cfg.api = hdf5_mv;
 #else
-                    RET_ERR ("The HDF5 used does not support multi-dataset write")
+                    ERR_OUT ("The HDF5 used does not support multi-dataset write")
 #endif
                 } else if (strcmp (optarg, "hdf5_log") == 0) {
 #ifdef ENABLE_LOGVOL
                     cfg.api = hdf5_log;
 #else
-                    RET_ERR ("Log VOL support was not enabled in this build");
+                    ERR_OUT ("Log VOL support was not enabled in this build");
 #endif
                 }
 #endif
@@ -196,7 +207,7 @@ int main (int argc, char **argv) {
                 }
 #endif
                 else {
-                    RET_ERR ("Unknown API")
+                    ERR_OUT ("Unknown API")
                 }
                 break;
                 /*
@@ -206,7 +217,7 @@ int main (int argc, char **argv) {
                 } else if (strcmp (optarg, "chunk") == 0) {
                     cfg.layout = chunk;
                 } else {
-                    RET_ERR ("Unknown layout")
+                    ERR_OUT ("Unknown layout")
                 }
                 break;
                 */
@@ -218,7 +229,7 @@ int main (int argc, char **argv) {
                 } else if (strcmp (optarg, "blob") == 0) {
                     cfg.strategy = blob;
                 } else {
-                    RET_ERR ("Unknown I/O strategy")
+                    ERR_OUT ("Unknown I/O strategy")
                 }
                 break;
 
@@ -261,7 +272,7 @@ int main (int argc, char **argv) {
                 } else if (strcmp (optarg, "zlib") == 0) {
                     cfg.filter = deflate;
                 } else {
-                    RET_ERR ("Unknown filter")
+                    ERR_OUT ("Unknown filter")
                 }
                 break;
             case 'h':
@@ -304,10 +315,11 @@ int main (int argc, char **argv) {
 
     err = MPI_Info_create (&(cfg.info));
     CHECK_MPIERR
-    nerrs += set_info (&cfg, &decom);
-    CHECK_NERR
+    err += set_info (&cfg, &decom);
+    if (err < 0) goto err_out;
 
-    nerrs += e3sm_io_core (&cfg, &decom);
+    err = e3sm_io_core (&cfg, &decom);
+    if (err < 0) goto err_out;
 
     timing[1] = MPI_Wtime() - timing[1];
 
@@ -315,22 +327,20 @@ int main (int argc, char **argv) {
     if (cfg.rank == 0)
         printf("read_decomp=%.2f e3sm_io_core=%.2f\n", max_t[0],max_t[1]);
 
-err_out:;
-    if (cfg.info != MPI_INFO_NULL) MPI_Info_free (&(cfg.info));
-    if (cfg.io_comm != MPI_COMM_WORLD && cfg.io_comm != MPI_COMM_NULL) {
+err_out:
+    if (cfg.info != MPI_INFO_NULL)
+        MPI_Info_free (&(cfg.info));
+    if (cfg.io_comm != MPI_COMM_WORLD && cfg.io_comm != MPI_COMM_NULL)
         MPI_Comm_free (&(cfg.io_comm));
-    }
 
-    // Free decom
+    /* Free decom */
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
-        if (decom.blocklens[i]) { free (decom.blocklens[i]); }
-        if (decom.disps[i]) { free (decom.disps[i]); }
-        if (decom.raw_offsets[i]) { free (decom.raw_offsets[i]); }
+        if (decom.blocklens[i]) free (decom.blocklens[i]);
+        if (decom.disps[i]) free (decom.disps[i]);
+        if (decom.raw_offsets[i]) free (decom.raw_offsets[i]);
     }
 
-    /* Non-IO tasks wait for IO tasks to complete */
-    MPI_Barrier (MPI_COMM_WORLD);
     MPI_Finalize ();
 
-    return (nerrs > 0);
+    return (err < 0) ? 1 : 0;
 }

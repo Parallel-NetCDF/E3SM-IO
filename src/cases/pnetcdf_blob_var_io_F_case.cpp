@@ -32,7 +32,7 @@
         ncmpi_inq_varname(ncid, varid, name);                       \
         printf("Error in %s:%d: var %s - %s\n", __FILE__, __LINE__, \
                name, ncmpi_strerror(err));                          \
-        goto fn_exit;                                               \
+        goto err_out;                                               \
     }                                                               \
 }
 #define FILE_CREATE(filename) { \
@@ -40,7 +40,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define FILE_CLOSE {                                       \
@@ -48,7 +48,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define ENDDEF {                                           \
@@ -56,7 +56,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define INQ_PUT_SIZE(size) {                               \
@@ -64,7 +64,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define INQ_FILE_INFO(info) {                              \
@@ -72,7 +72,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define IPUT_VAR_DBL(buf, adv) { \
@@ -153,7 +153,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
     nflushes++;                                            \
 }
@@ -164,7 +164,7 @@
        if (err != NC_NOERR) {                                 \
            printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                   ncmpi_strerror(err));                       \
-           goto fn_exit;                                      \
+           goto err_out;                                      \
        }                                                      \
    }
 #endif
@@ -330,7 +330,8 @@ int write_small_vars_F_case(e3sm_io_driver &driver,
     IPUT_VAR1_INT(*int_buf, 1 + gap) /* nsteph */
 
     *nreqs = my_nreqs;
-fn_exit:
+
+err_out:
     return err;
 }
 
@@ -451,11 +452,14 @@ int pnetcdf_blob_F_case(e3sm_io_config &cfg,
     timing = MPI_Wtime();
 
     /* define dimensions, variables, and attributes */
-    if (cfg.nvars == 414) /* for h0 file */
+    if (cfg.nvars == 414) { /* for h0 file */
         err = blob_def_F_case_h0(cfg, decom, driver, ncid, varids);
-    else /* for h1 file */
+        CHECK_ERR
+    }
+    else { /* for h1 file */
         err = blob_def_F_case_h1(cfg, decom, driver, ncid, varids);
-    if (err != NC_NOERR) goto fn_exit;
+        CHECK_ERR
+    }
 
     /* exit define mode and enter data mode */
     ENDDEF
@@ -540,7 +544,7 @@ int pnetcdf_blob_F_case(e3sm_io_config &cfg,
 					  decom.dims[2][0], decom.dims[2][0] +
 					  1, 2, 8, &int_buf_ptr, &txt_buf_ptr,
                                           &dbl_buf_ptr, &my_nreqs);
-            if (err != NC_NOERR) goto fn_exit;
+            CHECK_ERR
         }
         i += 27;
 
@@ -789,7 +793,7 @@ int pnetcdf_blob_F_case(e3sm_io_config &cfg,
         printf("-----------------------------------------------------------\n");
     }
 
-fn_exit:
+err_out:
     if (err < 0 && ncid >= 0)
 #ifdef USE_PNETCDF_DIRECTLY
         ncmpi_close(ncid);

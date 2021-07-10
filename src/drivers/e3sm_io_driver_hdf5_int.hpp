@@ -25,7 +25,7 @@
             printf ("Error at line %d in %s:\n", __LINE__, __FILE__); \
             H5Eprint1 (stdout);                                       \
             DEBUG_ABORT;                                              \
-            nerrs++;                                                  \
+            err = -1;                                                 \
             goto err_out;                                             \
         }                                                             \
     }
@@ -36,7 +36,7 @@
             printf ("Error at line %d in %s:\n", __LINE__, __FILE__); \
             H5Eprint1 (stdout);                                       \
             DEBUG_ABORT;                                              \
-            nerrs++;                                                  \
+            err = -1;                                                 \
             goto err_out;                                             \
         }                                                             \
     }

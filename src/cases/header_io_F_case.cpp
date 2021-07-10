@@ -86,7 +86,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
         soa_a2_sfgaex1, soa_a3DDF, soa_a3SFWET, soa_a3_SRF, soa_a3_sfgaex1, soa_c1DDF, soa_c1SFWET,
         soa_c2DDF, soa_c2SFWET, soa_c3DDF, soa_c3SFWET;
 
-    int i, err, nerrs = 0, dimids[3], iattr, mdims = 1;
+    int i, err, dimids[3], iattr, mdims = 1;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
     float fillv = 1.e+36f, missv = 1.e+36f;
 
@@ -5588,7 +5588,7 @@ int def_F_case_h0 (e3sm_io_driver &driver,
     assert (i == nvars);
 
 err_out:
-    return nerrs;
+    return err;
 }
 
 /*----< inq_F_case_h0() >----------------------------------------------------*/
@@ -5646,7 +5646,7 @@ int ncid,           /* file ID */
         soa_a2_sfgaex1, soa_a3DDF, soa_a3SFWET, soa_a3_SRF, soa_a3_sfgaex1, soa_c1DDF, soa_c1SFWET,
         soa_c2DDF, soa_c2SFWET, soa_c3DDF, soa_c3SFWET;
 
-    int i, err, nerrs = 0, dimids[3], iattr, mdims = 1;
+    int i, err, dimids[3], iattr, mdims = 1;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
     float fillv = 1.e+36f, missv = 1.e+36f;
 
@@ -11157,7 +11157,7 @@ int ncid,           /* file ID */
     assert (i == nvars);
 
 err_out:
-    return nerrs;
+    return err;
 }
 
 /*----< def_F_case_h1() >----------------------------------------------------*/
@@ -11174,7 +11174,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
         OMEGA500, OMEGA850, PRECT, PS, SWCF, T850, TMQ, TS, U, U250, U850, UBOT, V250, V850, VBOT,
         Z500;
 
-    int i, err, nerrs = 0, dimids[3], iattr, mdims = 1;
+    int i, err, dimids[3], iattr, mdims = 1;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
 
     /* global attributes: */
@@ -11692,7 +11692,7 @@ int def_F_case_h1 (e3sm_io_driver &driver,
     assert (i == nvars);
 
 err_out:
-    return nerrs;
+    return err;
 }
 
 /*----< inq_F_case_h1() >----------------------------------------------------*/
@@ -11709,7 +11709,7 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
         OMEGA500, OMEGA850, PRECT, PS, SWCF, T850, TMQ, TS, U, U250, U850, UBOT, V250, V850, VBOT,
         Z500;
 
-    int i, err, nerrs = 0, dimids[3], iattr, mdims = 1;
+    int i, err, dimids[3], iattr, mdims = 1;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
 
     /* global attributes: */
@@ -12236,5 +12236,5 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
     assert (i == nvars);
 
 err_out:
-    return nerrs;
+    return err;
 }

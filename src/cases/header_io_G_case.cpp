@@ -32,7 +32,7 @@
 static char attbuf[4096];
 
 static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
-    int err, nerrs = 0, iattr;
+    int err, iattr;
     double dattr;
 
     /* 963 global attributes: */
@@ -3188,7 +3188,7 @@ static int define_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
 
 err_out:
-    return nerrs;
+    return err;
 }
 
 /*----< def_G_case_h0() >----------------------------------------------------*/
@@ -3217,7 +3217,7 @@ int def_G_case_h0 (e3sm_io_driver &driver,
         temperatureSurfaceFluxTendency, salinitySurfaceFluxTendency, temperatureShortWaveTendency,
         temperatureNonLocalTendency, salinityNonLocalTendency, temperature, salinity;
 
-    int i, err, nerrs = 0, dimids[3];
+    int i, err, dimids[3];
     int dim_nVertLevelsP1, dim_nCells, dim_Time, dim_nVertLevels, dim_nEdges, dim_nVertices,
         dim_StrLen;
 
@@ -3885,11 +3885,11 @@ int def_G_case_h0 (e3sm_io_driver &driver,
     assert (i == nvars);
 
 err_out:
-    return nerrs;
+    return err;
 }
 
 static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
-    int err, nerrs = 0, iattr;
+    int err, iattr;
     double dattr;
     char txtbuf[1024];
 
@@ -6921,7 +6921,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
 
 err_out:
-    return nerrs;
+    return err;
 }
 
 /*----< def_G_case_h0() >----------------------------------------------------*/
@@ -6950,7 +6950,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
         temperatureSurfaceFluxTendency, salinitySurfaceFluxTendency, temperatureShortWaveTendency,
         temperatureNonLocalTendency, salinityNonLocalTendency, temperature, salinity;
 
-    int i, err, nerrs = 0, dimids[3];
+    int i, err, dimids[3];
     int dim_nVertLevelsP1, dim_nCells, dim_Time, dim_nVertLevels, dim_nEdges, dim_nVertices,
         dim_StrLen;
 
@@ -7632,5 +7632,5 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     assert (i == nvars);
 
 err_out:
-    return nerrs;
+    return err;
 }

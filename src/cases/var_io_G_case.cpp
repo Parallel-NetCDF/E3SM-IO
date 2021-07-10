@@ -205,7 +205,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
                      double *D1_fix_dbl_bufp) /* D1 fix double buffer */
 {
     std::string outfname;
-    int i, j, k, err, nerrs = 0, rank, ncid, cmode, *varids;
+    int i, j, k, err, rank, ncid, cmode, *varids;
     int rec_no, my_nreqs, nvars_D[6];
     size_t rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf,
@@ -823,12 +823,12 @@ int run_varn_G_case (e3sm_io_config &cfg,
         if (cfg.verbose) print_info (&info_used);
         printf ("-----------------------------------------------------------\n");
     }
+    fflush (stdout);
+
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
     if (!cfg.keep_outfile) unlink (outfname.c_str ());
-    fflush (stdout);
-    MPI_Barrier (cfg.io_comm);
-    return nerrs;
+    return err;
 }
 
 /*----< run_varn_G_case_rd() >--------------------------------------------------*/
@@ -849,7 +849,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
                         double **D1_fix_dbl_bufp) /* D1 fix double buffer */
 {
     std::string outfname;
-    int i, j, k, err, nerrs = 0, rank, ncid, cmode, *varids;
+    int i, j, k, err, rank, ncid, cmode, *varids;
     int rec_no, my_nreqs;
     size_t rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf,
@@ -1412,10 +1412,10 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
         if (cfg.verbose) print_info (&info_used);
         printf ("-----------------------------------------------------------\n");
     }
+    fflush (stdout);
+
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
     if (!cfg.keep_outfile) unlink (outfname.c_str ());
-    fflush (stdout);
-    MPI_Barrier (comm);
-    return nerrs;
+    return err;
 }

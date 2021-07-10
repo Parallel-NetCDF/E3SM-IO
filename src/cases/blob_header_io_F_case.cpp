@@ -351,7 +351,7 @@ int blob_def_F_case_h0(e3sm_io_config &cfg,
                        int            *varids)   /* variable IDs */
 {
     int one=1, two=2, three=3, *varid;
-    int err, nerrs=0, ndims, dimids[3], mdims=1, nvars_decomp=0;
+    int err, ndims, dimids[3], mdims=1, nvars_decomp=0;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
     int nblobs_ID, nelems_D[3], max_nreqs_D[3], dimids_D[3][3];
     int fix_D[3][3], rec_D[3][3];
@@ -359,7 +359,7 @@ int blob_def_F_case_h0(e3sm_io_config &cfg,
 
     /* add global attributes: */
     err = blob_def_F_case_add_gattrs(cfg, decom, driver, ncid);
-    if (err != NC_NOERR) goto err_out;
+    CHECK_ERR
 
     PUT_GATTR_TXT("time_period_freq", "day_5")
 
@@ -368,14 +368,14 @@ int blob_def_F_case_h0(e3sm_io_config &cfg,
                                &dim_nbnd, &dim_chars, &dim_lev, &dim_ilev,
                                &nblobs_ID, nelems_D, max_nreqs_D, dimids_D,
                                fix_D, rec_D);
-    if (err != NC_NOERR) goto err_out;
+    CHECK_ERR
 
     /* define variables related to decompositions */
     if (cfg.strategy == blob) {
         err = blob_def_F_case_decomp(cfg, decom, driver, ncid, nblobs_ID,
                                      max_nreqs_D, dimids_D, varids,
                                      &nvars_decomp);
-        if (err != NC_NOERR) goto err_out;
+        CHECK_ERR
 
         varid = varids + nvars_decomp - 1;
     }
@@ -3489,7 +3489,7 @@ int blob_def_F_case_h0(e3sm_io_config &cfg,
     assert (varid - varids + 1 == cfg.nvars + nvars_decomp);
 
 err_out:
-    return nerrs;
+    return err;
 }
 
 /*----< blob_def_F_case_h1() >-----------------------------------------------*/
@@ -3500,7 +3500,7 @@ int blob_def_F_case_h1(e3sm_io_config &cfg,
                        int            *varids)   /* variable IDs */
 {
     int one=1, two=2, three=3, *varid;
-    int err, nerrs=0, ndims, dimids[3], mdims=1, nvars_decomp=0;
+    int err, ndims, dimids[3], mdims=1, nvars_decomp=0;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
     int nblobs_ID, nelems_D[3], max_nreqs_D[3], dimids_D[3][3];
     int fix_D[3][3], rec_D[3][3];
@@ -3508,7 +3508,7 @@ int blob_def_F_case_h1(e3sm_io_config &cfg,
 
     /* add global attributes: */
     err = blob_def_F_case_add_gattrs(cfg, decom, driver, ncid);
-    if (err != 0) goto err_out;
+    CHECK_ERR
 
     PUT_GATTR_TXT("time_period_freq", "hour_1")
 
@@ -3517,14 +3517,14 @@ int blob_def_F_case_h1(e3sm_io_config &cfg,
                                &dim_nbnd, &dim_chars, &dim_lev, &dim_ilev,
                                &nblobs_ID, nelems_D, max_nreqs_D, dimids_D,
                                fix_D, rec_D);
-    if (err != NC_NOERR) goto err_out;
+    CHECK_ERR
 
     /* define variables related to decompositions */
     if (cfg.strategy == blob) {
         err = blob_def_F_case_decomp(cfg, decom, driver, ncid, nblobs_ID,
                                      max_nreqs_D, dimids_D, varids,
                                      &nvars_decomp);
-        if (err != NC_NOERR) goto err_out;
+        CHECK_ERR
 
         varid = varids + nvars_decomp - 1;
     }
@@ -3846,6 +3846,6 @@ int blob_def_F_case_h1(e3sm_io_config &cfg,
     assert (varid - varids + 1 == cfg.nvars + nvars_decomp);
 
 err_out:
-    return nerrs;
+    return err;
 }
 

@@ -223,8 +223,7 @@ static inline void print_no_collective_cause (uint32_t local_no_collective_cause
 
 int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     herr_t herr;
-    int nerrs = 0;
-    int i;
+    int i, err=0;
     uint32_t local_no_collective_cause, global_no_collective_cause;
     int rank;
     size_t esize;
@@ -366,7 +365,7 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
                                          void *buf,
                                          e3sm_io_op_mode mode) {
     herr_t herr   = 0;
-    int nerrs     = 0;
+    int err = 0;
     hdf5_file *fp = this->files[fid];
     int i, j;
     hsize_t esize, rsize, rsize_old = 0, memspace_size, total_memspace_size, hyperslab_set;
@@ -526,12 +525,12 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     }
     fp->putsize += putsize;
 
-err_out:;
+err_out:
     if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
     if (msid >= 0) H5Sclose (msid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::get_varn_merge (int fid,
@@ -543,7 +542,7 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
                                          void *buf,
                                          e3sm_io_op_mode mode) {
     herr_t herr   = 0;
-    int nerrs     = 0;
+    int err = 0;
     hdf5_file *fp = this->files[fid];
     int i, j, index;
     size_t esize, rsize;
@@ -657,10 +656,10 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
     }
     fp->getsize += getsize;
 
-err_out:;
+err_out:
     if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
     if (msid >= 0) H5Sclose (msid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return nerrs;
+    return err;
 }

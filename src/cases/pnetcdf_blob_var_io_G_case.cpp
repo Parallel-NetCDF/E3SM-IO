@@ -32,7 +32,7 @@
         ncmpi_inq_varname(ncid, varid, name);                       \
         printf("Error in %s:%d: var %s - %s\n", __FILE__, __LINE__, \
                name, ncmpi_strerror(err));                          \
-        goto fn_exit;                                               \
+        goto err_out;                                               \
     }                                                               \
 }
 #define FILE_CREATE(filename) { \
@@ -40,7 +40,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define FILE_CLOSE {                                       \
@@ -48,7 +48,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define ENDDEF {                                           \
@@ -56,7 +56,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define INQ_PUT_SIZE(size) {                               \
@@ -64,7 +64,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define INQ_FILE_INFO(info) {                              \
@@ -72,7 +72,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
 }
 #define IPUT_VAR_DBL(adv) { \
@@ -162,7 +162,7 @@
     if (err != NC_NOERR) {                                 \
         printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                ncmpi_strerror(err));                       \
-        goto fn_exit;                                      \
+        goto err_out;                                      \
     }                                                      \
     nflushes++;                                            \
 }
@@ -173,7 +173,7 @@
        if (err != NC_NOERR) {                                 \
            printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
                   ncmpi_strerror(err));                       \
-           goto fn_exit;                                      \
+           goto err_out;                                      \
        }                                                      \
    }
 #endif
@@ -392,7 +392,8 @@ int pnetcdf_blob_G_case(e3sm_io_config &cfg,
 
     /* define dimensions, variables, and attributes */
     err = blob_def_G_case(cfg, decom, driver, ncid, varids);
-    if (err != NC_NOERR) goto fn_exit;
+    CHECK_ERR
+
     free(varids);
 
     /* exit define mode and enter data mode */
@@ -760,7 +761,7 @@ int pnetcdf_blob_G_case(e3sm_io_config &cfg,
         printf("-----------------------------------------------------------\n");
     }
 
-fn_exit:
+err_out:
     if (err < 0 && ncid >= 0)
 #ifdef USE_PNETCDF_DIRECTLY
         ncmpi_close(ncid);

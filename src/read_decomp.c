@@ -110,7 +110,7 @@ int read_decomp(e3sm_io_config *cfg,
                 e3sm_io_decom  *decom)
 {
     char name[128];
-    int err, nerrs = 0, rank, nprocs, ncid, varid, proc_start, proc_count;
+    int err, rank, nprocs, ncid, varid, proc_start, proc_count;
     int i, j, k, nreqs, *all_nreqs, dimids[2], id;
     MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
     MPI_Info info=MPI_INFO_NULL;
@@ -302,12 +302,13 @@ int read_decomp(e3sm_io_config *cfg,
     CHECK_ERR
 
 err_out:
-    if (nerrs) {
-        for (id = 0; id < decom->num_decomp; id++) {
+    if (err < 0) {
+        for (id=0; id<decom->num_decomp; id++) {
             decom->contig_nreqs[id] = 0;
             if (decom->disps[id] != NULL) free(decom->disps[id]);
             if (decom->blocklens[id] != NULL) free(decom->blocklens[id]);
         }
     }
-    return nerrs;
+
+    return err;
 }
