@@ -62,7 +62,7 @@ extern int
 pnetcdf_blob_F_case(e3sm_io_config &cfg,
                     e3sm_io_decom &decom,
                     e3sm_io_driver &driver,
-                    char *outfile);
+                    std::string outfile);
 
 extern int
 blob_def_F_case_h0(e3sm_io_config &cfg,

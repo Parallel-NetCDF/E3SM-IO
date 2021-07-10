@@ -74,7 +74,7 @@ extern int
 pnetcdf_blob_G_case(e3sm_io_config &cfg,
                     e3sm_io_decom &decom,
                     e3sm_io_driver &driver,
-                    char *outfile);
+                    std::string outfile);
 
 extern int
 blob_def_G_case(e3sm_io_config &cfg,

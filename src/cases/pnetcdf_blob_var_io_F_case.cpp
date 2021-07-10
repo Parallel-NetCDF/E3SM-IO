@@ -347,7 +347,7 @@ fn_exit:
 int pnetcdf_blob_F_case(e3sm_io_config &cfg,
                         e3sm_io_decom  &decom,
                         e3sm_io_driver &driver,
-                        char           *outfile)  /* output file name */
+                        std::string     outfile)  /* output file name */
 {
     char targetfname[1024];
     int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, *varids;
@@ -435,7 +435,8 @@ int pnetcdf_blob_F_case(e3sm_io_config &cfg,
     MPI_Barrier(cfg.sub_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
-    sprintf(targetfname, "%s/%s.%04d", cfg.targetdir, outfile, cfg.subfile_ID);
+    sprintf(targetfname, "%s/%s.%04d", cfg.targetdir, outfile.c_str(),
+            cfg.subfile_ID);
 
     /* set output subfile name */
     if (cfg.verbose && sub_rank == 0)
