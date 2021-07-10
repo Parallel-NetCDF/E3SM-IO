@@ -38,7 +38,7 @@
 
 /*----< add_decomp() >------------------------------------------------------------*/
 static int add_decomp (const char *infname) {
-    int err, nerrs = 0;
+    int err;
     int ret;
     int i, j;
     int ver, np, ndim;
@@ -113,7 +113,7 @@ static int add_decomp (const char *infname) {
 
 err_out:
     fclose (fd);
-    return nerrs;
+    return err;
 }
 
 static void usage (char *argv0) {
@@ -126,9 +126,7 @@ static void usage (char *argv0) {
 
 /*----< main() >------------------------------------------------------------*/
 int main (int argc, char **argv) {
-    int err, nerrs = 0;
-    int i;
-    int rank;
+    int err, i;
     std::vector<char *> infname;
 
     /* get command-line arguments */
@@ -138,7 +136,7 @@ int main (int argc, char **argv) {
                 break;
             case 'h':
             default:
-                if (rank == 0) usage (argv[0]);
+                usage (argv[0]);
                 return 1;
         }
 
@@ -148,8 +146,7 @@ int main (int argc, char **argv) {
         return 1;
     }
 
-    for (auto &fname : infname) { nerrs += add_decomp (fname); }
+    for (auto &fname : infname) { err = add_decomp (fname); }
 
-fn_exit:
-    return (nerrs > 0);
+    return (err < 0) ? 1 : 0;
 }
