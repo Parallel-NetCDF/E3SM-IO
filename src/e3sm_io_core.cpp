@@ -61,6 +61,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         cfg->nvars = 414;
         switch (cfg->strategy) {
             case canonical:
+            case log:
                 tcase = new e3sm_io_case_F ();
                 break;
             case blob:
@@ -76,6 +77,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         cfg->nvars = 52;
         switch (cfg->strategy) {
             case canonical:
+            case log:
                 tcase = new e3sm_io_case_G ();
                 break;
             case blob:
