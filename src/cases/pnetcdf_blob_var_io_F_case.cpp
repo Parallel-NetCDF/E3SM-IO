@@ -349,7 +349,7 @@ int pnetcdf_blob_F_case(e3sm_io_config &cfg,
                         e3sm_io_decom  &decom,
                         e3sm_io_driver &driver)
 {
-    char outfile[1024];
+    char outfile[1040];
     int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, *varids;
     int rec_no, gap = 0, my_nreqs, num_decomp_vars;
     int contig_nreqs[MAX_NUM_DECOMP], nvars_D[MAX_NUM_DECOMP];
