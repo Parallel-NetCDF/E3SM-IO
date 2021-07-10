@@ -223,7 +223,7 @@
     my_nreqs++; \
 }
 #define IPUT_VARA_INT64_NOADV(buf) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_LONGLONG, start, count, buf, nb); \
+    err = driver.put_vara(ncid, varids[i++], MPI_LONG_LONG, start, count, buf, nb); \
     CHECK_ERR \
     my_nreqs++; \
 }
