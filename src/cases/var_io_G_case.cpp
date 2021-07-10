@@ -203,9 +203,9 @@ int run_varn_G_case (e3sm_io_config &cfg,
                      double *D6_rec_dbl_bufp, /* D6 rec double buffer */
                      double *D1_fix_dbl_bufp) /* D1 fix double buffer */
 {
-    int i, j, k, err, rank, ncid, cmode, *varids;
+    int i, j, k, err, rank, ncid, *varids;
     int rec_no, my_nreqs, nvars_D[6];
-    size_t rec_buflen, nelems[6];
+    size_t ii, rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf,
         *rec_buf_ptr;
     int *D1_fix_int_buf, *D2_fix_int_buf, *D3_fix_int_buf, *D4_fix_int_buf, *D5_fix_int_buf;
@@ -243,7 +243,6 @@ int run_varn_G_case (e3sm_io_config &cfg,
     int xnreqs[6]; /* number of requests after combination */
     MPI_Offset malloc_size, sum_size;
     MPI_Offset m_alloc = 0, max_alloc;
-    MPI_Offset put_buffer_size_limit;
 
     for (i = 0; i < 6; i++) {
         xnreqs[i]  = decom.contig_nreqs[i];
@@ -343,7 +342,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D1_fix_int_buf = D1_fix_int_bufp;
         } else {
             D1_fix_int_buf = (int *)malloc (nelems[0] * sizeof (int));
-            for (i = 0; i < nelems[0]; i++) D1_fix_int_buf[i] = rank + i;
+            for (ii=0; ii<nelems[0]; ii++) D1_fix_int_buf[ii] = rank + ii;
         }
     } else
         D1_fix_int_buf = NULL;
@@ -354,7 +353,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D2_fix_int_buf = D2_fix_int_bufp;
         } else {
             D2_fix_int_buf = (int *)malloc (2 * nelems[1] * sizeof (int));
-            for (i = 0; i < 2 * nelems[1]; i++) D2_fix_int_buf[i] = rank + i;
+            for (ii= 0; ii<2*nelems[1]; ii++) D2_fix_int_buf[ii] = rank + ii;
         }
     } else
         D2_fix_int_buf = NULL;
@@ -365,7 +364,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D3_fix_int_buf = D3_fix_int_bufp;
         } else {
             D3_fix_int_buf = (int *)malloc (nelems[2] * sizeof (int));
-            for (i = 0; i < nelems[2]; i++) D3_fix_int_buf[i] = rank + i;
+            for (ii=0; ii<nelems[2]; ii++) D3_fix_int_buf[ii] = rank + ii;
         }
     } else
         D3_fix_int_buf = NULL;
@@ -376,7 +375,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D4_fix_int_buf = D4_fix_int_bufp;
         } else {
             D4_fix_int_buf = (int *)malloc (nelems[3] * sizeof (int));
-            for (i = 0; i < nelems[3]; i++) D4_fix_int_buf[i] = rank + i;
+            for (ii=0; ii<nelems[3]; ii++) D4_fix_int_buf[ii] = rank + ii;
         }
     } else
         D4_fix_int_buf = NULL;
@@ -387,7 +386,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D5_fix_int_buf = D5_fix_int_bufp;
         } else {
             D5_fix_int_buf = (int *)malloc (nelems[4] * sizeof (int));
-            for (i = 0; i < nelems[4]; i++) D5_fix_int_buf[i] = rank + i;
+            for (ii=0; ii<nelems[4]; ii++) D5_fix_int_buf[ii] = rank + ii;
         }
     } else
         D5_fix_int_buf = NULL;
@@ -398,7 +397,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D1_fix_dbl_buf = D1_fix_dbl_bufp;
         } else {
             D1_fix_dbl_buf = (double *)malloc (nelems[0] * sizeof (double));
-            for (i = 0; i < nelems[0]; i++) D1_fix_dbl_buf[i] = rank + i;
+            for (ii=0; ii<nelems[0]; ii++) D1_fix_dbl_buf[ii] = rank + ii;
         }
     } else
         D1_fix_dbl_buf = NULL;
@@ -410,7 +409,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D1_rec_dbl_buf = D1_rec_dbl_bufp;
         } else {
             D1_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-            for (i = 0; i < rec_buflen; i++) D1_rec_dbl_buf[i] = rank + i;
+            for (ii=0; ii<rec_buflen; ii++) D1_rec_dbl_buf[ii] = rank + ii;
         }
     } else
         D1_rec_dbl_buf = NULL;
@@ -421,7 +420,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D3_rec_dbl_buf = D3_rec_dbl_bufp;
         } else {
             D3_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-            for (i = 0; i < rec_buflen; i++) D3_rec_dbl_buf[i] = rank + i;
+            for (ii=0; ii<rec_buflen; ii++) D3_rec_dbl_buf[ii] = rank + ii;
         }
     } else
         D3_rec_dbl_buf = NULL;
@@ -432,7 +431,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D4_rec_dbl_buf = D4_rec_dbl_bufp;
         } else {
             D4_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-            for (i = 0; i < rec_buflen; i++) D4_rec_dbl_buf[i] = rank + i;
+            for (ii=0; ii<rec_buflen; ii++) D4_rec_dbl_buf[ii] = rank + ii;
         }
     } else
         D4_rec_dbl_buf = NULL;
@@ -443,7 +442,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D5_rec_dbl_buf = D5_rec_dbl_bufp;
         } else {
             D5_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-            for (i = 0; i < rec_buflen; i++) D5_rec_dbl_buf[i] = rank + i;
+            for (ii=0; ii<rec_buflen; ii++) D5_rec_dbl_buf[ii] = rank + ii;
         }
     } else
         D5_rec_dbl_buf = NULL;
@@ -454,7 +453,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
             D6_rec_dbl_buf = D6_rec_dbl_bufp;
         } else {
             D6_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-            for (i = 0; i < rec_buflen; i++) D6_rec_dbl_buf[i] = rank + i;
+            for (ii=0; ii<rec_buflen; ii++) D6_rec_dbl_buf[ii] = rank + ii;
         }
     } else
         D6_rec_dbl_buf = NULL;
@@ -842,10 +841,9 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
                         double **D6_rec_dbl_bufp, /* D6 rec double buffer */
                         double **D1_fix_dbl_bufp) /* D1 fix double buffer */
 {
-    std::string in_fname;
-    int i, j, k, err, rank, ncid, cmode, *varids;
+    int i, j, k, err, rank, ncid, *varids;
     int rec_no, my_nreqs;
-    size_t rec_buflen, nelems[6];
+    size_t ii, rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf,
         *rec_buf_ptr;
     int *D1_fix_int_buf, *D2_fix_int_buf, *D3_fix_int_buf, *D4_fix_int_buf, *D5_fix_int_buf;
@@ -883,7 +881,6 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     char dummy_char_buf[64];
     MPI_Offset malloc_size, sum_size;
     MPI_Offset m_alloc = 0, max_alloc;
-    MPI_Offset put_buffer_size_limit;
 
     MPI_Barrier (comm); /*-----------------------------------------*/
     total_timing = pre_timing = MPI_Wtime ();
@@ -980,7 +977,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     /* int (nCells): maxLevelCell */
     if (nelems[0] > 0) {
         D1_fix_int_buf = (int *)malloc (nelems[0] * sizeof (int));
-        for (i = 0; i < nelems[0]; i++) D1_fix_int_buf[i] = rank + i;
+        for (ii=0; ii<nelems[0]; ii++) D1_fix_int_buf[ii] = rank + ii;
         *D1_fix_int_bufp = D1_fix_int_buf;
     } else
         D1_fix_int_buf = NULL;
@@ -988,7 +985,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     /* int (nEdges): maxLevelEdgeTop and maxLevelEdgeBot */
     if (nelems[1] > 0) {
         D2_fix_int_buf = (int *)malloc (2 * nelems[1] * sizeof (int));
-        for (i = 0; i < 2 * nelems[1]; i++) D2_fix_int_buf[i] = rank + i;
+        for (ii= 0; ii<2*nelems[1]; ii++) D2_fix_int_buf[ii] = rank + ii;
         *D2_fix_int_bufp = D2_fix_int_buf;
     } else
         D2_fix_int_buf = NULL;
@@ -996,7 +993,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     /* int (nCells, nVertLevels): cellMask */
     if (nelems[2] > 0) {
         D3_fix_int_buf = (int *)malloc (nelems[2] * sizeof (int));
-        for (i = 0; i < nelems[2]; i++) D3_fix_int_buf[i] = rank + i;
+        for (ii=0; ii<nelems[2]; ii++) D3_fix_int_buf[ii] = rank + ii;
         *D3_fix_int_bufp = D3_fix_int_buf;
     } else
         D3_fix_int_buf = NULL;
@@ -1004,7 +1001,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     /* int (nEdges, nVertLevels): edgeMask */
     if (nelems[3] > 0) {
         D4_fix_int_buf = (int *)malloc (nelems[3] * sizeof (int));
-        for (i = 0; i < nelems[3]; i++) D4_fix_int_buf[i] = rank + i;
+        for (ii=0; ii<nelems[3]; ii++) D4_fix_int_buf[ii] = rank + ii;
         *D4_fix_int_bufp = D4_fix_int_buf;
     } else
         D4_fix_int_buf = NULL;
@@ -1012,7 +1009,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     /* int (nVertices, nVertLevels): vertexMask */
     if (nelems[4] > 0) {
         D5_fix_int_buf = (int *)malloc (nelems[4] * sizeof (int));
-        for (i = 0; i < nelems[4]; i++) D5_fix_int_buf[i] = rank + i;
+        for (ii=0; ii<nelems[4]; ii++) D5_fix_int_buf[ii] = rank + ii;
         *D5_fix_int_bufp = D5_fix_int_buf;
     } else
         D5_fix_int_buf = NULL;
@@ -1020,7 +1017,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     /* double (nCells): bottomDepth */
     if (nelems[0] > 0) {
         D1_fix_dbl_buf = (double *)malloc (nelems[0] * sizeof (double));
-        for (i = 0; i < nelems[0]; i++) D1_fix_dbl_buf[i] = rank + i;
+        for (ii=0; ii<nelems[0]; ii++) D1_fix_dbl_buf[ii] = rank + ii;
         *D1_fix_dbl_bufp = D1_fix_dbl_buf;
     } else
         D1_fix_dbl_buf = NULL;
@@ -1029,7 +1026,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     if (nelems[0] > 0) {
         rec_buflen     = nelems[0] * nD1_rec_2d_vars;
         D1_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-        for (i = 0; i < rec_buflen; i++) D1_rec_dbl_buf[i] = rank + i;
+        for (ii=0; ii<rec_buflen; ii++) D1_rec_dbl_buf[ii] = rank + ii;
         *D1_rec_dbl_bufp = D1_rec_dbl_buf;
     } else
         D1_rec_dbl_buf = NULL;
@@ -1037,7 +1034,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     if (nelems[2] > 0) {
         rec_buflen     = nelems[2] * nD3_rec_3d_vars;
         D3_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-        for (i = 0; i < rec_buflen; i++) D3_rec_dbl_buf[i] = rank + i;
+        for (ii=0; ii<rec_buflen; ii++) D3_rec_dbl_buf[ii] = rank + ii;
         *D3_rec_dbl_bufp = D3_rec_dbl_buf;
     } else
         D3_rec_dbl_buf = NULL;
@@ -1045,7 +1042,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     if (nelems[3] > 0) {
         rec_buflen     = nelems[3] * nD4_rec_3d_vars;
         D4_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-        for (i = 0; i < rec_buflen; i++) D4_rec_dbl_buf[i] = rank + i;
+        for (ii=0; ii<rec_buflen; ii++) D4_rec_dbl_buf[ii] = rank + ii;
         *D4_rec_dbl_bufp = D4_rec_dbl_buf;
     } else
         D4_rec_dbl_buf = NULL;
@@ -1053,7 +1050,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     if (nelems[4] > 0) {
         rec_buflen     = nelems[4] * nD5_rec_3d_vars;
         D5_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-        for (i = 0; i < rec_buflen; i++) D5_rec_dbl_buf[i] = rank + i;
+        for (ii=0; ii<rec_buflen; ii++) D5_rec_dbl_buf[ii] = rank + ii;
         *D5_rec_dbl_bufp = D5_rec_dbl_buf;
     } else
         D5_rec_dbl_buf = NULL;
@@ -1061,7 +1058,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     if (nelems[5] > 0) {
         rec_buflen     = nelems[5] * nD6_rec_3d_vars;
         D6_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
-        for (i = 0; i < rec_buflen; i++) D6_rec_dbl_buf[i] = rank + i;
+        for (ii=0; ii<rec_buflen; ii++) D6_rec_dbl_buf[ii] = rank + ii;
         *D6_rec_dbl_bufp = D6_rec_dbl_buf;
     } else
         D6_rec_dbl_buf = NULL;
@@ -1283,7 +1280,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     close_timing += MPI_Wtime () - timing;
 
     if (cfg.rank == 0){
-        err = driver.inq_file_size(in_fname, &fsize);
+        err = driver.inq_file_size(cfg.in_path, &fsize);
         CHECK_ERR
     }
 
