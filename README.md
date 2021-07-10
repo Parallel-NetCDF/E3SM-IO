@@ -36,7 +36,8 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 ### Software Requirements
 * [PnetCDF 1.12.2](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz)
 * MPI C and C++ compilers
-  + The plugin uses the constant initializer; a C++ compiler supporting std 11 is required
+  + The plugin uses the constant initializer; a C++ compiler supporting std 11
+    is required
 * Autotools utility
   + autoconf 2.69
   + automake 1.16.1
@@ -56,7 +57,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   + Configure PnetCDF with mpi C compiler
   + Run make install
   + Example build commands are given below. This example will install
-    the PnetCDF library under the folder `${HOME}/PnetCDF/1.12.2`.
+    the PnetCDF library under folder `${HOME}/PnetCDF/1.12.2`.
     ```
     % wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz
     % tar -zxf pnetcdf-1.12.2.tar.gz
@@ -64,7 +65,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % ./configure --prefix=${HOME}/PnetCDF/1.12.2 CC=mpicc
     % make -j 16 install
     ```
-    The PnetCDF library is now installed under the folder `${HOME}/PnetCDF/1.12.2.`
+    The PnetCDF library is now installed under folder `${HOME}/PnetCDF/1.12.2.`
 * (Optional) Build HDF5 with parallel I/O support
   + Download and extract the HDF5 source code
   + Configure HDF5 with parallel I/O enabled
@@ -78,12 +79,13 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % ./configure --prefix=${HOME}/HDF5/1.12.0 --enable-parallel CC=mpicc
     % make -j 16 install
     ```
-    The HDF5 library is now installed under the folder `${HOME}/HDF5/1.12.0.`
+    The HDF5 library is now installed under folder `${HOME}/HDF5/1.12.0.`
 * (Optional) Build log-based VOL plugin.
   + Clone the source code from the log-based VOL repository
   + Run command autoreconf -i
   + Configure log-based VOL 
-    + Shared library is required to enable log-based VOL by environment variables
+    + Shared library is required to enable log-based VOL by environment
+      variables
     + Compile with zlib library to enable metadata compression
   + Example commands are given below.
     ```
@@ -93,7 +95,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % ./configure --prefix=${HOME}/Log_IO_VOL --with-hdf5=${HOME}/HDF5/1.12.0 --enable-shared --enable-zlib
     % make -j 16 install
     ```
-    The VOL plugin library is now installed under the folder `${HOME}/Log_IO_VOL.`
+    The VOL plugin library is now installed under folder `${HOME}/Log_IO_VOL.`
 * (Optional) Build ADIOS2 with parallel I/O support
   + Download and extract the ADIOS2 source code
   + Configure ADIOS2 with MPI support enabled
@@ -109,32 +111,43 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % make -j 16
     % make -j 16 install
     ```
-    The ADIOS2 library is now installed under the folder `${HOME}/ADIOS2/2.7.1.`
+    The ADIOS2 library is now installed under folder `${HOME}/ADIOS2/2.7.1.`
 * Build the E3SM-I/O benchmark
   + Clone this E3SM-I/O benchmark repository
   + Run command autoreconf -i
   + Configure the E3SM-I/O benchmark with mpi compilers
-    + Add HDF5 installation path (--with-hdf5=/path/to/implementation) to enable HDF5 API support
-      + E3SM-I/O benchmark only supports sequential run using HDF5 native VOL due to some HDF5 API limitations.
-        + Parallel I/O is supported when using the log-based VOL.
-    + Add log-based VOL installation path (--with-logvol=/path/to/implementation) to enable HDF5 API support
-    + Add ADIOS2 installation path (--with-adios2=/path/to/implementation) to enable HDF5 API support
-  + Run make install
+    + Add HDF5 installation path (--with-hdf5=/path/to/implementation) to
+      enable HDF5 API support. Using native HDF5 is supported only when running
+      the benchmark with command-line option '-a hdf5_ra'.
+    + Add HDF5 installation path (--with-hdf5=/path/to/implementation) that
+      contains the implementation of multi-dataset APIs. This is required when
+      running the benchmark with command-line option '-a hdf5_md'.
+    + Add log-based VOL installation path
+      (--with-logvol=/path/to/implementation). This is required when running
+      the benchmark with command-line option '-a hdf5_log'.
+    + Add ADIOS2 installation path (--with-adios2=/path/to/implementation) to
+      enable ADIOS API support. This is required when running the benchmark
+      with command-line option '-a adios'.
+  + Run 'make install'
   + Example commands are given below.
     ```
     % git clone https://github.com/Parallel-NetCDF/E3SM-IO.git
     % cd E3SM-IO
     % autoreconf -i
-    % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.2 --with-hdf5=${HOME}/HDF5/1.12.0 --with-logvol=${HOME}/Log_IO_VOL --with-adios2=${HOME}/ADIOS2 CC=mpicc CXX=mpicxx
+    % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.2 \
+                  --with-hdf5=${HOME}/HDF5/1.12.0 \
+                  --with-logvol=${HOME}/Log_IO_VOL \
+                  --with-adios2=${HOME}/ADIOS2 \
+                  CC=mpicc CXX=mpicxx
     % make -j 16 install
     ```
 
 ### Prepare the data decomposition file in NetCDF file format
-* For the F case, the three data decomposition files generated by the PIO library
-  are in text format with file extension name `.dat`. The decomposition files
-  must first be combined and converted into a NetCDF file to be read in
+* For the F case, there are three data decomposition files generated by the PIO
+  library in text format with file extension name `.dat`. The decomposition
+  files must first be combined and converted into a NetCDF file to be read in
   parallel as the input file to this benchmark program. Similarly, for the G
-  case, the six decomposition files need to be converted first.
+  case, there are six decomposition files that need to be converted first.
 * A utility program, `dat2nc.c`, is included to convert the text files. To
   build this utility program, run command
   ```
@@ -152,7 +165,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
           -h               Print help
           -v               Verbose mode
           -l num           Max number of characters per line in input file
-          -o out_file      Name of output netCDF file
+          -o out_file      Name of output NetCDF file
           -1 input_file    name of 1st decomposition file
           -2 input_file    name of 2nd decomposition file
           -3 input_file    name of 3rd decomposition file
@@ -229,14 +242,15 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   ```
     % mpiexec -n 16 ./e3sm_io -c datasets/f_case_866x72_16p.nc
   ```
-* The number of MPI processes used to run this benchmark can be different
-  from the value of the variable `decomp_nprocs` stored in the decomposition
-  NetCDF file. For example, in file `f_case_866x72_16p.nc`, `decomp_nprocs`
-  is 16, the number of MPI processes originally used to produce the decomposition .dat files. When running this benchmark using less number of
-  MPI processes, the I/O workload will be divided among all the allocated MPI
-  processes. When using more processes than `decomp_nprocs`, those processes
-  with MPI ranks greater than or equal to `decomp_nprocs` will have no data
-  to write but still participate the collective I/O in the benchmark.
+* The number of MPI processes used to run this benchmark can be different from
+  the value of variable `decomp_nprocs` stored in the decomposition NetCDF
+  file. For example, in file `f_case_866x72_16p.nc`, `decomp_nprocs` is 16, the
+  number of MPI processes originally used to generate the decomposition .dat
+  files. When running this benchmark using less number of MPI processes, the
+  I/O workload will be divided among all the allocated MPI processes. When
+  using more processes than `decomp_nprocs`, the processes with MPI ranks
+  greater than or equal to `decomp_nprocs` will have no data to write but still
+  participate the collective I/O in the benchmark.
 * Command-line options:
   ```
     % ./e3sm_io -h
@@ -248,27 +262,83 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-n] Run test that uses PnetCDF varn API
        [-m] Run test using noncontiguous write buffer
        [-t] Write 2D variables followed by 3D variables
-       [-R] Test reading performance
-       [-W] Test writing performance
-       [-f num] File number to run in F case (-1 (both) (default), 0, 1)
-       [-r num] Number of records (default 1)
-       [-s num] Stride between IO tasks (default 1)
-       [-g num] Number of IO groups (subfiles) (default 1)
-       [-o output_dir] Output directory name (default ./)
-       [-i target_dir] Path to directory containing the input files
-              pnetcdf:     PnetCDF library
-              hdf5_ra:     HDF5 library's native VOL with rearranger in E3SM
-              hdf5_log:    HDF5 library with Log I/O VOL
-              hdf5_ra:     HDF5 library's experimental multi-dataset write function with rearranger in E3SM
-              adios:       ADIOS2 library using BP3 format
-       [-x strategy] I/O strategy used to write E3SM variables (canonical (default), log, blob)
-              canonical:   Store E3SM variables as is in canonical layout
-              log:         Store E3SM variables as is in log-based storage layout
-              blob:        Flatten E3SM variables into 1-dimensional data blocks. Record decomposition information in other variables and attributes
-       [-c chunk_size] Use chunked storage layout with chunk_size (0 (no chunking) (default))
-       [-z filter] Apply the filter if supported by the underlying API (none (default), deflate)
-       FILE: Name of input netCDF file describing data decompositions
+       [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for h1
+                only, -1 for both (default: -1)
+       [-r num] Number of records/time steps (default: 1)
+       [-s num] MPI rank stride for selecting processes to perform I/O tasks
+                (default: 1)
+       [-g num] Number of subfiles, used in blob I/O only (default: 1)
+       [-i path] Enable read performance evaluation and set the input file
+                 (folder) path
+       [-i path] Enable write performance evaluation and set the output file
+                 (folder) path
+       [-a api]  I/O library name to perform write operation
+           pnetcdf:   PnetCDF library (default)
+           hdf5_ra:   HDF5 library with request rearranger on top of it
+           hdf5_log:  HDF5 library with Log-based VOL
+           hdf5_md:   HDF5 library with multi-dataset APIs
+           adios:     ADIOS2 library using BP3 format
+       [-x strategy] I/O strategy to write
+           canonical: Store E3SM variables in the canonical layout (default)
+           log:       Store E3SM variables as is in log-based storage layout
+           blob:      Write data is stored in a contiguous block (blob),
+                      ignoring variable's canonical order
+       [-c size] Data chunk size to be used when compression is enabled.
+                 (default 0, i.e. no chunking)
+       [-z filter] Enable data compression in write and use the supplied the
+                 filter name (default: none)
+       FILE: Name of input NetCDF file describing data decompositions
   ```
+* Current supported APIs and I/O strategies
+  + **pnetcdf + canonical**
+    * A single NetCDF file in CDF5 format will be created. All data objects and
+      their structures in the file are understandable by all NetCDF software.
+    * Users are recommended to use an output folder with a high file striping
+      count to obtain a good performance.
+  + **pnetcdf + blob**
+    * Multiple subfiles in NetCDF format will be created.
+    * There will be one subfile per compute node used.
+    * Input file name provided in option '-i' will be used as a base of
+      subfile name. The subfile names will have the numerical IDs as the
+      suffix.
+    * Because all variables are stored in a blob fashion in the files, the
+      subfiles can only be understood by the conversion utility tool,
+      [utils/pnetcdf_blob_replay.c](utils/pnetcdf_blob_replay.c), which can
+      be run off-line to convert the subfiles into a single regular NetCDF
+      file in CDF5 format.
+  + **hdf5_ra + canonical**
+    * hdf5_ra re-arranges the write requests among all MPI processes into less
+      but large contiguous requests before calling HDF5 to write the data. This
+      is essentially the same as the BOX data rearrangment implemented in
+      Scorpio.
+    * The output file is a regular HDF5.
+  + **hdf5_md + canonical**
+    * hdf5_md reads/writes data using the multi-dataset APIs, which is
+      currently under development. The APIs allow users to read/write multiple
+      requests in a single API call.
+    * This option requires this benchmark to be built with a
+      [develop branch](https://bitbucket.hdfgroup.org/projects/HDFFV/repos/hdf5/browse)
+      of HDF5 that implements the multi-dataset APIs.
+    * The output file is a regular HDF5.
+  + **hdf5_log + log**
+    * hdf5_log reads/writes data using the log-based VOL, which stores data in
+      a log layout. The output file is a valid HDF5 file, but requires the
+      log-based VOL to read and understand the data structures.
+    * The output file is a single HDF5 file.
+  + **adios + blob**
+    * Multiple subfiles in BP format will be created.
+    * The number of subfile is determined by command-line option '-g'.
+    * Input file name provided in option '-i' will be used as a base for the
+      names of folders that store the subfile. The folder names will have
+      suffix ".bp.dir" appended. Each subfile name will have ".bp" and a
+      numerical ID appended.
+    * Because all variables are stored in a blob fashion in the files, the
+      subfiles can only be understood by the Scorpio's conversion utility tool,
+      [adios2pio-nm](https://github.com/E3SM-Project/scorpio/tree/master/tools/adios2pio-nm),
+      which can be run off-line to convert the subfiles into a single regular
+      NetCDF file.
+
+### Example files
 * An example batch script file for running a job on Cori @NERSC with 8 KNL
   nodes, 64 MPI processes per node, is provided in `./slurm.knl`.
 * A median-size decomposition file `datasets/f_case_48602x72_512p.nc` contains
@@ -395,9 +465,16 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 * [Travis CI ![Build Status](https://travis-ci.org/Parallel-NetCDF/E3SM-IO.svg?branch=master)](https://travis-ci.org/Parallel-NetCDF/E3SM-IO)
 
 ### Developers
-* Wei-keng Liao <wkliao@northwestern.edu>
-* Kai-yuan Hou <kai-yuanhou2020@u.northwestern.edu>
+* Wei-keng Liao <<wkliao@northwestern.edu>>
+* Kai-yuan Hou <<kai-yuanhou2020@u.northwestern.edu>>
 
 Copyright (C) 2021, Northwestern University.
-
 See [COPYRIGHT](COPYRIGHT) notice in top-level directory.
+
+### Project funding supports:
+This research was supported by the Exascale Computing Project (17-SC-20-SC), a
+joint project of the U.S. Department of Energy's Office of Science and National
+Nuclear Security Administration, responsible for delivering a capable exascale
+ecosystem, including software, applications, and hardware technology, to
+support the nation's exascale computing imperative.
+
