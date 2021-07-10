@@ -36,6 +36,17 @@
     }                                                                        \
 }
 
+#define CHECK_PTR(A)                                                              \
+    {                                                                             \
+        if (A == NULL) {                                                          \
+            printf ("Error in %s line %d function %s\n", __FILE__, __LINE__,  \
+                __func__);                                                \
+            err = -1;                                                             \
+            DEBUG_ABORT                                                           \
+            goto err_out;                                                         \
+        }                                                                         \
+    }
+
 #define ERR_OUT(msg) {                                                  \
     printf("Error in %s line %d function %s: %s\n", __FILE__, __LINE__, \
            __func__, msg);                                              \
