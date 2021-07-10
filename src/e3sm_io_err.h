@@ -16,7 +16,7 @@
 
 #define CHECK_ERR {                                                      \
     if (err < 0) {                                                       \
-        printf ("Error in %s line %d function %s\n", __LINE__, __FILE__, \
+        printf ("Error in %s line %d function %s\n", __FILE__, __LINE__, \
                 __func__);                                               \
         DEBUG_ABORT                                                      \
         goto err_out;                                                    \
@@ -28,7 +28,7 @@
         int el = 256;                                                        \
         char errstr[256];                                                    \
         MPI_Error_string (err, errstr, &el);                                 \
-        printf ("Error in %s line %d function %s: %s\n", __LINE__, __FILE__, \
+        printf ("Error in %s line %d function %s: %s\n", __FILE__, __LINE__, \
                 __func__, errstr);                                           \
         err = -1;                                                            \
         DEBUG_ABORT                                                          \
@@ -37,7 +37,7 @@
 }
 
 #define ERR_OUT(msg) {                                                  \
-    printf("Error in %s line %d function %s: %s\n", __LINE__, __FILE__, \
+    printf("Error in %s line %d function %s: %s\n", __FILE__, __LINE__, \
            __func__, msg);                                              \
     err = -1;                                                           \
     DEBUG_ABORT                                                         \
