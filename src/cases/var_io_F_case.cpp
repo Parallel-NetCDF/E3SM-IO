@@ -12,6 +12,7 @@
 //
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <string>
 //
 #include <unistd.h> /* unlink() */
@@ -440,7 +441,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
                      e3sm_io_decom &decom,
                      e3sm_io_driver &driver)
 {
-    char txt_buf[16], *txt_buf_ptr;
+    char txt_buf[16], *txt_buf_ptr, outfile[1040], *ext;
     int i, j, k, err, rank, ncid, *varids;
     int *var_blocklens, *buf_blocklens, my_nreqs, rec_no, gap = 0;
     int int_buf[10], *int_buf_ptr, xnreqs[3];
@@ -518,8 +519,19 @@ int run_vard_F_case (e3sm_io_config &cfg,
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     open_timing = MPI_Wtime ();
 
+    /* construct h0/h1 file name */
+    const char *hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
+    ext = strrchr(cfg.out_path, '.');
+    if (ext == NULL || strcmp(ext, ".nc"))
+        sprintf(outfile, "%s%s", cfg.out_path, hist);
+    else {
+        sprintf(outfile, "%s", cfg.out_path);
+        sprintf(outfile + (ext - cfg.out_path), hist);
+        strcat(outfile, ext);
+    }
+
     /* create a new CDF-5 file for writing */
-    err = driver.create (cfg.out_path, cfg.io_comm, cfg.info, &ncid);
+    err = driver.create (outfile, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
@@ -795,7 +807,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     MPI_Reduce (&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, cfg.io_comm);
 
     if (rank == 0) {
-        printf ("History output file                = %s\n", cfg.out_path);
+        printf ("History output file                = %s\n", outfile);
         printf ("Output file size                   = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
@@ -823,7 +835,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (cfg.out_path);
+    if (!cfg.keep_outfile) unlink (outfile);
     return err;
 }
 
@@ -980,7 +992,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
                      char *txt_buf,       /* buffer for char var */
                      int *int_buf)        /* buffer for int var */
 {
-    char *txt_buf_ptr;
+    char *txt_buf_ptr, outfile[1040], *ext;
     int i, j, k, err, rank, ncid, *varids, nvars_D[3];
     int rec_no, gap = 0, my_nreqs, *int_buf_ptr, xnreqs[3];
     size_t ii, dbl_buflen, rec_buflen, nelems[3];
@@ -1055,8 +1067,19 @@ int run_varn_F_case (e3sm_io_config &cfg,
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
+    /* construct h0/h1 file name */
+    const char *hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
+    ext = strrchr(cfg.out_path, '.');
+    if (ext == NULL || strcmp(ext, ".nc"))
+        sprintf(outfile, "%s%s", cfg.out_path, hist);
+    else {
+        sprintf(outfile, "%s", cfg.out_path);
+        sprintf(outfile + (ext - cfg.out_path), hist);
+        strcat(outfile, ext);
+    }
+
     /* create a new CDF-5 file for writing */
-    err = driver.create (cfg.out_path, cfg.io_comm, cfg.info, &ncid);
+    err = driver.create (outfile, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
@@ -1380,7 +1403,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
     if (rank == 0) {
         int nvars_noD = cfg.nvars;
         for (i = 0; i < 3; i++) nvars_noD -= nvars_D[i];
-        printf ("History output file                = %s\n", cfg.out_path);
+        printf ("History output file                = %s\n", outfile);
         printf ("Output file size                   = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("No. variables use no decomposition = %3d\n", nvars_noD);
@@ -1410,12 +1433,11 @@ int run_varn_F_case (e3sm_io_config &cfg,
         if (cfg.verbose) print_info (&info_used);
         printf ("-----------------------------------------------------------\n");
     }
+    fflush (stdout);
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (cfg.out_path);
-    fflush (stdout);
-    MPI_Barrier (cfg.io_comm);
+    if (!cfg.keep_outfile) unlink (outfile);
     return err;
 }
 

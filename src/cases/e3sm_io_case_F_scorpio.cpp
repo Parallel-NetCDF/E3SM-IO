@@ -67,7 +67,7 @@ int e3sm_io_case_F_scorpio::wr_test (e3sm_io_config &cfg,
         if (cfg.hx == 0 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 414;
-            err = run_varn_F_case_scorpio (cfg, decom, driver, "f_case_h0_varn.nc", this->dbl_buf_h0,
+            err = run_varn_F_case_scorpio (cfg, decom, driver, this->dbl_buf_h0,
                                           this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
             CHECK_ERR
         }
@@ -75,7 +75,7 @@ int e3sm_io_case_F_scorpio::wr_test (e3sm_io_config &cfg,
         if (cfg.hx == 1 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 51;
-            err = run_varn_F_case_scorpio (cfg, decom, driver, "f_case_h1_varn.nc", this->dbl_buf_h0,
+            err = run_varn_F_case_scorpio (cfg, decom, driver, this->dbl_buf_h0,
                                           this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
             CHECK_ERR
         }

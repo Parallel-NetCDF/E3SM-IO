@@ -369,14 +369,12 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
 int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                          e3sm_io_decom &decom,
                          e3sm_io_driver &driver,
-                         std::string outfile, /* output file name */
                          double *dbl_bufp,    /* buffer for fixed size double var */
                          itype *rec_bufp,     /* buffer for rec floating point var */
                          char *txt_buf,       /* buffer for char var */
                          int *int_buf)        /* buffer for int var */
 {
-    std::string targetfname;
-    char *txt_buf_ptr;
+    char *txt_buf_ptr, outfile[1040], *ext;
     int i, j, k, err=0, rank, ncid, nvars_D[3];
     e3sm_io_scorpio_var *varids;
     int scorpiovars[6];
@@ -529,11 +527,19 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    /* set output file name */
-    targetfname = std::string (cfg.out_path) + '/' + outfile;
+    /* construct h0/h1 file name */
+    const char *hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
+    ext = strrchr(cfg.out_path, '.');
+    if (ext == NULL || strcmp(ext, ".nc"))
+        sprintf(outfile, "%s%s", cfg.out_path, hist);
+    else {
+        sprintf(outfile, "%s", cfg.out_path);
+        sprintf(outfile + (ext - cfg.out_path), hist);
+        strcat(outfile, ext);
+    }
 
-    /* create a new CDF-5 file for writing */
-    err = driver.create (targetfname, cfg.io_comm, cfg.info, &ncid);
+    /* create a new file for writing */
+    err = driver.create (outfile, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
@@ -824,7 +830,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     close_timing += MPI_Wtime () - timing;
 
     if (cfg.rank == 0){
-        err = driver.inq_file_size(targetfname, &fsize);
+        err = driver.inq_file_size(outfile, &fsize);
         CHECK_ERR
     }
 
@@ -880,7 +886,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (rank == 0) {
         int nvars_noD = cfg.nvars;
         for (i = 0; i < 3; i++) nvars_noD -= nvars_D[i];
-        printf ("History output file                = %s\n", outfile.c_str ());
+        printf ("History output file                = %s\n", outfile);
         printf ("Output file size                   = %.2f MiB = %.2f GiB\n",
                 (double)fsize / 1048576, (double)fsize / 1073741824);
         printf ("No. variables use no decomposition = %3d\n", nvars_noD);
@@ -916,7 +922,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (targetfname.c_str ());
+    if (!cfg.keep_outfile) unlink (outfile);
 
     return err;
 }

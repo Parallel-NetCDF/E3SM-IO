@@ -349,7 +349,7 @@ int pnetcdf_blob_F_case(e3sm_io_config &cfg,
                         e3sm_io_decom  &decom,
                         e3sm_io_driver &driver)
 {
-    char outfile[1040];
+    char outfile[1040], *ext;;
     int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, *varids;
     int rec_no, gap = 0, my_nreqs, num_decomp_vars;
     int contig_nreqs[MAX_NUM_DECOMP], nvars_D[MAX_NUM_DECOMP];
@@ -435,7 +435,15 @@ int pnetcdf_blob_F_case(e3sm_io_config &cfg,
     MPI_Barrier(cfg.sub_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
 
-    sprintf(outfile, "%s.%04d", cfg.out_path, cfg.subfile_ID);
+    /* construct h0/h1 file name */
+    const char *hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
+    ext = strrchr(cfg.out_path, '.');
+    if (ext == NULL || strcmp(ext, ".nc"))
+        sprintf(outfile, "%s%s.%04d", cfg.out_path, hist, cfg.subfile_ID);
+    else {
+        sprintf(outfile, "%s", cfg.out_path);
+        sprintf(outfile + (ext - cfg.out_path), "%s%s.%04d", hist, ext, cfg.subfile_ID);
+    }
 
     /* set output subfile name */
     if (cfg.verbose && sub_rank == 0)
