@@ -754,7 +754,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     close_timing = MPI_Wtime () - close_timing;
 
     if (cfg.rank == 0){
-        err = driver.inq_file_size(cfg.out_path, &fsize);
+        err = driver.inq_file_size(outfile, &fsize);
         CHECK_ERR
     }
     
@@ -1349,7 +1349,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
     close_timing += MPI_Wtime () - timing;
 
     if (cfg.rank == 0){
-        err = driver.inq_file_size(cfg.out_path, &fsize);
+        err = driver.inq_file_size(outfile, &fsize);
         CHECK_ERR
     }
 
