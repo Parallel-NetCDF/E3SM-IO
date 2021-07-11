@@ -503,7 +503,7 @@ err_out:;
 }
 
 int e3sm_io_driver_hdf5::put_att (
-    int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) {
+    int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, const void *buf) {
     int err = 0;
     herr_t herr;
     int esize;

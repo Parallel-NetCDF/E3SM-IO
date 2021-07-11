@@ -506,7 +506,7 @@ err_out:
 }
 
 int e3sm_io_driver_adios2::put_att (
-    int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf) {
+    int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, const void *buf) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];

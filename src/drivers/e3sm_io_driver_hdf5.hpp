@@ -106,7 +106,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     int enddef (int fid);
     int redef (int fid);
     int wait (int fid);
-    int put_att (int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, void *buf);
+    int put_att (int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, const void *buf);
     int get_att (int fid, int vid, std::string name, void *buf);
     int put_varl (int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode);
     int put_vara (int fid,
