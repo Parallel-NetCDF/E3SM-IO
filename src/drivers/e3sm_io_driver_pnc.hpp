@@ -20,14 +20,14 @@
 
 inline nc_type mpitype2nctype (MPI_Datatype type) {
     switch (type) {
+        case MPI_DOUBLE:
+            return NC_DOUBLE;
+        case MPI_FLOAT:
+            return NC_FLOAT;
         case MPI_INT:
             return NC_INT;
         case MPI_LONG_LONG:
             return NC_INT64;
-        case MPI_FLOAT:
-            return NC_FLOAT;
-        case MPI_DOUBLE:
-            return NC_DOUBLE;
         case MPI_CHAR:
             return NC_CHAR;
         case MPI_BYTE:
