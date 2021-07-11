@@ -77,6 +77,16 @@ typedef struct {
     } \
 }
 
+#define CHECK_VAR_ERR(ncid, varid) {                               \
+    if (err != NC_NOERR) {                                         \
+        char var_name[64];                                         \
+        ncmpi_inq_varname(ncid, varid, var_name);                  \
+        printf("Error in %s:%d: %s() var %s (%s)\n", __FILE__,     \
+               __LINE__, __func__, var_name, ncmpi_strerrno(err)); \
+        goto err_out;                                              \
+    }                                                              \
+}
+
 static int
 xlen_nc_type(nc_type xtype)
 {
@@ -188,11 +198,11 @@ int set_decomp(int        ncid,
 
         /* number of dimensions, dimension IDs, and dimension sizes */
         err = ncmpi_inq_attlen(ncid, varid, "global_dimids", &tmp);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(ncid, varid)
         dp->ndims = tmp;
         int dimids[2];
         err = ncmpi_get_att(ncid, varid, "global_dimids", dimids);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(ncid, varid)
         for (j=0; j<dp->ndims; j++) {
             err = ncmpi_inq_dimlen(ncid, dimids[j], &dp->dims[j]);
             CHECK_NC_ERR
@@ -201,7 +211,7 @@ int set_decomp(int        ncid,
         /* number of offset-length pairs assigned to this process */
         start[0] = sub_rank;
         err = ncmpi_get_var1_int_all(ncid, varid, start, &nreqs);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(ncid, varid)
         dp->nreqs = nreqs;
 
         /* read variable D*.blob_start */
@@ -209,14 +219,14 @@ int set_decomp(int        ncid,
         err = ncmpi_inq_varid(ncid, name, &varid);
         CHECK_NC_ERR
         err = ncmpi_get_var1_longlong_all(ncid, varid, start, &dp->r_start);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(ncid, varid)
 
         /* read variable D*.blob_count */
         sprintf(name, "D%d.blob_count",i+1);
         err = ncmpi_inq_varid(ncid, name, &varid);
         CHECK_NC_ERR
         err = ncmpi_get_var1_longlong_all(ncid, varid, start, &dp->r_count);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(ncid, varid)
 
         /* allocate buffers */
         dp->offsets = (int*) malloc(nreqs * 2 * sizeof(int));
@@ -232,14 +242,14 @@ int set_decomp(int        ncid,
         err = ncmpi_inq_varid(ncid, name, &varid);
         CHECK_NC_ERR
         err = ncmpi_get_vara_int_all(ncid, varid, start, count, dp->offsets);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(ncid, varid)
 
         /* read variable D*.lengths */
         sprintf(name, "D%d.lengths",i+1);
         err = ncmpi_inq_varid(ncid, name, &varid);
         CHECK_NC_ERR
         err = ncmpi_get_vara_int_all(ncid, varid, start, count, dp->lengths);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(ncid, varid)
 
         /* construct starts[] and counts[] for iput_varn */
         dp->w_starts = (MPI_Offset**) malloc(nreqs * 4 * sizeof(MPI_Offset*));
@@ -397,7 +407,7 @@ int set_vars(int        in_ncid,
         /* inquire metadata of variable i */
         err = ncmpi_inq_var(in_ncid, i, name, &xtype, &var[i].ndims, dimids,
                             &nattrs);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(in_ncid, i)
 
         var[i].varid  = -1;
         var[i].is_rec = 0;
@@ -420,7 +430,11 @@ int set_vars(int        in_ncid,
         if (err == NC_ENOTATT) { /* this variable is not partitioned */
             err = ncmpi_def_var(out_ncid, name, xtype, var[i].ndims, dimids,
                                 &var[i].varid);
-            CHECK_NC_ERR
+            if (err != NC_NOERR) {
+                printf("Error in %s:%d: %s() var %s (%s)\n", __FILE__,
+                       __LINE__, __func__, name, ncmpi_strerrno(err));
+                goto err_out;
+            }
             if (var[i].ndims > 0 && dimids[0] == rec_dim) var[i].is_rec = 1;
 
             /* count size of this variable, one record only */
@@ -440,13 +454,17 @@ int set_vars(int        in_ncid,
             /* define variable using the global dimensions */
             var[i].ndims = tmp;
             err = ncmpi_get_att_int(in_ncid, i, "global_dimids", dimids);
-            CHECK_NC_ERR
+            CHECK_VAR_ERR(in_ncid, i)
             err = ncmpi_def_var(out_ncid, name, xtype, var[i].ndims, dimids,
                                 &var[i].varid);
-            CHECK_NC_ERR
+            if (err != NC_NOERR) {
+                printf("Error in %s:%d: %s() var %s (%s)\n", __FILE__,
+                       __LINE__, __func__, name, ncmpi_strerrno(err));
+                goto err_out;
+            }
             err = ncmpi_get_att_int(in_ncid, i, "decomposition_ID",
                                     &var[i].dec_id);
-            CHECK_NC_ERR
+            CHECK_VAR_ERR(in_ncid, i)
             var[i].dec_id--; /* change to 0-based */
             if (var[i].ndims > 0 && dimids[0] == rec_dim) var[i].is_rec = 1;
 
@@ -465,12 +483,12 @@ int set_vars(int        in_ncid,
             nvars_partitioned++;
         }
         else
-            CHECK_NC_ERR
+            CHECK_VAR_ERR(in_ncid, i)
 
         /* copy over all attributes */
         for (j=0; j<nattrs; j++) {
             err = ncmpi_inq_attname(in_ncid, i, j, name);
-            CHECK_NC_ERR
+            CHECK_VAR_ERR(in_ncid, i)
 
             /* skip copying decomposition attributes */
             if (strcmp(name, "decomposition_ID") == 0 ||
@@ -478,7 +496,7 @@ int set_vars(int        in_ncid,
                 continue;
 
             err = ncmpi_copy_att(in_ncid, i, name, out_ncid, var[i].varid);
-            CHECK_NC_ERR
+            CHECK_VAR_ERR(in_ncid, i)
         }
     }
     if (verbose && world_rank == 0)
@@ -705,7 +723,7 @@ int main (int argc, char **argv)
             if (world_rank == 0) {
                 err = ncmpi_iget_var(in_ncid, i, buf_ptr, 0,
                                      MPI_DATATYPE_NULL, NULL);
-                CHECK_NC_ERR
+                CHECK_VAR_ERR(in_ncid, i)
                 buf_ptr += var[i].vlen;
                 num_igets++;
             }
@@ -716,7 +734,7 @@ int main (int argc, char **argv)
         count[0] = decomp[var[i].dec_id].r_count;
         err = ncmpi_iget_vara(in_ncid, i, start, count, buf_ptr, 0,
                               MPI_DATATYPE_NULL, NULL);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(in_ncid, i)
         buf_ptr += var[i].vlen;
         num_igets++;
     }
@@ -736,7 +754,7 @@ int main (int argc, char **argv)
             if (world_rank == 0) {
                 err = ncmpi_iput_var(out_ncid, var[i].varid, buf_ptr, 0,
                                      MPI_DATATYPE_NULL, NULL);
-                CHECK_NC_ERR
+                CHECK_VAR_ERR(out_ncid, var[i].varid)
                 buf_ptr += var[i].vlen;
                 num_iputs++;
             }
@@ -747,7 +765,7 @@ int main (int argc, char **argv)
         err = ncmpi_iput_varn(out_ncid, var[i].varid, dp->nreqs,
                               dp->w_startx, dp->w_countx,
                               buf_ptr, 0, MPI_DATATYPE_NULL, NULL);
-        CHECK_NC_ERR
+        CHECK_VAR_ERR(out_ncid, var[i].varid)
         buf_ptr += var[i].vlen;
         num_iputs++;
     }
@@ -775,7 +793,7 @@ int main (int argc, char **argv)
                     start[1] = 0;
                     err = ncmpi_iget_vara(in_ncid, i, start, var[i].dims,
                                           buf_ptr, 0, MPI_DATATYPE_NULL, NULL);
-                    CHECK_NC_ERR
+                    CHECK_VAR_ERR(in_ncid, i)
                     buf_ptr += var[i].vlen;
                     num_igets++;
                 }
@@ -786,7 +804,7 @@ int main (int argc, char **argv)
             count[1] = decomp[var[i].dec_id].r_count;
             err = ncmpi_iget_vara(in_ncid, i, start, count, buf_ptr, 0,
                                   MPI_DATATYPE_NULL, NULL);
-            CHECK_NC_ERR
+            CHECK_VAR_ERR(in_ncid, i)
             buf_ptr += var[i].vlen;
             num_igets++;
         }
@@ -812,7 +830,7 @@ int main (int argc, char **argv)
                     err = ncmpi_iput_vara(out_ncid, var[i].varid, start,
                                           var[i].dims, buf_ptr, 0,
                                           MPI_DATATYPE_NULL, NULL);
-                    CHECK_NC_ERR
+                    CHECK_VAR_ERR(out_ncid, var[i].varid)
                     buf_ptr += var[i].vlen;
                     num_iputs++;
                 }
@@ -823,7 +841,7 @@ int main (int argc, char **argv)
             err = ncmpi_iput_varn(out_ncid, var[i].varid, dp->nreqs,
                                   dp->w_starts, dp->w_counts,
                                   buf_ptr, 0, MPI_DATATYPE_NULL, NULL);
-            CHECK_NC_ERR
+            CHECK_VAR_ERR(out_ncid, var[i].varid)
             buf_ptr += var[i].vlen;
             num_iputs++;
         }
