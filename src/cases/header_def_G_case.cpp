@@ -22,7 +22,7 @@
     if (err != 0) {                                                          \
         char var_name[64];                                                   \
         driver.inq_var_name(ncid, varid, var_name);                          \
-        printf("Error in %s:%d: %s() var %s\n"     ,                         \
+        printf("Error in %s:%d: %s() var %s\n",                              \
                __FILE__, __LINE__, __func__, var_name);                      \
         goto err_out;                                                        \
     }                                                                        \
@@ -72,13 +72,13 @@
     err = driver.put_att(ncid, *varid, name, MPI_LONG_LONG, num, buf);       \
     CHECK_VAR_ERR(*varid)                                                    \
 }
-#define PUT_ATTR_DECOMP(D, ndims, dimids) {                                  \
-    if (cfg.strategy == blob) {                                              \
-        err = driver.put_att(ncid,*varid,"decomposition_ID",MPI_INT,1,&D);   \
-        CHECK_VAR_ERR(*varid)                                                \
+#define PUT_ATTR_DECOMP(D, ndims, dimids) {                                    \
+    if (cfg.strategy == blob) {                                                \
+        err = driver.put_att(ncid,*varid,"decomposition_ID",MPI_INT,1,&D);     \
+        CHECK_VAR_ERR(*varid)                                                  \
         err = driver.put_att(ncid,*varid,"global_dimids",MPI_INT,ndims,dimids);\
-        CHECK_VAR_ERR(*varid)                                                \
-    }                                                                        \
+        CHECK_VAR_ERR(*varid)                                                  \
+    }                                                                          \
 }
 
 /*----< add_gattrs() >-------------------------------------------------------*/
