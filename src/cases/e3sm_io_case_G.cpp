@@ -102,11 +102,11 @@ int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
         printf ("Input decomposition file           = %s\n", cfg.cfg_path);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file/directory              = %s\n", cfg.out_path);
+        printf ("Input file/directory               = %s\n", cfg.in_path);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
-        printf ("Write number of records (time dim) = %d\n", cfg.nrec);
-        printf ("Using noncontiguous write buffer   = %s\n", cfg.non_contig_buf ? "yes" : "no");
+        printf ("Read number of records (time dim)  = %d\n", cfg.nrec);
+        printf ("Using noncontiguous read buffer    = %s\n", cfg.non_contig_buf ? "yes" : "no");
     }
 
     /* vard APIs require internal data type matches external one */
@@ -117,7 +117,7 @@ int e3sm_io_case_G::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         ERR_OUT ("Low level API not supported in g case\n");
     } else {
         PRINT_MSG (0,
-                   "\n==== benchmarking G case reading using varn API ========================\n");
+                   "\n==== benchmarking G case read using varn API ========================\n");
 
         if (cfg.two_buf) {
             PRINT_MSG (0, "Variable read order: 2D variables then 3D variables\n\n");

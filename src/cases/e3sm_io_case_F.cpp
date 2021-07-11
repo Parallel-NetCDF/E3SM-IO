@@ -127,11 +127,11 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
         printf ("Input decomposition file           = %s\n", cfg.cfg_path);
         printf ("Number of decompositions           = %d\n", decom.num_decomp);
-        printf ("Output file/directory              = %s\n", cfg.out_path);
+        printf ("Input file/directory               = %s\n", cfg.in_path);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
-        printf ("Write number of records (time dim) = %d\n", cfg.nrec);
-        printf ("Using noncontiguous write buffer   = %s\n", cfg.non_contig_buf ? "yes" : "no");
+        printf ("Read number of records (time dim)  = %d\n", cfg.nrec);
+        printf ("Using noncontiguous read buffer    = %s\n", cfg.non_contig_buf ? "yes" : "no");
     }
 
     nvar = cfg.nvars;
@@ -144,12 +144,12 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         ERR_OUT ("Reading not supported for low-level API\n");
     } else {
         PRINT_MSG (
-            0, "\n==== benchmarking F case writing using low level API ========================\n");
+            0, "\n==== benchmarking F case read using low level API ========================\n");
 
         if (cfg.two_buf) {
-            PRINT_MSG (0, "Variable written order: 2D variables then 3D variables\n\n");
+            PRINT_MSG (0, "Variable read order: 2D variables then 3D variables\n\n");
         } else {
-            PRINT_MSG (0, "Variable written order: same as variables are defined\n\n");
+            PRINT_MSG (0, "Variable read order: same as variables are defined\n\n");
         }
 
         fflush (stdout);
