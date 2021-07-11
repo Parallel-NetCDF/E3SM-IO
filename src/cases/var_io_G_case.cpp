@@ -41,8 +41,8 @@
 #define IPUT_VARA_INT(F, D, S, C, B, R)        driver.put_vara (F, D, MPI_INT, S, C, B, nb);
 #define IPUT_VARA_CHAR(F, D, S, C, B, R)       driver.put_vara (F, D, MPI_CHAR, S, C, B, nb);
 #define IPUT_VARN(F, D, N, S, C, B, BC, BT, R) driver.put_varn (F, D, BT, N, S, C, B, nb);
-#define BPUT_VARS_DOUBLE(F, D, S, C, ST, B, R) driver.put_vars (F, D, MPI_DOUBLE, S, C, ST, B, nbe);
-#define BPUT_VARS_CHAR(F, D, S, C, ST, B, R)   driver.put_vars (F, D, MPI_CHAR, S, C, ST, B, nbe);
+#define BPUT_VARA_DOUBLE(F, D, S, C, B, R) driver.put_vara (F, D, MPI_DOUBLE, S, C, B, nbe);
+#define BPUT_VARA_CHAR(F, D, S, C, B, R)   driver.put_vara (F, D, MPI_CHAR, S, C, B, nbe);
 
 #define PUT_VARD_ALL(F, D, FT, B, N, T) driver.put_vard (F, D, T, N, FT, B, coll);
 #define PUT_VARD(F, D, FT, B, N, T)     driver.put_vard (F, D, T, N, FT, B, indep);
@@ -60,9 +60,6 @@
 #define IGET_VARA_INT(F, D, S, C, B, R)        driver.get_vara (F, D, MPI_INT, S, C, B, nb);
 #define IGET_VARA_CHAR(F, D, S, C, B, R)       driver.get_vara (F, D, MPI_CHAR, S, C, B, nb);
 #define IGET_VARN(F, D, N, S, C, B, BC, BT, R) driver.get_varn (F, D, BT, N, S, C, B, nb);
-
-#define IGET_VARS_DOUBLE(F, D, S, C, ST, B, R) driver.get_vars (F, D, MPI_DOUBLE, S, C, ST, B, nb);
-#define IGET_VARS_CHAR(F, D, S, C, ST, B, R)   driver.get_vars (F, D, MPI_CHAR, S, C, ST, B, nb);
 
 #define GET_VARD_ALL(F, D, FT, B, N, T) driver.get_vard (F, D, T, N, FT, B, coll);
 #define GET_VARD(F, D, FT, B, N, T)     driver.get_vard (F, D, T, N, FT, B, indep);
@@ -235,7 +232,6 @@ int run_varn_G_case (e3sm_io_config &cfg,
     int D5_rec_3d_varids[1]  = {18};
     int nD6_rec_3d_vars      = 4;
     int D6_rec_3d_varids[4]  = {1, 2, 3, 27};
-    MPI_Offset stride[2]     = {1, 1};
     MPI_Offset start[2]      = {0, 0};
     MPI_Offset count[2]      = {1, 1};
     double *dummy_double_buf = NULL;
@@ -548,19 +544,19 @@ int run_varn_G_case (e3sm_io_config &cfg,
         count[0] = decom.dims[2][1]; /* dimension nVertLevels */
 
         /* double vertCoordMovementWeights(nVertLevels) */
-        err = BPUT_VARS_DOUBLE (ncid, 9, start, count, stride, dummy_double_buf, NULL);
+        err = BPUT_VARA_DOUBLE (ncid, 9, start, count, dummy_double_buf, NULL);
         CHECK_ERR
 
         /* double refZMid(nVertLevels) */
-        err = BPUT_VARS_DOUBLE (ncid, 13, start, count, stride, dummy_double_buf, NULL);
+        err = BPUT_VARA_DOUBLE (ncid, 13, start, count, dummy_double_buf, NULL);
         CHECK_ERR
 
         /* double refLayerThickness(nVertLevels) */
-        err = BPUT_VARS_DOUBLE (ncid, 14, start, count, stride, dummy_double_buf, NULL);
+        err = BPUT_VARA_DOUBLE (ncid, 14, start, count, dummy_double_buf, NULL);
         CHECK_ERR
 
         /* double refBottomDepth(nVertLevels) */
-        err = BPUT_VARS_DOUBLE (ncid, 33, start, count, stride, dummy_double_buf, NULL);
+        err = BPUT_VARA_DOUBLE (ncid, 33, start, count, dummy_double_buf, NULL);
         CHECK_ERR
 
         my_nreqs += 4; /* 4 non-record variables */
@@ -577,31 +573,31 @@ int run_varn_G_case (e3sm_io_config &cfg,
             count[1] = 64; /* dimension StrLen */
 
             /* char xtime(Time, StrLen) */
-            err = BPUT_VARS_CHAR (ncid, 15, start, count, stride, dummy_char_buf, NULL);
+            err = BPUT_VARA_CHAR (ncid, 15, start, count, dummy_char_buf, NULL);
             CHECK_ERR
 
             /* double areaCellGlobal(Time) */
-            err = BPUT_VARS_DOUBLE (ncid, 20, start, count, stride, dummy_double_buf, NULL);
+            err = BPUT_VARA_DOUBLE (ncid, 20, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double areaEdgeGlobal(Time) */
-            err = BPUT_VARS_DOUBLE (ncid, 21, start, count, stride, dummy_double_buf, NULL);
+            err = BPUT_VARA_DOUBLE (ncid, 21, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double areaTriangleGlobal(Time) */
-            err = BPUT_VARS_DOUBLE (ncid, 22, start, count, stride, dummy_double_buf, NULL);
+            err = BPUT_VARA_DOUBLE (ncid, 22, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double volumeCellGlobal(Time) */
-            err = BPUT_VARS_DOUBLE (ncid, 23, start, count, stride, dummy_double_buf, NULL);
+            err = BPUT_VARA_DOUBLE (ncid, 23, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double volumeEdgeGlobal(Time) */
-            err = BPUT_VARS_DOUBLE (ncid, 24, start, count, stride, dummy_double_buf, NULL);
+            err = BPUT_VARA_DOUBLE (ncid, 24, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double CFLNumberGlobal(Time) */
-            err = BPUT_VARS_DOUBLE (ncid, 25, start, count, stride, dummy_double_buf, NULL);
+            err = BPUT_VARA_DOUBLE (ncid, 25, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             my_nreqs += 7; /* 7 record variables */
@@ -876,7 +872,6 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     int D5_rec_3d_varids[1]  = {18};
     int nD6_rec_3d_vars      = 4;
     int D6_rec_3d_varids[4]  = {1, 2, 3, 27};
-    MPI_Offset stride[2]     = {1, 1};
     MPI_Offset start[2]      = {0, 0};
     MPI_Offset count[2]      = {1, 1};
     double dummy_double_buf[80];
@@ -1141,19 +1136,19 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
         count[0] = decom.dims[2][1]; /* dimension nVertLevels */
 
         /* double vertCoordMovementWeights(nVertLevels) */
-        err = IGET_VARS_DOUBLE (ncid, 9, start, count, stride, dummy_double_buf, NULL);
+        err = IGET_VARA_DOUBLE (ncid, 9, start, count, dummy_double_buf, NULL);
         CHECK_ERR
 
         /* double refZMid(nVertLevels) */
-        err = IGET_VARS_DOUBLE (ncid, 13, start, count, stride, dummy_double_buf, NULL);
+        err = IGET_VARA_DOUBLE (ncid, 13, start, count, dummy_double_buf, NULL);
         CHECK_ERR
 
         /* double refLayerThickness(nVertLevels) */
-        err = IGET_VARS_DOUBLE (ncid, 14, start, count, stride, dummy_double_buf, NULL);
+        err = IGET_VARA_DOUBLE (ncid, 14, start, count, dummy_double_buf, NULL);
         CHECK_ERR
 
         /* double refBottomDepth(nVertLevels) */
-        err = IGET_VARS_DOUBLE (ncid, 33, start, count, stride, dummy_double_buf, NULL);
+        err = IGET_VARA_DOUBLE (ncid, 33, start, count, dummy_double_buf, NULL);
         CHECK_ERR
 
         my_nreqs += 4; /* 4 non-record variables */
@@ -1169,31 +1164,31 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
             count[1] = 64; /* dimension StrLen */
 
             /* char xtime(Time, StrLen) */
-            err = IGET_VARS_CHAR (ncid, 15, start, count, stride, dummy_char_buf, NULL);
+            err = IGET_VARA_CHAR (ncid, 15, start, count, dummy_char_buf, NULL);
             CHECK_ERR
 
             /* double areaCellGlobal(Time) */
-            err = IGET_VARS_DOUBLE (ncid, 20, start, count, stride, dummy_double_buf, NULL);
+            err = IGET_VARA_DOUBLE (ncid, 20, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double areaEdgeGlobal(Time) */
-            err = IGET_VARS_DOUBLE (ncid, 21, start, count, stride, dummy_double_buf, NULL);
+            err = IGET_VARA_DOUBLE (ncid, 21, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double areaTriangleGlobal(Time) */
-            err = IGET_VARS_DOUBLE (ncid, 22, start, count, stride, dummy_double_buf, NULL);
+            err = IGET_VARA_DOUBLE (ncid, 22, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double volumeCellGlobal(Time) */
-            err = IGET_VARS_DOUBLE (ncid, 23, start, count, stride, dummy_double_buf, NULL);
+            err = IGET_VARA_DOUBLE (ncid, 23, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double volumeEdgeGlobal(Time) */
-            err = IGET_VARS_DOUBLE (ncid, 24, start, count, stride, dummy_double_buf, NULL);
+            err = IGET_VARA_DOUBLE (ncid, 24, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             /* double CFLNumberGlobal(Time) */
-            err = IGET_VARS_DOUBLE (ncid, 25, start, count, stride, dummy_double_buf, NULL);
+            err = IGET_VARA_DOUBLE (ncid, 25, start, count, dummy_double_buf, NULL);
             CHECK_ERR
 
             my_nreqs += 7; /* 7 record variables */
