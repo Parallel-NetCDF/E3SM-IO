@@ -158,16 +158,15 @@
     nflushes++;                                            \
 }
 #else
-#ifdef CHECK_ERR
-#undef CHECK_ERR
-#define CHECK_ERR {                                           \
-       if (err != NC_NOERR) {                                 \
-           printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
-                  ncmpi_strerror(err));                       \
-           goto err_out;                                      \
-       }                                                      \
-   }
-#endif
+#define CHECK_VAR_ERR(varid) {                                \
+    if (err != 0) {                                           \
+        char var_name[64];                                    \
+        driver.inq_var_name(ncid, varid, var_name);           \
+        printf("Error in %s:%d: %s() var %s\n"     ,          \
+               __FILE__, __LINE__, __func__, var_name);       \
+        goto err_out;                                         \
+    }                                                         \
+}
 #define FILE_CREATE(filename) { \
     err = driver.create(filename, cfg.sub_comm, cfg.info, &ncid); \
     CHECK_ERR \
@@ -189,59 +188,67 @@
     CHECK_ERR                                \
 }
 #define IPUT_VAR_DBL(buf, adv) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_DOUBLE, NULL, NULL, buf, nb); \
-    CHECK_ERR \
+    err = driver.put_vara(ncid, varids[i], MPI_DOUBLE, NULL, NULL, buf, nb); \
+    CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
+    i++; \
 }
 #define IPUT_VAR_INT(buf, adv) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_INT, NULL, NULL, buf, nb); \
-    CHECK_ERR \
+    err = driver.put_vara(ncid, varids[i], MPI_INT, NULL, NULL, buf, nb); \
+    CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
     my_nreqs++; \
 }
 #define IPUT_VAR1_DBL(buf, adv) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_DOUBLE, start, NULL, buf, nb); \
-    CHECK_ERR \
+    err = driver.put_vara(ncid, varids[i], MPI_DOUBLE, start, NULL, buf, nb); \
+    CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
     my_nreqs++; \
+    i++; \
 }
 #define IPUT_VAR1_INT(buf, adv) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_INT, start, NULL, buf, nb); \
-    CHECK_ERR \
+    err = driver.put_vara(ncid, varids[i], MPI_INT, start, NULL, buf, nb); \
+    CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
     my_nreqs++; \
+    i++; \
 }
 #define IPUT_VARA_INT(buf, adv) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_INT, start, count, buf, nb); \
-    CHECK_ERR \
+    err = driver.put_vara(ncid, varids[i], MPI_INT, start, count, buf, nb); \
+    CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
     my_nreqs++; \
+    i++; \
 }
 #define IPUT_VARA_INT_NOADV(buf) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_INT, start, count, buf, nb); \
-    CHECK_ERR \
+    err = driver.put_vara(ncid, varids[i], MPI_INT, start, count, buf, nb); \
+    CHECK_VAR_ERR(varids[i]) \
     my_nreqs++; \
+    i++; \
 }
 #define IPUT_VARA_INT64_NOADV(buf) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_LONG_LONG, start, count, buf, nb); \
-    CHECK_ERR \
+    err = driver.put_vara(ncid, varids[i], MPI_LONG_LONG, start, count, buf, nb); \
+    CHECK_VAR_ERR(varids[i]) \
     my_nreqs++; \
+    i++; \
 }
 #define IPUT_VARA_DBL(buf, adv) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_DOUBLE, start, count, buf, nb); \
-    CHECK_ERR \
+    err = driver.put_vara(ncid, varids[i], MPI_DOUBLE, start, count, buf, nb); \
+    CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
     my_nreqs++; \
+    i++; \
 }
 #define IPUT_VARA_TXT(buf, adv) { \
-    err = driver.put_vara(ncid, varids[i++], MPI_CHAR, start, count, buf, nb); \
-    CHECK_ERR \
+    err = driver.put_vara(ncid, varids[i], MPI_CHAR, start, count, buf, nb); \
+    CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
     my_nreqs++; \
+    i++; \
 }
 #define IPUT_VARA(varid, start, count, buf) { \
     err = driver.put_vara(ncid, varid, REC_ITYPE, start, count, buf, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(varid) \
     my_nreqs++; \
 }
 #define WAIT_ALL_REQS { \

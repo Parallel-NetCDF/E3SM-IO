@@ -167,16 +167,15 @@
     nflushes++;                                            \
 }
 #else
-#ifdef CHECK_ERR
-#undef CHECK_ERR
-#define CHECK_ERR {                                           \
-       if (err != NC_NOERR) {                                 \
-           printf("Error in %s:%d: %s\n", __FILE__, __LINE__, \
-                  ncmpi_strerror(err));                       \
-           goto err_out;                                      \
-       }                                                      \
-   }
-#endif
+#define CHECK_VAR_ERR(varid) {                                \
+    if (err != 0) {                                           \
+        char var_name[64];                                    \
+        driver.inq_var_name(ncid, varid, var_name);           \
+        printf("Error in %s:%d: %s() var %s\n"     ,          \
+               __FILE__, __LINE__, __func__, var_name);       \
+        goto err_out;                                         \
+    }                                                         \
+}
 #define FILE_CREATE(filename) { \
     err = driver.create(filename, cfg.sub_comm, cfg.info, &ncid); \
     CHECK_ERR \
@@ -199,74 +198,74 @@
 }
 #define IPUT_VAR_DBL(adv) { \
     err = driver.put_vara(ncid, *varid, MPI_DOUBLE, NULL, NULL, dbl_buf_ptr, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(*varid) \
     dbl_buf_ptr += (adv); \
     varid++; \
 }
 #define IPUT_VAR_INT(adv) { \
     err = driver.put_vara(ncid, *varid, MPI_INT, NULL, NULL, int_buf_ptr, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(*varid) \
     int_buf_ptr += (adv); \
     my_nreqs++; \
     varid++; \
 }
 #define IPUT_VAR1_DBL(adv) { \
     err = driver.put_vara(ncid, *varid, MPI_DOUBLE, start, NULL, dbl_buf_ptr, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(*varid) \
     dbl_buf_ptr += (adv); \
     my_nreqs++; \
     varid++; \
 }
 #define IPUT_VAR1_INT(adv) { \
     err = driver.put_vara(ncid, *varid, MPI_INT, start, NULL, int_buf_ptr, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(*varid) \
     int_buf_ptr += (adv); \
     my_nreqs++; \
     varid++; \
 }
 #define IPUT_VARA_INT(adv) { \
     err = driver.put_vara(ncid, *varid, MPI_INT, start, count, int_buf_ptr, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(*varid) \
     int_buf_ptr += (adv); \
     my_nreqs++; \
     varid++; \
 }
 #define IPUT_VARA_INT_NOADV(buf) { \
     err = driver.put_vara(ncid, *varid, MPI_INT, start, count, buf, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(*varid) \
     my_nreqs++; \
     varid++; \
 }
 #define IPUT_VARA_INT64_NOADV(buf) { \
     err = driver.put_vara(ncid, *varid, MPI_LONG_LONG, start, count, buf, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(*varid) \
     my_nreqs++; \
     varid++; \
 }
 #define IPUT_VARA_DBL(adv) { \
     err = driver.put_vara(ncid, *varid, MPI_DOUBLE, start, count, dbl_buf_ptr, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(*varid) \
     dbl_buf_ptr += (adv); \
     my_nreqs++; \
     varid++; \
 }
 #define IPUT_VARA_CHR(adv) { \
     err = driver.put_vara(ncid, *varid, MPI_CHAR, start, count, chr_buf_ptr, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(*varid) \
     chr_buf_ptr += (adv); \
     my_nreqs++; \
     varid++; \
 }
 #define IPUT_VARA(varid, start, count, buf) { \
     err = driver.put_vara(ncid, varid, REC_ITYPE, start, count, buf, nb); \
-    CHECK_ERR \
+    CHECK_VAR_ERR(varid) \
     my_nreqs++; \
     varid++; \
 }
 #define POST_VARA_DBL(decomp) {                                       \
     err = driver.put_vara(ncid, *varid, MPI_DOUBLE, start_D[decomp],  \
                           count_D[decomp], dbl_buf_ptr, nb);          \
-    CHECK_ERR                                                         \
+    CHECK_VAR_ERR(*varid)                                             \
     dbl_buf_ptr += count_D[decomp][1] + gap;                          \
     my_nreqs++;                                                       \
     varid++;                                                          \
