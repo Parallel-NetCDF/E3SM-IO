@@ -78,6 +78,7 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
     int def_local_var (
         int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did);
     int inq_var (int fid, std::string name, int *did);
+    int inq_var_name(int ncid, int varid, char *name);
     int inq_var_off (int fid, int vid, MPI_Offset *off);
     int def_dim (int fid, std::string name, MPI_Offset size, int *dimid);
     int inq_dim (int fid, std::string name, int *dimid);

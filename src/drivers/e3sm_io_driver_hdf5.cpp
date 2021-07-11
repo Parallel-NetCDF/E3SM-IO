@@ -403,6 +403,12 @@ err_out:;
     return err;
 }
 
+int e3sm_io_driver_hdf5::inq_var_name (int fid, int vid, char *name) {
+    name[0] = '\0';
+    printf("inq_var_name is not yet implementaed\n");
+    return 0;
+}
+
 int e3sm_io_driver_hdf5::inq_var_off (int fid, int vid, MPI_Offset *off) {
     throw "Function not supported";
     return 1;

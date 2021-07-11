@@ -228,6 +228,17 @@ err_out:
     return err;
 }
 
+int e3sm_io_driver_pnc::inq_var_name(int   ncid,
+                                     int   varid,
+                                     char *name)
+{
+    int err = ncmpi_inq_varname(ncid, varid, name);
+    CHECK_NCERR
+
+err_out:
+    return err;
+}
+
 int e3sm_io_driver_pnc::inq_var_off (int fid, int vid, MPI_Offset *off) {
     int err;
 
