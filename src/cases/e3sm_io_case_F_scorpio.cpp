@@ -18,14 +18,7 @@
 
 e3sm_io_case_F_scorpio::e3sm_io_case_F_scorpio () {}
 e3sm_io_case_F_scorpio::~e3sm_io_case_F_scorpio () {}
-int e3sm_io_case_F_scorpio::load_data (e3sm_io_config &cfg,
-                                   e3sm_io_decom &decom,
-                                   e3sm_io_driver &driver) {
-    int err=0;
-    ERR_OUT ("PIO case does not support reading")
-err_out:;
-    return err;
-}
+
 int e3sm_io_case_F_scorpio::wr_test (e3sm_io_config &cfg,
                                  e3sm_io_decom &decom,
                                  e3sm_io_driver &driver) {

@@ -173,34 +173,3 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
 err_out:
     return err;
 }
-
-int e3sm_io_case_F::load_data (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
-    int err, verbose, nvar;
-
-    verbose = cfg.verbose;
-    nvar    = cfg.nvars;
-
-    cfg.verbose = -1;  // Disable output
-
-    // Run dummy read test to get data
-    if (cfg.hx == 0 || cfg.hx == -1) {
-        MPI_Barrier (cfg.io_comm);
-        cfg.nvars = 414;
-        err = run_varn_F_case_rd (cfg, decom, driver, &(this->dbl_buf_h0),
-                                     &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
-        CHECK_ERR
-    }
-    if (cfg.hx == 0 || cfg.hx == -1) {
-        MPI_Barrier (cfg.io_comm);
-        cfg.nvars = 51;
-        err += run_varn_F_case_rd (cfg, decom, driver, &(this->dbl_buf_h0),
-                                     &(this->rec_buf_h0), this->txt_buf[0], this->int_buf[0]);
-        CHECK_ERR
-    }
-
-    cfg.nvars   = nvar;
-    cfg.verbose = verbose;
-
-err_out:
-    return err;
-}
