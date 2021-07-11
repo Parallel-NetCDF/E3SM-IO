@@ -74,9 +74,9 @@ pnetcdf_blob_G_case(e3sm_io_config &cfg,
                     e3sm_io_driver &driver);
 
 extern int
-blob_def_G_case(e3sm_io_config &cfg,
-                e3sm_io_decom  &decom,
-                e3sm_io_driver &driver,
-                int ncid,
-                int *varids);
+def_G_case(e3sm_io_config &cfg,
+           e3sm_io_decom  &decom,
+           e3sm_io_driver &driver,
+           int ncid,
+           int *varids);
 

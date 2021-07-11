@@ -537,11 +537,11 @@ int run_vard_F_case (e3sm_io_config &cfg,
     /* define dimensions, variables, and attributes */
     if (cfg.nvars == 414) {
         /* for h0 file */
-        err = def_F_case_h0 (driver, ncid, decom.dims[2], cfg.nvars, varids);
+        err = def_F_case_h0(cfg, decom, driver, ncid, varids);
         CHECK_ERR
     } else {
         /* for h1 file */
-        err = def_F_case_h1 (driver, ncid, decom.dims[2], cfg.nvars, varids);
+        err = def_F_case_h1(cfg, decom, driver, ncid, varids);
         CHECK_ERR
     }
 
@@ -1085,11 +1085,11 @@ int run_varn_F_case (e3sm_io_config &cfg,
     /* define dimensions, variables, and attributes */
     if (cfg.nvars == 414) {
         /* for h0 file */
-        err = def_F_case_h0 (driver, ncid, decom.dims[2], cfg.nvars, varids);
+        err = def_F_case_h0(cfg, decom, driver, ncid, varids);
         CHECK_ERR
     } else {
         /* for h1 file */
-        err = def_F_case_h1 (driver, ncid, decom.dims[2], cfg.nvars, varids);
+        err = def_F_case_h1(cfg, decom, driver, ncid, varids);
         CHECK_ERR
     }
 

@@ -475,8 +475,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
-    err = def_G_case_h0 (driver, ncid, decom.dims[0], decom.dims[1], decom.dims[2], decom.dims[3],
-                         decom.dims[4], decom.dims[5], cfg.nvars, varids);
+    err = def_G_case(cfg, decom, driver, ncid, varids);
     CHECK_ERR
 
     /* exit define mode and enter data mode */

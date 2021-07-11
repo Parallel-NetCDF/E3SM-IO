@@ -389,7 +389,7 @@ int pnetcdf_blob_G_case(e3sm_io_config &cfg,
     varids = (int*) malloc((cfg.nvars + num_decomp_vars) * sizeof(int));
 
     /* define dimensions, variables, and attributes */
-    err = blob_def_G_case(cfg, decom, driver, ncid, varids);
+    err = def_G_case(cfg, decom, driver, ncid, varids);
     CHECK_ERR
 
     free(varids);

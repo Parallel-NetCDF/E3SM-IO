@@ -61,16 +61,16 @@ pnetcdf_blob_F_case(e3sm_io_config &cfg,
                     e3sm_io_driver &driver);
 
 extern int
-blob_def_F_case_h0(e3sm_io_config &cfg,
-                   e3sm_io_decom  &decom,
-                   e3sm_io_driver &driver,
-                   int ncid,
-                   int *varids);
+def_F_case_h0(e3sm_io_config &cfg,
+              e3sm_io_decom  &decom,
+              e3sm_io_driver &driver,
+              int ncid,
+              int *varids);
 
 extern int
-blob_def_F_case_h1(e3sm_io_config &cfg,
-                   e3sm_io_decom  &decom,
-                   e3sm_io_driver &driver,
-                   int ncid,
-                   int *varids);
+def_F_case_h1(e3sm_io_config &cfg,
+              e3sm_io_decom  &decom,
+              e3sm_io_driver &driver,
+              int ncid,
+              int *varids);
 
