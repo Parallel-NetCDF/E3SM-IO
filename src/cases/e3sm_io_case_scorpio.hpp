@@ -76,6 +76,8 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
         dnames_array[i] = dnames[dimids[i]].c_str();
     }
 
+    // If there is a decomposition map associated with the variable,
+    // created 2 associated scalar variables frame_id (timesteps) and decom_id (decomposition map)
     if (decomid >= 0) {
         
         MPI_Offset one = 1;
@@ -92,7 +94,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                                         &(var->decomp_id));
             CHECK_ERR
 
-            // Only double vars have fillval_id
+            // Double vars have an additional fillval_id
             if (type == MPI_DOUBLE) {
                 err = driver.def_local_var (fid, "fillval_id/" + name, type, 1, &one,
                                             &(var->fillval_id));
@@ -105,7 +107,9 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             // err = driver.put_att (fid, var->data, "_FillValue", var->type, 1, cbuf);
             // CHECK_ERR
 
+            // Scorpio attributes are only written by rank 0
             if (cfg.rank == 0) {
+                // Decomposition map
                 ibuf = var->decomp_id + 512;
                 err  = driver.put_att (fid, var->data, "__pio__/decomp", MPI_INT, 1, &ibuf);
                 CHECK_ERR
@@ -114,14 +118,17 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                     driver.put_att (fid, var->data, "__pio__/dims", MPI_WCHAR, ndim, dnames_array.data());
                 CHECK_ERR
 
+                // Type of NetCDF API called
                 err =
                     driver.put_att (fid, var->data, "__pio__/ncop", MPI_CHAR, 7, (void *)"darray");
                 CHECK_ERR
 
+                // NetCDF type enum
                 ibuf = 5;
                 err  = driver.put_att (fid, var->data, "__pio__/nctype", MPI_INT, 1, &ibuf);
                 CHECK_ERR
 
+                // Number of dimensions
                 err = driver.put_att (fid, var->data, "__pio__/ndims", MPI_INT, 1, &ndim);
                 CHECK_ERR
             }
@@ -156,7 +163,9 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
         }
 
         // Attributes for non-constant small vars
+        // Scorpio attributes are only written by rank 0
         if (cfg.rank == 0) {
+            // ADIOS type enum, variables without decomposition map are stored as byte array
             ibuf = (int)mpi_type_to_adios2_type (type);
             err  = driver.put_att (fid, var->data, "__pio__/adiostype", MPI_INT, 1, &ibuf);
             CHECK_ERR
@@ -167,15 +176,18 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                     driver.put_att (fid, var->data, "__pio__/dims", MPI_WCHAR, ndim, dnames_array.data());
                 CHECK_ERR
             }
-
+            
+            // Type of NetCDF API called
             err =
                 driver.put_att (fid, var->data, "__pio__/ncop", MPI_CHAR, 7, (void *)"put_var");
             CHECK_ERR
 
+            // NetCDF type enum
             ibuf = (int)mpitype2nctype (type);
             err  = driver.put_att (fid, var->data, "__pio__/nctype", MPI_INT, 1, &ibuf);
             CHECK_ERR
 
+            // Number of dimensions
             err = driver.put_att (fid, var->data, "__pio__/ndims", MPI_INT, 1, &ndim);
             CHECK_ERR
         }
