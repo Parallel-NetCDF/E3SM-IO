@@ -80,7 +80,6 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
             // HDF5 ?
 #ifdef ENABLE_HDF5
             if (not_done) {
-                herr_t herr;
                 off_t offset = 512;
 
                 while (rlen == 8 && memcmp (signature, hdf5_signature, 8)) {
@@ -198,7 +197,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 if (cfg->api == pnetcdf) tcase = new e3sm_io_case_F ();
 #ifdef ENABLE_ADIOS2
                 else
-                    tcase = new e3sm_io_case_F_scorpio ();
+                    tcase = new e3sm_io_case_F();
 #endif
                 break;
         }
