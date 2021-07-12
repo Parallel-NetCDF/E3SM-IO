@@ -52,10 +52,10 @@ typedef enum e3sm_io_api {
     hdf5_md,
     hdf5_log,
     adios,
-    undef
+    undef_api
 } e3sm_io_api;
 
-typedef enum e3sm_io_strategy { canonical, blob, log } e3sm_io_strategy;
+typedef enum e3sm_io_strategy { canonical, blob, log, undef_io } e3sm_io_strategy;
 
 typedef enum e3sm_io_filter { none, deflate, bzip2 } e3sm_io_filter;
 

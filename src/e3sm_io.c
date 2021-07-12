@@ -143,8 +143,8 @@ int main (int argc, char **argv) {
     cfg.wr             = 0;
     cfg.rd             = 0;
     cfg.nvars          = 0;
-    cfg.strategy       = canonical;
-    cfg.api            = pnetcdf;
+    cfg.strategy       = undef_io;
+    cfg.api            = undef_api;
     cfg.chunksize      = 0;
     cfg.filter         = none;
     cfg.vard           = 0;
@@ -272,8 +272,51 @@ int main (int argc, char **argv) {
     if (!cfg.wr && !cfg.rd)
         ERR_OUT("Error: neither command-line option -i or -o is used")
 
-    if (cfg.strategy == log && cfg.api != hdf5_log)
-        ERR_OUT ("Selected API does not support log-based I/O")
+    /* check yet to support APIs and I/O strategies */
+    if (cfg.api == undef_api) cfg.api = pnetcdf;
+
+    if (cfg.api == pnetcdf) {
+        if (cfg.strategy == undef_io)
+            cfg.strategy = canonical;
+        else if (cfg.strategy == log)
+            ERR_OUT ("PnetCDF with log I/O strategy is not supported yet")
+    }
+
+    if (cfg.api == hdf5_ra) {
+        if (cfg.strategy == undef_io)
+            cfg.strategy = canonical;
+        else if (cfg.strategy == log)
+            ERR_OUT ("HDF5 rearranger with log I/O strategy is not supported yet")
+        else if (cfg.strategy == blob)
+            ERR_OUT ("HDF5 rearranger with blob I/O strategy is not supported yet")
+    }
+
+    if (cfg.api == hdf5_md) {
+        if (cfg.strategy == undef_io)
+            cfg.strategy = canonical;
+        else if (cfg.strategy == log)
+            ERR_OUT ("HDF5 multi-dataset with log I/O strategy is not supported yet")
+        else if (cfg.strategy == blob)
+            ERR_OUT ("HDF5 multi-dataset with blob I/O strategy is not supported yet")
+    }
+
+    if (cfg.api == hdf5_log) {
+        if (cfg.strategy == undef_io)
+            cfg.strategy = log;
+        else if (cfg.strategy == canonical)
+            ERR_OUT ("HDF5 log-based VOL with canonical I/O strategy is not supported yet")
+        else if (cfg.strategy == blob)
+            ERR_OUT ("HDF5 log-based VOL with blob I/O strategy is not supported yet")
+    }
+
+    if (cfg.api == adios) {
+        if (cfg.strategy == undef_io)
+            cfg.strategy = blob;
+        else if (cfg.strategy == canonical)
+            ERR_OUT ("ADIOS with canonical I/O strategy is not supported yet")
+        else if (cfg.strategy == log)
+            ERR_OUT ("ADIOS with log I/O strategy is not supported yet")
+    }
 
     /* input decomposition file contains number of write requests and their
      * file access offsets (per array element) */

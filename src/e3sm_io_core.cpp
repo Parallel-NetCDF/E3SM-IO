@@ -163,7 +163,7 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
 #endif
             break;
         default:
-            ERR_OUT ("Unknown driver")
+            ERR_OUT ("I/O API is not set")
             break;
     }
 
@@ -200,6 +200,9 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                     tcase = new e3sm_io_case_F_scorpio();
 #endif
                 break;
+            default:
+                ERR_OUT ("I/O strategy is not set")
+                break;
         }
     } else if (decom->num_decomp == 6) {
         cfg->nvars = 52;
@@ -216,6 +219,9 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                     tcase = new e3sm_io_case_G_scorpio ();
 */
 #endif
+                break;
+            default:
+                ERR_OUT ("I/O strategy is not set")
                 break;
         }
     } else {
