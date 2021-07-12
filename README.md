@@ -305,64 +305,75 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
                  filter name (default: none)
        FILE: Name of input NetCDF file describing data decompositions
   ```
-* The API used in the read test is determined by the input file format.
-  The API selected by "-a" option is ignored except when reading HDF5 files
-  in which the selected API (hdf5_ra or hdf5_md) can affect the set of HDF5
-  APIs used.
-* The F case test involves 2 files. The E3SM benchmark will append `_h0` and 
-  `_h1` to the assigned path accordingly (see "Output files" section in the 
-  README file). If the path contains a file extension ('.'), `_h0` and `_h1` will be
-  inserted right before the file extension ('.').
-* If both read and write test is enabled. The benchmark will perform read test
-  first and use the data read in the write test. Otherwise, the benchmark will 
-  write out random data in the write test.
-* Current supported APIs and I/O strategies
+* For option '-i', the API to be used in the read test is determined by the
+  input file format, which is detected internally. The API selected in option
+  '-a' is for write only, except for when the input file is an HDF5 and option
+  '-a' is either hdf5_ra or hdf5_md, in which case the HDF5 rearranger API or
+  multi-dataset API is used to read the input file.
+* The F write case will create two history files. The supplied file name in
+  option '-o' will be used to create two new files name by inserting/appending
+  strings '_h0' and '_h1' to indicate the two history files.  If the input path
+  contains file extension '.nc', '_h0' and '_h1' will be inserted before the
+  file extension. Otherwise, they will be appended at the end.  See examples in
+  "Output files" section below.
+* If both read and write options are enabled, i.e. both '-i' and '-o' are set.
+  The benchmark will read the input file first and use the data read to write
+  to the output file. If read option is not set, the benchmark will write
+  random data.
+* Current supported APIs (option '-a') and I/O strategies (option '-x')
   + **pnetcdf + canonical**
-    * A single NetCDF file in CDF5 format will be created. All data objects and
-      their structures in the file are understandable by all NetCDF software.
-    * Users are recommended to use an output folder with a high file striping
-      count to obtain a good performance.
+    * A single NetCDF file in the classic CDF5 format will be created. All data
+      objects stored in the file are in the canonical order and understandable
+      by NetCDF and its third-party software.
+    * If the output file systems allow users to customize the file striping
+      configuration, such as Lustre, users are recommended to write to a folder
+      with a high file striping count to obtain a good I/O performance.
   + **pnetcdf + blob**
-    * Multiple subfiles in NetCDF format will be created.
+    * Multiple subfiles in NetCDF format will be created. The files conform
+      with NetCDF file format specification.
     * There will be one subfile per compute node used.
-    * Input file name provided in option '-i' will be used as a base of
-      subfile name. The subfile names will have the numerical IDs as the
+    * Input file name provided in option '-i' will be used as a base to create
+      the subfile name. The subfile names will have the numerical IDs as the
       suffix.
     * Because all variables are stored in a blob fashion in the files, the
-      subfiles can only be understood by the conversion utility tool,
-      [utils/pnetcdf_blob_replay.c](utils/pnetcdf_blob_replay.c), which can
-      be run off-line to convert the subfiles into a single regular NetCDF
-      file in CDF5 format.
+      subfiles altogether can only be understood by the conversion utility
+      tool, [utils/pnetcdf_blob_replay.c](utils/pnetcdf_blob_replay.c), which
+      is to be run off-line to convert the subfiles into a single regular
+      NetCDF file in CDF5 format.
   + **hdf5_ra + canonical**
     * hdf5_ra re-arranges the write requests among all MPI processes into less
       but large contiguous requests before calling HDF5 to write the data. This
       is essentially the same as the BOX data rearrangment implemented in
       Scorpio.
-    * The output file is a regular HDF5.
+    * The output file is a regular HDF5, which is understandable by regular
+      HDF5 and its third-party software.
   + **hdf5_md + canonical**
-    * hdf5_md reads/writes data using the multi-dataset APIs, which is
-      currently under development. The APIs allow users to read/write multiple
-      requests in a single API call.
-    * This option requires this benchmark to be built with a
+    * hdf5_md reads/writes data using the multi-dataset APIs, which is a new
+      HDF5 feature and currently under development. The APIs allow users to
+      read/write multiple requests in a single API call and thus achieve a
+      better I/O performance.
+    * This option requires to configure this benchmark with the
       [develop branch](https://bitbucket.hdfgroup.org/projects/HDFFV/repos/hdf5/browse)
       of HDF5 that implements the multi-dataset APIs.
-    * The output file is a regular HDF5.
+    * The output file is a regular HDF5, which is understandable by regular
+      HDF5 and its third-party software.
   + **hdf5_log + log**
     * hdf5_log reads/writes data using the log-based VOL, which stores data in
-      a log layout. The output file is a valid HDF5 file, but requires the
-      log-based VOL to read and understand the data structures.
+      a log layout, rather than a canonical layout. The output file is a valid
+      HDF5 file, but requires the log-based VOL to read and understand the data
+      structures.
     * The output file is a single HDF5 file.
   + **adios + blob**
     * Multiple subfiles in BP format will be created.
     * The number of subfile is determined by command-line option '-g'.
-    * Input file name provided in option '-i' will be used as a base for the
-      names of folders that store the subfile. The folder names will have
-      suffix ".bp.dir" appended. Each subfile name will have ".bp" and a
-      numerical ID appended.
+    * The input file name provided in option '-i' will be used as a base to
+      create folder names that store the subfiles. The folder names will have
+      suffix ".bp.dir" appended. Each subfile name in its folder will have
+      ".bp" and a numerical ID appended.
     * Because all variables are stored in a blob fashion in the files, the
       subfiles can only be understood by the Scorpio's conversion utility tool,
       [adios2pio-nm](https://github.com/E3SM-Project/scorpio/tree/master/tools/adios2pio-nm),
-      which can be run off-line to convert the subfiles into a single regular
+      which is to be run off-line to convert the subfiles into a single regular
       NetCDF file.
 
 ### Example files
@@ -387,57 +398,19 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 
 ### example outputs shown on screen
 ```
-  % mpiexec -n 512 ./e3sm_io -k -r 3 -o $SCRATCH/FS_1M_64 -c datasets/f_case_48602x72_512p.nc
+  % mpiexec -n 512 ./e3sm_io -n -k -r 3 -o $SCRATCH/FS_1M_64/can_F_out.nc datasets/f_case_48602x72_512p.nc
 
   Total number of MPI processes      = 512
   Input decomposition file           = datasets/f_case_48602x72_512p.nc
-  Output file directory              = $SCRATCH/FS_1M_64
+  Output file/directory              = $SCRATCH/FS_1M_64/can_F_out.nc
   Variable dimensions (C order)      = 72 x 48602
   Write number of records (time dim) = 3
   Using noncontiguous write buffer   = no
 
-  ==== benchmarking vard API ================================
-  Variable written order: same as variables are defined
-
-  History output file                = f_case_h0_vard.nc
-  No. variables use no decomposition =  26
-  No. variables use decomposition D1 =   2
-  No. variables use decomposition D2 = 323
-  No. variables use decomposition D3 =  63
-  Total number of variables          = 414
-  MAX heap memory allocated by PnetCDF internally is 2.22 MiB
-  Total write amount                 = 2699.36 MiB = 2.64 GiB
-  Max number of requests             = 310598
-  Max Time of open + metadata define = 0.0533 sec
-  Max Time of I/O preparing          = 0.1156 sec
-  Max Time of ncmpi_put_vard         = 5.4311 sec
-  Max Time of close                  = 0.0306 sec
-  Max Time of TOTAL                  = 5.6385 sec
-  I/O bandwidth (open-to-close)      = 478.7341 MiB/sec
-  I/O bandwidth (write-only)         = 496.9981 MiB/sec
-  -----------------------------------------------------------
-  History output file                = f_case_h1_vard.nc
-  No. variables use no decomposition =  26
-  No. variables use decomposition D1 =   2
-  No. variables use decomposition D2 =  22
-  No. variables use decomposition D3 =   1
-  Total number of variables          =  51
-  MAX heap memory allocated by PnetCDF internally is 2.22 MiB
-  Total write amount                 = 52.30 MiB = 0.05 GiB
-  Max number of requests             = 6022
-  Max Time of open + metadata define = 0.0338 sec
-  Max Time of I/O preparing          = 0.0014 sec
-  Max Time of ncmpi_put_vard         = 0.2489 sec
-  Max Time of close                  = 0.0055 sec
-  Max Time of TOTAL                  = 0.2907 sec
-  I/O bandwidth (open-to-close)      = 179.8902 MiB/sec
-  I/O bandwidth (write-only)         = 210.1002 MiB/sec
-  -----------------------------------------------------------
-
   ==== benchmarking varn API ================================
   Variable written order: same as variables are defined
 
-  History output file                = f_case_h0_varn.nc
+  History output file                = $SCRATCH/FS_1M_64/can_F_out_h0.nc
   No. variables use no decomposition =  26
   No. variables use decomposition D1 =   2
   No. variables use decomposition D2 = 323
@@ -455,7 +428,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   I/O bandwidth (open-to-close)      = 435.3753 MiB/sec
   I/O bandwidth (write-only)         = 460.6144 MiB/sec
   -----------------------------------------------------------
-  History output file                = f_case_h1_varn.nc
+  History output file                = $SCRATCH/FS_1M_64/can_F_out_h1.nc
   No. variables use no decomposition =  26
   No. variables use decomposition D1 =   2
   No. variables use decomposition D2 =  22
@@ -476,19 +449,20 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 ```
 ### Output files
 * The above example command uses command-line option `-k` to keep the output
-  files (otherwise the default is to delete them when the program exits.) 
-  For the F case, each run of `e3sm_io` produces two output files name by 
-  user-assigned file name postfixed with `h0`, and `h1`.
+  files (otherwise the default is to delete them when the program exits.) For
+  the F case, each run of `e3sm_io` produces two history output files whose
+  names are created by inserting 'h0', and 'h1' to user-supplied file name.
   The header of F case files from running the provided decomposition file
-  `f_case_866x72_16p.nc` using PnetCDF obtainable by command
-  `ncdump -h` is available in [datasets/f_case_h0.txt](datasets/f_case_h0.txt), 
-  and [datasets/f_case_h1.txt](datasets/f_case_h1.txt).
-* For the G case, there is one output file.
-  The header of G case file running the provided decomposition file 
-  `g_case_cmpaso_16p.nc` using PnetCDF can be found in
-  [datasets/g_case_hist.txt](datasets/g_case_hist.txt).
-* ADIOS2 automatically append `.bp.dir` file extension to any path.
-  + When using ADIOS2, the output file will be postfixed with the `.bp.dir` extension.
+  `f_case_866x72_16p.nc` using PnetCDF obtainable by command `ncdump -h` is
+  available in [datasets/f_case_h0.txt](datasets/f_case_h0.txt), and
+  [datasets/f_case_h1.txt](datasets/f_case_h1.txt).
+* The G case only creates is one output file. The header of G case file running
+  the provided decomposition file `g_case_cmpaso_16p.nc` using PnetCDF can be
+  found in [datasets/g_case_hist.txt](datasets/g_case_hist.txt).
+* The ADIOS2 API option automatically appends '.bp.dir' extension to the
+  user-provided input path and creates two folders for F case (one for G case.)
+  + When using ADIOS2, the names of output subfiles will be appended with
+    file extension `.bp.dir`.
 
 ### Current build status
 * [Travis CI ![Build Status](https://travis-ci.org/Parallel-NetCDF/E3SM-IO.svg?branch=master)](https://travis-ci.org/Parallel-NetCDF/E3SM-IO)
