@@ -197,7 +197,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 if (cfg->api == pnetcdf) tcase = new e3sm_io_case_F ();
 #ifdef ENABLE_ADIOS2
                 else
-                    tcase = new e3sm_io_case_F();
+                    tcase = new e3sm_io_case_F_scorpio();
 #endif
                 break;
         }
