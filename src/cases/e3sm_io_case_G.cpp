@@ -71,13 +71,13 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
         if (cfg.sub_comm != MPI_COMM_NULL)
             MPI_Comm_free(&cfg.sub_comm);
     }
-    else if (cfg.vard) {
+    else if (cfg.vard) { /* using PnetCDF vard APIs to write/read */
         /* vard APIs require internal data type matches external one */
 #if REC_XTYPE != NC_FLOAT
         ERR_OUT ("PnetCDF vard API requires internal and external data types match, skip\n");
 #endif
         ERR_OUT ("Low level API not supported in g case\n");
-    } else {
+    } else { /* using PnetCDF varn APIs to write/read */
         err = run_varn_G_case (cfg, decom, driver, this->D1_fix_int_buf,
                                   this->D2_fix_int_buf, this->D3_fix_int_buf, this->D4_fix_int_buf,
                                   this->D5_fix_int_buf, this->D1_rec_dbl_buf, this->D3_rec_dbl_buf,

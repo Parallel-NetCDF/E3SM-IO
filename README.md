@@ -274,8 +274,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-h] Print this help message
        [-v] Verbose mode
        [-k] Keep the output files when program exits
-       [-d] Run test that uses PnetCDF vard API
-       [-n] Run test that uses PnetCDF varn API
+       [-d] Run test that uses PnetCDF vard API (default is varn APIs)
        [-m] Run test using noncontiguous write buffer
        [-t] Write 2D variables followed by 3D variables
        [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for h1
@@ -398,7 +397,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 
 ### example outputs shown on screen
 ```
-  % mpiexec -n 512 ./e3sm_io -n -k -r 3 -o $SCRATCH/FS_1M_64/can_F_out.nc datasets/f_case_48602x72_512p.nc
+  % mpiexec -n 512 ./e3sm_io -k -r 3 -o $SCRATCH/FS_1M_64/can_F_out.nc datasets/f_case_48602x72_512p.nc
 
   Total number of MPI processes      = 512
   Input decomposition file           = datasets/f_case_48602x72_512p.nc

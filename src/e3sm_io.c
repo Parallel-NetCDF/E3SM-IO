@@ -88,8 +88,7 @@ static void usage (char *argv0) {
 "       [-h] Print this help message\n"
 "       [-v] Verbose mode\n"
 "       [-k] Keep the output files when program exits\n"
-"       [-d] Run test that uses PnetCDF vard API\n"
-"       [-n] Run test that uses PnetCDF varn API\n"
+"       [-d] Run test that uses PnetCDF vard API (default is varn APIs)\n"
 "       [-m] Run test using noncontiguous write buffer\n"
 "       [-t] Write 2D variables followed by 3D variables\n"
 "       [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for h1\n"
@@ -163,7 +162,7 @@ int main (int argc, char **argv) {
     }
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dnmtf:ha:x:g:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dmtf:ha:x:g:")) != EOF) switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -233,9 +232,6 @@ int main (int argc, char **argv) {
                 break;
             case 'd':
                 cfg.vard = 1;
-                break;
-            case 'n':
-                cfg.vard = 0;
                 break;
             case 'm':
                 cfg.non_contig_buf = 1;

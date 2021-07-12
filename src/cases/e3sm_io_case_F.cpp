@@ -80,7 +80,7 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
         if (cfg.sub_comm != MPI_COMM_NULL)
             MPI_Comm_free(&cfg.sub_comm);
     }
-    else if (cfg.vard) {
+    else if (cfg.vard) { /* using PnetCDF vard APIs to write/read */
         /* vard APIs require internal data type matches external one */
 #if REC_XTYPE != NC_FLOAT
         ERR_OUT ("PnetCDF vard API requires internal and external data types match, skip\n");
@@ -96,7 +96,7 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
             err = run_vard_F_case (cfg, decom, driver, this->dbl_buf_h0,
                                       this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
         }
-    } else {
+    } else { /* using PnetCDF varn APIs to write/read */
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 414;
             err = run_varn_F_case (cfg, decom, driver, this->dbl_buf_h0,
