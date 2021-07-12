@@ -110,7 +110,7 @@ err_out:
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_TOTAL)
 
-    e3sm_io_print_profile (cfg);
+    if (cfg->verbose) e3sm_io_print_profile (cfg);
 
     return (err != 0) ? err : nerrs;
 }
