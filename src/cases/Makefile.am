@@ -28,11 +28,9 @@ H_SRCS =    e3sm_io_case.hpp \
 
 if ENABLE_ADIOS2
 CXX_SRCS += var_io_F_case_scorpio.cpp \
-            e3sm_io_case_F_scorpio.cpp \
             header_io_F_case_scorpio.cpp
 
-H_SRCS +=   e3sm_io_case_scorpio.hpp \
-            e3sm_io_F_case_scorpio.hpp
+H_SRCS +=   e3sm_io_F_case_scorpio.hpp
 endif
 
 libe3sm_io_cases_a_SOURCES = $(CXX_SRCS) $(H_SRCS)

@@ -16,8 +16,8 @@
 //
 #include <e3sm_io.h>
 
-#include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
+#include <e3sm_io_case_F.hpp>
 
 int def_F_case_h0_scorpio (e3sm_io_driver &driver,
                        e3sm_io_config &cfg,

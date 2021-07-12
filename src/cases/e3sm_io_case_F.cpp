@@ -44,8 +44,12 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
         printf ("Write number of records (time dim) = %d\n", cfg.nrec);
         printf ("Using noncontiguous write buffer   = %s\n", cfg.non_contig_buf ? "yes" : "no");
         printf("==== Benchmarking F case ====\n");
-        if (cfg.strategy == blob)
-            printf("Using one-file-per-node blob I/O strategy\n");
+        if (cfg.strategy == blob) {
+            if (cfg.api == pnetcdf)
+                printf("Using PnetCDF blob subfile I/O strategy\n");
+            else if (cfg.api == adios)
+                printf("Using ADIOS blob subfile I/O strategy\n");
+        }
         else if (cfg.vard)
             printf("Using PnetCDF vard API\n");
         else
@@ -79,6 +83,27 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
 
         if (cfg.sub_comm != MPI_COMM_NULL)
             MPI_Comm_free(&cfg.sub_comm);
+    }
+    else if (cfg.api == adios) {
+        if (cfg.hx == 0 || cfg.hx == -1) {
+            cfg.nvars = 414;
+            err = run_varn_F_case_scorpio(cfg, decom, driver,
+                                          this->dbl_buf_h0,
+                                          this->rec_buf_h0,
+                                          this->txt_buf[0],
+                                          this->int_buf[0]);
+            CHECK_ERR
+        }
+
+        if (cfg.hx == 0 || cfg.hx == -1) {
+            cfg.nvars = 51;
+            err = run_varn_F_case_scorpio(cfg, decom, driver,
+                                          this->dbl_buf_h0,
+                                          this->rec_buf_h0,
+                                          this->txt_buf[0],
+                                          this->int_buf[0]);
+            CHECK_ERR
+        }
     }
     else if (cfg.vard) { /* using PnetCDF vard APIs to write/read */
         /* vard APIs require internal data type matches external one */
@@ -118,6 +143,13 @@ err_out:
 
 int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
     int err, nvar;
+
+    if (cfg.strategy == blob) {
+        if (cfg.api == pnetcdf)
+            ERR_OUT ("PnetCDF blob subfile I/O is currently not support reading")
+        else if (cfg.api == adios)
+            ERR_OUT ("ADIOS blob subfile I/O is currently not support reading")
+    }
 
     PRINT_MSG (0, "number of requests for D1=%d D2=%d D3=%d\n", decom.contig_nreqs[0],
                decom.contig_nreqs[1], decom.contig_nreqs[2]);

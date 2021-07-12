@@ -21,7 +21,6 @@
 #include <e3sm_io_err.h>
 
 #include <e3sm_io_case_F_scorpio.hpp>
-#include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
 
 #define PUT_ATT_TEXT(F, D, N, S, B) e3sm_io_scorpio_put_att (driver, F, D, N, MPI_CHAR, S, (void *)B);
