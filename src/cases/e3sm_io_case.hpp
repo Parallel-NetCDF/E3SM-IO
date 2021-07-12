@@ -55,4 +55,12 @@ class e3sm_io_case_F_scorpio : public e3sm_io_case_F {
     int wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
     int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
 };
+
+class e3sm_io_case_G_scorpio : public e3sm_io_case_G {
+   public:
+    e3sm_io_case_G_scorpio ();
+    ~e3sm_io_case_G_scorpio ();
+    int wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
+    int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
+};
 #endif
