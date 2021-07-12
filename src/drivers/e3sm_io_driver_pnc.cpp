@@ -153,16 +153,17 @@ err_out:
 }
 
 int e3sm_io_driver_pnc::def_var (
-    int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did) {
+    int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *varid) {
     int err;
     int i;
     int cdim[E3SM_IO_DRIVER_MAX_RANK];
     int tsize;
     size_t csize = 0;
 
-    err = ncmpi_def_var (fid, name.c_str (), mpitype2nctype (type), ndim, dimids, did);
+    err = ncmpi_def_var (fid, name.c_str (), mpitype2nctype (type), ndim, dimids, varid);
     CHECK_NCERR
 
+    /* skip the followings if compression is not enabled */
     if (cfg->chunksize == 0) return err;
 
     if (ndim) {
@@ -181,7 +182,7 @@ int e3sm_io_driver_pnc::def_var (
         }
 
         if (csize > 0) {
-            err = ncmpi_put_att_int (fid, *did, "_chunkdim", NC_INT, ndim, cdim);
+            err = ncmpi_put_att_int (fid, *varid, "_chunkdim", NC_INT, ndim, cdim);
             CHECK_NCERR
 
             switch (cfg->filter) {
@@ -189,7 +190,7 @@ int e3sm_io_driver_pnc::def_var (
                     break;
                 case deflate:
                     tsize = 2;  // TODO: Use formal PnetCDF filter ID
-                    err   = ncmpi_put_att_int (fid, *did, "_zipdriver", NC_INT, 1, &tsize);
+                    err   = ncmpi_put_att_int (fid, *varid, "_zipdriver", NC_INT, 1, &tsize);
                     CHECK_NCERR
                     break;
                 default:
@@ -198,18 +199,21 @@ int e3sm_io_driver_pnc::def_var (
         }
     }
 
-    if (this->var_nelems.size () <= *did) {
-        this->var_nelems.resize (*did + 1);
-        this->var_ndims.resize (*did + 1);
+    /* variable IDs returned by ncmpi_def_var(), if successful, are always
+     * non-negative.
+     */
+    if (this->var_nelems.size () <= (size_t)*varid) {
+        this->var_nelems.resize (*varid + 1);
+        this->var_ndims.resize (*varid + 1);
     }
-    this->var_ndims[*did]  = ndim;
+    this->var_ndims[*varid]  = ndim;
 
 err_out:
     return err;
 }
 
 int e3sm_io_driver_pnc::def_local_var (
-    int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) {
+    int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *varid) {
     int err;
 
     ERR_OUT ("PNC does not support local variables")
@@ -218,10 +222,10 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_pnc::inq_var (int fid, std::string name, int *did) {
+int e3sm_io_driver_pnc::inq_var (int fid, std::string name, int *varid) {
     int err;
 
-    err = ncmpi_inq_varid (fid, name.c_str (), did);
+    err = ncmpi_inq_varid (fid, name.c_str (), varid);
     CHECK_NCERR
 
 err_out:
@@ -257,7 +261,11 @@ int e3sm_io_driver_pnc::def_dim (int fid, std::string name, MPI_Offset size, int
 
     if (cfg->chunksize == 0) return err;
 
-    if (this->dim_lens.size () <= *dimid) { this->dim_lens.resize (*dimid + 1); }
+    /* dimension IDs returned by ncmpi_def_dim(), if successful, are always
+     * non-negative.
+     */
+    if (this->dim_lens.size () <= (size_t)*dimid)
+        this->dim_lens.resize (*dimid + 1);
     this->dim_lens[*dimid] = size;
 
 err_out:
@@ -276,7 +284,9 @@ int e3sm_io_driver_pnc::inq_dim (int fid, std::string name, int *dimid) {
 
     if (cfg->chunksize == 0) return err;
 
-    if (this->dim_lens.size () <= *dimid) { this->dim_lens.resize (*dimid + 1); }
+    /* dimension IDs in PnetCDF are always non-negative */
+    if (this->dim_lens.size () <= (size_t)*dimid)
+        this->dim_lens.resize (*dimid + 1);
     this->dim_lens[*dimid] = size;
 
 err_out:
