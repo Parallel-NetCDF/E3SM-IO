@@ -371,15 +371,15 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                          e3sm_io_driver &driver,
                          double *dbl_bufp,    /* buffer for fixed size double var */
                          itype *rec_bufp,     /* buffer for rec floating point var */
-                         char *txt_buf,       /* buffer for char var */
-                         int *int_buf)        /* buffer for int var */
+                         char *txt_bufp,      /* buffer for char var */
+                         int *int_bufp)       /* buffer for int var */
 {
-    char *txt_buf_ptr, outfile[1040], *ext;
+    char *txt_buf=NULL, *txt_buf_ptr, outfile[1040], *ext;
     int i, j, k, err=0, rank, ncid, nvars_D[3];
     e3sm_io_scorpio_var *varids;
     int scorpiovars[6];
-    int rec_no=0, gap = 0, my_nreqs, *int_buf_ptr, xnreqs[3];
-    size_t dbl_buflen, rec_buflen, nelems[3];
+    int rec_no=0, gap = 0, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
+    size_t ii, dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
@@ -420,12 +420,15 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (cfg.verbose && rank == 0) printf ("nelems=%zd %zd %zd\n", nelems[0], nelems[1], nelems[2]);
 
     /* allocate and initialize write buffer for small variables */
-    dbl_buflen = nelems[1] * 2 + nelems[0] + 3 * decom.dims[2][0] + 3 * (decom.dims[2][0] + 1) + 8 +
-                 2 + 20 * gap + 27 * 2;
-    if (dbl_bufp != NULL) {
+    dbl_buflen = nelems[1] * 2
+               + nelems[0]
+               + 3 * decom.dims[2][0]
+               + 3 * (decom.dims[2][0] + 1)
+               + 8 + 2 + 20 * gap + 27 * 2;
+
+    if (dbl_bufp != NULL)
         dbl_buf = dbl_bufp;
-    } else {
-        size_t ii;
+    else {
         dbl_buf = (double *)malloc (dbl_buflen * sizeof (double));
         for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = rank;
     }
@@ -436,15 +439,23 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     else
         rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
 
-    if (rec_bufp != NULL) {
+    if (rec_bufp != NULL)
         rec_buf = rec_bufp;
-    } else {
-        size_t ii;
+    else {
         rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
-
-        for (i=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
-        for (i=0; ii<10; ii++) int_buf[ii] = rank;
-        for (i=0; ii<16; ii++) txt_buf[ii] = 'a' + rank;
+        for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
+    }
+    if (int_bufp != NULL)
+        int_buf = int_bufp;
+    else {
+        int_buf = (int*) malloc(10 * sizeof(int));
+        for (ii=0; ii<10; ii++) int_buf[ii] = rank;
+    }
+    if (txt_bufp != NULL)
+        txt_buf = txt_bufp;
+    else {
+        txt_buf = (char*) malloc(16 * sizeof(char));
+        for (ii=0; ii<16; ii++) txt_buf[ii] = 'a' + rank;
     }
 
     // Assign decom ID
@@ -842,8 +853,10 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         free (starts_D2[0]);
         free (starts_D2);
     }
-    if (rec_buf != NULL) free (rec_buf);
-    if (dbl_buf != NULL) free (dbl_buf);
+    if (rec_bufp == NULL && rec_buf != NULL) free (rec_buf);
+    if (dbl_bufp == NULL && dbl_buf != NULL) free (dbl_buf);
+    if (int_bufp == NULL && int_buf != NULL) free (int_buf);
+    if (txt_bufp == NULL && txt_buf != NULL) free (txt_buf);
     free (varids);
 
     total_timing = MPI_Wtime () - total_timing;
