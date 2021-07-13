@@ -67,11 +67,17 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
     char cbuf[64], *cbufp;
     int ibuf;
     int ret;
+    std::vector<const char*> dnames_array (ndim);
 
     var->type    = type;
     var->decomid = decomid;
 
+    for(i = 0; i < ndim; i++){
+        dnames_array[i] = dnames[dimids[i]].c_str();
+    }
+
     if (decomid >= 0) {
+        
         MPI_Offset one = 1;
 
         err = driver.def_local_var (fid, name, type, 1, &(decom.raw_nreqs[decomid]), &(var->data));
@@ -104,15 +110,8 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                 err  = driver.put_att (fid, var->data, "__pio__/decomp", MPI_INT, 1, &ibuf);
                 CHECK_ERR
 
-                cbufp = cbuf;
-                ret   = sprintf (cbufp, "{%s", dnames[dimids[0]].c_str ());
-                cbufp += ret;
-                for (i = 1; i < ndim; i++) {
-                    ret = sprintf (cbufp, ", %s", dnames[dimids[i]].c_str ());
-                    cbufp += ret;
-                }
                 err =
-                    driver.put_att (fid, var->data, "__pio__/dims", MPI_CHAR, strlen (cbuf), cbuf);
+                    driver.put_att (fid, var->data, "__pio__/dims", MPI_WCHAR, ndim, dnames_array.data());
                 CHECK_ERR
 
                 err =
@@ -152,20 +151,12 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
 
         // Attributes for non-constant small vars
         if (cfg.rank == 0) {
-            if (ndim > 0) {
                 ibuf = (int)mpi_type_to_adios2_type (type);
                 err  = driver.put_att (fid, var->data, "__pio__/adiostype", MPI_INT, 1, &ibuf);
                 CHECK_ERR
 
-                cbufp = cbuf;
-                ret   = sprintf (cbufp, "{%s", dnames[dimids[0]].c_str ());
-                cbufp += ret;
-                for (i = 1; i < ndim; i++) {
-                    ret = sprintf (cbufp, ", %s", dnames[dimids[i]].c_str ());
-                    cbufp += ret;
-                }
                 err =
-                    driver.put_att (fid, var->data, "__pio__/dims", MPI_CHAR, strlen (cbuf), cbuf);
+                    driver.put_att (fid, var->data, "__pio__/dims", MPI_WCHAR, ndim, dnames_array.data());
                 CHECK_ERR
 
                 err =

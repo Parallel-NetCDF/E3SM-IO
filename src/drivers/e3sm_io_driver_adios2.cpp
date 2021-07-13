@@ -519,7 +519,9 @@ int e3sm_io_driver_adios2::put_att (
     if (size == 0) goto err_out;
 
     if (vid == E3SM_IO_GLOBAL_ATTR) {
-        if (atype == adios2_type_string) {
+        // ADIOS2 have no char type, we translate char array into unit sized string
+        // MPI has not string type, we use WCHAR to represent string
+        if (type == MPI_CHAR) {
             aid = adios2_define_attribute (fp->iop, name.c_str (), atype, buf);
         } else {
             aid = adios2_define_attribute_array (fp->iop, name.c_str (), atype, buf, (size_t)size);
@@ -533,7 +535,9 @@ int e3sm_io_driver_adios2::put_att (
         aerr = adios2_variable_name (vname, &namesize, did);
         CHECK_AERR
         vname[namesize] = '\0';
-        if (atype == adios2_type_string) {
+        // ADIOS2 have no char type, we translate char array into unit sized string
+        // MPI has not string type, we use WCHAR to represent string
+        if (type == MPI_CHAR) {
             aid = adios2_define_variable_attribute (fp->iop, name.c_str (), atype, buf, vname, "/");
         } else {
             aid = adios2_define_variable_attribute_array (fp->iop, name.c_str (), atype, buf,
