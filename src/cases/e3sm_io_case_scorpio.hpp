@@ -139,15 +139,21 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             if (dsize[j] > 0) { j++; }
         }
 
-        // flatten into 1 dim
-        for (i = 0; i < j; i++) { vsize *= dsize[i]; }
-        // Convert into byte array
-        err = MPI_Type_size(type, &esize);
-        CHECK_MPIERR
-        vsize *= esize;
-        vsize += 8 * 2 * ndim; // Include start and count array
-        err = driver.def_local_var (fid, name, MPI_BYTE, 1, &vsize, &(var->data));
-        CHECK_ERR
+        // flatten into 1 dim only apply to non-scalar variables
+        if (ndim){
+            for (i = 0; i < j; i++) { vsize *= dsize[i]; }
+            // Convert into byte array
+            err = MPI_Type_size(type, &esize);
+            CHECK_MPIERR
+            vsize *= esize;
+            vsize += 8 * 2 * ndim; // Include start and count array
+            err = driver.def_local_var (fid, name, MPI_BYTE, 1, &vsize, &(var->data));
+            CHECK_ERR
+        }
+        else{
+            err = driver.def_local_var (fid, name, type, ndim, NULL, &(var->data));
+            CHECK_ERR
+        }
 
         // Attributes for non-constant small vars
         if (cfg.rank == 0) {
