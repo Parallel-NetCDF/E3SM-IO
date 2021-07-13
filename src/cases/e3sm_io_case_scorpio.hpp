@@ -151,25 +151,27 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
 
         // Attributes for non-constant small vars
         if (cfg.rank == 0) {
-                ibuf = (int)mpi_type_to_adios2_type (type);
-                err  = driver.put_att (fid, var->data, "__pio__/adiostype", MPI_INT, 1, &ibuf);
-                CHECK_ERR
+            ibuf = (int)mpi_type_to_adios2_type (type);
+            err  = driver.put_att (fid, var->data, "__pio__/adiostype", MPI_INT, 1, &ibuf);
+            CHECK_ERR
 
+            // Scalar var does not have dims
+            if (ndim > 0) {
                 err =
                     driver.put_att (fid, var->data, "__pio__/dims", MPI_WCHAR, ndim, dnames_array.data());
                 CHECK_ERR
-
-                err =
-                    driver.put_att (fid, var->data, "__pio__/ncop", MPI_CHAR, 7, (void *)"put_var");
-                CHECK_ERR
-
-                ibuf = (int)mpitype2nctype (type);
-                err  = driver.put_att (fid, var->data, "__pio__/nctype", MPI_INT, 1, &ibuf);
-                CHECK_ERR
-
-                err = driver.put_att (fid, var->data, "__pio__/ndims", MPI_INT, 1, &ndim);
-                CHECK_ERR
             }
+
+            err =
+                driver.put_att (fid, var->data, "__pio__/ncop", MPI_CHAR, 7, (void *)"put_var");
+            CHECK_ERR
+
+            ibuf = (int)mpitype2nctype (type);
+            err  = driver.put_att (fid, var->data, "__pio__/nctype", MPI_INT, 1, &ibuf);
+            CHECK_ERR
+
+            err = driver.put_att (fid, var->data, "__pio__/ndims", MPI_INT, 1, &ndim);
+            CHECK_ERR
         }
 
         var->decomp_id  = -1;
