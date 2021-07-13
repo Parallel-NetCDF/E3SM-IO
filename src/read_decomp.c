@@ -283,7 +283,7 @@ int read_decomp(e3sm_io_config *cfg,
         for (i=0, j=0; i<decom->contig_nreqs[id]; i++)
             for (k=decom->disps[id][i];
                  k<(decom->disps[id][i] + decom->blocklens[id][i]); k++)
-                decom->raw_offsets[id][j++] = k;
+                decom->raw_offsets[id][j++] = k + 1;
 
         if (cfg->verbose) {
             int min_blocklen = decom->blocklens[id][0];
