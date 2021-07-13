@@ -546,7 +546,7 @@ int main (int argc, char **argv)
     char *buf=NULL, *buf_ptr;
     io_var *var=NULL;
     MPI_Offset start[3], count[3], num_recs=0;
-    MPI_Info info;
+    MPI_Info r_info=MPI_INFO_NULL, w_info=MPI_INFO_NULL;
     double open_t, def_t, read_t, write_t, close_t, total_t, mark_t;
 
     MPI_Init(&argc, &argv);
@@ -626,26 +626,34 @@ int main (int argc, char **argv)
         MPI_Abort(MPI_COMM_WORLD, -1);
     }
 
-    MPI_Info_create(&info);
-
     /* disable collective read for reading blob subfiles */
-    MPI_Info_set(info, "romio_cb_read", "disable");
-    MPI_Info_set(info, "romio_no_indep_rw", "false");
+    MPI_Info_create(&r_info);
+    MPI_Info_set(r_info, "romio_cb_read", "disable");
+    MPI_Info_set(r_info, "romio_no_indep_rw", "false");
 
     /* open input subfiles using sub_comm */
-    err = ncmpi_open(sub_comm, in_file, NC_NOWRITE, info, &in_ncid);
+    err = ncmpi_open(sub_comm, in_file, NC_NOWRITE, r_info, &in_ncid);
+    CHECK_NC_ERR
+
+    MPI_Info_free(&r_info);
+    /* inquire the MPI-IO hints actually used */
+    err = ncmpi_inq_file_info(in_ncid, &r_info);
     CHECK_NC_ERR
 
     /* collective write and no independent MPI-IO */
-    MPI_Info_set(info, "romio_cb_write", "enable");
-    MPI_Info_set(info, "romio_no_indep_rw", "true");
+    MPI_Info_create(&w_info);
+    MPI_Info_set(w_info, "romio_cb_write", "enable");
+    MPI_Info_set(w_info, "romio_no_indep_rw", "true");
 
     /* create output file using MPI_COMM_WORLD */
-    err = ncmpi_create(MPI_COMM_WORLD, out_file, NC_64BIT_DATA, info,
+    err = ncmpi_create(MPI_COMM_WORLD, out_file, NC_64BIT_DATA, w_info,
                        &out_ncid);
     CHECK_NC_ERR
 
-    MPI_Info_free(&info);
+    MPI_Info_free(&w_info);
+    /* inquire the MPI-IO hints actually used */
+    err = ncmpi_inq_file_info(in_ncid, &w_info);
+    CHECK_NC_ERR
 
     open_t = MPI_Wtime() - open_t;
 
@@ -959,6 +967,9 @@ err_out:
         }
     }
     if (var != NULL) free(var);
+
+    if (r_info != MPI_INFO_NULL) MPI_Info_free(&r_info);
+    if (w_info != MPI_INFO_NULL) MPI_Info_free(&w_info);
 
     if (sub_comm != MPI_COMM_NULL) MPI_Comm_free(&sub_comm);
     if (in_ncid != -1) ncmpi_close(in_ncid);
