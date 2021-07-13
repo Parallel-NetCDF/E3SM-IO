@@ -6,6 +6,59 @@
  * This program is part of the E3SM I/O benchmark.
  *
  *********************************************************************/
+
+/* Mimic the I/O kernel of E3SM's scorpio module on G case
+ * Compared to the canonical method used by PnetCDF, the blob strategy used by 
+ * 
+ * The file written by scorpio blob strategy differs in the canonical layout 
+ * in the following points:
+ * 
+ * Scorpio saves the decomposition maps as global variables.
+ * Each decomposition map contains 3 attributes - "dimlen" (size of the dimensions), 
+ * "ndims" (dimensionality), and "piotype" (datatype in PIO type enum).
+ * The decomposition variables and their attributes are written by all processes.
+ * 
+ * E3SM dimensions are stored as scalar variables of type uint64_t.
+ * The dimensions are "chars", "ilev", "lev", "nbnd", "ncol", and "time".
+ * The time dimension is not used and is always 0.
+ * 
+ * All E3SM variables are stored as 1-dimensional ADIOS2 local variables.
+ * 
+ * For each E3SM variable that is associated with a decomposition map, Scorpio
+ * adds additional scalar variables and attributes.
+ * The variables are "decomp_id" (ID of the associated decomposition map),
+ * and frame_id (time steps). If the variable is of double type, there is an 
+ * additional variable "fillval_id" attached.
+ * When a process writes a block of data to the E3SM variable it will also write
+ * a block (cell) to the associated scalar variables.
+ * The attributes are "decomp" (decomposition map ID in string representation), "dims"
+ * (name of the dimensions as string array), "ncop" (string representation of the 
+ * type of NetCDF operation performed to write the variable), "nctype" (datatype 
+ * in NetCDF type enum), "ndims" (dimensionality). The attributes are only written 
+ * by rank 0.
+ *
+ * For each small E3SM variable that is not associated with a decomposition map, 
+ * Scorpio does not introduce additional variables but attaches attributes to them.
+ * The attributes are "adiostype" (datatype in ADIOS2 type enum), "ncop" (string 
+ * representation of the type of NetCDF operation performed to write the variable), 
+ * "nctype" (datatype in NetCDF type enum), "ndims" (dimensionality), and, if the
+ * variable is not a scalar, "dims" (name of the dimensions as string array). 
+ * The attributes are only written by rank 0.
+ * Unlike variables associated with a decomposition map, small variables are stored
+ * as byte stream (uint_8) together with their metadata (start and count). The actual 
+ * type of the data is stored as an attribute. An exception is scalar variables which 
+ * retains its original type.
+ * 
+ * There is one scalar global variable "Nproc" (number of processes writing the file) 
+ * written by rank 0.
+ * 
+ * There is one scalar global attribute "fillmode" written by all processes.
+ * 
+ * When sub-filling is enabled, ADIOS2 records data objects in a subfile only when one of
+ * the process writing to the subfile writes those data objects. As a result, the data 
+ * objects written only by rank 0 will only appear in the first subfile.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
