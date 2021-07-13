@@ -823,10 +823,6 @@ int main (int argc, char **argv)
         read_t += MPI_Wtime() - mark_t;
         mark_t  = MPI_Wtime();
 
-        /* set all starts[][0] to next record */
-        for (j=0; j<decomp[var[i].dec_id].nreqs; j++)
-            decomp[var[i].dec_id].w_starts[j][0] = rec;
-
         /* write to output file */
         buf_ptr = buf;
         for (i=0; i<nvars; i++) {
@@ -844,6 +840,10 @@ int main (int argc, char **argv)
                 }
                 continue;
             }
+            /* set all starts[][0] to next record */
+            for (j=0; j<decomp[var[i].dec_id].nreqs; j++)
+                decomp[var[i].dec_id].w_starts[j][0] = rec;
+
             /* write partitioned variable */
             io_decomp *dp = decomp + var[i].dec_id;
             err = ncmpi_iput_varn(out_ncid, var[i].varid, dp->nreqs,
