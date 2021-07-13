@@ -1,4 +1,4 @@
-## Utilities Programs for E3SM-IO benchmark
+## Utility Programs for E3SM-IO benchmark
 
 * [dat2nc](#dat2nc) -- converts multiple decomposition files into a NetCDF file
 * [datstat](#datstat) -- displays statistics of decomposition files.
@@ -108,10 +108,10 @@ NetCDF file format.
 
 ---
 ## datstat
-**datstat** reads one or more decomposition files in their original text format
-and report some statistics of the decompositions.
+**datstat** reads a decomposition file in its original text format and report
+statistics of the decomposition.
 
-* Command-line options of `pnetcdf_blob_replay`:
+* Command-line options of `datstat`:
   ```
     % ./datstat -h
     Usage: ./datstat [OPTION]...
