@@ -6,6 +6,7 @@
   by the `e3sm_io` benchmark when it ran with PnetCDF blob I/O strategy into a
   regular NetCDF file.
 
+---
 ## dat2nc
 **dat2nc** is a utility program that converts a PIO decomposition file (in a
 text format) to a NetCDF file, which can be fed to `e3sm_io` benchmark to
@@ -105,6 +106,7 @@ NetCDF file format.
 * The NetCDF file containing the 6 decompositions from a small G case is also
   available in folder `../datasets` with file named `g_case_cmpaso_16p.nc`.
 
+---
 ## datstat
 **datstat** reads one or more decomposition files in their original text format
 and report some statistics of the decompositions.
@@ -134,6 +136,7 @@ and report some statistics of the decompositions.
     zero ratio: 0.436198
   ```
 
+---
 ## pnetcdf_blob_replay
 **pnetcdf_blob_replay** reads the subfiles produced by the `e3sm_io` benchmark
 into a single, regular NetCDF file. Currently, it must be run with the same

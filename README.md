@@ -148,8 +148,8 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   files must first be combined and converted into a NetCDF file to be read in
   parallel as the input file to this benchmark program. Similarly, for the G
   case, there are six decomposition files that need to be converted first.
-* See [utils/README](utils/README.md) for instruction to run a utility program
-  named `dat2nc.c`, to convert the text files.
+* See [utils/README](./utils) for instruction to run a utility program named
+  `dat2nc.c` to convert the text files.
 
 ### Run command:
 * Example run commands using `mpiexec` and 16 MPI processes:
