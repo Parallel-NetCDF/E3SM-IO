@@ -111,7 +111,8 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             if (cfg.rank == 0) {
                 // Decomposition map
                 ibuf = var->decomp_id + 512;
-                err  = driver.put_att (fid, var->data, "__pio__/decomp", MPI_INT, 1, &ibuf);
+                sprintf(cbuf, "%d", ibuf);
+                err  = driver.put_att (fid, var->data, "__pio__/decomp", MPI_CHAR, strlen(cbuf), &cbuf);
                 CHECK_ERR
 
                 err =
