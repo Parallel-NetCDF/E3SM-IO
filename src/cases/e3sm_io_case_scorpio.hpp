@@ -32,6 +32,8 @@ typedef struct e3sm_io_scorpio_var {
     int fillval_id;
     MPI_Datatype type;
     int decomid;
+    int64_t bsize[3];
+    int ndim;
 } e3sm_io_scorpio_var;
 
 inline int e3sm_io_scorpio_define_dim (e3sm_io_driver &driver,
@@ -71,6 +73,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
 
     var->type    = type;
     var->decomid = decomid;
+    var->ndim = 0;
 
     for(i = 0; i < ndim; i++){
         dnames_array[i] = dnames[dimids[i]].c_str();
@@ -149,8 +152,17 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
 
         // flatten into 1 dim only apply to non-scalar variables
         if (ndim){
-            for (i = 0; i < j; i++) { vsize *= dsize[i]; }
+            // Record block size to be written into the data later
+            var->ndim = ndim;
+            for (i = 0; i < ndim; i++) { 
+                var->bsize[i] = dsize[ndim - i - 1]; 
+                // Time dim is always 0, but block size should be 1
+                if (var->bsize[i] == 0){
+                    var->bsize[i] = 1;
+                }
+            }
             // Convert into byte array
+            for (i = 0; i < j; i++) { vsize *= dsize[i]; }
             err = MPI_Type_size(type, &esize);
             CHECK_MPIERR
             vsize *= esize;
@@ -209,6 +221,12 @@ inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
+
+    // Attach start and count before the data for small, non-scalar variables
+    if (var.ndim){
+        memset(buf , 0, var.ndim * sizeof(int64_t));
+        memcpy(buf + var.ndim * sizeof(int64_t), var.bsize, var.ndim * sizeof(int64_t));
+    }
 
     err = driver.put_varl (fid, var.data, type, buf, mode);
     CHECK_ERR
