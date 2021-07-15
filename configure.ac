@@ -546,6 +546,7 @@ echo \
    Features:  Internal debug mode         - ${debug}
               ADIOS-2 support             - ${have_adios2}
               HDF5 log-based VOL support  - ${have_logvol}
+              HDF5 multi-dataset support  - ${have_multi_dset}
 
    Compilers: MPICC    = ${MPICC}
               MPICXX   = ${MPICXX}"
