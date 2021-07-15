@@ -482,7 +482,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (dbl_bufp != NULL)
         dbl_buf = dbl_bufp;
     else {
-        dbl_buf = (double *)malloc (dbl_buflen * sizeof (double));
+        dbl_buf = (double *)malloc (dbl_buflen * sizeof (double) + 64);
         for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = rank;
     }
 
@@ -495,19 +495,19 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (rec_bufp != NULL)
         rec_buf = rec_bufp;
     else {
-        rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
+        rec_buf = (itype *)malloc (rec_buflen * sizeof (itype) + 64);
         for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
     }
     if (int_bufp != NULL)
         int_buf = int_bufp;
     else {
-        int_buf = (int*) malloc(10 * sizeof(int));
+        int_buf = (int*) malloc(10 * sizeof(int) + 64);
         for (ii=0; ii<10; ii++) int_buf[ii] = rank;
     }
     if (txt_bufp != NULL)
         txt_buf = txt_bufp;
     else {
-        txt_buf = (char*) malloc(16 * sizeof(char));
+        txt_buf = (char*) malloc(16 * sizeof(char) + 64);
         for (ii=0; ii<16; ii++) txt_buf[ii] = 'a' + rank;
     }
 
