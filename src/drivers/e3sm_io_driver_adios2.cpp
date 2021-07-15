@@ -56,6 +56,8 @@ size_t adios2_type_size (adios2_type type) {
             return 8;
         case adios2_type_uint8_t:
             return 1;
+        case adios2_type_int8_t:
+            return 1;
         case adios2_type_string:
             return 1;
         default:
@@ -522,7 +524,7 @@ int e3sm_io_driver_adios2::put_att (
         // ADIOS2 have no char type, we translate char array into unit sized string
         // MPI has not string type, we use WCHAR to represent string
         if (type == MPI_CHAR) {
-            aid = adios2_define_attribute (fp->iop, name.c_str (), atype, buf);
+            aid = adios2_define_attribute (fp->iop, name.c_str (), adios2_type_string, buf);
         } else {
             aid = adios2_define_attribute_array (fp->iop, name.c_str (), atype, buf, (size_t)size);
         }
@@ -538,7 +540,7 @@ int e3sm_io_driver_adios2::put_att (
         // ADIOS2 have no char type, we translate char array into unit sized string
         // MPI has not string type, we use WCHAR to represent string
         if (type == MPI_CHAR) {
-            aid = adios2_define_variable_attribute (fp->iop, name.c_str (), atype, buf, vname, "/");
+            aid = adios2_define_variable_attribute (fp->iop, name.c_str (), adios2_type_string, buf, vname, "/");
         } else {
             aid = adios2_define_variable_attribute_array (fp->iop, name.c_str (), atype, buf,
                                                           (size_t)size, vname, "/");
