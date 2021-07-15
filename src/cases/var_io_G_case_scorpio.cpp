@@ -391,7 +391,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D1_fix_int_bufp != NULL) {
             D1_fix_int_buf = D1_fix_int_bufp;
         } else {
-            D1_fix_int_buf = (int *)malloc (nelems[0] * sizeof (int));
+            D1_fix_int_buf = (int *)malloc (nelems[0] * sizeof (int) + 64);
             for (ii = 0; ii < nelems[0]; ii++) D1_fix_int_buf[ii] = rank + ii;
         }
     } else
@@ -402,7 +402,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D2_fix_int_bufp != NULL) {
             D2_fix_int_buf = D2_fix_int_bufp;
         } else {
-            D2_fix_int_buf = (int *)malloc (2 * nelems[1] * sizeof (int));
+            D2_fix_int_buf = (int *)malloc (2 * nelems[1] * sizeof (int) + 64);
             for (ii = 0; ii < 2 * nelems[1]; ii++) D2_fix_int_buf[ii] = rank + ii;
         }
     } else
@@ -413,7 +413,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D3_fix_int_bufp != NULL) {
             D3_fix_int_buf = D3_fix_int_bufp;
         } else {
-            D3_fix_int_buf = (int *)malloc (nelems[2] * sizeof (int));
+            D3_fix_int_buf = (int *)malloc (nelems[2] * sizeof (int) + 64);
             for (ii = 0; ii < nelems[2]; ii++) D3_fix_int_buf[ii] = rank + ii;
         }
     } else
@@ -424,7 +424,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D4_fix_int_bufp != NULL) {
             D4_fix_int_buf = D4_fix_int_bufp;
         } else {
-            D4_fix_int_buf = (int *)malloc (nelems[3] * sizeof (int));
+            D4_fix_int_buf = (int *)malloc (nelems[3] * sizeof (int) + 64);
             for (ii = 0; ii < nelems[3]; ii++) D4_fix_int_buf[ii] = rank + ii;
         }
     } else
@@ -435,7 +435,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D5_fix_int_bufp != NULL) {
             D5_fix_int_buf = D5_fix_int_bufp;
         } else {
-            D5_fix_int_buf = (int *)malloc (nelems[4] * sizeof (int));
+            D5_fix_int_buf = (int *)malloc (nelems[4] * sizeof (int) + 64);
             for (ii = 0; ii < nelems[4]; ii++) D5_fix_int_buf[ii] = rank + ii;
         }
     } else
@@ -446,7 +446,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D1_fix_dbl_bufp != NULL) {
             D1_fix_dbl_buf = D1_fix_dbl_bufp;
         } else {
-            D1_fix_dbl_buf = (double *)malloc (nelems[0] * sizeof (double));
+            D1_fix_dbl_buf = (double *)malloc (nelems[0] * sizeof (double) + 64);
             for (ii = 0; ii < nelems[0]; ii++) D1_fix_dbl_buf[ii] = rank + ii;
         }
     } else
@@ -469,7 +469,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D3_rec_dbl_bufp != NULL) {
             D3_rec_dbl_buf = D3_rec_dbl_bufp;
         } else {
-            D3_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
+            D3_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double) + 64);
             for (ii = 0; ii < rec_buflen; ii++) D3_rec_dbl_buf[ii] = rank + ii;
         }
     } else
@@ -480,7 +480,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D4_rec_dbl_bufp != NULL) {
             D4_rec_dbl_buf = D4_rec_dbl_bufp;
         } else {
-            D4_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
+            D4_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double) + 64);
             for (ii = 0; ii < rec_buflen; ii++) D4_rec_dbl_buf[ii] = rank + ii;
         }
     } else
@@ -491,7 +491,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D5_rec_dbl_bufp != NULL) {
             D5_rec_dbl_buf = D5_rec_dbl_bufp;
         } else {
-            D5_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
+            D5_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double) + 64);
             for (ii = 0; ii < rec_buflen; ii++) D5_rec_dbl_buf[ii] = rank + ii;
         }
     } else
@@ -502,7 +502,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D6_rec_dbl_bufp != NULL) {
             D6_rec_dbl_buf = D6_rec_dbl_bufp;
         } else {
-            D6_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
+            D6_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double) + 64);
             for (ii = 0; ii < rec_buflen; ii++) D6_rec_dbl_buf[ii] = rank + ii;
         }
     } else
