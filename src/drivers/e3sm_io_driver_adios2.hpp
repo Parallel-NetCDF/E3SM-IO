@@ -30,6 +30,7 @@ inline adios2_type mpi_type_to_adios2_type (MPI_Datatype mpitype) {
         case MPI_LONG_LONG:
             return adios2_type_int64_t;
         case MPI_CHAR:
+            return adios2_type_int8_t;
         case MPI_WCHAR:
             return adios2_type_string;
         case MPI_BYTE:

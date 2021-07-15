@@ -32,6 +32,8 @@ typedef struct e3sm_io_scorpio_var {
     int fillval_id;
     MPI_Datatype type;
     int decomid;
+    int64_t bsize[3];
+    int ndim;
 } e3sm_io_scorpio_var;
 
 inline int e3sm_io_scorpio_define_dim (e3sm_io_driver &driver,
@@ -71,6 +73,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
 
     var->type    = type;
     var->decomid = decomid;
+    var->ndim = 0;
 
     for(i = 0; i < ndim; i++){
         dnames_array[i] = dnames[dimids[i]].c_str();
@@ -111,7 +114,8 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             if (cfg.rank == 0) {
                 // Decomposition map
                 ibuf = var->decomp_id + 512;
-                err  = driver.put_att (fid, var->data, "__pio__/decomp", MPI_INT, 1, &ibuf);
+                sprintf(cbuf, "%d", ibuf);
+                err  = driver.put_att (fid, var->data, "__pio__/decomp", MPI_CHAR, strlen(cbuf), &cbuf);
                 CHECK_ERR
 
                 err =
@@ -148,8 +152,17 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
 
         // flatten into 1 dim only apply to non-scalar variables
         if (ndim){
-            for (i = 0; i < j; i++) { vsize *= dsize[i]; }
+            // Record block size to be written into the data later
+            var->ndim = ndim;
+            for (i = 0; i < ndim; i++) { 
+                var->bsize[i] = dsize[ndim - i - 1]; 
+                // Time dim is always 0, but block size should be 1
+                if (var->bsize[i] == 0){
+                    var->bsize[i] = 1;
+                }
+            }
             // Convert into byte array
+            for (i = 0; i < j; i++) { vsize *= dsize[i]; }
             err = MPI_Type_size(type, &esize);
             CHECK_MPIERR
             vsize *= esize;
@@ -209,20 +222,26 @@ inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
 
-    err = driver.put_varl (fid, var.data, type, buf, mode);
+    // Attach start and count before the data for small, non-scalar variables
+    if (var.ndim){
+        memset(buf , 0, var.ndim * sizeof(int64_t));
+        memcpy(buf + var.ndim * sizeof(int64_t), var.bsize, var.ndim * sizeof(int64_t));
+    }
+
+    err = driver.put_varl (fid, var.data, type, buf, nbe);
     CHECK_ERR
 
     if (var.frame_id >= 0) {
-        err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, mode);
+        err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, nbe);
         CHECK_ERR
 
-        err = driver.put_varl (fid, var.decomp_id, MPI_INT, &(var.decomid), mode);
+        err = driver.put_varl (fid, var.decomp_id, MPI_INT, &(var.decomid), nbe);
         CHECK_ERR
 
         if (var.fillval_id >= 0) {
             double fbuf = 1e+20;
 
-            err = driver.put_varl (fid, var.fillval_id, var.type, &fbuf, mode);
+            err = driver.put_varl (fid, var.fillval_id, var.type, &fbuf, nbe);
             CHECK_ERR
         }
     }
