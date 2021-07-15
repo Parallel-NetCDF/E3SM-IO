@@ -228,20 +228,20 @@ inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
         memcpy(buf + var.ndim * sizeof(int64_t), var.bsize, var.ndim * sizeof(int64_t));
     }
 
-    err = driver.put_varl (fid, var.data, type, buf, mode);
+    err = driver.put_varl (fid, var.data, type, buf, nbe);
     CHECK_ERR
 
     if (var.frame_id >= 0) {
-        err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, mode);
+        err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, nbe);
         CHECK_ERR
 
-        err = driver.put_varl (fid, var.decomp_id, MPI_INT, &(var.decomid), mode);
+        err = driver.put_varl (fid, var.decomp_id, MPI_INT, &(var.decomid), nbe);
         CHECK_ERR
 
         if (var.fillval_id >= 0) {
             double fbuf = 1e+20;
 
-            err = driver.put_varl (fid, var.fillval_id, var.type, &fbuf, mode);
+            err = driver.put_varl (fid, var.fillval_id, var.type, &fbuf, nbe);
             CHECK_ERR
         }
     }
