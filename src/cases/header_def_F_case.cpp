@@ -3606,7 +3606,6 @@ int def_F_case_h1(e3sm_io_config &cfg,
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Vertically-integrated low cloud")
     PUT_ATTR_TXT("cell_methods", "time: point")
-    PUT_ATTR_TXT("cell_methods", "time: point")
     PUT_ATTR_DECOMP(two, 2, dimids_D[1])
 
     /* float CLDMED(time, ncol) */
