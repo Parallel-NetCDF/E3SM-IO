@@ -27,7 +27,7 @@
         }                                                                                      \
     }
 
-static int verbose, line_sz;
+static int verbose, line_sz, raw_decom;
 
 /*----< intcompare() >------------------------------------------------------*/
 /* This subroutine is used in qsort() */
@@ -44,9 +44,9 @@ static int add_decomp (int ncid, const char *infname, int label) {
     char *buf, name[128], *map, *str;
     FILE *fd;
     int rank, nprocs, ndims;
-    int i, j, dimid, varid[3], *nreqs, err, nerrs = 0, *off, *len;
-    int total_nreqs, max_nreqs, min_nreqs, maxlen, minlen;
-    MPI_Offset k, gsize, *dims, *dims_C, start, count;
+    int i, j, dimid, varid[5], *nreqs, *raw_nreqs = NULL, err, nerrs = 0, *off, *len, *raw_off;
+    int total_nreqs, max_nreqs, min_nreqs, maxlen, minlen, total_raw_nreqs;
+    MPI_Offset k, gsize, *dims, *dims_C, start, count, raw_start, raw_count;
 
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
 
@@ -110,6 +110,7 @@ static int add_decomp (int ncid, const char *infname, int label) {
 
     /* nreqs[i] is the number of elements accessed by process i */
     nreqs = (int *)calloc (nprocs, sizeof (int));
+    raw_nreqs = (int *)calloc (nprocs, sizeof (int));
 
     /* decomposition data format:
      *     (process.rank.ID) (number.of.requests)
@@ -139,6 +140,9 @@ static int add_decomp (int ncid, const char *infname, int label) {
         nreqs[rank] = atoi (strtok (NULL, " ")); /* number of requests */
         if (nreqs[rank] == 0) /* this rank has zero request */
             continue;         /* loop of rank */
+
+        /* Record number of raw offsets before it is merged */
+        raw_nreqs[rank] = nreqs[rank];
 
         off = (int *)malloc (nreqs[rank] * sizeof (int));
         fgets (buf, LINE_SIZE + 1, fd); /* 2nd line: list of offsets */
@@ -180,8 +184,10 @@ static int add_decomp (int ncid, const char *infname, int label) {
 
     /* find total, max, and min nreqs amount all processes */
     total_nreqs = max_nreqs = min_nreqs = nreqs[0];
+    total_raw_nreqs = raw_nreqs[0];
     for (i = 1; i < nprocs; i++) {
         total_nreqs += nreqs[i];
+        total_raw_nreqs += raw_nreqs[i];
         max_nreqs = (nreqs[i] > max_nreqs) ? nreqs[i] : max_nreqs;
         min_nreqs = (nreqs[i] < min_nreqs) ? nreqs[i] : min_nreqs;
     }
@@ -221,6 +227,18 @@ static int add_decomp (int ncid, const char *infname, int label) {
     err = ncmpi_put_att_text (ncid, varid[0], "description", strlen (str), str);
     ERR
 
+    /* define variable raw_nreqs for this decomposition */
+    if (raw_decom) {
+        sprintf (name, "D%d.raw_nreqs", label);
+        err = ncmpi_def_var (ncid, name, NC_INT, 1, &dimid, &varid[3]);
+        ERR
+
+        /* define attribute description for this variable */
+        str = "Number of file offsets accessed per process before merge";
+        err = ncmpi_put_att_text (ncid, varid[3], "description", strlen (str), str);
+        ERR
+    }
+
     /* define dimension total_nreqs for this decomposition */
     sprintf (name, "D%d.total_nreqs", label);
     err = ncmpi_def_dim (ncid, name, total_nreqs, &dimid);
@@ -247,6 +265,21 @@ static int add_decomp (int ncid, const char *infname, int label) {
     ERR
     err = ncmpi_put_att_int (ncid, varid[2], "min", NC_INT, 1, &minlen);
     ERR
+
+    if (raw_decom) {
+        /* define dimension total_raw_nreqs for this decomposition */
+        sprintf (name, "D%d.total_raw_nreqs", label);
+        err = ncmpi_def_dim (ncid, name, total_raw_nreqs, &dimid);
+        ERR
+
+        /* define variable raw_offsets */
+        sprintf (name, "D%d.raw_offsets", label);
+        err = ncmpi_def_var (ncid, name, NC_INT, 1, &dimid, &varid[4]);
+        ERR
+        str = "File offsets accessed before merge";
+        err = ncmpi_put_att_text (ncid, varid[4], "description", strlen (str), str);
+        ERR
+    }
 
     /* add attribute to describe dimensionality */
     sprintf (name, "D%d.ndims", label);
@@ -276,8 +309,15 @@ static int add_decomp (int ncid, const char *infname, int label) {
     err = ncmpi_put_var_int_all (ncid, varid[0], nreqs);
     ERR
 
+    /* write variable containing number of requests before merge for each process */
+    if (raw_decom){
+        err = ncmpi_put_var_int_all (ncid, varid[3], raw_nreqs);
+        ERR
+    }
+
     /* read the offsets again into allocated array off */
     start = 0;
+    raw_start = 0;
     rewind (fd);
     fgets (buf, LINE_SIZE, fd);
     fgets (buf, LINE_SIZE, fd);
@@ -305,17 +345,19 @@ static int add_decomp (int ncid, const char *infname, int label) {
 
         off = (int *)malloc (nreqs[rank] * sizeof (int));
         len = (int *)malloc (nreqs[rank] * sizeof (int));
+        raw_off = (int *)malloc (raw_nreqs[rank] * sizeof (int));
         fgets (buf, LINE_SIZE, fd);
-        off[0] = atoi (strtok (buf, " "));
+        i = 0;
+        off[0] = raw_off[i++] = atoi (strtok (buf, " "));
         j      = 1;
         while (off[0] == 0) {
-            off[0] = atoi (strtok (NULL, " "));
+            off[0] = raw_off[i++] = atoi (strtok (NULL, " "));
             j++;
         }
         off[0]--;
         k = 1;
         for (; j < nreqs[rank]; j++) {
-            off[k] = atoi (strtok (NULL, " "));
+            off[k] = raw_off[i++] = atoi (strtok (NULL, " "));
             if (off[k] == 0) continue; /* skip 0 values */
             off[k]--;                  /* offset is 1 based */
             k++;
@@ -354,8 +396,17 @@ static int add_decomp (int ncid, const char *infname, int label) {
         ERR
         start += ncontig;
 
+        /* write/append raw file offsets before merge */
+        if (raw_decom){
+            raw_count = raw_nreqs[rank];
+            err = ncmpi_put_vara_int_all (ncid, varid[4], &raw_start, &raw_count, raw_off);
+            ERR
+            raw_start += raw_count; 
+        }
+
         free (off);
         free (len);
+        free (raw_off);
     }
     free (dims);
 
@@ -367,6 +418,7 @@ static int add_decomp (int ncid, const char *infname, int label) {
 fn_exit:
     fclose (fd);
     free (nreqs);
+    free (raw_nreqs);
     free (buf);
 
     return nerrs;
@@ -377,6 +429,7 @@ static void usage (char *argv0) {
         "Usage: %s [OPTION]...\n"
         "       -h               Print help\n"
         "       -v               Verbose mode\n"
+        "       -r               Include original decomposition map\n"
         "       -l num           max number of characters per line in input file\n"
         "       -o out_file      name of output netCDF file\n"
         "       -1 input_file    name of 1st decomposition file\n"
@@ -406,9 +459,10 @@ int main (int argc, char **argv) {
     outfname[0] = '\0';
     line_sz     = LINE_SIZE;
     verbose     = 0;
+    raw_decom     = 0;
 
     /* get command-line arguments */
-    while ((i = getopt (argc, argv, "hvo:l:1:2:3:4:5:6:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "hvro:l:1:2:3:4:5:6:")) != EOF) switch (i) {
             case 'v':
                 verbose = 1;
                 break;
@@ -417,6 +471,9 @@ int main (int argc, char **argv) {
                 break;
             case 'l':
                 line_sz = atoi (optarg);
+                break;
+            case 'r':
+                raw_decom = 1;
                 break;
             case '1':
                 infname[0] = optarg;
