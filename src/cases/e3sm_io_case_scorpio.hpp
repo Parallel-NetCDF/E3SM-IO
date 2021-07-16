@@ -71,7 +71,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
     std::vector<const char*> dnames_array (ndim);
 
     var->type    = type;
-    var->decomid = decomid;
+    var->decomid = decomid + 512;
     var->ndim = 0;
 
     for(i = 0; i < ndim; i++){
@@ -112,8 +112,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             // Scorpio attributes are only written by rank 0
             if (cfg.rank == 0) {
                 // Decomposition map
-                ibuf = var->decomp_id + 512;
-                sprintf(cbuf, "%d", ibuf);
+                sprintf(cbuf, "%d", var->decomid);
                 err  = driver.put_att (fid, var->data, "__pio__/decomp", MPI_CHAR, strlen(cbuf), &cbuf);
                 CHECK_ERR
 
