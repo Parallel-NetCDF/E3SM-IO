@@ -225,7 +225,7 @@ inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
     // Attach start and count before the data for small, non-scalar variables
     if (var.ndim){
         memset(buf , 0, var.ndim * sizeof(int64_t));
-        memcpy(buf + var.ndim * sizeof(int64_t), var.bsize, var.ndim * sizeof(int64_t));
+        memcpy((char*)buf + var.ndim * sizeof(int64_t), var.bsize, var.ndim * sizeof(int64_t));
     }
 
     err = driver.put_varl (fid, var.data, type, buf, nbe);
