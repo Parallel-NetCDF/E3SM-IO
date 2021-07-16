@@ -300,6 +300,13 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
       [adios2pio-nm](https://github.com/E3SM-Project/scorpio/tree/master/tools/adios2pio-nm),
       which is to be run off-line to convert the subfiles into a single regular
       NetCDF file.
+    * Running adios + blob requires the original PIO decomposition map. They can
+      be included in the converted NetCDF decomposition file by adding option `-r`
+      when running dat2nc. See README file in the utils folder for more instructions.
+      If the original decomposition map is not in the decomposition file, the E3SM benchmark
+      will simulate it by expanding the offset and length pairs in the converted decomposition
+      map into list of offsets accessed.
+
 
 ### Example files
 * An example batch script file for running a job on Cori @NERSC with 8 KNL

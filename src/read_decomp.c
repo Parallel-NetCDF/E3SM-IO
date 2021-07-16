@@ -111,8 +111,9 @@ int read_decomp(e3sm_io_config *cfg,
 {
     char name[128];
     int err, rank, nprocs, ncid, varid, proc_start, proc_count;
-    int i, j, k, nreqs, *all_nreqs, dimids[2], id;
-    MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
+    int i, j, k, nreqs, *all_nreqs, *all_raw_nreqs, dimids[3], id;
+    int has_raw_decom;
+    MPI_Offset num, decomp_nprocs, total_nreqs, start, count, raw_start, raw_count;
     MPI_Info info=MPI_INFO_NULL;
     struct off_len *myreqs;
 
@@ -175,7 +176,6 @@ int read_decomp(e3sm_io_config *cfg,
         decom->contig_nreqs[id] = 0;
         decom->disps[id]        = NULL;
         decom->blocklens[id]    = NULL;
-        decom->raw_nreqs[id]    = 0;
         decom->raw_offsets[id]  = NULL;
 
         /* total number of noncontiguous requests of all processes */
@@ -254,8 +254,6 @@ int read_decomp(e3sm_io_config *cfg,
         for (i = 0; i < nreqs; i++) {
             decom->disps[id][i]     = myreqs[i].off;
             decom->blocklens[id][i] = myreqs[i].len;
-            /* Count number of offsets before merge */
-            decom->raw_nreqs[id] += decom->blocklens[id][i];
         }
         free(myreqs);
 
@@ -276,14 +274,68 @@ int read_decomp(e3sm_io_config *cfg,
         /* update number of true noncontiguous requests */
         if (nreqs > 0) decom->contig_nreqs[id] = j + 1;
 
-        /* Generate (simualted) raw decomposition map */
-        decom->raw_offsets[id] = (MPI_Offset*) calloc(decom->raw_nreqs[id],
-                                               sizeof(MPI_Offset));
+        /* ADIOS blob test requires the decomposition map in the orinal PIO format
+         * There is an option in dat2nc to include the orinal PIO decomposition map in the decomposition file
+         * The variables are named "Dx.raw_nreqs" (number of offsets accessed) and "Dx.raw_offsets" (offsets accessed)
+         * If variable "Dx.raw_nreqs" presents (the PIO decomposition was included), read the PIO decomposition map from the variables
+         * Otherwise, simulate it by converting the converted decomposition map back into the PIO format
+         * See README file for more details
+         */
+        /* obtain varid of request variable Dx.raw_nreqs */
+        sprintf(name, "D%d.raw_nreqs", id + 1);
+        err = ncmpi_inq_varid(ncid, name, &varid);
+        if (err == NC_ENOTVAR){
+            has_raw_decom = 0;
+        }
+        else{
+            CHECK_ERR
+            has_raw_decom = 1;
+        }
+        if(has_raw_decom) {
+            /* read all numbers of requests */
+            all_raw_nreqs = (int *)malloc(decomp_nprocs * sizeof(int));
+            err       = ncmpi_get_var_int_all(ncid, varid, all_raw_nreqs);
+            CHECK_ERR
 
-        for (i=0, j=0; i<decom->contig_nreqs[id]; i++)
-            for (k=decom->disps[id][i];
-                 k<(decom->disps[id][i] + decom->blocklens[id][i]); k++)
-                decom->raw_offsets[id][j++] = k + 1;
+            /* calculate start index in Dx.offsets for this process */
+            i     = 0;
+            start = 0;
+            for (start = 0, i = 0; i < proc_start; i++) start += all_raw_nreqs[i];
+
+            /* calculate number of requests for this process */
+            count = 0;
+            for (; i < proc_start + proc_count; i++) count += all_raw_nreqs[i];
+            decom->raw_nreqs[id] = count;
+            free(all_raw_nreqs);
+
+            if (cfg->verbose)
+                printf("D%d rank %d: proc_start=%d proc_count=%d raw_start%lld raw_count=%lld\n",
+                        id + 1, rank, proc_start, proc_count, start, count);
+
+            /* read starting offsets of requests into disps[] */
+            decom->raw_offsets[id] = (MPI_Offset *)malloc(decom->raw_nreqs[id] * sizeof(MPI_Offset));
+            sprintf(name, "D%d.raw_offsets", id + 1);
+            err = ncmpi_inq_varid(ncid, name, &varid);
+            CHECK_ERR
+            err = ncmpi_get_vara_longlong_all(ncid, varid, &start, &count,
+                                        decom->raw_offsets[id]);
+            CHECK_ERR
+        }
+        else {    /* Generate (simualted) raw decomposition map */
+            /* Count number of offsets before merge */
+            decom->raw_nreqs[id] = 0;
+            for (i = 0; i < nreqs; i++) {            
+                decom->raw_nreqs[id] += decom->blocklens[id][i];
+            }
+
+            decom->raw_offsets[id] = (MPI_Offset*) calloc(decom->raw_nreqs[id],
+                                                sizeof(MPI_Offset));
+
+            for (i=0, j=0; i<decom->contig_nreqs[id]; i++)
+                for (k=decom->disps[id][i];
+                    k<(decom->disps[id][i] + decom->blocklens[id][i]); k++)
+                    decom->raw_offsets[id][j++] = k + 1;
+        }
 
         if (cfg->verbose) {
             int min_blocklen = decom->blocklens[id][0];
