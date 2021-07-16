@@ -22,6 +22,22 @@ NetCDF file format.
   files that need to be converted first.
 * A utility program, `dat2nc.c`, can be used to convert the text files. Running
   command `make` under to root folder should already build the executable.
+* In addition to converting the text-based decomposition map into binary form. 
+  The dat2nc utility also converts the decomposition map into the format used by
+  the E3SM benchmark.
+  + 0 offsets are removed.
+    In the PIO decomposition map, the index starts from 1. The decomposition map 
+    may contain 0s which means the process did not access any element. They are 
+    removed in the converted NetCDF file.
+  + Access to consecutive locations is merged.
+    The PIO decomposition map records the variable offset of every element accessed
+    by a process. The dat2nc utility converts them into offset and length pairs, 
+    merging consecutive elements.
+  + The offset and length pairs are sorted according to the offset.
+* The original decomposition map can be included in the NetCDF file by adding 
+  option `-r`. When enabled, dat2nc will save a copy of the original decomposition 
+  map in the binary form before applying the conversion mentioned above. It is used 
+  in the ADIOS blob test cases.
 * The command to combine the three `.dat` files to a NetCDF file for the F case
   as an example, is:
   ```
@@ -33,6 +49,7 @@ NetCDF file format.
     Usage: ./dat2nc [OPTION]... [FILE]...
           -h               Print help
           -v               Verbose mode
+          -r               Include original decomposition map
           -l num           Max number of characters per line in input file
           -o out_file      Name of output NetCDF file
           -1 input_file    name of 1st decomposition file
