@@ -232,7 +232,7 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
 
 #ifdef HDF5_HAVE_DWRITE_MULTI
-    H5Dwrite_multi (dxplid_coll, multi_datasets.size (), multi_datasets);
+    H5Dwrite_multi (this->driver.dxplid_coll, multi_datasets.size (), multi_datasets.data());
 #else
     for (i = 0; i < multi_datasets.size (); ++i) {
         // MPI_Barrier(MPI_COMM_WORLD);
@@ -281,7 +281,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
 
     // printf("Rank %d number of datasets to be written %d\n", rank, multi_datasets.size());
 #ifdef HDF5_HAVE_DWRITE_MULTI
-    H5Dread_multi (dxplid_coll, multi_datasets.size (), multi_datasets);
+    H5Dread_multi (this->driver.dxplid_coll, multi_datasets.size (), multi_datasets.data());
 #else
     for (i = 0; i < multi_datasets.size (); ++i) {
         // MPI_Barrier(MPI_COMM_WORLD);
