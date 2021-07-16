@@ -126,7 +126,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                 CHECK_ERR
 
                 // NetCDF type enum
-                ibuf = 5;
+                ibuf = (int)mpitype2nctype (type);
                 err  = driver.put_att (fid, var->data, "__pio__/nctype", MPI_INT, 1, &ibuf);
                 CHECK_ERR
 
