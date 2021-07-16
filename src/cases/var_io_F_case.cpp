@@ -526,7 +526,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
         sprintf(outfile, "%s%s", cfg.out_path, hist);
     else {
         sprintf(outfile, "%s", cfg.out_path);
-        sprintf(outfile + (ext - cfg.out_path), hist);
+        sprintf(outfile + (ext - cfg.out_path), "%s", hist);
         strcat(outfile, ext);
     }
 
@@ -1074,7 +1074,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
         sprintf(outfile, "%s%s", cfg.out_path, hist);
     else {
         sprintf(outfile, "%s", cfg.out_path);
-        sprintf(outfile + (ext - cfg.out_path), hist);
+        sprintf(outfile + (ext - cfg.out_path), "%s", hist);
         strcat(outfile, ext);
     }
 
