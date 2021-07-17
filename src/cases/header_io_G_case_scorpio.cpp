@@ -984,14 +984,20 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
     /* define scorpio decom map variables */
     for (j = 0; j < 6; j++) {
         int piodecomid[] = {0, 1, 2, 3, 4, 5};
+        int piodims[5];
 
         sprintf (name, "/__pio__/decomp/%d", (j + 512));
         err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
                                     scorpiovars + j);
         CHECK_ERR
+
+        for (i = 0; i < decom.ndims[piodecomid[j]]; i++){
+            piodims[i] = (int)decom.dims[piodecomid[j]][i];
+        }
         err = driver.put_att (ncid, scorpiovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
-                              decom.dims + piodecomid[j]);
+                              piodims);
         CHECK_ERR
+
         err =
             driver.put_att (ncid, scorpiovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
         CHECK_ERR
