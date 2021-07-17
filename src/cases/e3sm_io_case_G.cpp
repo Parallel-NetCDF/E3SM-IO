@@ -9,7 +9,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-//
+
+#include <assert.h>
+
 #include <e3sm_io_case_G.hpp>
 #include <e3sm_io.h>
 #include <e3sm_io_case.hpp>
@@ -36,7 +38,7 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
                             e3sm_io_driver &driver)
 {
     int err;
-    
+
     PRINT_MSG (0, "number of requests for D1=%d D2=%d D3=%d D4=%d D5=%d D6=%d\n",
                decom.contig_nreqs[0], decom.contig_nreqs[1], decom.contig_nreqs[2],
                decom.contig_nreqs[3], decom.contig_nreqs[4], decom.contig_nreqs[5]);
@@ -51,20 +53,26 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
                 decom.dims[2][0], decom.dims[2][1]);
         printf ("Using noncontiguous write buffer   = %s\n", cfg.non_contig_buf ? "yes" : "no");
         printf("==== Benchmarking G case ====\n");
-        if (cfg.strategy == blob)
-            printf("Using one-file-per-node blob I/O strategy\n");
+        if (cfg.strategy == blob) {
+            if (cfg.api == pnetcdf)
+                printf("Using PnetCDF one-file-per-node blob I/O strategy\n");
+            else if (cfg.api == hdf5)
+                printf("Using HDF5 one-file-per-node blob I/O strategy\n");
+        }
         else if (!cfg.vard)
             printf("Using varn API\n");
         printf("Variable written order: same as variables are defined\n");
     }
 
-    if (cfg.api == pnetcdf && cfg.strategy == blob) {
+    if (cfg.strategy == blob) {
+        assert (cfg.api == pnetcdf || cfg.api == hdf5);
+
         /* construct metadata for blob I/O strategy */
         err = blob_metadata(&cfg, &decom);
         CHECK_ERR
 
         /* Use one-file-per-compute-node blob I/O strategy */
-        err = pnetcdf_blob_G_case(cfg, decom, driver);
+        err = blob_G_case(cfg, decom, driver);
         CHECK_ERR
 
         if (cfg.sub_comm != MPI_COMM_NULL)

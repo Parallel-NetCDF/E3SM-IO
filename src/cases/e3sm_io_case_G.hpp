@@ -69,9 +69,9 @@ extern int run_varn_G_case_rd (e3sm_io_config &cfg,
                                double **D1_fix_dbl_bufp); /* D1 fix double buffer */
 
 extern int
-pnetcdf_blob_G_case(e3sm_io_config &cfg,
-                    e3sm_io_decom &decom,
-                    e3sm_io_driver &driver);
+blob_G_case(e3sm_io_config &cfg,
+            e3sm_io_decom &decom,
+            e3sm_io_driver &driver);
 
 extern int
 def_G_case(e3sm_io_config &cfg,
