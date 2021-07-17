@@ -198,6 +198,7 @@
     CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
     my_nreqs++; \
+    i++; \
 }
 #define IPUT_VAR1_DBL(buf, adv) { \
     err = driver.put_vara(ncid, varids[i], MPI_DOUBLE, start, NULL, buf, nb); \
