@@ -69,9 +69,10 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
     int ibuf;
     int ret;
     std::vector<const char*> dnames_array (ndim);
+    int piodecomid_inv[] = {0, 1, 4};
 
     var->type    = type;
-    var->decomid = decomid + 512;
+    var->decomid = piodecomid_inv[decomid] + 512;
     var->ndim = 0;
 
     for(i = 0; i < ndim; i++){
@@ -219,6 +220,7 @@ inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err, nerrs = 0;
+    int decomid;
 
     // Attach start and count before the data for small, non-scalar variables
     if (var.ndim){
@@ -233,7 +235,11 @@ inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
         err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, nbe);
         CHECK_ERR
 
-        err = driver.put_varl (fid, var.decomp_id, MPI_INT, &(var.decomid), nbe);
+        decomid = var.decomid;
+        if (var.fillval_id < 0) {
+            decomid *= -1;
+        }
+        err = driver.put_varl (fid, var.decomp_id, MPI_INT, &(decomid), nbe);
         CHECK_ERR
 
         if (var.fillval_id >= 0) {
