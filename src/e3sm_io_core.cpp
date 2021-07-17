@@ -205,6 +205,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 break;
         }
     } else if (decom->num_decomp == 6) {
+        cfg->nrec = 1;  /* only one record for G case */
         cfg->nvars = 52;
         switch (cfg->strategy) {
             case canonical:

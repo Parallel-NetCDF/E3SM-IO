@@ -193,7 +193,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-t] Write 2D variables followed by 3D variables
        [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for h1
                 only, -1 for both (default: -1)
-       [-r num] Number of records/time steps (default: 1)
+       [-r num] Number of records/time steps for F case h1 file (default: 1)
        [-s num] MPI rank stride for selecting processes to perform I/O tasks
                 (default: 1)
        [-g num] Number of subfiles, used in blob I/O only (default: 1)

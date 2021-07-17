@@ -740,6 +740,9 @@ int run_vard_F_case (e3sm_io_config &cfg,
         err =
             PUT_VARD_ALL (ncid, varids[30], filetype_rec[rec_no], rec_buf, rec_buflen, buftype_rec);
         CHECK_ERR
+
+        if (cfg.nvars == 414)
+            break; /* h0 file stores only one time stamp */
     }
     io_timing = MPI_Wtime () - io_timing;
 
@@ -984,27 +987,23 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
     }
 
 /*----< run_varn_F_case() >--------------------------------------------------*/
-int run_varn_F_case (e3sm_io_config &cfg,
-                     e3sm_io_decom &decom,
-                     e3sm_io_driver &driver,
-                     double *dbl_bufp,    /* buffer for fixed size double var */
-                     itype *rec_bufp,     /* buffer for rec floating point var */
-                     char *txt_buf,       /* buffer for char var */
-                     int *int_buf)        /* buffer for int var */
+int run_varn_F_case(e3sm_io_config &cfg,
+                    e3sm_io_decom &decom,
+                    e3sm_io_driver &driver)
 {
-    char *txt_buf_ptr, outfile[1040], *ext;
+    char *txt_buf=NULL, *txt_buf_ptr, outfile[1040], *ext;
     int i, j, k, err, rank, ncid, *varids, nvars_D[3];
-    int rec_no, gap = 0, my_nreqs, *int_buf_ptr, xnreqs[3];
-    size_t ii, dbl_buflen, rec_buflen, nelems[3];
+    int rec_no, gap = 0, my_nreqs=0, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
+    size_t ii, txt_buflen, int_buflen, dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing, max_timing;
-    MPI_Offset tmp, metadata_size, put_size, total_size, fsize, max_nreqs, total_nreqs;
+    MPI_Offset metadata_size, put_size, total_size, max_nreqs, total_nreqs;
     MPI_Offset **starts_D2 = NULL, **counts_D2 = NULL;
     MPI_Offset **starts_D3 = NULL, **counts_D3 = NULL;
     MPI_Info info_used = MPI_INFO_NULL;
-    MPI_Offset malloc_size, sum_size;
+    MPI_Offset malloc_size, sum_size, tmp, fsize;
     MPI_Offset m_alloc = 0, max_alloc;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
@@ -1027,40 +1026,58 @@ int run_varn_F_case (e3sm_io_config &cfg,
     }
 
     /* calculate number of variable elements from 3 decompositions */
-    my_nreqs = 0;
-    for (i = 0; i < 3; i++) {
-        for (nelems[i] = 0, k = 0; k < xnreqs[i]; k++) nelems[i] += decom.blocklens[i][k];
+    for (i=0; i<3; i++) {
+        for (nelems[i]=0, k=0; k<xnreqs[i]; k++)
+             nelems[i] += decom.blocklens[i][k];
     }
-    if (cfg.verbose && rank == 0) printf ("nelems=%zd %zd %zd\n", nelems[0], nelems[1], nelems[2]);
+    if (cfg.verbose && rank == 0)
+        printf ("nelems=%zd %zd %zd\n", nelems[0], nelems[1], nelems[2]);
 
-    /* allocate and initialize write buffer for small variables */
-    dbl_buflen = nelems[1] * 2
-               + nelems[0]
-               + 3 * decom.dims[2][0]
-               + 3 * (decom.dims[2][0] + 1)
-               + 8 + 2 + 20 * gap;
-    if (dbl_bufp != NULL) {
-        dbl_buf = dbl_bufp;
-    } else {
-        dbl_buf = (double *)malloc (dbl_buflen * sizeof (double));
-        for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = rank;
-    }
+    /* allocate write buffer for small climate variables */
+    dbl_buflen = nelems[1] * 2               /* lat[ncol] and lon[ncol] */
+               + nelems[0]                   /* area[ncol] */
+               + 3 * gap
+               + 3 * decom.dims[2][0]        /* 3 [lev] */
+               + 3 * (decom.dims[2][0] + 1)  /* 3 [ilev] */
+               + 2                           /* 1 [nbnd] */
+               + 8                           /* 8 single-element variables */
+               + 15 * gap;
+
+    txt_buflen = 2 * 8     /* 2 [nchars] */
+               + 10 * gap;
+    int_buflen = 10        /* 10 [1] */
+               + 10 * gap;
 
     /* allocate and initialize write buffer for large variables */
     if (cfg.nvars == 414)
-        rec_buflen = nelems[1] * 323 + nelems[2] * 63 + (323 + 63) * gap;
+        rec_buflen = nelems[1] * 323
+                   + nelems[2] * 63
+                   + (323 + 63) * gap;
     else
-        rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
+        rec_buflen = nelems[1] * 22
+                   + nelems[2]
+                   + (22 + 1) * gap;
 
-    if (rec_bufp != NULL) {
-        rec_buf = rec_bufp;
-    } else {
-        rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
+#define FLUSH_ALL_RECORDS_AT_ONCE
+#ifdef FLUSH_ALL_RECORDS_AT_ONCE
+    dbl_buflen *= cfg.nrec;
+    txt_buflen *= cfg.nrec;
+    int_buflen *= cfg.nrec;
+    rec_buflen *= cfg.nrec;
+#endif
 
-        for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
-        for (ii=0; ii<10; ii++) int_buf[ii] = rank;
-        for (ii=0; ii<16; ii++) txt_buf[ii] = 'a' + rank;
-    }
+    /* allocate and initialize write buffer */
+    dbl_buf = (double*) malloc (dbl_buflen * sizeof (double));
+    for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = rank;
+
+    rec_buf = (itype*) malloc (rec_buflen * sizeof (itype));
+    for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
+
+    txt_buf = (char*) malloc(txt_buflen * sizeof(char));
+    for (ii=0; ii<txt_buflen; ii++) txt_buf[ii] = 'a' + rank;
+
+    int_buf = (int*) malloc(int_buflen * sizeof(int));
+    for (ii=0; ii<int_buflen; ii++) int_buf[ii] = rank;
 
     pre_timing = MPI_Wtime () - pre_timing;
 
@@ -1167,43 +1184,33 @@ int run_varn_F_case (e3sm_io_config &cfg,
         REC_3D_VAR_STARTS_COUNTS (0, starts_D3, counts_D3, xnreqs[2], decom.disps[2],
                                   decom.blocklens[2], decom.dims[2][1]);
 
-    post_timing += MPI_Wtime () - timing;
+#ifdef FLUSH_ALL_RECORDS_AT_ONCE
+    rec_buf_ptr = rec_buf;
+    int_buf_ptr = int_buf;
+    txt_buf_ptr = txt_buf;
+#endif
 
     for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
-        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-        timing = MPI_Wtime ();
-
-        i           = 3;
-        dbl_buf_ptr = dbl_buf + nelems[1] * 2 + nelems[0] + gap * 3;
+#ifndef FLUSH_ALL_RECORDS_AT_ONCE
+        dbl_buf_ptr = dbl_buf + decom.count[1] * 2 + decom.count[0] + gap * 3;
         int_buf_ptr = int_buf;
         txt_buf_ptr = txt_buf;
+        rec_buf_ptr = rec_buf;
+#endif
+        i = 3;
 
         /* next 27 small variables are written by rank 0 only */
         if (rank == 0) {
             my_nreqs += 27;
             /* post nonblocking requests using IPUT_VARN() */
-            err = write_small_vars_F_case (driver, ncid, i, varids, rec_no, gap, decom.dims[2][0],
-                                           decom.dims[2][0] + 1, 2, 8, &int_buf_ptr, &txt_buf_ptr,
+	    err = write_small_vars_F_case (driver, ncid, i, varids, rec_no,
+					   gap, decom.dims[2][0],
+					   decom.dims[2][0] + 1, 2, 8,
+					   &int_buf_ptr, &txt_buf_ptr,
                                            &dbl_buf_ptr);
             CHECK_ERR
         }
         i += 27;
-
-        post_timing += MPI_Wtime () - timing;
-
-        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-        timing = MPI_Wtime ();
-
-        /* flush fixed-size and small variables */
-        err = WAIT_ALL_REQS (ncid, NC_REQ_ALL, NULL, NULL);
-        CHECK_ERR
-
-        wait_timing += MPI_Wtime () - timing;
-
-        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-        timing = MPI_Wtime ();
-
-        rec_buf_ptr = rec_buf;
 
         for (j = 0; j < xnreqs[1]; j++) starts_D2[j][0] = rec_no;
         for (j = 0; j < xnreqs[2]; j++) starts_D3[j][0] = rec_no;
@@ -1313,7 +1320,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
                 POST_VARN (3, 1, 284)   /* hstobie_linoz */
                 POST_VARN (2, 129, 285) /* mlip ... soa_c3SFWET */
             }
-        } else {
+        } else { /* h1 file */
             if (cfg.two_buf) {
                 /* write 2D variables followed by 3D variables */
                 POST_VARN (2, 13, 30) /* CLDHGH ... T5 */
@@ -1326,7 +1333,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
                 POST_VARN (2, 7, 44)  /* U250 ... Z500 */
             }
         }
-
+#ifndef FLUSH_ALL_RECORDS_AT_ONCE
         post_timing += MPI_Wtime () - timing;
 
         MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
@@ -1336,8 +1343,22 @@ int run_varn_F_case (e3sm_io_config &cfg,
         CHECK_ERR
 
         wait_timing += MPI_Wtime () - timing;
+#endif
+        if (cfg.nvars == 414)
+            break; /* h0 file stores only one time stamp */
     }
 
+#ifdef FLUSH_ALL_RECORDS_AT_ONCE
+    post_timing += MPI_Wtime() - timing;
+
+    MPI_Barrier(cfg.io_comm); /*---------------------------------------*/
+    timing = MPI_Wtime();
+
+    /* flush once for all time records */
+    err = WAIT_ALL_REQS (ncid, NC_REQ_ALL, NULL, NULL);
+
+    wait_timing += MPI_Wtime() - timing;
+#endif
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
@@ -1348,7 +1369,7 @@ int run_varn_F_case (e3sm_io_config &cfg,
     CHECK_ERR
     close_timing += MPI_Wtime () - timing;
 
-    if (cfg.rank == 0){
+    if (cfg.rank == 0) {
         err = driver.inq_file_size(outfile, &fsize);
         CHECK_ERR
     }
@@ -1363,6 +1384,8 @@ int run_varn_F_case (e3sm_io_config &cfg,
     }
     if (rec_buf != NULL) free (rec_buf);
     if (dbl_buf != NULL) free (dbl_buf);
+    if (txt_buf != NULL) free (txt_buf);
+    if (int_buf != NULL) free (int_buf);
     free (varids);
 
     total_timing = MPI_Wtime () - total_timing;
@@ -1411,6 +1434,8 @@ int run_varn_F_case (e3sm_io_config &cfg,
         printf ("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
         printf ("No. variables use decomposition D3 = %3d\n", nvars_D[2]);
         printf ("Total number of variables          = %3d\n", cfg.nvars);
+        printf ("Write number of records (time dim) = %3d\n",
+                (cfg.nvars == 414) ? 1 : cfg.nrec);
         if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
             printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                 (float)max_alloc / 1048576);

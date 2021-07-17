@@ -41,7 +41,6 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
         printf ("Output file/directory              = %s\n", cfg.out_path);
         printf ("Variable dimensions (C order)      = %lld x %lld\n", decom.dims[2][0],
                 decom.dims[2][1]);
-        printf ("Write number of records (time dim) = %d\n", cfg.nrec);
         printf ("Using noncontiguous write buffer   = %s\n", cfg.non_contig_buf ? "yes" : "no");
         printf("==== Benchmarking F case ====\n");
         if (cfg.strategy == blob)
@@ -99,14 +98,12 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
     } else { /* using PnetCDF varn APIs to write/read */
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 414;
-            err = run_varn_F_case (cfg, decom, driver, this->dbl_buf_h0,
-                                      this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
+            err = run_varn_F_case(cfg, decom, driver);
         }
 
         if (cfg.hx == 1 || cfg.hx == -1) {
             cfg.nvars = 51;
-            err = run_varn_F_case (cfg, decom, driver, this->dbl_buf_h0,
-                                      this->rec_buf_h0, this->txt_buf[0], this->int_buf[0]);
+            err = run_varn_F_case(cfg, decom, driver);
         }
     }
 

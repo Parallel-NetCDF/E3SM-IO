@@ -49,7 +49,6 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
         printf ("Output file/directory              = %s\n", cfg.out_path);
         printf ("Variable dimensions (C order)      = %lld x %lld\n",
                 decom.dims[2][0], decom.dims[2][1]);
-        printf ("Write number of records (time dim) = %d\n", cfg.nrec);
         printf ("Using noncontiguous write buffer   = %s\n", cfg.non_contig_buf ? "yes" : "no");
         printf("==== Benchmarking G case ====\n");
         if (cfg.strategy == blob)
