@@ -68,6 +68,7 @@ err_out:
 void print_info (MPI_Info *info_used) {
     int i, nkeys;
 
+    if (*info_used == MPI_INFO_NULL) return;
     MPI_Info_get_nkeys (*info_used, &nkeys);
     printf ("MPI File Info: nkeys = %d\n", nkeys);
     for (i = 0; i < nkeys; i++) {
@@ -103,7 +104,7 @@ static void usage (char *argv0) {
 "                 (folder) path\n"
 "       [-a api]  I/O library name to perform write operation\n"
 "           pnetcdf:   PnetCDF library (default)\n"
-"           hdf5_ra:   HDF5 library with request rearranger on top of it\n"
+"           hdf5:      HDF5 library\n"
 "           hdf5_log:  HDF5 library with Log-based VOL\n"
 "           hdf5_md:   HDF5 library with multi-dataset APIs\n"
 "           adios:     ADIOS2 library using BP3 format\n"
@@ -179,8 +180,8 @@ int main (int argc, char **argv) {
                 if (strcmp (optarg, "pnetcdf") == 0)
                     cfg.api = pnetcdf;
 #ifdef ENABLE_HDF5
-                else if (strcmp (optarg, "hdf5_ra") == 0)
-                    cfg.api = hdf5_ra;
+                else if (strcmp (optarg, "hdf5") == 0)
+                    cfg.api = hdf5;
                 else if (strcmp (optarg, "hdf5_md") == 0)
 #ifdef HDF5_HAVE_DWRITE_MULTI
                     cfg.api = hdf5_md;
@@ -270,7 +271,7 @@ int main (int argc, char **argv) {
 
     /* neither command-line option -i or -o is used */
     if (!cfg.wr && !cfg.rd)
-        ERR_OUT("Error: neither command-line option -i or -o is used")
+        ERR_OUT("Error: neither command-line option -i nor -o is used")
 
     /* check yet to support APIs and I/O strategies */
     if (cfg.api == undef_api) cfg.api = pnetcdf;
@@ -282,13 +283,11 @@ int main (int argc, char **argv) {
             ERR_OUT ("PnetCDF with log I/O strategy is not supported yet")
     }
 
-    if (cfg.api == hdf5_ra) {
+    if (cfg.api == hdf5) {
         if (cfg.strategy == undef_io)
             cfg.strategy = canonical;
         else if (cfg.strategy == log)
             ERR_OUT ("HDF5 rearranger with log I/O strategy is not supported yet")
-        else if (cfg.strategy == blob)
-            ERR_OUT ("HDF5 rearranger with blob I/O strategy is not supported yet")
     }
 
     if (cfg.api == hdf5_md) {
