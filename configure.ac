@@ -544,9 +544,10 @@ echo \
    ${PACKAGE_NAME} Version ${PACKAGE_VERSION}
 
    Features:  Internal debug mode         - ${debug}
-              ADIOS-2 support             - ${have_adios2}
+              HDF5 support                - ${have_hdf5}
               HDF5 log-based VOL support  - ${have_logvol}
               HDF5 multi-dataset support  - ${have_multi_dset}
+              ADIOS-2 support             - ${have_adios2}
 
    Compilers: MPICC    = ${MPICC}
               MPICXX   = ${MPICXX}"
