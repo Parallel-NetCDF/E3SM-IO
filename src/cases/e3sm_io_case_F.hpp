@@ -53,11 +53,6 @@ extern int run_varn_F_case_rd (e3sm_io_config &cfg,
                                int *int_buf);       /* buffer for int var */
 
 extern int
-pnetcdf_blob_F_case(e3sm_io_config &cfg,
-                    e3sm_io_decom &decom,
-                    e3sm_io_driver &driver);
-
-extern int
 def_F_case_h0(e3sm_io_config &cfg,
               e3sm_io_decom  &decom,
               e3sm_io_driver &driver,
@@ -70,4 +65,9 @@ def_F_case_h1(e3sm_io_config &cfg,
               e3sm_io_driver &driver,
               int ncid,
               int *varids);
+
+extern int
+blob_F_case(e3sm_io_config &cfg,
+            e3sm_io_decom &decom,
+            e3sm_io_driver &driver);
 

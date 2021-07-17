@@ -9,7 +9,9 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-//
+
+#include <assert.h>
+
 #include <e3sm_io_case_F.hpp>
 #include <e3sm_io.h>
 #include <e3sm_io_case.hpp>
@@ -43,8 +45,12 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
                 decom.dims[2][1]);
         printf ("Using noncontiguous write buffer   = %s\n", cfg.non_contig_buf ? "yes" : "no");
         printf("==== Benchmarking F case ====\n");
-        if (cfg.strategy == blob)
-            printf("Using one-file-per-node blob I/O strategy\n");
+        if (cfg.strategy == blob) {
+            if (cfg.api == pnetcdf)
+                printf("Using PnetCDF one-file-per-node blob I/O strategy\n");
+            else if (cfg.api == hdf5)
+                printf("Using HDF5 one-file-per-node blob I/O strategy\n");
+        }
         else if (cfg.vard)
             printf("Using PnetCDF vard API\n");
         else
@@ -57,7 +63,9 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
 
     nvar = cfg.nvars;
 
-    if (cfg.api == pnetcdf && cfg.strategy == blob) {
+    if (cfg.strategy == blob) {
+        assert (cfg.api == pnetcdf || cfg.api == hdf5);
+
         /* construct metadata for blob I/O strategy */
         err = blob_metadata(&cfg, &decom);
         CHECK_ERR
@@ -65,14 +73,14 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
         /* Use one-file-per-compute-node blob I/O strategy */
         if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
             cfg.nvars = 414;
-            err = pnetcdf_blob_F_case(cfg, decom, driver);
+            err = blob_F_case(cfg, decom, driver);
             CHECK_ERR
 
         }
 
         if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
             cfg.nvars = 51;
-            err = pnetcdf_blob_F_case(cfg, decom, driver);
+            err = blob_F_case(cfg, decom, driver);
             CHECK_ERR
         }
 
