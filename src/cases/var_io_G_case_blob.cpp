@@ -756,6 +756,7 @@ int blob_G_case(e3sm_io_config &cfg,
         printf("No. variables use decomposition D5 = %3d\n", nvars_D[4]);
         printf("No. variables use decomposition D6 = %3d\n", nvars_D[5]);
         printf("Total number of variables          = %3d\n", cfg.nvars + num_decomp_vars);
+        printf("Write number of records (time dim) = %3d\n", cfg.nrec);
         if (cfg.api == pnetcdf)
             printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                    (float)max_alloc / 1048576);
