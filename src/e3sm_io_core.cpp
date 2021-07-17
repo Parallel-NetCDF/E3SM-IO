@@ -29,6 +29,7 @@
 #include <hdf5.h>
 
 #include <e3sm_io_driver_hdf5.hpp>
+#include <e3sm_io_driver_h5blob.hpp>
 #endif
 #ifdef ENABLE_ADIOS2
 #include <adios2_c.h>
@@ -96,7 +97,7 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
                     gid = H5Gopen (fid, "_LOG", H5P_DEFAULT);
                     if (gid >= 0) {
                         cfg->api = hdf5_log;
-                    } else if (!((cfg->api == hdf5_md) || (cfg->api == hdf5_ra))) {
+                    } else if (!((cfg->api == hdf5_md) || (cfg->api == hdf5))) {
                         ERR_OUT ("Selected API not compatible with input file format");
                     }
 
@@ -146,7 +147,16 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
         case pnetcdf:
             driver = new e3sm_io_driver_pnc (cfg);
             break;
-        case hdf5_ra:
+        case hdf5:
+#ifdef ENABLE_HDF5
+            if (cfg->strategy == blob)
+                driver = new e3sm_io_driver_h5blob (cfg);
+            else
+                driver = new e3sm_io_driver_hdf5 (cfg);
+#else
+            ERR_OUT ("HDF5 support was not enabled in this build")
+#endif
+            break;
         case hdf5_md:
         case hdf5_log:
 #ifdef ENABLE_HDF5
@@ -194,7 +204,8 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 tcase = new e3sm_io_case_F ();
                 break;
             case blob:
-                if (cfg->api == pnetcdf) tcase = new e3sm_io_case_F ();
+                if (cfg->api == pnetcdf || cfg->api == hdf5)
+                    tcase = new e3sm_io_case_F();
 #ifdef ENABLE_ADIOS2
                 else
                     tcase = new e3sm_io_case_F_scorpio();
@@ -213,7 +224,8 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 tcase = new e3sm_io_case_G ();
                 break;
             case blob:
-                if (cfg->api == pnetcdf) tcase = new e3sm_io_case_G ();
+                if (cfg->api == pnetcdf || cfg->api == hdf5)
+                    tcase = new e3sm_io_case_G();
 #ifdef ENABLE_ADIOS2
                 else
                     tcase = new e3sm_io_case_G_scorpio ();
