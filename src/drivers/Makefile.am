@@ -12,13 +12,20 @@ AM_CPPFLAGS += -I${top_srcdir}/src/cases
 noinst_LIBRARIES = libe3sm_io_drivers.a
 
 C_SRCS = e3sm_io_driver_pnc.cpp
-H_SRCS = e3sm_io_driver_pnc.hpp
+
+H_SRCS = e3sm_io_driver.hpp \
+         e3sm_io_driver_pnc.hpp
 
 if ENABLE_HDF5
 C_SRCS +=   e3sm_io_driver_hdf5.cpp \
-            e3sm_io_driver_hdf5_agg.cpp
+            e3sm_io_driver_hdf5_agg.cpp \
+            e3sm_io_driver_h5blob.cpp \
+            blob_ncmpio.c
+
 H_SRCS +=   e3sm_io_driver_hdf5.hpp \
-            e3sm_io_driver_hdf5_int.hpp
+            e3sm_io_driver_hdf5_int.hpp \
+            e3sm_io_driver_h5blob.hpp \
+            blob_ncmpio.h
 endif
 
 if ENABLE_ADIOS2
