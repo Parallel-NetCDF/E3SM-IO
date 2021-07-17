@@ -10,13 +10,18 @@ M4H_SRCS = e3sm_io_profile.m4h
 
 bin_PROGRAMS = e3sm_io
 
+H_SRCS          = e3sm_io.h \
+                  e3sm_io_err.h
+
 e3sm_io_SOURCES = e3sm_io.c \
                   e3sm_io_core.cpp \
                   read_decomp.c \
                   blob_metadata.c
 
-e3sm_io_SOURCES += e3sm_io.h
-e3sm_io_SOURCES += $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
+e3sm_io_SOURCES += $(H_SRCS) \
+                   $(M4_SRCS:.m4=.cpp) \
+                   $(M4H_SRCS:.m4h=.hpp)
+
 e3sm_io_LDADD = cases/libe3sm_io_cases.a \
                 drivers/libe3sm_io_drivers.a \
                 -lpnetcdf
