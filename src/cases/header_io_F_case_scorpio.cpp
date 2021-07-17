@@ -204,13 +204,18 @@ int def_F_case_h0_scorpio (e3sm_io_driver &driver,
     /* define pio decom map variables */
     for (j = 0; j < 5; j++) {
         int piodecomid[] = {0, 1, 1, 1, 2};
+        int piodims[5];
 
         sprintf (name, "/__pio__/decomp/%d", (j + 512));
         err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
                                     scorpiovars + j);
         CHECK_ERR
+
+        for (i = 0; i < decom.ndims[piodecomid[j]]; i++){
+            piodims[i] = (int)decom.dims[piodecomid[j]][i];
+        }
         err = driver.put_att (ncid, scorpiovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
-                              decom.dims + piodecomid[j]);
+                              piodims);
         CHECK_ERR
         err = driver.put_att (ncid, scorpiovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
         CHECK_ERR
@@ -6204,16 +6209,23 @@ int def_F_case_h1_scorpio (e3sm_io_driver &driver,
     /* define pio decom map variables */
     for (j = 0; j < 5; j++) {
         int piodecomid[] = {0, 1, 1, 1, 2};
-        k                = 6;
+        int piodims[5];
+        
         sprintf (name, "/__pio__/decomp/%d", (j + 512));
         err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
                                     scorpiovars + j);
         CHECK_ERR
+
+        for (i = 0; i < decom.ndims[piodecomid[j]]; i++){
+            piodims[i] = (int)decom.dims[piodecomid[j]][i];
+        }
         err = driver.put_att (ncid, scorpiovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
-                              decom.dims + piodecomid[j]);
+                              piodims);
         CHECK_ERR
+
         err = driver.put_att (ncid, scorpiovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
         CHECK_ERR
+
         err = driver.put_att (ncid, scorpiovars[j], "piotype", MPI_INT, 1, &k);
         CHECK_ERR
     }
