@@ -19,9 +19,9 @@
 
 #include <mpi.h>
 
-#include <e3sm_io_case_G.hpp>
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
+#include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
 
 #ifdef USE_PNETCDF_DIRECTLY
