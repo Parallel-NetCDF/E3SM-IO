@@ -430,7 +430,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     int i, j, k, err=0, rank, ncid, nvars_D[3];
     e3sm_io_scorpio_var *varids;
     int scorpiovars[6];
-    int rec_no=0, gap = 0, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
+    int rec_no=0, gap = 0, nrec, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
     size_t ii, dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
@@ -703,7 +703,13 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
 
     post_timing += MPI_Wtime () - timing;
 
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
+    // Determine number of records
+    if (cfg.nvars == 414)
+        nrec = 1;   // H0 always contains 1 timesteps regardless of options
+    else
+        nrec = cfg.nrec;
+
+    for (rec_no = 0; rec_no < nrec; rec_no++) {
         MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime ();
 
