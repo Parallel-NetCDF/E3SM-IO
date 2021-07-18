@@ -222,7 +222,7 @@ static inline void print_no_collective_cause (uint32_t local_no_collective_cause
 }
 
 int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
-    herr_t herr;
+    herr_t herr=0;
     int i, err=0;
     uint32_t local_no_collective_cause, global_no_collective_cause;
     int rank;
