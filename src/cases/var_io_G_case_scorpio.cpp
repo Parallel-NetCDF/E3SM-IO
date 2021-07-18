@@ -251,7 +251,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     int i, j, k, err, rank, ncid;
     e3sm_io_scorpio_var *varids;
     int scorpiovars[7];
-    int rec_no=0, my_nreqs, nvars_D[6];
+    int rec_no, nrec, my_nreqs, nvars_D[6];
     size_t ii, rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf,
         *rec_buf_ptr;
@@ -677,7 +677,8 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         my_nreqs += 4; /* 4 non-record variables */
     }
 
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
+    nrec = 1;
+    for (rec_no = 0; rec_no < nrec; rec_no++) {
         start[0] = rec_no;
         count[0] = 1;
 
@@ -916,7 +917,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         printf ("No. variables use decomposition D5 = %3d\n", nvars_D[4]);
         printf ("No. variables use decomposition D6 = %3d\n", nvars_D[5]);
         printf ("Total number of variables          = %3d\n", cfg.nvars);
-        printf ("Write number of records (time dim) = %3d\n", cfg.nrec);
+        printf ("Write number of records (time dim) = %3d\n", nrec);
         if (dynamic_cast<e3sm_io_driver_pnc *> (&driver)) {
             printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                     (float)max_alloc / 1048576);
