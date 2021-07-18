@@ -203,7 +203,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
                  (folder) path
        [-a api]  I/O library name to perform write operation
            pnetcdf:   PnetCDF library (default)
-           hdf5_ra:   HDF5 library with request rearranger on top of it
+           hdf5:      HDF5 library
            hdf5_log:  HDF5 library with Log-based VOL
            hdf5_md:   HDF5 library with multi-dataset APIs
            adios:     ADIOS2 library using BP3 format
@@ -252,13 +252,26 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
       tool, [utils/pnetcdf_blob_replay.c](utils/pnetcdf_blob_replay.c), which
       is to be run off-line to convert the subfiles into a single regular
       NetCDF file in CDF5 format.
-  + **hdf5_ra + canonical**
-    * hdf5_ra re-arranges the write requests among all MPI processes into less
-      but large contiguous requests before calling HDF5 to write the data. This
-      is essentially the same as the BOX data rearrangment implemented in
-      Scorpio.
-    * The output file is a regular HDF5, which is understandable by regular
-      HDF5 and its third-party software.
+    * The blobs are per-record based, which means all writes by different
+      processes to the same variable are stored in a blob. Within that blob,
+      data layout follows the process rank order.
+  + **hdf5 + blob**
+    * This is the blob I/O implemented with HDF5. Different from the PnetCDF
+      blob I/O, the implementation of uses the per-process based blob I/O
+      strategy, in which each process writes only one blob at file close time.
+      All writes to all variables by a process are first cached in memory until
+      file close time, in which they are packed into a contiguous buffer, a
+      blob, to be flushed out in a single write call. There is an additional
+      write for the header data blob, which is written by the root process
+      only. This per-process based strategy is the same one used by ADIOS.
+    * Multiple subfiles in HDF5 format will be created.
+    * There will be one subfile per compute node used.
+    * Input file name provided in option `-i` will be used as a base to create
+      the subfile name. The subfile names will have the numerical IDs as the
+      suffix.
+    * The HDF5 subfiles cannot be understood by the traditional HDF5 software.
+      A utility tool program will be developed in the future to convert the
+      subfiles into a single regular HDF5 filet.
   + **hdf5_md + canonical**
     * hdf5_md reads/writes data using the multi-dataset APIs, which is a new
       HDF5 feature and currently under development. The APIs allow users to
