@@ -896,6 +896,7 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
                                           void *buf,
                                           e3sm_io_op_mode mode) {
     int err = 0;
+    size_t tsize, putsize;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     int i, j;
@@ -910,8 +911,6 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
     hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
     hid_t tid = -1;
-    MPI_Offset putsize;
-    MPI_Offset **count;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -1050,12 +1049,15 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
         }
     }
 
-    tid     = H5Dget_type (did);
-    putsize = H5Tget_size (tid);
-    for (count = counts; count < counts + nreq; count++) {
-        for (i = 0; i < ndim; i++) { putsize *= *count[i]; }
+    tid   = H5Dget_type (did);
+    tsize = H5Tget_size (tid);
+
+    for (j=0; j<nreq; j++) {
+        putsize = tsize;
+        for (i=0; i<ndim; i++)
+            putsize *= counts[j][i];
+        fp->putsize += putsize;
     }
-    fp->putsize += putsize;
 
 err_out:;
     if (tid >= 0) H5Tclose (tid);
