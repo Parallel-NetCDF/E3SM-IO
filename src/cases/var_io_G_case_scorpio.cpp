@@ -253,7 +253,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     int i, j, k, err, rank, ncid;
     e3sm_io_scorpio_var *varids;
     int scorpiovars[7];
-    int rec_no, my_nreqs, nvars_D[6];
+    int rec_no=0, my_nreqs, nvars_D[6];
     size_t ii, rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf,
         *rec_buf_ptr;
