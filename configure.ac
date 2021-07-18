@@ -9,7 +9,7 @@ dnl
 
 dnl autoconf v2.69 was released in 2012-04-24
 AC_PREREQ([2.69])
-AC_INIT([e3sm_io],[1.0.0],[],[e3sm_io],[])
+AC_INIT([e3sm_io],[1.3.0],[],[e3sm_io],[])
 
 AM_EXTRA_RECURSIVE_TARGETS([tests])
 
