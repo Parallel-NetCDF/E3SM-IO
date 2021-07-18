@@ -20,7 +20,6 @@
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 
-#include <e3sm_io_case_F_scorpio.hpp>
 #include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
 

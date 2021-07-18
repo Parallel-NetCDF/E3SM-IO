@@ -75,11 +75,10 @@
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 
-#include <e3sm_io_case_F.hpp>
-#include <e3sm_io_case_F_scorpio.hpp>
-#include <e3sm_io_case_scorpio.hpp>
+#include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
 #ifdef ENABLE_ADIOS2
+#include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver_adios2.hpp>
 #endif
 
