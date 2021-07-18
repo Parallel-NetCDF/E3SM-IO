@@ -76,8 +76,6 @@
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 
-#include <e3sm_io_case_G.hpp>
-#include <e3sm_io_case_G_scorpio.hpp>
 #include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
 #include <e3sm_io_driver_pnc.hpp>

@@ -13,8 +13,7 @@
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 
-#include <e3sm_io_case.hpp>
-#include <e3sm_io_case_G_scorpio.hpp>
+#include <e3sm_io_case_scorpio.hpp>
 
 e3sm_io_case_G_scorpio::e3sm_io_case_G_scorpio () {}
 e3sm_io_case_G_scorpio::~e3sm_io_case_G_scorpio () {}
