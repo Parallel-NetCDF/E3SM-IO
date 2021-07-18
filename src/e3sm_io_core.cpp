@@ -246,7 +246,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         CHECK_PTR (driver)
 
         err = tcase->rd_test (*cfg, *decom, *driver);
-        if (err != 0) goto err_out;
+        CHECK_ERR
 
         cfg->api = api_tmp;  // Restore API to user setting for write test
 
@@ -261,7 +261,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         CHECK_PTR (driver)
 
         err = tcase->wr_test (*cfg, *decom, *driver);
-        if (err != 0) goto err_out;
+        CHECK_ERR
 
         if (driver) {
             delete driver;
