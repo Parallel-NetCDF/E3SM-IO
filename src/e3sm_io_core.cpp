@@ -194,9 +194,20 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_TOTAL)
 
-    // Select test case
-    /* F case has 3 decompositions, G case has 6 */
+    if ((cfg->verbose >= 0) && (cfg->rank == 0)) {
+        printf ("Total number of MPI processes      = %d\n", cfg->np);
+        printf ("Number of IO processes             = %d\n", cfg->num_iotasks);
+        printf ("Input decomposition file           = %s\n", cfg->cfg_path);
+        printf ("Number of decompositions           = %d\n", decom->num_decomp);
+        if (decom->num_decomp == 3)
+            printf("==== Benchmarking F case =============================\n");
+        else if (decom->num_decomp == 6)
+            printf("==== Benchmarking G case =============================\n");
+    }
+
+    /* Select test case */
     if (decom->num_decomp == 3) {
+        /* F case has 3 decompositions */
         cfg->nvars = 414;
         switch (cfg->strategy) {
             case canonical:
@@ -216,6 +227,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 break;
         }
     } else if (decom->num_decomp == 6) {
+        /* G case has 6 decompositions */
         cfg->nrec = 1;  /* only one record for G case */
         cfg->nvars = 52;
         switch (cfg->strategy) {
@@ -239,7 +251,17 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         ERR_OUT ("Unknown decom file")
     }
 
+    /* perform read */
     if (cfg->rd) {
+        if ((cfg->verbose >= 0) && (cfg->rank == 0)) {
+            printf ("Input f ile/directory              = %s\n", cfg->in_path);
+            printf ("Using noncontiguous read buffer    = %s\n", cfg->non_contig_buf ? "yes" : "no");
+            if (cfg->two_buf)
+                printf("Variable read order: 2D variables then 3D variables\n");
+            else
+                printf("Variable read order: same as variables are defined\n");
+        }
+
         e3sm_io_api api_tmp = cfg->api;
 
         driver = e3sm_io_get_driver (cfg->in_path, cfg);
@@ -256,7 +278,47 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         }
     }
 
+    /* perform write */
     if (cfg->wr) {
+        if ((cfg->verbose >= 0) && (cfg->rank == 0)) {
+            printf ("Output file/directory              = %s\n", cfg->out_path);
+            printf ("Using noncontiguous write buffer   = %s\n", cfg->non_contig_buf ? "yes" : "no");
+            if (cfg->two_buf)
+                printf("Variable write order: 2D variables then 3D variables\n");
+            else
+                printf("Variable write order: same as variables are defined\n");
+
+            if (cfg->strategy == canonical) {
+                if (cfg->api == pnetcdf) {
+                    if (cfg->vard)
+                        printf("==== PnetCDF canonical I/O using vard API ============\n");
+                    else
+                        printf("==== PnetCDF canonical I/O using varn API ============\n");
+                }
+                else if (cfg->api == hdf5_md) {
+                    printf("==== HDF5 canonical I/O using multi-dataset API ======\n");
+                }
+                else
+                    ERR_OUT ("I/O strategy and API used is not supported yet")
+            }
+            else if (cfg->strategy == log) {
+                if (cfg->api == hdf5_log)
+                    printf("==== HDF5 using log-based VOL ========================\n");
+                else
+                    ERR_OUT ("I/O strategy and API used is not supported yet")
+            }
+            else if (cfg->strategy == blob) {
+                if (cfg->api == pnetcdf)
+                    printf("==== PnetCDF blob I/O ================================\n");
+                else if (cfg->api == hdf5)
+                    printf("==== HDF5 blob I/O ===================================\n");
+                else if (cfg->api == adios)
+                    printf("==== ADIOS blob I/O ==================================\n");
+                else
+                    ERR_OUT ("I/O strategy and API used is not supported yet")
+            }
+        }
+
         driver = e3sm_io_get_driver (NULL, cfg);
         CHECK_PTR (driver)
 

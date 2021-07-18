@@ -179,26 +179,14 @@ int main (int argc, char **argv) {
             case 'a':
                 if (strcmp (optarg, "pnetcdf") == 0)
                     cfg.api = pnetcdf;
-#ifdef ENABLE_HDF5
                 else if (strcmp (optarg, "hdf5") == 0)
                     cfg.api = hdf5;
                 else if (strcmp (optarg, "hdf5_md") == 0)
-#ifdef HDF5_HAVE_DWRITE_MULTI
                     cfg.api = hdf5_md;
-#else
-                    ERR_OUT ("The HDF5 used does not support multi-dataset write")
-#endif
                 else if (strcmp (optarg, "hdf5_log") == 0)
-#ifdef ENABLE_LOGVOL
                     cfg.api = hdf5_log;
-#else
-                    ERR_OUT ("Log VOL support was not enabled in this build")
-#endif
-#endif
-#ifdef ENABLE_ADIOS2
                 else if (strcmp (optarg, "adios") == 0)
                     cfg.api = adios;
-#endif
                 else
                     ERR_OUT ("Unknown API")
                 break;
@@ -284,6 +272,9 @@ int main (int argc, char **argv) {
     }
 
     if (cfg.api == hdf5) {
+#ifndef ENABLE_HDF5
+        ERR_OUT("HDF5 is not enabled at configure time")
+#endif
         if (cfg.strategy == undef_io)
             cfg.strategy = canonical;
         else if (cfg.strategy == log)
@@ -291,6 +282,9 @@ int main (int argc, char **argv) {
     }
 
     if (cfg.api == hdf5_md) {
+#ifndef HDF5_HAVE_DWRITE_MULTI
+        ERR_OUT("HDF5 does not support multi-dataset APIs")
+#endif
         if (cfg.strategy == undef_io)
             cfg.strategy = canonical;
         else if (cfg.strategy == log)
@@ -300,6 +294,9 @@ int main (int argc, char **argv) {
     }
 
     if (cfg.api == hdf5_log) {
+#ifndef ENABLE_LOGVOL
+        ERR_OUT("HDF5 Log VOL is not enabled at configure time")
+#endif
         if (cfg.strategy == undef_io)
             cfg.strategy = log;
         else if (cfg.strategy == canonical)
@@ -309,6 +306,9 @@ int main (int argc, char **argv) {
     }
 
     if (cfg.api == adios) {
+#ifndef ENABLE_ADIOS2
+        ERR_OUT("ADIOS is not enabled at configure time")
+#endif
         if (cfg.strategy == undef_io)
             cfg.strategy = blob;
         else if (cfg.strategy == canonical)
@@ -349,8 +349,11 @@ int main (int argc, char **argv) {
     timing[1] = MPI_Wtime() - timing[1];
 
     MPI_Reduce(timing, max_t, 2, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-    if (cfg.rank == 0)
+    if (cfg.rank == 0) {
         printf("read_decomp=%.2f e3sm_io_core=%.2f\n", max_t[0],max_t[1]);
+        printf("-----------------------------------------------------------\n");
+        printf("\n\n");
+    }
 
 err_out:
     if (cfg.info != MPI_INFO_NULL)
