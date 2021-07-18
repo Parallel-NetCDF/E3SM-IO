@@ -20,7 +20,6 @@
 #include <e3sm_io_err.h>
 
 #include <e3sm_io_case.hpp>
-#include <e3sm_io_case_F.hpp>
 #include <e3sm_io_driver.hpp>
 #include <e3sm_io_driver_adios2.hpp>
 #include <e3sm_io_driver_pnc.hpp>
@@ -269,3 +268,60 @@ inline int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
                                 void *buf) {
     return driver.put_att (fid, var.data, name, type, size, buf);
 }
+
+extern int
+def_F_case_h0_scorpio(e3sm_io_driver &driver,
+                      e3sm_io_config &cfg,
+                      e3sm_io_decom &decom,
+                      int ncid,                 /* file ID */
+                      const MPI_Offset dims[2], /* dimension sizes */
+                      int nvars,                /* number of variables */
+                      std::vector<int> &decomids,
+                      e3sm_io_scorpio_var *varids,
+                      int *scorpiovars);
+
+extern int
+def_F_case_h1_scorpio(e3sm_io_driver &driver,
+                      e3sm_io_config &cfg,
+                      e3sm_io_decom &decom,
+                      int ncid,                 /* file ID */
+                      const MPI_Offset dims[2], /* dimension sizes */
+                      int nvars,                /* number of variables */
+                      std::vector<int> &decomids,
+                      e3sm_io_scorpio_var *varids,
+                      int *scorpiovars);
+
+extern int
+run_varn_F_case_scorpio(e3sm_io_config &cfg,
+                        e3sm_io_decom &decom,
+                        e3sm_io_driver &driver,
+                        double *dbl_bufp,    /* buffer for fixed size double var */
+                        itype *rec_bufp,     /* buffer for rec floating point var */
+                        char *txt_buf,       /* buffer for char var */
+                        int *int_buf);       /* buffer for int var */
+
+extern int
+def_G_case_scorpio(e3sm_io_config &cfg,
+                   e3sm_io_decom &decom,
+                   e3sm_io_driver &driver,
+                   int ncid, /* file ID */
+                   std::vector<int> &decomids,
+                   e3sm_io_scorpio_var *varids, /* variable IDs */
+                   int *scorpiovars);
+
+extern int
+run_varn_G_case_scorpio(e3sm_io_config &cfg,
+                        e3sm_io_decom &decom,
+                        e3sm_io_driver &driver,
+                        int *D1_fix_int_bufp,     /* D1 fix int buffer */
+                        int *D2_fix_int_bufp,     /* D2 fix int buffer */
+                        int *D3_fix_int_bufp,     /* D3 fix int buffer */
+                        int *D4_fix_int_bufp,     /* D4 fix int buffer */
+                        int *D5_fix_int_bufp,     /* D5 fix int buffer */
+                        double *D1_rec_dbl_bufp,  /* D1 rec double buffer */
+                        double *D3_rec_dbl_bufp,  /* D3 rec double buffer */
+                        double *D4_rec_dbl_bufp,  /* D4 rec double buffer */
+                        double *D5_rec_dbl_bufp,  /* D5 rec double buffer */
+                        double *D6_rec_dbl_bufp,  /* D6 rec double buffer */
+                        double *D1_fix_dbl_bufp); /* D1 fix double buffer */
+
