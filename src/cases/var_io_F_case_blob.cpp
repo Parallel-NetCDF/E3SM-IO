@@ -356,7 +356,7 @@ int blob_F_case(e3sm_io_config &cfg,
                 e3sm_io_decom  &decom,
                 e3sm_io_driver &driver)
 {
-    char outfile[1040], *ext;;
+    char outfile[1040], base_name[1024], *ext;;
     const char *hist;
     int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, *varids;
     int rec_no, gap = 0, my_nreqs, num_decomp_vars;
@@ -453,11 +453,15 @@ int blob_F_case(e3sm_io_config &cfg,
     /* construct h0/h1 file name */
     hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
     ext = strrchr(cfg.out_path, '.');
-    if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))
+    if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5"))) {
+        sprintf(base_name, "%s%s", cfg.out_path, hist);
         sprintf(outfile, "%s%s.%04d", cfg.out_path, hist, cfg.subfile_ID);
+    }
     else {
         sprintf(outfile, "%s", cfg.out_path);
         sprintf(outfile + (ext - cfg.out_path), "%s%s.%04d", hist, ext, cfg.subfile_ID);
+        sprintf(base_name, "%s", cfg.out_path);
+        sprintf(base_name + (ext - cfg.out_path), "%s%s", hist, ext);
     }
 
     /* set output subfile name */
@@ -752,7 +756,7 @@ int blob_F_case(e3sm_io_config &cfg,
     check_malloc(&cfg, &driver);
 
     /* report timing breakdowns */
-    report_timing_WR(&cfg, &driver, outfile);
+    report_timing_WR(&cfg, &driver, base_name);
 
     /* print MPI-IO hints actually used */
     if (cfg.verbose && global_rank == 0) print_info(&info_used);

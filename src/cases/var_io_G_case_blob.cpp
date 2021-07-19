@@ -700,7 +700,7 @@ int blob_G_case(e3sm_io_config &cfg,
     check_malloc(&cfg, &driver);
 
     /* report timing breakdowns */
-    report_timing_WR(&cfg, &driver, outfile);
+    report_timing_WR(&cfg, &driver, cfg.out_path);
 
     /* print MPI-IO hints actually used */
     if (cfg.verbose && global_rank == 0) print_info(&info_used);

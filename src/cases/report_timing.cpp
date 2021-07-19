@@ -101,16 +101,28 @@ int report_timing_WR(e3sm_io_config *cfg,
         else /* write happens at file close for hdf5 blob and adios blob */
             wTime = close_time;
 
-        err = driver->inq_file_size(outfile, &file_size);
-        if (err != 0) {
-            printf("Error: failed inq_file_size %s\n",outfile);
-            return -1;
-        }
-
-        printf("History output file                = %s\n", outfile);
-        if (cfg->api == adios)
-            printf("Output file size                   = %.2f MiB = %.2f GiB\n",
+        if (cfg->strategy == blob) {
+            printf("History output name base           = %s\n", cfg->out_path);
+            if (cfg->api == adios) {
+                err = driver->inq_file_size(outfile, &file_size);
+                if (err != 0) {
+                    printf("Error: failed inq_file_size %s\n",outfile);
+                    return -1;
+                }
+                printf("History output folder name         = %s.bp.dir\n", outfile);
+                printf("History output subfile names       = %s.bp.dir/%s.bp.xxxx\n",
+                       outfile, outfile);
+                printf("Number of subfiles                 = %d\n", cfg->num_group);
+                printf("Output file size                   = %.2f MiB = %.2f GiB\n",
                     (double)file_size / 1048576, (double)file_size / 1073741824);
+            }
+            else {
+                printf("History output subfile names       = %s.xxxx\n", outfile);
+                printf("Number of subfiles                 = %d\n", cfg->num_subfiles);
+            }
+        }
+        else
+            printf("History output file                = %s\n", outfile);
         printf("No. decomposition variables        = %3d\n", cfg->num_decomp_vars);
         printf("No. variables use no decomposition = %3d\n", nvars_noD);
         for (i=0; i<cfg->num_decomp; i++)
