@@ -285,14 +285,13 @@ int blob_G_case(e3sm_io_config &cfg,
     char outfile[1040];
     int i, err, sub_rank, global_rank, ncid=-1, nflushes=0, *varids;
     int rec_no, gap=0, my_nreqs, num_decomp_vars;
-    int contig_nreqs[MAX_NUM_DECOMP], nvars_D[MAX_NUM_DECOMP];
-    double pre_timing, open_timing, post_timing, wait_timing, close_timing;
-    double def_timing, timing, total_timing;
-    MPI_Offset metadata_size, put_size, total_size, max_nreqs, total_nreqs;
+    int contig_nreqs[MAX_NUM_DECOMP], *nvars_D=cfg.nvars_D;
+    double timing;
+    MPI_Offset metadata_size, total_size;
     MPI_Offset start[2], count[2];
     MPI_Offset start_D[MAX_NUM_DECOMP][2], count_D[MAX_NUM_DECOMP][2];
     MPI_Offset blob_start[MAX_NUM_DECOMP], blob_count[MAX_NUM_DECOMP];
-    MPI_Offset previous_size, sum_size, m_alloc=0, max_alloc;
+    MPI_Offset previous_size;
     MPI_Info info_used = MPI_INFO_NULL;
     size_t j, chr_buflen, int_buflen, dbl_buflen;
     double *dbl_buf=NULL, *dbl_buf_ptr; /* buffer for fixed double var */
@@ -309,13 +308,10 @@ int blob_G_case(e3sm_io_config &cfg,
                           50, 51};
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    total_timing = pre_timing = MPI_Wtime ();
+    cfg.end2end_time = cfg.pre_time = MPI_Wtime();
 
-    open_timing  = 0.0;
-    def_timing   = 0.0;
-    post_timing  = 0.0;
-    wait_timing  = 0.0;
-    close_timing = 0.0;
+    cfg.post_time  = 0.0;
+    cfg.flush_time = 0.0;
 
     if (cfg.api == hdf5) /* I/O amount from previous I/O */
         INQ_PUT_SIZE(previous_size)
@@ -376,7 +372,7 @@ int blob_G_case(e3sm_io_config &cfg,
     for (j=0; j<int_buflen; j++) int_buf[j] = global_rank;
     for (j=0; j<chr_buflen; j++) chr_buf[j] = 'a' + global_rank;
 
-    pre_timing = MPI_Wtime() - pre_timing;
+    cfg.pre_time = MPI_Wtime() - cfg.pre_time;
 
     MPI_Barrier(cfg.sub_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
@@ -390,7 +386,7 @@ int blob_G_case(e3sm_io_config &cfg,
     /* create the output file */
     FILE_CREATE(outfile)
 
-    open_timing += MPI_Wtime() - timing;
+    cfg.open_time = MPI_Wtime() - timing;
 
     MPI_Barrier(cfg.sub_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
@@ -413,7 +409,7 @@ int blob_G_case(e3sm_io_config &cfg,
 
     INQ_FILE_INFO(info_used)
 
-    def_timing += MPI_Wtime() - timing;
+    cfg.def_time = MPI_Wtime() - timing;
 
     MPI_Barrier(cfg.sub_comm); /*-----------------------------------------*/
     timing = MPI_Wtime();
@@ -651,7 +647,7 @@ int blob_G_case(e3sm_io_config &cfg,
         POST_VARA_DBL(2)
 
 #ifndef FLUSH_ALL_RECORDS_AT_ONCE
-        post_timing += MPI_Wtime() - timing;
+        cfg.post_time += MPI_Wtime() - timing;
 
         MPI_Barrier(cfg.sub_comm); /*---------------------------------------*/
         timing = MPI_Wtime();
@@ -659,13 +655,13 @@ int blob_G_case(e3sm_io_config &cfg,
         /* flush once per time record */
         WAIT_ALL_REQS
 
-        wait_timing += MPI_Wtime() - timing;
+        cfg.flush_time += MPI_Wtime() - timing;
 
         timing = MPI_Wtime();
 #endif
     }
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    post_timing += MPI_Wtime() - timing;
+    cfg.post_time += MPI_Wtime() - timing;
 
     MPI_Barrier(cfg.sub_comm); /*---------------------------------------*/
     timing = MPI_Wtime();
@@ -673,7 +669,7 @@ int blob_G_case(e3sm_io_config &cfg,
     /* flush once for all time records */
     WAIT_ALL_REQS
 
-    wait_timing += MPI_Wtime() - timing;
+    cfg.flush_time += MPI_Wtime() - timing;
 #endif
     MPI_Barrier(cfg.sub_comm); /*---------------------------------------*/
     timing = MPI_Wtime();
@@ -686,102 +682,28 @@ int blob_G_case(e3sm_io_config &cfg,
 
     FILE_CLOSE
 
-    close_timing += MPI_Wtime() - timing;
+    cfg.close_time = MPI_Wtime() - timing;
 
     if (cfg.api == hdf5) INQ_PUT_SIZE(total_size)
 
     total_size -= previous_size;
-    put_size = total_size - metadata_size;
 
-    total_timing = MPI_Wtime() - total_timing;
+    cfg.num_flushes = nflushes;
+    cfg.num_decomp = decom.num_decomp;
+    cfg.num_decomp_vars = num_decomp_vars;
+    cfg.my_nreqs = my_nreqs;
+    cfg.metadata_WR = metadata_size;
+    cfg.amount_WR = total_size;
+    cfg.end2end_time = MPI_Wtime() - cfg.end2end_time;
 
     /* check if there is any PnetCDF internal malloc residue */
-    if (cfg.api == pnetcdf) {
-        MPI_Offset malloc_size;
-        err = driver.inq_malloc_size(&malloc_size);
-        if (err == NC_NOERR) {
-            MPI_Reduce(&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, cfg.io_comm);
-            if (global_rank == 0 && sum_size > 0) {
-                printf("-----------------------------------------------------------\n");
-                printf("heap memory allocated by PnetCDF internally has %lld bytes yet to be freed\n",
-                        sum_size);
-            }
-        }
-        driver.inq_malloc_max_size(&m_alloc);
-    }
+    check_malloc(&cfg, &driver);
 
-    MPI_Offset off_tmp[3], sum_off[3];
-    off_tmp[0] = my_nreqs;
-    off_tmp[1] = put_size;
-    off_tmp[2] = total_size;
-    MPI_Reduce(off_tmp, sum_off, 3, MPI_OFFSET, MPI_SUM, 0, cfg.io_comm);
-    total_nreqs = sum_off[0];
-    put_size    = sum_off[1];
-    total_size  = sum_off[2];
+    /* report timing breakdowns */
+    report_timing_WR(&cfg, outfile);
 
-    MPI_Offset max_off[2];
-    off_tmp[0] = my_nreqs;
-    off_tmp[1] = m_alloc;
-    MPI_Reduce(off_tmp, max_off, 2, MPI_OFFSET, MPI_MAX, 0, cfg.io_comm);
-    max_nreqs = max_off[0];
-    max_alloc = max_off[1];
-
-    double dbl_tmp[7], max_dbl[7];
-    dbl_tmp[0] =   pre_timing;
-    dbl_tmp[1] =  open_timing;
-    dbl_tmp[2] =   def_timing;
-    dbl_tmp[3] =  post_timing;
-    dbl_tmp[4] =  wait_timing;
-    dbl_tmp[5] = close_timing;
-    dbl_tmp[6] = total_timing;
-    MPI_Reduce(dbl_tmp, max_dbl, 7, MPI_DOUBLE, MPI_MAX, 0, cfg.io_comm);
-      pre_timing = max_dbl[0];
-     open_timing = max_dbl[1];
-      def_timing = max_dbl[2];
-     post_timing = max_dbl[3];
-     wait_timing = max_dbl[4];
-    close_timing = max_dbl[5];
-    total_timing = max_dbl[6];
-
-    if (global_rank == 0) {
-        int nvars_noD = cfg.nvars;
-        for (i=0; i<decom.num_decomp; i++) nvars_noD -= nvars_D[i];
-        printf("History output file                = %s\n", outfile);
-        printf("No. decomposition variables        = %3d\n", num_decomp_vars);
-        printf("No. variables use no decomposition = %3d\n", nvars_noD);
-        printf("No. variables use decomposition D1 = %3d\n", nvars_D[0]);
-        printf("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
-        printf("No. variables use decomposition D3 = %3d\n", nvars_D[2]);
-        printf("No. variables use decomposition D4 = %3d\n", nvars_D[3]);
-        printf("No. variables use decomposition D5 = %3d\n", nvars_D[4]);
-        printf("No. variables use decomposition D6 = %3d\n", nvars_D[5]);
-        printf("Total number of variables          = %3d\n", cfg.nvars + num_decomp_vars);
-        printf("Write number of records (time dim) = %3d\n", cfg.nrec);
-        if (cfg.api == pnetcdf)
-            printf("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
-                   (float)max_alloc / 1048576);
-        printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
-               (double)total_size / 1048576, (double)total_size / 1073741824);
-        printf("Total no. noncontiguous requests   = %lld\n", total_nreqs);
-        printf("Max   no. noncontiguous requests   = %lld\n", max_nreqs);
-        if (cfg.api == pnetcdf)
-            printf("No. I/O flush calls                = %d\n", nflushes);
-        printf("Max Time of I/O preparing          = %.4f sec\n",   pre_timing);
-        printf("Max Time of file open/create       = %.4f sec\n",  open_timing);
-        printf("Max Time of define variables       = %.4f sec\n",   def_timing);
-        printf("Max Time of posting iput requests  = %.4f sec\n",  post_timing);
-        if (cfg.api == pnetcdf)
-            printf("Max Time of write flushing         = %.4f sec\n",  wait_timing);
-        printf("Max Time of close                  = %.4f sec\n", close_timing);
-        printf("Max Time of TOTAL                  = %.4f sec\n", total_timing);
-        printf("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
-               (double)total_size / 1048576.0 / total_timing);
-        if (cfg.api == pnetcdf)
-            printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
-                   (double)put_size / 1048576.0 / wait_timing);
-        if (cfg.verbose) print_info(&info_used);
-        printf("-----------------------------------------------------------\n");
-    }
+    /* print MPI-IO hints actually used */
+    if (cfg.verbose && global_rank == 0) print_info(&info_used);
 
 err_out:
     if (err < 0 && ncid >= 0)
