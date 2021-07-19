@@ -91,7 +91,6 @@ int report_timing_WR(e3sm_io_config *cfg,
     end2end_time = max_dbl[6];
 
     if (global_rank == 0) {
-        int nrecs = (cfg->nvars == 414) ? 1 : cfg->nrec;
         int nvars_noD = cfg->nvars;
         for (i=0; i<cfg->num_decomp; i++) nvars_noD -= cfg->nvars_D[i];
         int nvars = cfg->nvars + nvars_noD;
@@ -108,7 +107,7 @@ int report_timing_WR(e3sm_io_config *cfg,
             printf("No. variables use decomposition D%d = %3d\n",
                    i, cfg->nvars_D[i]);
         printf("Total number of variables          = %3d\n", nvars);
-        printf("Write number of records (time dim) = %3d\n", nrecs);
+        printf("Write number of records (time dim) = %3d\n", cfg->nrecs);
         printf("Total no. noncontiguous requests   = %3lld\n", sum_nreqs);
         printf("Max   no. noncontiguous requests   = %3lld\n", max_nreqs);
         printf("No. I/O flush calls                = %3d\n", cfg->num_flushes);

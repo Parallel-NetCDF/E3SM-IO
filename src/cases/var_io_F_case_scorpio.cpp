@@ -430,7 +430,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     int i, j, k, err=0, rank, ncid, nvars_D[3];
     e3sm_io_scorpio_var *varids;
     int scorpiovars[6];
-    int rec_no=0, gap = 0, nrec, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
+    int rec_no=0, gap = 0, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
     size_t ii, dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
@@ -703,13 +703,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
 
     post_timing += MPI_Wtime () - timing;
 
-    // Determine number of records
-    if (cfg.nvars == 414)
-        nrec = 1;   // H0 always contains 1 timesteps regardless of options
-    else
-        nrec = cfg.nrec;
-
-    for (rec_no = 0; rec_no < nrec; rec_no++) {
+    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
         MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime ();
 
@@ -965,8 +959,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         printf ("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
         printf ("No. variables use decomposition D3 = %3d\n", nvars_D[2]);
         printf ("Total number of variables          = %3d\n", cfg.nvars);
-        printf ("Write number of records (time dim) = %3d\n",
-                (cfg.nvars == 414) ? 1 : cfg.nrec);
+        printf ("Write number of records (time dim) = %3d\n", cfg.nrecs);
         if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
             printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
                 (float)max_alloc / 1048576);

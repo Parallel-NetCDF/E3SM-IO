@@ -568,7 +568,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     }
 
     /* write 34 record variables */
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
+    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
 
         /* next small non-partitioned variables are written by rank 0 only */
         if (rank == 0) {
@@ -1101,7 +1101,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
         my_nreqs += 4; /* 4 non-record variables */
     }
 
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
+    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
 
         /* next small non-partitioned variables are written by rank 0 only */
         if (rank == 0) {

@@ -352,9 +352,9 @@ int blob_G_case(e3sm_io_config &cfg,
     /* allocate and initialize write buffer for large variables */
 #define FLUSH_ALL_RECORDS_AT_ONCE
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    dbl_buflen *= cfg.nrec;
-    int_buflen *= cfg.nrec;
-    chr_buflen *= cfg.nrec;
+    dbl_buflen *= cfg.nrecs;
+    int_buflen *= cfg.nrecs;
+    chr_buflen *= cfg.nrecs;
 #else
     if (cfg.api == hdf5) {
         printf("Error in %s:%d: %s() FLUSH_ALL_RECORDS_AT_ONCE must be enabled when using HDF5 blob I/O",
@@ -527,7 +527,7 @@ int blob_G_case(e3sm_io_config &cfg,
         count_D[i][1] = decom.count[i];
     }
 
-    for (rec_no=0; rec_no<cfg.nrec; rec_no++) {
+    for (rec_no=0; rec_no<cfg.nrecs; rec_no++) {
 #ifndef FLUSH_ALL_RECORDS_AT_ONCE
         timing = MPI_Wtime();
         dbl_buf_ptr = dbl_buf

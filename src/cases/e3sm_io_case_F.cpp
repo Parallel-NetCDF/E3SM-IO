@@ -29,9 +29,10 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
                             e3sm_io_decom &decom,
                             e3sm_io_driver &driver)
 {
-    int err=0, nvar;
+    int err=0, nvars, nrecs;
 
-    nvar = cfg.nvars;
+    nvars = cfg.nvars;
+    nrecs = cfg.nrecs;
 
     if (cfg.strategy == blob) {
         assert (cfg.api == pnetcdf || cfg.api == hdf5);
@@ -43,12 +44,14 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
         /* Use one-file-per-compute-node blob I/O strategy */
         if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
             cfg.nvars = 414;
+            cfg.nrecs = 1;
             err = blob_F_case(cfg, decom, driver);
             CHECK_ERR
         }
 
         if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
             cfg.nvars = 51;
+            cfg.nrecs = nrecs;
             err = blob_F_case(cfg, decom, driver);
             CHECK_ERR
         }
@@ -63,6 +66,7 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
 #endif
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 414;
+            cfg.nrecs = 1;
             err = run_vard_F_case(cfg, decom, driver,
                                   this->dbl_buf_h0,
                                   this->rec_buf_h0,
@@ -73,6 +77,7 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
 
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 51;
+            cfg.nrecs = nrecs;
             err = run_vard_F_case (cfg, decom, driver,
                                   this->dbl_buf_h0,
                                   this->rec_buf_h0,
@@ -83,27 +88,31 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
     } else { /* using PnetCDF/HDF5 varn APIs to write/read */
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 414;
+            cfg.nrecs = 1;
             err = run_varn_F_case(cfg, decom, driver);
             CHECK_ERR
         }
 
         if (cfg.hx == 1 || cfg.hx == -1) {
             cfg.nvars = 51;
+            cfg.nrecs = nrecs;
             err = run_varn_F_case(cfg, decom, driver);
             CHECK_ERR
         }
     }
 
-    cfg.nvars = nvar;
+    cfg.nvars = nvars;
+    cfg.nrecs = nrecs;
 
 err_out:
     return err;
 }
 
 int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
-    int err, nvar;
+    int err, nvars, nrecs;
 
-    nvar = cfg.nvars;
+    nvars = cfg.nvars;
+    nrecs = cfg.nrecs;
 
     /* vard APIs require internal data type matches external one */
     if (cfg.vard) {
@@ -115,6 +124,7 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         if (cfg.hx == 0 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 414;
+            cfg.nrecs = 1;
             err = run_varn_F_case_rd(cfg, decom, driver,
                                      &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0),
@@ -125,6 +135,7 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         if (cfg.hx == 0 || cfg.hx == -1) {
             MPI_Barrier (cfg.io_comm);
             cfg.nvars = 51;
+            cfg.nrecs = nrecs;
             err = run_varn_F_case_rd(cfg, decom, driver,
                                      &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0),
@@ -134,7 +145,8 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         }
     }
 
-    cfg.nvars = nvar;
+    cfg.nvars = nvars;
+    cfg.nrecs = nrecs;
 
 err_out:
     return err;

@@ -71,10 +71,10 @@ typedef struct e3sm_io_config {
     char out_path[E3SM_IO_MAX_PATH];
     char cfg_path[E3SM_IO_MAX_PATH];
     int hx;
-    int nrec;
+    int nrecs;  /* number of record (time steps) */
     int wr;
     int rd;
-    int nvars;
+    int nvars;  /* number of climate variables */
 
     e3sm_io_strategy strategy;
     e3sm_io_api api;

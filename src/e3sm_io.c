@@ -141,7 +141,7 @@ int main (int argc, char **argv) {
     cfg.in_path[0]     = '\0';
     cfg.cfg_path[0]    = '\0';
     cfg.hx             = -1;
-    cfg.nrec           = 1;
+    cfg.nrecs          = 1;
     cfg.wr             = 0;
     cfg.rd             = 0;
     cfg.nvars          = 0;
@@ -172,7 +172,7 @@ int main (int argc, char **argv) {
                 cfg.keep_outfile = 1;
                 break;
             case 'r':
-                cfg.nrec = atoi (optarg);
+                cfg.nrecs = atoi (optarg);
                 break;
             case 's':
                 cfg.io_stride = atoi (optarg);

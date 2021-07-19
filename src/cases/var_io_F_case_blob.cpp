@@ -416,10 +416,10 @@ int blob_F_case(e3sm_io_config &cfg,
 
 #define FLUSH_ALL_RECORDS_AT_ONCE
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    dbl_buflen *= cfg.nrec;
-    txt_buflen *= cfg.nrec;
-    int_buflen *= cfg.nrec;
-    rec_buflen *= cfg.nrec;
+    dbl_buflen *= cfg.nrecs;
+    txt_buflen *= cfg.nrecs;
+    int_buflen *= cfg.nrecs;
+    rec_buflen *= cfg.nrecs;
 #else
     if (cfg.api == hdf5) {
         printf("Error in %s:%d: %s() FLUSH_ALL_RECORDS_AT_ONCE must be enabled when using HDF5 blob I/O",
@@ -551,7 +551,7 @@ int blob_F_case(e3sm_io_config &cfg,
     txt_buf_ptr = txt_buf;
 #endif
 
-    for (rec_no=0; rec_no<cfg.nrec; rec_no++) {
+    for (rec_no=0; rec_no<cfg.nrecs; rec_no++) {
 #ifndef FLUSH_ALL_RECORDS_AT_ONCE
         dbl_buf_ptr = dbl_buf + decom.count[1] * 2 + decom.count[0] + gap * 3;
         int_buf_ptr = int_buf;
@@ -707,8 +707,6 @@ int blob_F_case(e3sm_io_config &cfg,
 
         timing = MPI_Wtime();
 #endif
-        if (cfg.nvars == 414)
-            break; /* h0 file stores only one time stamp */
     }
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
     cfg.post_time += MPI_Wtime() - timing;

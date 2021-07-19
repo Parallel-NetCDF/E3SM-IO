@@ -692,8 +692,8 @@ int run_vard_F_case (e3sm_io_config &cfg,
         buftype_rec = REC_ITYPE;
     }
 
-    filetype_rec = (MPI_Datatype *)malloc (cfg.nrec * sizeof (MPI_Datatype));
-    for (j = 0; j < cfg.nrec; j++) {
+    filetype_rec = (MPI_Datatype *)malloc (cfg.nrecs * sizeof (MPI_Datatype));
+    for (j = 0; j < cfg.nrecs; j++) {
         if (j > 0) {
             for (k = 30; k < cfg.nvars; k++) var_disps[k] += rec_size;
         }
@@ -726,7 +726,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     err = PUT_VARD_ALL (ncid, varids[0], filetype_dbl, dbl_buf, fix_buflen, buftype_dbl);
     CHECK_ERR
 
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
+    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
         i           = 3;
         dbl_buf_ptr = dbl_buf + nelems[1] * 2 + nelems[0] + gap * 3;
         int_buf_ptr = int_buf;
@@ -749,9 +749,6 @@ int run_vard_F_case (e3sm_io_config &cfg,
         err =
             PUT_VARD_ALL (ncid, varids[30], filetype_rec[rec_no], rec_buf, rec_buflen, buftype_rec);
         CHECK_ERR
-
-        if (cfg.nvars == 414)
-            break; /* h0 file stores only one time stamp */
     }
     io_timing = MPI_Wtime () - io_timing;
 
@@ -772,7 +769,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
         CHECK_ERR
     }
     
-    for (j = 0; j < cfg.nrec; j++) MPI_Type_free (filetype_rec + j);
+    for (j = 0; j < cfg.nrecs; j++) MPI_Type_free (filetype_rec + j);
     free (filetype_rec);
     MPI_Type_free (&filetype_dbl);
 
@@ -1022,10 +1019,10 @@ int run_varn_F_case(e3sm_io_config &cfg,
 
 #define FLUSH_ALL_RECORDS_AT_ONCE
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    dbl_buflen *= cfg.nrec;
-    txt_buflen *= cfg.nrec;
-    int_buflen *= cfg.nrec;
-    rec_buflen *= cfg.nrec;
+    dbl_buflen *= cfg.nrecs;
+    txt_buflen *= cfg.nrecs;
+    int_buflen *= cfg.nrecs;
+    rec_buflen *= cfg.nrecs;
 #endif
 
     /* allocate and initialize write buffer */
@@ -1159,7 +1156,7 @@ int run_varn_F_case(e3sm_io_config &cfg,
     txt_buf_ptr = txt_buf;
 #endif
 
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
+    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
 #ifndef FLUSH_ALL_RECORDS_AT_ONCE
         dbl_buf_ptr = dbl_buf + decom.count[1] * 2 + decom.count[0] + gap * 3;
         int_buf_ptr = int_buf;
@@ -1312,8 +1309,6 @@ int run_varn_F_case(e3sm_io_config &cfg,
 
         cfg.flush_time += MPI_Wtime () - timing;
 #endif
-        if (cfg.nvars == 414)
-            break; /* h0 file stores only one time stamp */
     }
 
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
@@ -1542,7 +1537,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
 
     post_timing += MPI_Wtime () - timing;
 
-    for (rec_no = 0; rec_no < cfg.nrec; rec_no++) {
+    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
         MPI_Barrier (comm); /*-----------------------------------------*/
         timing = MPI_Wtime ();
 
