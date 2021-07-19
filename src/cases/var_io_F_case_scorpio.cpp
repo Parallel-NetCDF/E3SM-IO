@@ -426,31 +426,31 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                          char *txt_bufp,      /* buffer for char var */
                          int *int_bufp)       /* buffer for int var */
 {
+    const char *hist;
     char *txt_buf=NULL, *txt_buf_ptr, outfile[1040], *ext;
-    int i, j, k, err=0, rank, ncid, nvars_D[3];
+    int i, j, k, err=0, rank, ncid, *nvars_D=cfg.nvars_D;
     e3sm_io_scorpio_var *varids;
     int scorpiovars[6];
     int rec_no=0, gap = 0, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
     size_t ii, dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
-    double pre_timing, open_timing, post_timing, wait_timing, close_timing;
-    double timing, total_timing, max_timing;
-    MPI_Offset tmp, metadata_size, put_size, total_size, fsize, max_nreqs, total_nreqs;
+    double timing;
+    MPI_Offset metadata_size=0, total_size;
     MPI_Offset **starts_D2 = NULL, **counts_D2 = NULL;
     MPI_Offset **starts_D3 = NULL, **counts_D3 = NULL;
     MPI_Info info_used = MPI_INFO_NULL;
-    MPI_Offset malloc_size, sum_size;
-    MPI_Offset m_alloc = 0, max_alloc;
+    MPI_Offset previous_size;
     std::vector<int> decomids;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    total_timing = pre_timing = MPI_Wtime ();
+    cfg.end2end_time = cfg.pre_time = MPI_Wtime();
 
-    open_timing  = 0.0;
-    post_timing  = 0.0;
-    wait_timing  = 0.0;
-    close_timing = 0.0;
+    cfg.post_time  = 0.0;
+    cfg.flush_time = 0.0;
+
+    /* write amount from previous I/O */
+    previous_size = cfg.amount_WR;
 
     MPI_Comm_rank (cfg.io_comm, &rank);
 
@@ -585,13 +585,13 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         ASSIGN_DECOMID (2, 7, 44)  /* U250 ... Z500 */
     }
 
-    pre_timing = MPI_Wtime () - pre_timing;
+    cfg.pre_time = MPI_Wtime() - cfg.pre_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
     /* construct h0/h1 file name */
-    const char *hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
+    hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
     ext = strrchr(cfg.out_path, '.');
     if (ext == NULL || strcmp(ext, ".nc"))
         sprintf(outfile, "%s%s", cfg.out_path, hist);
@@ -604,6 +604,11 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     /* create a new file for writing */
     err = driver.create (outfile, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
+
+    cfg.open_time = MPI_Wtime() - timing;
+
+    MPI_Barrier(cfg.io_comm); /*-----------------------------------------*/
+    timing = MPI_Wtime();
 
     /* define dimensions, variables, and attributes */
     if (cfg.nvars == 414) {
@@ -628,7 +633,8 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     
     err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
-    open_timing += MPI_Wtime () - timing;
+
+    cfg.def_time = MPI_Wtime() - timing;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
@@ -636,7 +642,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     // Write pio scalar vars (one time)
     
     // Nproc only written by rank 0
-    if (cfg.rank == 0) {
+    if (rank == 0) {
         err = driver.put_varl (ncid, scorpiovars[5], MPI_LONG_LONG, &(cfg.np), nb);
         CHECK_ERR
     }
@@ -710,12 +716,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         CHECK_ERR
     }
 
-    post_timing += MPI_Wtime () - timing;
-
     for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
-        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-        timing = MPI_Wtime ();
-
         i           = 3;
         dbl_buf_ptr = dbl_buf + nelems[1] * 2 + nelems[0] + gap * 3;
         int_buf_ptr = int_buf;
@@ -731,20 +732,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
             CHECK_ERR
         }
         i += 27;
-
-        post_timing += MPI_Wtime () - timing;
-
-        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-        timing = MPI_Wtime ();
-
-        /* flush fixed-size and small variables */
-        err = WAIT_ALL_REQS (ncid, NC_REQ_ALL, NULL, NULL);
-        CHECK_ERR
-
-        wait_timing += MPI_Wtime () - timing;
-
-        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-        timing = MPI_Wtime ();
 
         rec_buf_ptr = rec_buf;
 
@@ -869,33 +856,29 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                 POST_VARN (2, 7, 44)  /* U250 ... Z500 */
             }
         }
-
-        post_timing += MPI_Wtime () - timing;
-
-        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-        timing = MPI_Wtime ();
-
-        err = WAIT_ALL_REQS (ncid, NC_REQ_ALL, NULL, NULL);
-        CHECK_ERR
-
-        wait_timing += MPI_Wtime () - timing;
     }
+
+    cfg.post_time += MPI_Wtime() - timing;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    err = driver.inq_put_size (ncid, &total_size);
+    /* in ADIOS,  data is actually flushed at file close */
+    err = WAIT_ALL_REQS (ncid, NC_REQ_ALL, NULL, NULL);
     CHECK_ERR
-    put_size = total_size - metadata_size;
 
-    err      = driver.close (ncid);
+    cfg.flush_time += MPI_Wtime() - timing;
+
+    MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
+    timing = MPI_Wtime ();
+
+    err = driver.close (ncid);
     CHECK_ERR
-    close_timing += MPI_Wtime () - timing;
 
-    if (cfg.rank == 0){
-        err = driver.inq_file_size(outfile, &fsize);
-        CHECK_ERR
-    }
+    cfg.close_time = MPI_Wtime() - timing;
+
+    /* for ADIOS blob I/O, writes only happen when closing the file */
+    total_size = cfg.amount_WR - previous_size;
 
     if (starts_D3 != NULL) {
         free (starts_D3[0]);
@@ -911,80 +894,22 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (txt_bufp == NULL && txt_buf != NULL) free (txt_buf);
     free (varids);
 
-    total_timing = MPI_Wtime () - total_timing;
-
-    tmp = my_nreqs;
-    MPI_Reduce (&tmp, &max_nreqs, 1, MPI_OFFSET, MPI_MAX, 0, cfg.io_comm);
-    MPI_Reduce (&tmp, &total_nreqs, 1, MPI_OFFSET, MPI_SUM, 0, cfg.io_comm);
-    MPI_Reduce (&put_size, &tmp, 1, MPI_OFFSET, MPI_SUM, 0, cfg.io_comm);
-    put_size = tmp;
-    MPI_Reduce (&total_size, &tmp, 1, MPI_OFFSET, MPI_SUM, 0, cfg.io_comm);
-    total_size = tmp;
-    MPI_Reduce (&open_timing, &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, cfg.io_comm);
-    open_timing = max_timing;
-    MPI_Reduce (&pre_timing, &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, cfg.io_comm);
-    pre_timing = max_timing;
-    MPI_Reduce (&post_timing, &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, cfg.io_comm);
-    post_timing = max_timing;
-    MPI_Reduce (&wait_timing, &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, cfg.io_comm);
-    wait_timing = max_timing;
-    MPI_Reduce (&close_timing, &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, cfg.io_comm);
-    close_timing = max_timing;
-    MPI_Reduce (&total_timing, &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, cfg.io_comm);
-    total_timing = max_timing;
+    cfg.num_flushes     = 1;
+    cfg.num_decomp      = decom.num_decomp;
+    cfg.num_decomp_vars = decom.num_decomp;
+    cfg.my_nreqs        = my_nreqs;
+    cfg.metadata_WR     = metadata_size;
+    cfg.amount_WR       = total_size;
+    cfg.end2end_time    = MPI_Wtime() - cfg.end2end_time;
 
     /* check if there is any PnetCDF internal malloc residue */
-    err = driver.inq_malloc_size (&malloc_size);
-    if (err == NC_NOERR) {
-        MPI_Reduce (&malloc_size, &sum_size, 1, MPI_OFFSET, MPI_SUM, 0, cfg.io_comm);
-        if (rank == 0 && sum_size > 0) {
-            printf ("-----------------------------------------------------------\n");
-            printf (
-                "heap memory allocated by PnetCDF internally has %lld bytes yet to be "
-                "freed\n",
-                sum_size);
-        }
-    }
-    driver.inq_malloc_max_size (&m_alloc);
-    MPI_Reduce (&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, cfg.io_comm);
+    check_malloc(&cfg, &driver);
 
-    if (rank == 0) {
-        int nvars_noD = cfg.nvars;
-        for (i = 0; i < 3; i++) nvars_noD -= nvars_D[i];
-        printf ("History output file                = %s\n", outfile);
-        printf ("Output file size                   = %.2f MiB = %.2f GiB\n",
-                (double)fsize / 1048576, (double)fsize / 1073741824);
-        printf ("No. variables use no decomposition = %3d\n", nvars_noD);
-        printf ("No. variables use decomposition D1 = %3d\n", nvars_D[0]);
-        printf ("No. variables use decomposition D2 = %3d\n", nvars_D[1]);
-        printf ("No. variables use decomposition D3 = %3d\n", nvars_D[2]);
-        printf ("Total number of variables          = %3d\n", cfg.nvars);
-        printf ("Write number of records (time dim) = %3d\n", cfg.nrecs);
-        if(dynamic_cast<e3sm_io_driver_pnc*>(&driver)){
-            printf ("MAX heap memory allocated by PnetCDF internally is %.2f MiB\n",
-                (float)max_alloc / 1048576);
-        }
-        printf ("Total write amount                 = %.2f MiB = %.2f GiB\n",
-                (double)total_size / 1048576, (double)total_size / 1073741824);
-        printf ("Total number of requests           = %lld\n", total_nreqs);
-        printf ("Max number of requests             = %lld\n", max_nreqs);
-        printf ("Max Time of open + metadata define = %.4f sec\n", open_timing);
-        printf ("Max Time of I/O preparing          = %.4f sec\n", pre_timing);
-        printf ("Max Time of IPUT_VARN              = %.4f sec\n", post_timing);
-#ifdef ENABLE_ADIOS2
-        if(dynamic_cast<e3sm_io_driver_adios2*>(&driver))
-#endif
-        printf ("Max Time of write flushing         = %.4f sec\n", wait_timing);
-        printf ("Max Time of close                  = %.4f sec\n", close_timing);
-        printf ("Max Time of TOTAL                  = %.4f sec\n", total_timing);
-        printf ("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
-                (double)total_size / 1048576.0 / total_timing);
-        printf ("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
-                (double)put_size / 1048576.0 / wait_timing);
-        if (cfg.verbose) print_info (&info_used);
-        printf ("-----------------------------------------------------------\n");
-    }
-    fflush (stdout);
+    /* report timing breakdowns */
+    report_timing_WR(&cfg, &driver, outfile);
+
+    /* print MPI-IO hints actually used */
+    if (cfg.verbose && rank == 0) print_info(&info_used);
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
