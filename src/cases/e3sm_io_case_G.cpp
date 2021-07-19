@@ -58,7 +58,7 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
         ERR_OUT ("PnetCDF vard API requires internal and external data types match, skip\n");
 #endif
         ERR_OUT ("Low level API not supported in g case\n");
-    } else { /* using PnetCDF varn APIs to write/read */
+    } else { /* using PnetCDF/HDF5 varn APIs to write/read */
         err = run_varn_G_case(cfg, decom, driver,
                               this->D1_fix_int_buf,
                               this->D2_fix_int_buf,

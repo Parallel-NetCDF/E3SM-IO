@@ -45,7 +45,6 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
             cfg.nvars = 414;
             err = blob_F_case(cfg, decom, driver);
             CHECK_ERR
-
         }
 
         if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
@@ -81,7 +80,7 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
                                   this->int_buf[0]);
             CHECK_ERR
         }
-    } else { /* using PnetCDF varn APIs to write/read */
+    } else { /* using PnetCDF/HDF5 varn APIs to write/read */
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 414;
             err = run_varn_F_case(cfg, decom, driver);

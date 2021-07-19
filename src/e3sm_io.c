@@ -80,6 +80,7 @@ void print_info (MPI_Info *info_used) {
         MPI_Info_get (*info_used, key, valuelen + 1, value, &flag);
         printf ("MPI File Info: [%2d] key = %25s, value = %s\n", i, key, value);
     }
+    printf("-----------------------------------------------------------\n");
 }
 
 /*----< usage() >------------------------------------------------------------*/

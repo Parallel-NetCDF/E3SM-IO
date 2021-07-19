@@ -94,6 +94,26 @@ typedef struct e3sm_io_config {
     int      subfile_ID;   /* unqiue file identifier for subfiles */
     MPI_Comm sub_comm;     /* communicator for a subfile */
 
+    /* statistics */
+    char *outfile;
+    int num_flushes;
+    int num_decomp;
+    int num_decomp_vars;
+    int nvars_D[MAX_NUM_DECOMP];
+    MPI_Offset metadata_WR;
+    MPI_Offset amount_WR;
+    MPI_Offset amount_RD;
+    MPI_Offset my_nreqs;
+
+    /* timings */
+    double pre_time;
+    double open_time;
+    double def_time;
+    double post_time;
+    double flush_time;
+    double close_time;
+    double end2end_time;
+
 } e3sm_io_config;
 
 
@@ -143,7 +163,7 @@ extern "C" {
 extern int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern int blob_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern void print_info (MPI_Info *info_used);
-int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);
+extern int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);
 #ifdef __cplusplus
 }
 #endif
