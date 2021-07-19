@@ -194,6 +194,9 @@ int e3sm_io_driver_adios2::close (int fid) {
     fp->iop = NULL;
     adios2_finalize (fp->adp);
 
+    this->cfg->amount_WR += fp->putsize;
+    this->cfg->amount_RD += fp->getsize;
+
     delete fp;
 
 err_out:;
