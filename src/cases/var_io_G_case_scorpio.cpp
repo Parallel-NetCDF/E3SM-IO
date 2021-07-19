@@ -677,20 +677,19 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         my_nreqs += 4; /* 4 non-record variables */
     }
 
+    // Write PIO decom vars, assume there are 6
+    for (j = 0; j < 6; j++) {
+        int piodecomid[] = {0, 1, 2, 3, 4, 5};
+
+        err = driver.put_varl (ncid, scorpiovars[j], MPI_LONG_LONG,
+                                decom.raw_offsets[piodecomid[j]], nb);
+        CHECK_ERR
+    }
+
     for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
         start[0] = rec_no;
         count[0] = 1;
-
         count[1] = 64; /* dimension StrLen */
-
-        // Write PIO decom vars, assume there are 6
-        for (j = 0; j < 6; j++) {
-            int piodecomid[] = {0, 1, 2, 3, 4, 5};
-
-            err = driver.put_varl (ncid, scorpiovars[j], MPI_LONG_LONG,
-                                   decom.raw_offsets[piodecomid[j]], nb);
-            CHECK_ERR
-        }
 
         if (rank == 0) {
             /* char xtime(Time, StrLen) */

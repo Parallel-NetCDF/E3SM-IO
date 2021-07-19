@@ -701,20 +701,20 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         REC_3D_VAR_STARTS_COUNTS (0, starts_D3, counts_D3, xnreqs[2], decom.disps[2],
                                   decom.blocklens[2], decom.dims[2][1]);
 
+    // Write PIO decom vars
+    for (j = 0; j < 5; j++) {
+        int piodecomid[] = {0, 1, 1, 1, 2};
+
+        err = driver.put_varl (ncid, scorpiovars[j], MPI_LONG_LONG,
+                                decom.raw_offsets[piodecomid[j]], nb);
+        CHECK_ERR
+    }
+
     post_timing += MPI_Wtime () - timing;
 
     for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
         MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
         timing = MPI_Wtime ();
-
-        // Write PIO decom vars
-        for (j = 0; j < 5; j++) {
-            int piodecomid[] = {0, 1, 1, 1, 2};
-
-            err = driver.put_varl (ncid, scorpiovars[j], MPI_LONG_LONG,
-                                   decom.raw_offsets[piodecomid[j]], nb);
-            CHECK_ERR
-        }
 
         i           = 3;
         dbl_buf_ptr = dbl_buf + nelems[1] * 2 + nelems[0] + gap * 3;
