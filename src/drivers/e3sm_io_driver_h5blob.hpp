@@ -43,8 +43,6 @@ class e3sm_io_driver_h5blob : public e3sm_io_driver {
     std::vector<h5blob_file *> files;
 
     e3sm_io_config *cfg;
-    MPI_Offset put_amount;  /* write amount by far for all files */
-    MPI_Offset get_amount;  /* read  amount by far for all files */
 
    public:
     e3sm_io_driver_h5blob (e3sm_io_config *cfg);

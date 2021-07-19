@@ -23,8 +23,6 @@
 
 e3sm_io_driver_h5blob::e3sm_io_driver_h5blob (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
     this->cfg = cfg;
-    this->put_amount = 0;  /* write amount per driver, not per file */
-    this->get_amount = 0;
 }
 
 e3sm_io_driver_h5blob::~e3sm_io_driver_h5blob () { }
@@ -104,7 +102,7 @@ int e3sm_io_driver_h5blob::close (int fid)
     NC *ncp;
     size_t header_len;
     void *buf, *header_buf;
-    MPI_Offset start, count, sum;
+    MPI_Offset start, count, sum, put_amount=0;
 
     /* prepare to write the header */
     ncp = fp->header;
@@ -212,7 +210,7 @@ for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp
     CHECK_HERR
 
     /* this process writes fp->total_len amount in bytes */
-    this->put_amount += fp->total_len;
+    put_amount += fp->total_len;
 
     herr = H5Pclose(dxpl_id);
     CHECK_HERR
@@ -241,7 +239,7 @@ for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp
         CHECK_HERR
 
         /* root process writes header_len amount in bytes */
-        this->put_amount += header_len;
+        put_amount += header_len;
     }
 
     herr = H5Pclose(dxpl_id);
@@ -258,6 +256,8 @@ for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp
 
     free(fp->header);
     MPI_Comm_free(&fp->comm);
+
+    cfg->amount_WR += put_amount;
 
     delete fp;
 
@@ -296,12 +296,12 @@ err_out:
 }
 
 int e3sm_io_driver_h5blob::inq_put_size (int fid, MPI_Offset *size) {
-    *size = this->put_amount;
+    *size = 0;
     return 0;
 }
 
 int e3sm_io_driver_h5blob::inq_get_size (int fid, MPI_Offset *size) {
-    *size = this->get_amount;
+    *size = 0;
     return 0;
 }
 
