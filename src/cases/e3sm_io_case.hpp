@@ -207,3 +207,9 @@ def_G_case(e3sm_io_config &cfg,
            int ncid,
            int *varids);
 
+extern int
+check_malloc(e3sm_io_config *cfg, e3sm_io_driver *driver);
+
+extern int
+report_timing_WR(e3sm_io_config *cfg, const char *outfile);
+
