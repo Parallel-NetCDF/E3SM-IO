@@ -314,7 +314,7 @@ int blob_G_case(e3sm_io_config &cfg,
     cfg.flush_time = 0.0;
 
     if (cfg.api == hdf5) /* I/O amount from previous I/O */
-        INQ_PUT_SIZE(previous_size)
+        previous_size = cfg.amount_WR;
     else
         previous_size = 0;
 
@@ -684,7 +684,7 @@ int blob_G_case(e3sm_io_config &cfg,
 
     cfg.close_time = MPI_Wtime() - timing;
 
-    if (cfg.api == hdf5) INQ_PUT_SIZE(total_size)
+    if (cfg.api == hdf5) total_size = cfg.amount_WR;
 
     total_size -= previous_size;
 
@@ -700,7 +700,7 @@ int blob_G_case(e3sm_io_config &cfg,
     check_malloc(&cfg, &driver);
 
     /* report timing breakdowns */
-    report_timing_WR(&cfg, outfile);
+    report_timing_WR(&cfg, &driver, outfile);
 
     /* print MPI-IO hints actually used */
     if (cfg.verbose && global_rank == 0) print_info(&info_used);
