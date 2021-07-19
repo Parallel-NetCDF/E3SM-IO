@@ -53,11 +53,12 @@ int check_malloc(e3sm_io_config *cfg,
 
 /*---< report_timing_WR() >--------------------------------------------------*/
 int report_timing_WR(e3sm_io_config *cfg,
+                     e3sm_io_driver *driver,
                      const char     *outfile)
 {
-    int i, global_rank;
+    int i, err=0, global_rank;
     MPI_Offset off_msg[2], sum_off[2], max_off[2];
-    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs;
+    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs, file_size;
     double pre_time, open_time, def_time, post_time, flush_time, close_time;
     double end2end_time, wTime;
 
@@ -100,7 +101,16 @@ int report_timing_WR(e3sm_io_config *cfg,
         else /* write happens at file close for hdf5 blob and adios blob */
             wTime = close_time;
 
+        err = driver->inq_file_size(outfile, &file_size);
+        if (err != 0) {
+            printf("Error: failed inq_file_size %s\n",outfile);
+            return -1;
+        }
+
         printf("History output file                = %s\n", outfile);
+        if (cfg->api == adios)
+            printf("Output file size                   = %.2f MiB = %.2f GiB\n",
+                    (double)file_size / 1048576, (double)file_size / 1073741824);
         printf("No. decomposition variables        = %3d\n", cfg->num_decomp_vars);
         printf("No. variables use no decomposition = %3d\n", nvars_noD);
         for (i=0; i<cfg->num_decomp; i++)

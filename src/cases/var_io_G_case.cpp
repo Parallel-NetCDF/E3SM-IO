@@ -213,7 +213,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     int *D1_fix_int_buf, *D2_fix_int_buf, *D3_fix_int_buf, *D4_fix_int_buf, *D5_fix_int_buf;
     double *D1_fix_dbl_buf;
     double timing;
-    MPI_Offset metadata_size, total_size, fsize;
+    MPI_Offset metadata_size, total_size;
     MPI_Offset **fix_starts_D1, **fix_counts_D1;
     MPI_Offset **fix_starts_D2, **fix_counts_D2;
     MPI_Offset **fix_starts_D3, **fix_counts_D3;
@@ -689,11 +689,6 @@ int run_varn_G_case (e3sm_io_config &cfg,
 
     cfg.close_time = MPI_Wtime() - timing;
 
-    if (rank == 0){
-        err = driver.inq_file_size(cfg.out_path, &fsize);
-        CHECK_ERR
-    }
-
     if (dummy_double_buf != NULL) free (dummy_double_buf);
 
     if (xnreqs[0] > 0) {
@@ -759,7 +754,7 @@ int run_varn_G_case (e3sm_io_config &cfg,
     check_malloc(&cfg, &driver);
 
     /* report timing breakdowns */
-    report_timing_WR(&cfg, cfg.out_path);
+    report_timing_WR(&cfg, &driver, cfg.out_path);
 
     /* print MPI-IO hints actually used */
     if (cfg.verbose && rank == 0) print_info(&info_used);

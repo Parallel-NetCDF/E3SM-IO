@@ -455,7 +455,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     double *dbl_buf, *dbl_buf_ptr;
     double timing, io_timing;
     MPI_Aint *var_disps, *buf_disps;
-    MPI_Offset metadata_size, rec_size, total_size, fsize;
+    MPI_Offset metadata_size, rec_size, total_size;
     MPI_Offset offset_fix, offset_rec, var_offset;
     MPI_Datatype *var_types, type[4], *filetype_rec, filetype_dbl;
     MPI_Datatype buftype_rec, buftype_dbl;
@@ -764,11 +764,6 @@ int run_vard_F_case (e3sm_io_config &cfg,
     CHECK_ERR
     cfg.close_time = MPI_Wtime () - timing;
 
-    if (rank == 0){
-        err = driver.inq_file_size(outfile, &fsize);
-        CHECK_ERR
-    }
-    
     for (j = 0; j < cfg.nrecs; j++) MPI_Type_free (filetype_rec + j);
     free (filetype_rec);
     MPI_Type_free (&filetype_dbl);
@@ -794,7 +789,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     check_malloc(&cfg, &driver);
 
     /* report timing breakdowns */
-    report_timing_WR(&cfg, outfile);
+    report_timing_WR(&cfg, &driver, outfile);
 
     /* print MPI-IO hints actually used */
     if (cfg.verbose && rank == 0) print_info(&info_used);
@@ -965,7 +960,6 @@ int run_varn_F_case(e3sm_io_config &cfg,
     MPI_Offset **starts_D2 = NULL, **counts_D2 = NULL;
     MPI_Offset **starts_D3 = NULL, **counts_D3 = NULL;
     MPI_Info info_used = MPI_INFO_NULL;
-    MPI_Offset fsize;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     cfg.end2end_time = cfg.pre_time = MPI_Wtime();
@@ -1331,11 +1325,6 @@ int run_varn_F_case(e3sm_io_config &cfg,
     CHECK_ERR
     cfg.close_time = MPI_Wtime () - timing;
 
-    if (rank == 0) {
-        err = driver.inq_file_size(outfile, &fsize);
-        CHECK_ERR
-    }
-
     if (starts_D3 != NULL) {
         free (starts_D3[0]);
         free (starts_D3);
@@ -1362,7 +1351,7 @@ int run_varn_F_case(e3sm_io_config &cfg,
     check_malloc(&cfg, &driver);
 
     /* report timing breakdowns */
-    report_timing_WR(&cfg, outfile);
+    report_timing_WR(&cfg, &driver, outfile);
 
     /* print MPI-IO hints actually used */
     if (cfg.verbose && rank == 0) print_info(&info_used);
