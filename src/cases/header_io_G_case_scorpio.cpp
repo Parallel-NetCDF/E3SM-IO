@@ -45,24 +45,26 @@
             goto err_out;                                                                       \
         }                                                                                       \
     }
-#define PUT_GATTR_TXT(name, buf)                                                          \
-    {                                                                                     \
-        err = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, name, MPI_CHAR, \
-                                       strlen (buf), (void *)(buf));                      \
-        CHECK_ERR                                                                         \
-    }
-#define PUT_GATTR_INT(name, val)                                                                   \
+#define PUT_GATTR_TXT(name, buf)                                                                   \
     {                                                                                              \
-        int buf = val;                                                                             \
-        err = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, name, MPI_INT, 1, &buf); \
+        err = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR,                          \
+                                       "pio_global/" + std::string (name), MPI_CHAR, strlen (buf), \
+                                       (void *)(buf));                                             \
         CHECK_ERR                                                                                  \
     }
-#define PUT_GATTR_DBL(name, val)                                                               \
-    {                                                                                          \
-        double buf = val;                                                                      \
-        err = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, name, MPI_DOUBLE, 1, \
-                                       &buf);                                                  \
-        CHECK_ERR                                                                              \
+#define PUT_GATTR_INT(name, val)                                                                  \
+    {                                                                                             \
+        int buf = val;                                                                            \
+        err     = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR,                     \
+                                       "pio_global/" + std::string (name), MPI_INT, 1, &buf); \
+        CHECK_ERR                                                                                 \
+    }
+#define PUT_GATTR_DBL(name, val)                                                                        \
+    {                                                                                                   \
+        double buf = val;                                                                               \
+        err        = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR,                        \
+                                       "pio_global/" + std::string (name), MPI_DOUBLE, 1, &buf); \
+        CHECK_ERR                                                                                       \
     }
 #define PUT_ATTR_TXT(name, buf)                                                            \
     {                                                                                      \
@@ -111,6 +113,13 @@ static int add_gattrs_scorpio (e3sm_io_config &cfg,
     CHECK_ERR
 
     /* 742 global attributes: */
+    // TODO: retrieve real attribute content
+    PUT_GATTR_TXT ("initial_file",
+                   "/global/cfs/cdirs/e3sm/inputdata/atm/cam/inic/homme/"
+                   "cami_mam3_Linoz_0000-01-ne120np4_L72_c160318.nc")
+    PUT_GATTR_INT ("ne", 120)
+    PUT_GATTR_INT ("np", 21600)
+    PUT_GATTR_TXT ("time_period_freq", "day_5")
     PUT_GATTR_TXT ("title", "MPAS-Ocean output file information")
     PUT_GATTR_TXT ("source", "MPAS Ocean")
     PUT_GATTR_TXT ("source_id", "a79fafdb76")
@@ -123,6 +132,9 @@ static int add_gattrs_scorpio (e3sm_io_config &cfg,
     PUT_GATTR_TXT ("history", "created on 06/04/21 12:46:19")
     PUT_GATTR_TXT ("Conventions", "CF-1.7")
     PUT_GATTR_TXT ("institution_id", "E3SM-Project")
+    PUT_GATTR_TXT ("topography_file",
+                   "/global/cfs/cdirs/e3sm/inputdata/atm/cam/topo/"
+                   "USGS-gtopo30_ne120np4_16xdel2-PFC-consistentSGH.nc")
     PUT_GATTR_TXT (
         "institution",
         "LLNL (Lawrence Livermore National Laboratory, Livermore, CA 94550, USA); ANL (Argonne "
@@ -991,7 +1003,7 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
                                     scorpiovars + j);
         CHECK_ERR
 
-        for (i = 0; i < decom.ndims[piodecomid[j]]; i++){
+        for (i = 0; i < decom.ndims[piodecomid[j]]; i++) {
             piodims[i] = (int)decom.dims[piodecomid[j]][i];
         }
         err = driver.put_att (ncid, scorpiovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
