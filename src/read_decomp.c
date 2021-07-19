@@ -113,7 +113,7 @@ int read_decomp(e3sm_io_config *cfg,
     int err, rank, nprocs, ncid, varid, proc_start, proc_count;
     int i, j, k, nreqs, *all_nreqs, *all_raw_nreqs, dimids[3], id;
     int has_raw_decom;
-    MPI_Offset num, decomp_nprocs, total_nreqs, start, count, raw_start, raw_count;
+    MPI_Offset num, decomp_nprocs, total_nreqs, start, count;
     MPI_Info info=MPI_INFO_NULL;
     struct off_len *myreqs;
 
@@ -309,7 +309,7 @@ int read_decomp(e3sm_io_config *cfg,
             free(all_raw_nreqs);
 
             if (cfg->verbose)
-                printf("D%d rank %d: proc_start=%d proc_count=%d raw_start%lld raw_count=%lld\n",
+                printf("D%d rank %d: proc_start=%d proc_count=%d start%lld count=%lld\n",
                         id + 1, rank, proc_start, proc_count, start, count);
 
             /* read starting offsets of requests into disps[] */
