@@ -72,6 +72,7 @@ typedef enum e3sm_io_api {
     pnetcdf,
     hdf5,
     hdf5_md,
+    hdf5_ra,
     hdf5_log,
     adios,
     undef_api

@@ -156,6 +156,9 @@ done_check:
             ERR_OUT ("HDF5 support was not enabled in this build")
 #endif
             break;
+#ifdef E3SM_IO_DEBUG
+        case hdf5_ra:
+#endif
         case hdf5_md:
         case hdf5_log:
 #ifdef ENABLE_HDF5
