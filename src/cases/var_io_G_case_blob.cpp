@@ -529,7 +529,6 @@ int blob_G_case(e3sm_io_config &cfg,
 
     for (rec_no=0; rec_no<cfg.nrecs; rec_no++) {
 #ifndef FLUSH_ALL_RECORDS_AT_ONCE
-        timing = MPI_Wtime();
         dbl_buf_ptr = dbl_buf
                     + decom.dims[2][1] * 4
                     + decom.count[0] + gap * 5;
