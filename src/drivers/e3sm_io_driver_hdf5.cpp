@@ -87,6 +87,10 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
         throw "The HDF5 used does not support multi-dataset write";
 #endif
     }
+#ifdef E3SM_IO_DEBUG
+    else if (cfg->api == hdf5_ra) {  
+    }
+#endif
 
     if ((cfg->chunksize != 0) && (cfg->filter != none)) {
         throw "Fitler requries chunking in HDF5";

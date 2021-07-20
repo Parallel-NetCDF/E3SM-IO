@@ -232,24 +232,27 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
 
 #ifdef HDF5_HAVE_DWRITE_MULTI
-    herr = H5Dwrite_multi (this->driver.dxplid_coll, multi_datasets.size (), multi_datasets.data());
-    CHECK_HERR
-#else
-    for (i = 0; i < multi_datasets.size (); ++i) {
-        // MPI_Barrier(MPI_COMM_WORLD);
-        herr = H5Dwrite (multi_datasets[i].dset_id, multi_datasets[i].mem_type_id,
-                         multi_datasets[i].mem_space_id, multi_datasets[i].dset_space_id,
-                         driver.dxplid_coll, multi_datasets[i].u.wbuf);
-        CHECK_HERR
+    if (this->driver.use_dwrite_multi) {    
+        H5Dwrite_multi (this->driver.dxplid_coll, multi_datasets.size (), multi_datasets.data());
+    }
+    else
+#endif
+    {
+        for (i = 0; i < multi_datasets.size (); ++i) {
+            // MPI_Barrier(MPI_COMM_WORLD);
+            herr = H5Dwrite (multi_datasets[i].dset_id, multi_datasets[i].mem_type_id,
+                            multi_datasets[i].mem_space_id, multi_datasets[i].dset_space_id,
+                            driver.dxplid_coll, multi_datasets[i].u.wbuf);
+            CHECK_HERR
 
-        if (!rank) {
-            uint32_t local_no_collective_cause, global_no_collective_cause;
-            H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
-                                             &global_no_collective_cause);
-            print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
+            if (!rank) {
+                uint32_t local_no_collective_cause, global_no_collective_cause;
+                H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
+                                                &global_no_collective_cause);
+                print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
+            }
         }
     }
-#endif
 
     // Count data size
     for (i = 0; i < (int)(multi_datasets.size ()); ++i) {
