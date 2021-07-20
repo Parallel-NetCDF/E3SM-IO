@@ -76,8 +76,6 @@ typedef unsigned long long uint64;
 #define FILE_ALIGNMENT_DEFAULT 512
 #define FILE_ALIGNMENT_LB      4
 
-/* XXX: this seems really low.  do we end up spending a ton of time mallocing?
- * could we reduce that by increasing this to something 21st century? */
 #ifndef NC_ARRAY_GROWBY
 #define NC_ARRAY_GROWBY 64
 #endif
@@ -112,36 +110,18 @@ typedef enum {
      var_list = ABSENT  -- 8 bytes
 */
 
-typedef struct NC NC; /* forward reference */
-
-/*
- * NC dimension structure
- */
 typedef struct {
     MPI_Offset  size;
     size_t      name_len; /* strlen(name), for faster string compare */
     char       *name;
 } NC_dim;
 
-/* The dimension ID returned from ncmpi_def_dim() is a pointer to type "int"
- * which means the total number of defined dimension allowed in a file
- * is up to 2^31-1. Thus, the member ndefined below should be of type int.
- * In fact, the value of ndefined should be between 0 and NC_MAX_DIMS.
- *
- * We use name ndefined for number of defined dimensions, instead of "nelems"
- * used in the CDF format specifications because the number can only be of
- * data type int (signed 4-byte integer). Other "nelems" in the format
- * specifications can be of type 8-byte integers.
- */
 typedef struct NC_dimarray {
     int            ndefined;      /* number of defined dimensions */
     int            unlimited_id;  /* -1 for not defined, otherwise >= 0 */
     NC_dim       **value;
 } NC_dimarray;
 
-/*
- * NC attribute
- */
 typedef struct {
     MPI_Offset nelems;   /* number of attribute elements */
     MPI_Offset xsz;      /* amount of space at xvalue (4-byte aligned) */
@@ -151,17 +131,7 @@ typedef struct {
     void      *xvalue;   /* the actual data, in external representation */
 } NC_attr;
 
-/* Number of attributes is limited by 2^31-1 because the argument ngattsp in
- * API ncmpi_inq()/nc_inq() is a signed 4-byte integer. Similarly for argument
- * ngattsp in API ncmpi_inq_natts()/nc_inq_natts(). In fact, the value of
- * ndefined should be between 0 and NC_MAX_ATTRS.
- *
- * We use name ndefined for number of defined attributes, instead of "nelems"
- * used in the CDF format specifications, because the number can only be of
- * data type int (signed 4-byte integer). Other "nelems" in the format
- * specifications can be of type 8-byte integers.
- */
-typedef struct NC_attrarray {
+typedef struct {
     int            ndefined;  /* number of defined attributes */
     NC_attr      **value;
 } NC_attrarray;
@@ -188,19 +158,7 @@ typedef struct {
     NC_attrarray  attrs;   /* attribute array */
 } NC_var;
 
-/*
- * Number of variables is limited by 2^31-1 because the argument nvarsp in
- * API ncmpi_inq()/nc_inq() is a signed 4-byte integer and argument varid in
- * API ncmpi_def_var()/nc_def_var() is also a signed 4-byte int. In fact,
- * the value of ndefined should be between 0 and NC_MAX_VARS.
- *
- * We use name ndefined for number of defined variables, instead of "nelems"
- * used in the CDF format specifications, because the number can only be of
- * data type int (signed 4-byte integer). Other "nelems" in the format
- * specifications can be of type 8-byte integers.
- */
-/* note: we only allow less than 2^31-1 variables defined in a file */
-typedef struct NC_vararray {
+typedef struct {
     int            ndefined;    /* number of defined variables */
     int            num_rec_vars;/* number of defined record variables */
     NC_var       **value;
@@ -209,44 +167,26 @@ typedef struct NC_vararray {
 #define IS_RECVAR(vp) \
         ((vp)->shape != NULL ? (*(vp)->shape == NC_UNLIMITED) : 0 )
 
-
-struct NC {
-    int           ncid;         /* file ID */
-    int           format;       /* 1, 2, or 5 corresponding to CDF-1, 2, or 5 */
-    MPI_Offset    xsz;         /* size of this file header, <= var[0].begin */
-    MPI_Offset    begin_var;   /* file offset of the first fixed-size variable,
-                                  if no fixed-sized variable, it is the offset
-                                  of first record variable. This value is also
-                                  the size of file header extent. */
-    MPI_Offset    begin_rec;   /* file offset of the first 'record' */
-
-    MPI_Offset    recsize;   /* length of 'record': sum of single record sizes
-                                of all the record variables */
-    MPI_Offset    numrecs;   /* number of 'records' allocated */
-    MPI_Offset    put_size;  /* amount of writes committed so far in bytes */
-    MPI_Offset    get_size;  /* amount of reads  committed so far in bytes */
-
-    MPI_Comm      comm;           /* MPI communicator */
+typedef struct {
+    int           ncid;     /* file ID */
+    int           format;   /* 1, 2, or 5 corresponding to CDF-1, 2, or 5 */
+    MPI_Offset    xsz;      /* size of this file header, <= var[0].begin */
+    MPI_Offset    recsize;  /* length of 'record': sum of single record sizes
+                               of all the record variables */
+    MPI_Offset    numrecs;  /* number of 'records' allocated */
 
     NC_dimarray   dims;     /* dimensions defined */
     NC_attrarray  attrs;    /* global attributes defined */
     NC_vararray   vars;     /* variables defined */
-
-    char         *path;     /* file name */
-    struct NC    *old;      /* contains the previous NC during redef. */
-};
+} NC;
 
 
-/* Begin defined in ncmpio_header_get.c -------------------------------------*/
-typedef struct bufferinfo {
-    MPI_Offset  get_size; /* amount of file read n bytes so far */
+typedef struct {
     MPI_Offset  offset;   /* current read/write offset in the file */
     int         size;     /* allocated size of the buffer */
     int         version;  /* 1, 2, and 5 for CDF-1, 2, and 5 respectively */
-    int         safe_mode;/* 0: disabled, 1: enabled */
     char       *base;     /* beginning of read/write buffer */
     char       *pos;      /* current position in buffer */
-    char       *end;      /* end position of buffer */
 } bufferinfo;
 
 extern int blob_ncmpio_create_NC(NC *ncp);
