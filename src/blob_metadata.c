@@ -20,6 +20,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <mpi.h>
 #include <e3sm_io.h>
@@ -57,7 +58,7 @@ int split_communicator(MPI_Comm comm,
 int blob_metadata(e3sm_io_config *cfg,
                   e3sm_io_decom  *decom)
 {
-    int i, j, err, rank, sub_rank, color, int_msg[2];
+    int i, j, err, rank, sub_rank, color, int_msg[2], sub_nprocs, *nnprocs;
     MPI_Comm comm_roots;
 
     /* split communicator to create one sub-communicator per compute node */
@@ -76,6 +77,27 @@ int blob_metadata(e3sm_io_config *cfg,
 
     MPI_Comm_size(comm_roots, &cfg->num_subfiles);
     MPI_Comm_rank(comm_roots, &cfg->subfile_ID);
+
+    /* print the number of MPI processes per node (subfile) */
+    MPI_Comm_size(cfg->sub_comm, &sub_nprocs);
+    nnprocs = (int*) malloc(cfg->num_subfiles * sizeof(int));
+    MPI_Gather(&sub_nprocs, 1, MPI_INT, nnprocs, 1, MPI_INT, 0, comm_roots);
+    if (rank == 0) {
+        char str[64], msg[2048];
+        sprintf(msg,"Total number of compute nodes: %d\n", cfg->num_subfiles);
+        for (j=0, i=1; i<cfg->num_subfiles; i++) {
+            if (nnprocs[i] != nnprocs[j]) {
+                if (j+1 == i) sprintf(str,"Node %d runs %d processes; ",j,nnprocs[j]);
+                else sprintf(str,"Nodes %d to %d run %d processes each; ",j,i-1,nnprocs[j]);
+                j = i;
+                strcat(msg, str);
+            }
+        }
+        if (j+1 == i) sprintf(str,"Node %d runs %d processes\n",j,nnprocs[j]);
+        else sprintf(str,"Nodes %d to %d run %d processes each\n",j,i-1,nnprocs[j]);
+        printf("%s%s",msg, str);
+    }
+    free(nnprocs);
     MPI_Comm_free(&comm_roots);
 
     int_msg[0] = cfg->num_subfiles;
