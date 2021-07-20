@@ -1,10 +1,17 @@
-/*
- *  Copyright (C) 2003, Northwestern University and Argonne National Laboratory
- *  See COPYRIGHT notice in top-level directory.
+/*********************************************************************
+ *
+ * Copyright (C) 2021, Northwestern University
+ * See COPYRIGHT notice in top-level directory.
+ *
+ * This program is part of the E3SM I/O benchmark.
+ *
+ * This file is extracted from PnetCDF source file ncmpio_NC.h in:
+ * https://github.com/Parallel-NetCDF/PnetCDF/blob/master/src/drivers/ncmpio
+ *
  */
 
-#ifndef _NC_H
-#define _NC_H
+#ifndef _BLOB_NCMPIO_H
+#define _BLOB_NCMPIO_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -206,4 +213,4 @@ extern int blob_ncmpio_pack_NC(NC *ncp, size_t *buf_len, void **buf);
 }
 #endif
 
-#endif /* _NC_H */
+#endif /* _BLOB_NCMPIO_H */

@@ -5,6 +5,10 @@
  *
  * This program is part of the E3SM I/O benchmark.
  *
+ * This file is extracted from PnetCDF source files:
+ * ncmpio_enddef.c, ncmpio_header_get.c, ncmpio_header_put.c, and utils.c
+ * https://github.com/Parallel-NetCDF/PnetCDF/tree/master/src/drivers/ncmpio
+ *
  *********************************************************************/
 #ifdef HAVE_CONFIG_H
 #include <config.h>
