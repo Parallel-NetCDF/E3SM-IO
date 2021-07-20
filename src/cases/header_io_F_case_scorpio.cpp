@@ -35,7 +35,7 @@
 
 #define INQ_VID(F, N, T, S, B, V) driver.inq_var (F, N, V);
 
-#define DEF_VAR(F, N, T, ND, D, V) e3sm_io_scorpio_define_var (driver, cfg, dnames, decom, decomids[i], F, N, T, ND, D, V);
+#define DEF_VAR(F, N, T, ND, D, V) e3sm_io_scorpio_define_var (driver, cfg, dnames, decom, (decomids[i] >=0 ? piodecomid_inv[decomids[i]] : -1), F, N, T, ND, D, V);
 
 static char attbuf[4096];
 
@@ -102,6 +102,7 @@ int def_F_case_h0_scorpio (e3sm_io_driver &driver,
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
     float fillv = 1.e+36f, missv = 1.e+36f;
     std::map<int, std::string> dnames;
+    int piodecomid_inv[] = {0, 1, 4};
     char name[128];
 
     /* global attributes: */
@@ -6152,6 +6153,7 @@ int def_F_case_h1_scorpio (e3sm_io_driver &driver,
     int i, j, k, err, nerrs = 0, dimids[3], iattr, mdims = 1;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
     std::map<int, std::string> dnames;
+    int piodecomid_inv[] = {0, 1, 4};
     char name[128];
 
     /* global attributes: */

@@ -35,15 +35,17 @@
         err = e3sm_io_scorpio_define_dim (driver, ncid, name, num, dnames, dimid); \
         CHECK_ERR                                                                  \
     }
-#define DEF_VAR(name, type, ndims, dimids)                                                      \
-    {                                                                                           \
-        varid++;                                                                                \
-        err = e3sm_io_scorpio_define_var (driver, cfg, dnames, decom, decomids[varid - varids], \
-                                          ncid, name, type, ndims, dimids, varid);              \
-        if (err != 0) {                                                                         \
-            printf ("Error in %s line %d: def_var %s\n", __FILE__, __LINE__, name);             \
-            goto err_out;                                                                       \
-        }                                                                                       \
+#define DEF_VAR(name, type, ndims, dimids)                                                         \
+    {                                                                                              \
+        varid++;                                                                                   \
+        err = e3sm_io_scorpio_define_var (                                                         \
+            driver, cfg, dnames, decom,                                                            \
+            (decomids[varid - varids] >= 0 ? piodecomid_inv[decomids[varid - varids]] : -1), ncid, \
+            name, type, ndims, dimids, varid);                                                     \
+        if (err != 0) {                                                                            \
+            printf ("Error in %s line %d: def_var %s\n", __FILE__, __LINE__, name);                \
+            goto err_out;                                                                          \
+        }                                                                                          \
     }
 #define PUT_GATTR_TXT(name, buf)                                                                   \
     {                                                                                              \
@@ -912,7 +914,7 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
     int dim_nVertLevels, dim_nVertLevelsP1, dimids_D[MAX_NUM_DECOMP][3];
     int fix_D[MAX_NUM_DECOMP][3], rec_D[MAX_NUM_DECOMP][3];
     std::map<int, std::string> dnames;
-
+    int piodecomid_inv[] = {0, 1, 2, 3, 4, 5};
     char name[64];
 
     err = add_gattrs_scorpio (cfg, decom, driver, ncid);

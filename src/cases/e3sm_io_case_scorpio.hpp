@@ -69,10 +69,9 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
     int ibuf;
     int ret;
     std::vector<const char*> dnames_array (ndim);
-    int piodecomid_inv[] = {0, 1, 4};
 
     var->type    = type;
-    var->decomid = piodecomid_inv[decomid] + 512;
+    var->decomid = decomid + 512;
     var->ndim = 0;
 
     for(i = 0; i < ndim; i++){
