@@ -411,17 +411,7 @@ int e3sm_io_driver_h5blob::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
 
 int e3sm_io_driver_h5blob::enddef (int fid) { return 0; }
 int e3sm_io_driver_h5blob::redef (int fid) { return 0; }
-int e3sm_io_driver_h5blob::wait (int fid) {
-    int err = 0;
-    herr_t herr;
-    h5blob_file *fp = this->files[fid];
-
-    herr = H5Fflush (fp->id, H5F_SCOPE_GLOBAL);
-    CHECK_HERR
-
-err_out:
-    return err;
-}
+int e3sm_io_driver_h5blob::wait (int fid) { return 0; }
 
 int e3sm_io_driver_h5blob::put_att(int          fid,
                                    int          varid,
