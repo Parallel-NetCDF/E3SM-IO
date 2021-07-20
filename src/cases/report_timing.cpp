@@ -58,7 +58,7 @@ int report_timing_WR(e3sm_io_config *cfg,
 {
     int i, err=0, global_rank;
     MPI_Offset off_msg[2], sum_off[2], max_off[2];
-    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs, file_size;
+    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs, file_size=0;
     double pre_time, open_time, def_time, post_time, flush_time, close_time;
     double end2end_time, wTime;
 
@@ -105,10 +105,8 @@ int report_timing_WR(e3sm_io_config *cfg,
             printf("History output name base           = %s\n", cfg->out_path);
             if (cfg->api == adios) {
                 err = driver->inq_file_size(outfile, &file_size);
-                if (err != 0) {
+                if (err != 0) /* ignore non-critical error */
                     printf("Error: failed inq_file_size %s\n",outfile);
-                    return -1;
-                }
                 printf("History output folder name         = %s.bp.dir\n", outfile);
                 printf("History output subfile names       = %s.bp.dir/%s.bp.xxxx\n",
                        outfile, outfile);
