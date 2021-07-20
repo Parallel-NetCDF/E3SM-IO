@@ -435,7 +435,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     size_t ii, dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
-    double timing;
     MPI_Offset metadata_size=0, total_size;
     MPI_Offset **starts_D2 = NULL, **counts_D2 = NULL;
     MPI_Offset **starts_D3 = NULL, **counts_D3 = NULL;
@@ -445,9 +444,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     cfg.end2end_time = cfg.pre_time = MPI_Wtime();
-
-    cfg.post_time  = 0.0;
-    cfg.flush_time = 0.0;
 
     /* write amount from previous I/O */
     previous_size = cfg.amount_WR;
@@ -588,7 +584,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     cfg.pre_time = MPI_Wtime() - cfg.pre_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    timing = MPI_Wtime ();
+    cfg.open_time = MPI_Wtime ();
 
     /* construct h0/h1 file name */
     hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
@@ -605,10 +601,10 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     err = driver.create (outfile, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
-    cfg.open_time = MPI_Wtime() - timing;
+    cfg.open_time = MPI_Wtime() - cfg.open_time;
 
     MPI_Barrier(cfg.io_comm); /*-----------------------------------------*/
-    timing = MPI_Wtime();
+    cfg.def_time = MPI_Wtime();
 
     /* define dimensions, variables, and attributes */
     if (cfg.nvars == 414) {
@@ -634,10 +630,10 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
 
-    cfg.def_time = MPI_Wtime() - timing;
+    cfg.def_time = MPI_Wtime() - cfg.def_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    timing = MPI_Wtime ();
+    cfg.post_time = MPI_Wtime ();
 
     // Write pio scalar vars (one time)
     
@@ -858,24 +854,24 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         }
     }
 
-    cfg.post_time += MPI_Wtime() - timing;
+    cfg.post_time = MPI_Wtime() - cfg.post_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    timing = MPI_Wtime ();
+    cfg.flush_time = MPI_Wtime ();
 
     /* in ADIOS,  data is actually flushed at file close */
     err = WAIT_ALL_REQS (ncid, NC_REQ_ALL, NULL, NULL);
     CHECK_ERR
 
-    cfg.flush_time += MPI_Wtime() - timing;
+    cfg.flush_time = MPI_Wtime() - cfg.flush_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    timing = MPI_Wtime ();
+    cfg.close_time = MPI_Wtime ();
 
     err = driver.close (ncid);
     CHECK_ERR
 
-    cfg.close_time = MPI_Wtime() - timing;
+    cfg.close_time = MPI_Wtime() - cfg.close_time;
 
     /* for ADIOS blob I/O, writes only happen when closing the file */
     total_size = cfg.amount_WR - previous_size;
