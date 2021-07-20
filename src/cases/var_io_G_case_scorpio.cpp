@@ -784,18 +784,18 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
             my_nreqs += xnreqs[4];
             if (rec_no == 0) nvars_D[4]++;
         }
+
+        cfg.post_time = MPI_Wtime() - cfg.post_time;
+
+        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
+        cfg.flush_time = MPI_Wtime ();
+
+        /* in ADIOS,  data is actually flushed at file close */
+        err = driver.wait (ncid);
+        CHECK_ERR
+
+        cfg.flush_time = MPI_Wtime() - cfg.flush_time;
     }
-
-    cfg.post_time = MPI_Wtime() - cfg.post_time;
-
-    MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.flush_time = MPI_Wtime ();
-
-    /* in ADIOS,  data is actually flushed at file close */
-    err = driver.wait (ncid);
-    CHECK_ERR
-
-    cfg.flush_time = MPI_Wtime() - cfg.flush_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     cfg.close_time = MPI_Wtime ();

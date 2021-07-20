@@ -667,16 +667,16 @@ int run_varn_G_case (e3sm_io_config &cfg,
             my_nreqs += xnreqs[4];
             if (rec_no == 0) nvars_D[4]++;
         }
+
+        cfg.post_time = MPI_Wtime() - timing;
+
+        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
+        timing = MPI_Wtime ();
+
+        WAIT_ALL_REQS
+
+        cfg.flush_time = MPI_Wtime() - timing;
     }
-
-    cfg.post_time = MPI_Wtime() - timing;
-
-    MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    timing = MPI_Wtime ();
-
-    WAIT_ALL_REQS
-
-    cfg.flush_time = MPI_Wtime() - timing;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
