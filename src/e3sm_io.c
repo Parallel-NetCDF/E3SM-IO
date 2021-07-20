@@ -156,6 +156,8 @@ int main (int argc, char **argv) {
     cfg.non_contig_buf = 0;
     cfg.io_stride      = 1;
     cfg.sub_comm       = MPI_COMM_NULL;
+    cfg.amount_WR      = 0;
+    cfg.amount_RD      = 0;
 
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
         decom.blocklens[i]   = NULL;
