@@ -91,6 +91,16 @@ int e3sm_io_driver_h5blob::open(std::string path,
     return -1;
 }
 
+/*---< close() >-------------------------------------------------------------*/
+/* All write requests cached internally will be flushed to the file now. Each
+ * process packs all its write requests previous cached in memory into a single
+ * contiguous buffer and writes to a contiguous file location (blob), appending
+ * one process's blob after another, based on the rank order of MPI processes.
+ * There will be two HDF5 dataset created: one for header and the other for
+ * write data. Using one dataset for all blobs allows to use MPI collective
+ * write to write to the file, which can take advantage of MPI-IO optimization
+ * implemented in collective write functions.
+ */
 int e3sm_io_driver_h5blob::close (int fid)
 {
     char *buf_ptr;
@@ -110,12 +120,6 @@ int e3sm_io_driver_h5blob::close (int fid)
 
     MPI_Comm_rank(fp->comm, &rank);
 
-/*
-printf("%s: nvars=%d num_puts=%d total_len=%lld header=%lld\n", __FILE__,ncp->vars.ndefined, fp->num_puts, fp->total_len, fp->header->xsz);
-for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp->vars.value[i]->name,fp->vars[i].nrecs,fp->vars[i].len[0]);
-*/
-    /* create a new dataset to store data blobs of all processes */
-
     /* Sum the data blob sizes across all processes */
     count = fp->total_len;
     err = MPI_Allreduce(&count, &sum, 1, MPI_OFFSET, MPI_SUM, fp->comm);
@@ -134,7 +138,7 @@ for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp
     /* free up space occupied by the header metadata */
     blob_ncmpio_free_NC(ncp);
 
-    /* set create property list */
+    /* set create property list for header blob dataset */
     dcpl_id = H5Pcreate(H5P_DATASET_CREATE);
     CHECK_HID(dcpl_id)
 
@@ -142,7 +146,7 @@ for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp
     H5Pset_fill_time(dcpl_id, H5D_FILL_TIME_NEVER);
     H5Pset_alloc_time(dcpl_id, H5D_ALLOC_TIME_DEFAULT);
 
-    /* create a new dataset to store header blob */
+    /* header blob dataset will be a 1D array */
     dim_len = header_len;
     fspace = H5Screate_simple(1, &dim_len, NULL);
     CHECK_HID(fspace);
@@ -154,7 +158,7 @@ for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp
     herr = H5Sclose(fspace);
     CHECK_HERR
 
-    /* create a HDF5 dataset to store data blob */
+    /* data blob dataset will also be a 1D array */
     dim_len = sum;
     fspace = H5Screate_simple(1, &dim_len, NULL);
     CHECK_HID(fspace);
@@ -167,7 +171,7 @@ for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp
     herr = H5Pclose(dcpl_id);
     CHECK_HERR
 
-    /* done with creating new datasets */
+    /* done with creating new datasets, now prepare to write them */
 
     /* Each process packs its write data into a contiguous buffer */
     buf = (void*) malloc(fp->total_len);
@@ -182,13 +186,13 @@ for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp
             free(fp->vars[i].buf[j]);
             buf_ptr += fp->vars[i].len[j];
         }
-        free(fp->vars[i].buf);
+        free(fp->vars[i].buf); /* free the cache buffer */
         free(fp->vars[i].len);
     }
     assert(buf_ptr - (char*)buf == (long)fp->total_len);
     free(fp->vars);
 
-    /* set collectie write mode for writing data blob */
+    /* set MPI collective write mode for writing data blob */
     dxpl_id = H5Pcreate(H5P_DATASET_XFER);
     CHECK_HID(dxpl_id)
     herr = H5Pset_dxpl_mpio(dxpl_id, H5FD_MPIO_COLLECTIVE);
@@ -251,12 +255,14 @@ for (i=0; i<fp->num_puts; i++) printf("var[%d]=%s nrecs=%d buf len =%ld\n",i,ncp
 
     free(header_buf);
 
+    /* close the HDF5 file */
     herr = H5Fclose(fp->id);
     CHECK_HERR
 
     free(fp->header);
     MPI_Comm_free(&fp->comm);
 
+    /* update/accumulate the write amount */
     cfg->amount_WR += put_amount;
 
     delete fp;
@@ -443,12 +449,17 @@ err_out:
     return err;
 }
 
+/*----< put_vara() >---------------------------------------------------------*/
+/* In this blob I/O deign, the write data in user buffer will be copied over
+ * into a newly allocated intern buffer and cached until file close. After this
+ * function returns the user write buffer can be reused by users.
+ */
 int e3sm_io_driver_h5blob::put_vara(int fid,
                                     int varid,
                                     MPI_Datatype itype,
                                     MPI_Offset *start,
                                     MPI_Offset *count,
-                                    void *buf,
+                                    void *buf,  /* user's write buffer */
                                     e3sm_io_op_mode mode)
 {
     int i, xsz;
@@ -460,39 +471,32 @@ int e3sm_io_driver_h5blob::put_vara(int fid,
 
     this->files[fid]->num_puts++;
 
+    /* external data type, i.e. for the variable in the file */
     xtype = varp->xtype;
     MPI_Type_size(xtype, &xsz);
 
+    /* calculate the number of elements in this put request */
     nelems = 1;
     if (varp->ndims > 0 && start == NULL) { /* var API */
         if (varp->shape[0] != NC_UNLIMITED) nelems *= varp->shape[0];
         for (i=1; i<varp->ndims; i++)
             nelems *= varp->shape[i];
-
-/*
-if (varp->ndims==1) printf("%s var %s varid %d: ndims=%d shape[0]=%lld nelems=%lld\n",__func__,varp->name,varid,varp->ndims,varp->shape[0],nelems);
-if (varp->ndims==2) printf("%s var %s varid %d: ndims=%d shape[0]=%lld %lld nelems=%lld\n",__func__,varp->name,varid,varp->ndims,varp->shape[0],varp->shape[1],nelems);
-if (varp->ndims==3) printf("%s var %s varid %d: ndims=%d shape[0]=%lld %lld %lld nelems=%lld\n",__func__,varp->name,varid,varp->ndims,varp->shape[0],varp->shape[1],varp->shape[2],nelems);
-*/
     }
     else if (varp->ndims > 0 && count != NULL) {
         if (varp->shape[0] != NC_UNLIMITED) nelems *= count[0];
         for (i=1; i<varp->ndims; i++)
             nelems *= count[i];
-/*
-if (varp->ndims==1) printf("%s var %s varid %d: ndims=%d count[0]=%lld nelems=%lld\n",__func__,varp->name,varid,varp->ndims,count[0],nelems);
-if (varp->ndims==2) printf("%s var %s varid %d: ndims=%d count[0]=%lld %lld nelems=%lld\n",__func__,varp->name,varid,varp->ndims,count[0],count[1],nelems);
-if (varp->ndims==3) printf("%s var %s varid %d: ndims=%d count[0]=%lld %lld %lld nelems=%lld\n",__func__,varp->name,varid,varp->ndims,count[0],count[1],count[2],nelems);
-*/
     }
 
+    /* calculate write request amount in bytes */
     len = nelems * xsz;
 
     if (itype != xtype) {
-        /* type cast when external and internal data type sizes are different */
+        /* when external and internal data type sizes are different */
         if (itype == MPI_DOUBLE && xtype == MPI_FLOAT) {
             double *dbl_buf = (double*)buf;
             float *flt_buf = (float*) malloc(nelems * sizeof(float));
+            /* type casting from doube to float is required */
             for (i=0; i<nelems; i++)
                 flt_buf[i] = (float) dbl_buf[i];
             buf = flt_buf;
@@ -502,22 +506,25 @@ if (varp->ndims==3) printf("%s var %s varid %d: ndims=%d count[0]=%lld %lld %lld
             return -1;
         }
     }
-    else { /* type matched, allocate buffer and copy over */
+    else { /* if type matched, simply allocate buffer and copy over */
         void *tmp = (void*) malloc(len);
         memcpy(tmp, buf, len);
         buf = tmp;
     }
 
+    /* currently writing more than one record is not supported */
     if (IS_RECVAR(varp) && count != NULL && count[0] > 1)
         throw "Error: writing 2 or more records is not supported yet";
 
+    /* increment write amount */
     this->files[fid]->total_len += len;
 
-    if (IS_RECVAR(varp)) {
+    if (IS_RECVAR(varp)) { /* record variable */
         assert(start != NULL);
         if (start[0] > vbuf->nalloc + 64)
             throw "Error: non-sequential write to records is not supported yet";
         if (start[0] == vbuf->nalloc) {
+            /* expand space for vbuf data structure when necessary */
             vbuf->nalloc += 64;
             vbuf->buf = (void**)  realloc(vbuf->buf, vbuf->nalloc * sizeof(void*));
             vbuf->len = (size_t*) realloc(vbuf->len, vbuf->nalloc * sizeof(size_t));
@@ -525,27 +532,28 @@ if (varp->ndims==3) printf("%s var %s varid %d: ndims=%d count[0]=%lld %lld %lld
                 vbuf->len[vbuf->nalloc - 64 + i] = 0;
         }
 
+        /* update the number of records */
         vbuf->nrecs = (start[0]+1 > vbuf->nrecs) ? start[0]+1 : vbuf->nrecs;
 
         vbuf->buf[start[0]] = buf;
         vbuf->len[start[0]] = len;
 
+        /* update the number of records in the header */
         MPI_Offset new_numrecs = start[0];
         new_numrecs += (count == NULL) ? 1 : count[0];
         if (ncp->numrecs < new_numrecs)
             ncp->numrecs = new_numrecs;
-// printf("%s RECORD var %s\n", __FILE__,ncp->vars.value[varid]->name);
     }
     else { /* fixed-size variable */
         vbuf->nrecs = 0;
         if (vbuf->nalloc == 0) {
+            /* allocate space for vbuf data structure */
             vbuf->nalloc = 1;
             vbuf->buf = (void**)  realloc(vbuf->buf, sizeof(void*));
             vbuf->len = (size_t*) realloc(vbuf->len, sizeof(size_t));
         }
         vbuf->buf[0] = buf;
         vbuf->len[0] = len;
-// printf("%s FIXED var %s\n", __FILE__,ncp->vars.value[varid]->name);
     }
 
     return 0;
