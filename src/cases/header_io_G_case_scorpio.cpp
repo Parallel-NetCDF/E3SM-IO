@@ -39,7 +39,7 @@
     {                                                                                              \
         varid++;                                                                                   \
         err = e3sm_io_scorpio_define_var (                                                         \
-            driver, cfg, dnames, decom,                                                            \
+            driver, cfg, dnames, decom, decomids[i],                                               \
             (decomids[varid - varids] >= 0 ? piodecomid_inv[decomids[varid - varids]] : -1), ncid, \
             name, type, ndims, dimids, varid);                                                     \
         if (err != 0) {                                                                            \
@@ -91,7 +91,7 @@
     }
 #define PUT_ATTR_DECOMP(D, ndims, dimids)                                                        \
     {                                                                                            \
-        if ((cfg.strategy == blob) && false) {                                                              \
+        if ((cfg.strategy == blob) && false) {                                                   \
             err = e3sm_io_scorpio_put_att (driver, ncid, *varid, "decomposition_ID", MPI_INT, 1, \
                                            &D);                                                  \
             CHECK_VAR_ERR (*varid)                                                               \
