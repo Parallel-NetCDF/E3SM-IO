@@ -525,7 +525,7 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     tid     = H5Dget_type (did);
     putsize = H5Tget_size (tid);
     for (count = counts; count < counts + nreq; count++) {
-        for (i = 0; i < ndim; i++) { putsize *= *count[i]; }
+        for (i = 0; i < ndim; i++) { putsize *= (*count)[i]; }
     }
     fp->putsize += putsize;
 
@@ -656,7 +656,7 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
     tid     = H5Dget_type (did);
     getsize = H5Tget_size (tid);
     for (count = counts; count < counts + nreq; count++) {
-        for (i = 0; i < ndim; i++) { getsize *= *count[i]; }
+        for (i = 0; i < ndim; i++) { getsize *= (*count)[i]; }
     }
     fp->getsize += getsize;
 
