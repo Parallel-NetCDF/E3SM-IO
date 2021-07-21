@@ -30,7 +30,7 @@ typedef struct e3sm_io_scorpio_var {
     int decomp_id;
     int fillval_id;
     MPI_Datatype type;
-    int decomid;
+    int piodecomid;
     int64_t bsize[3];
     int ndim;
 } e3sm_io_scorpio_var;
@@ -57,6 +57,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                                    std::map<int, std::string> &dnames,
                                    e3sm_io_decom &decom,
                                    int decomid,
+                                   int pio_decomid,
                                    int fid,
                                    std::string name,
                                    MPI_Datatype type,
@@ -71,7 +72,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
     std::vector<const char*> dnames_array (ndim);
 
     var->type    = type;
-    var->decomid = decomid + 512;
+    var->piodecomid = pio_decomid + 512;
     var->ndim = 0;
 
     for(i = 0; i < ndim; i++){
@@ -81,9 +82,8 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
     // If there is a decomposition map associated with the variable,
     // created 2 associated scalar variables frame_id (timesteps) and decom_id (decomposition map)
     if (decomid >= 0) {
-        
         MPI_Offset one = 1;
-
+        
         err = driver.def_local_var (fid, name, type, 1, &(decom.raw_nreqs[decomid]), &(var->data));
         CHECK_ERR
 
@@ -112,7 +112,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             // Scorpio attributes are only written by rank 0
             if (cfg.rank == 0) {
                 // Decomposition map
-                sprintf(cbuf, "%d", var->decomid);
+                sprintf(cbuf, "%d", var->piodecomid);
                 err  = driver.put_att (fid, var->data, "__pio__/decomp", MPI_CHAR, strlen(cbuf), &cbuf);
                 CHECK_ERR
 
@@ -234,7 +234,7 @@ inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
         err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, nbe);
         CHECK_ERR
 
-        decomid = var.decomid;
+        decomid = var.piodecomid ;
         if (var.fillval_id < 0) {
             decomid *= -1;
         }

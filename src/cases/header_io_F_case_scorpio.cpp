@@ -35,7 +35,7 @@
 
 #define INQ_VID(F, N, T, S, B, V) driver.inq_var (F, N, V);
 
-#define DEF_VAR(F, N, T, ND, D, V) e3sm_io_scorpio_define_var (driver, cfg, dnames, decom, (decomids[i] >=0 ? piodecomid_inv[decomids[i]] : -1), F, N, T, ND, D, V);
+#define DEF_VAR(F, N, T, ND, D, V) e3sm_io_scorpio_define_var (driver, cfg, dnames, decom, decomids[i], (decomids[i] >=0 ? piodecomid_inv[decomids[i]] : -1), F, N, T, ND, D, V);
 
 static char attbuf[4096];
 
