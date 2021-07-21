@@ -404,7 +404,7 @@ int blob_F_case(e3sm_io_config &cfg,
     int_buflen = 10        /* 10 [1] */
                + 10 * gap;
 
-    /* allocate and initialize write buffer for large variables */
+    /* allocate and initialize write buffer for large climate variables */
     if (cfg.nvars == 414)
         rec_buflen = decom.count[1] * 323
                    + decom.count[2] * 63
@@ -416,10 +416,17 @@ int blob_F_case(e3sm_io_config &cfg,
 
 #define FLUSH_ALL_RECORDS_AT_ONCE
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    dbl_buflen *= cfg.nrecs;
-    txt_buflen *= cfg.nrecs;
-    int_buflen *= cfg.nrecs;
-    rec_buflen *= cfg.nrecs;
+    if (cfg.api == pnetcdf) {
+        /* write buffers should not be touched when using PnetCDF iput before
+         * ncmpi_wait_all is called. For HDF5 and ADIOS blob I/O, write data
+         * will be copied and cached into internally allocated buffers and user
+         * buffers can be reused after put call returned.
+         */
+        dbl_buflen *= cfg.nrecs;
+        txt_buflen *= cfg.nrecs;
+        int_buflen *= cfg.nrecs;
+        rec_buflen *= cfg.nrecs;
+    }
 #else
     if (cfg.api == hdf5) {
         printf("Error in %s:%d: %s() FLUSH_ALL_RECORDS_AT_ONCE must be enabled when using HDF5 blob I/O",
@@ -436,8 +443,8 @@ int blob_F_case(e3sm_io_config &cfg,
 
     for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = global_rank;
     for (ii=0; ii<txt_buflen; ii++) txt_buf[ii] = 'a' + global_rank;
-    for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = global_rank;
     for (ii=0; ii<int_buflen; ii++) int_buf[ii] = global_rank;
+    for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = global_rank;
 
     /* there are num_decomp_vars number of decomposition variables */
     num_decomp_vars = decom.num_decomp * NVARS_DECOMP;
@@ -557,7 +564,7 @@ int blob_F_case(e3sm_io_config &cfg,
 
     for (rec_no=0; rec_no<cfg.nrecs; rec_no++) {
 #ifndef FLUSH_ALL_RECORDS_AT_ONCE
-        dbl_buf_ptr = dbl_buf + decom.count[1] * 2 + decom.count[0] + gap * 3;
+        dbl_buf_ptr = dbl_buf;
         int_buf_ptr = int_buf;
         txt_buf_ptr = txt_buf;
         rec_buf_ptr = rec_buf;
@@ -567,9 +574,9 @@ int blob_F_case(e3sm_io_config &cfg,
         /* next 27 small variables are written by sub_rank 0 only */
         if (sub_rank == 0) {
             /* post nonblocking requests for small datasets */
-	    err = write_small_vars_F_case(driver, ncid, i, varids, rec_no, gap,
-					  decom.dims[2][0], decom.dims[2][0] +
-					  1, 2, 8, &int_buf_ptr, &txt_buf_ptr,
+            err = write_small_vars_F_case(driver, ncid, i, varids, rec_no, gap,
+                                          decom.dims[2][0], decom.dims[2][0] +
+                                          1, 2, 8, &int_buf_ptr, &txt_buf_ptr,
                                           &dbl_buf_ptr, &my_nreqs);
             CHECK_ERR
         }

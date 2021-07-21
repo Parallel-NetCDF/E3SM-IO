@@ -330,7 +330,7 @@ int blob_G_case(e3sm_io_config &cfg,
 
     if (cfg.non_contig_buf) gap = 10;
 
-    /* allocate write buffer for small climate variables */
+    /* allocate write buffer for climate variables */
     dbl_buflen = decom.dims[2][1] * 4
                + decom.count[0] * 5
                + decom.count[2] * 24
@@ -352,9 +352,16 @@ int blob_G_case(e3sm_io_config &cfg,
     /* allocate and initialize write buffer for large variables */
 #define FLUSH_ALL_RECORDS_AT_ONCE
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    dbl_buflen *= cfg.nrecs;
-    int_buflen *= cfg.nrecs;
-    chr_buflen *= cfg.nrecs;
+    if (cfg.api == pnetcdf) {
+        /* write buffers should not be touched when using PnetCDF iput before
+         * ncmpi_wait_all is called. For HDF5 and ADIOS blob I/O, write data
+         * will be copied and cached into internally allocated buffers and user
+         * buffers can be reused after put call returned.
+         */
+        dbl_buflen *= cfg.nrecs;
+        int_buflen *= cfg.nrecs;
+        chr_buflen *= cfg.nrecs;
+    }
 #else
     if (cfg.api == hdf5) {
         printf("Error in %s:%d: %s() FLUSH_ALL_RECORDS_AT_ONCE must be enabled when using HDF5 blob I/O",
