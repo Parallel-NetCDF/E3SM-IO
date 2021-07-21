@@ -98,19 +98,24 @@ int add_gattrs(e3sm_io_config &cfg,
         PUT_GATTR_INT("num_subfiles", cfg.num_subfiles)
     }
 
-    /* 742 global attributes: */
+    /* 747 global attributes: */
+    PUT_GATTR_TXT ("initial_file", "/global/cfs/cdirs/e3sm/inputdata/atm/cam/inic/homme/cami_mam3_Linoz_0000-01-ne120np4_L72_c160318.nc")
+    PUT_GATTR_INT ("ne", 120)
+    PUT_GATTR_INT ("np", 9600)
+    PUT_GATTR_TXT ("time_period_freq", "day_5")
     PUT_GATTR_TXT("title", "MPAS-Ocean output file information")
     PUT_GATTR_TXT("source", "MPAS Ocean")
     PUT_GATTR_TXT("source_id", "a79fafdb76")
     PUT_GATTR_TXT("product", "model-output")
     PUT_GATTR_TXT("realm", "ocean")
     PUT_GATTR_TXT("case", "GMPAS-NYF_T62_oRRS18to6v3")
-    PUT_GATTR_TXT("username", "dqwu")
+    PUT_GATTR_TXT("username", "E3SM")
     PUT_GATTR_TXT("hostname", "cori-knl")
     PUT_GATTR_TXT("git_version", "a79fafdb76")
     PUT_GATTR_TXT("history", "created on 06/04/21 12:46:19")
     PUT_GATTR_TXT("Conventions", "CF-1.7")
     PUT_GATTR_TXT("institution_id", "E3SM-Project")
+    PUT_GATTR_TXT ("topography_file", "/global/cfs/cdirs/e3sm/inputdata/atm/cam/topo/USGS-gtopo30_ne120np4_16xdel2-PFC-consistentSGH.nc")
     PUT_GATTR_TXT("institution", "LLNL (Lawrence Livermore National Laboratory, Livermore, CA 94550, USA); ANL (Argonne National Laboratory, Argonne, IL 60439, USA); BNL (Brookhaven National Laboratory, Upton, NY 11973, USA); LANL (Los Alamos National Laboratory, Los Alamos, NM 87545, USA); LBNL (Lawrence Berkeley National Laboratory, Berkeley, CA 94720, USA); ORNL (Oak Ridge National Laboratory, Oak Ridge, TN 37831, USA); PNNL (Pacific Northwest National Laboratory, Richland, WA 99352, USA); SNL (Sandia National Laboratories, Albuquerque,")
     PUT_GATTR_TXT("contact", "e3sm-data-support@listserv.llnl.gov")
     PUT_GATTR_TXT("on_a_sphere", "YES")

@@ -114,13 +114,13 @@ static int add_gattrs_scorpio (e3sm_io_config &cfg,
     err = driver.put_att (ncid, E3SM_IO_GLOBAL_ATTR, "/__pio__/fillmode", MPI_INT, 1, &k);
     CHECK_ERR
 
-    /* 742 global attributes: */
+    /* 747 global attributes: */
     // TODO: retrieve real attribute content
     PUT_GATTR_TXT ("initial_file",
                    "/global/cfs/cdirs/e3sm/inputdata/atm/cam/inic/homme/"
                    "cami_mam3_Linoz_0000-01-ne120np4_L72_c160318.nc")
     PUT_GATTR_INT ("ne", 120)
-    PUT_GATTR_INT ("np", 21600)
+    PUT_GATTR_INT ("np", 9600)
     PUT_GATTR_TXT ("time_period_freq", "day_5")
     PUT_GATTR_TXT ("title", "MPAS-Ocean output file information")
     PUT_GATTR_TXT ("source", "MPAS Ocean")
@@ -128,7 +128,7 @@ static int add_gattrs_scorpio (e3sm_io_config &cfg,
     PUT_GATTR_TXT ("product", "model-output")
     PUT_GATTR_TXT ("realm", "ocean")
     PUT_GATTR_TXT ("case", "GMPAS-NYF_T62_oRRS18to6v3")
-    PUT_GATTR_TXT ("username", "dqwu")
+    PUT_GATTR_TXT ("username", "E3SM")
     PUT_GATTR_TXT ("hostname", "cori-knl")
     PUT_GATTR_TXT ("git_version", "a79fafdb76")
     PUT_GATTR_TXT ("history", "created on 06/04/21 12:46:19")
