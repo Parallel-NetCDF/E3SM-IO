@@ -360,6 +360,8 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     return 0;
 }
 
+// TODO: Fix bug of not extending the datasets when needed
+// This function was not in use for now
 int e3sm_io_driver_hdf5::put_varn_merge (int fid,
                                          int vid,
                                          MPI_Datatype type,
@@ -537,6 +539,8 @@ err_out:
     return err;
 }
 
+// TODO: Fix bug of not extending the datasets when needed
+// This function was not in use for now
 int e3sm_io_driver_hdf5::get_varn_merge (int fid,
                                          int vid,
                                          MPI_Datatype type,
