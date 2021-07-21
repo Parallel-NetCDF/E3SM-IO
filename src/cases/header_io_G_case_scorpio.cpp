@@ -39,7 +39,7 @@
     {                                                                                              \
         varid++;                                                                                   \
         err = e3sm_io_scorpio_define_var (                                                         \
-            driver, cfg, dnames, decom, decomids[i],                                               \
+            driver, cfg, dnames, decom, decomids[varid - varids],                                               \
             (decomids[varid - varids] >= 0 ? piodecomid_inv[decomids[varid - varids]] : -1), ncid, \
             name, type, ndims, dimids, varid);                                                     \
         if (err != 0) {                                                                            \
