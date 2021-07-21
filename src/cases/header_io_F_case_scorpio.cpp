@@ -100,7 +100,7 @@ int def_F_case_h0_scorpio (e3sm_io_driver &driver,
 
     int i, j, k, dimids[3], iattr, mdims = 1;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
-    float fillv = 1.e+36f, missv = 1.e+36f;
+    float fillv = 1.e+20f, missv = 1.e+20f;
     std::map<int, std::string> dnames;
     int piodecomid_inv[] = {0, 1, 4};
     char name[128];
@@ -149,7 +149,7 @@ int def_F_case_h0_scorpio (e3sm_io_driver &driver,
     // TODO: retrieve real attribute content
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/Conventions", 6, "CF-1.7");
     CHECK_ERR
-    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/case", 33, "ADIOS_FC5AV1C-H01A_ne120_oRRS18v3");
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/case", 27, "FC5AV1C-H01A_ne120_oRRS18v3");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/contact", 35, "e3sm-data-support@listserv.llnl.gov");
     CHECK_ERR
@@ -161,7 +161,7 @@ int def_F_case_h0_scorpio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/initial_file", 99, "/global/cfs/cdirs/e3sm/inputdata/atm/cam/inic/homme/cami_mam3_Linoz_0000-01-ne120np4_L72_c160318.nc");
     CHECK_ERR
-    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/institution", 660, "LLNL (Lawrence Livermore National Laboratory, Livermore, CA 94550, USA); ANL (Argonne National Laboratory, Argonne, IL 60439, USA); BNL (Brookhaven National Laboratory, Upton, NY 11973, USA); LANL (Los Alamos National Laboratory, Los Alamos, NM 87545, USA); LBNL (Lawrence Berkeley National Laboratory, Berkeley, CA 94720, USA); ORNL (Oak Ridge National Laboratory, Oak Ridge, TN 37831, USA); PNNL (Pacific Northwest National Laboratory, Richland, WA 99352, USA); SNL (Sandia National Laboratories, Albuquerque, NM 87185, USA). Mailing address: LLNL Climate Program, c/o David C. Bader, Principal Investigator, L-103, 7000 East Avenue, Livermore, CA 94550, USA");
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/institution", 511, "LLNL (Lawrence Livermore National Laboratory, Livermore, CA 94550, USA); ANL (Argonne National Laboratory, Argonne, IL 60439, USA); BNL (Brookhaven National Laboratory, Upton, NY 11973, USA); LANL (Los Alamos National Laboratory, Los Alamos, NM 87545, USA); LBNL (Lawrence Berkeley National Laboratory, Berkeley, CA 94720, USA); ORNL (Oak Ridge National Laboratory, Oak Ridge, TN 37831, USA); PNNL (Pacific Northwest National Laboratory, Richland, WA 99352, USA); SNL (Sandia National Laboratories, Albuquerque,");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/institution_id", 12, "E3SM-Project");
     CHECK_ERR
@@ -185,7 +185,7 @@ int def_F_case_h0_scorpio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/topography_file", 96, "/global/cfs/cdirs/e3sm/inputdata/atm/cam/topo/USGS-gtopo30_ne120np4_16xdel2-PFC-consistentSGH.nc");
     CHECK_ERR
-    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/username", 4, "dqwu");
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/username", 4, "E3SM");
     CHECK_ERR
 
     /* define dimensions */
@@ -6160,7 +6160,7 @@ int def_F_case_h1_scorpio (e3sm_io_driver &driver,
     // TODO: retrieve real attribute content
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/Conventions", 6, "CF-1.7");
     CHECK_ERR
-    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/case", 33, "ADIOS_FC5AV1C-H01A_ne120_oRRS18v3");
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/case", 27, "FC5AV1C-H01A_ne120_oRRS18v3");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/contact", 35, "e3sm-data-support@listserv.llnl.gov");
     CHECK_ERR
@@ -6172,7 +6172,8 @@ int def_F_case_h1_scorpio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/initial_file", 99, "/global/cfs/cdirs/e3sm/inputdata/atm/cam/inic/homme/cami_mam3_Linoz_0000-01-ne120np4_L72_c160318.nc");
     CHECK_ERR
-    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/institution", 660, "LLNL (Lawrence Livermore National Laboratory, Livermore, CA 94550, USA); ANL (Argonne National Laboratory, Argonne, IL 60439, USA); BNL (Brookhaven National Laboratory, Upton, NY 11973, USA); LANL (Los Alamos National Laboratory, Los Alamos, NM 87545, USA); LBNL (Lawrence Berkeley National Laboratory, Berkeley, CA 94720, USA); ORNL (Oak Ridge National Laboratory, Oak Ridge, TN 37831, USA); PNNL (Pacific Northwest National Laboratory, Richland, WA 99352, USA); SNL (Sandia National Laboratories, Albuquerque, NM 87185, USA). Mailing address: LLNL Climate Program, c/o David C. Bader, Principal Investigator, L-103, 7000 East Avenue, Livermore, CA 94550, USA");
+
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/institution", 511, "LLNL (Lawrence Livermore National Laboratory, Livermore, CA 94550, USA); ANL (Argonne National Laboratory, Argonne, IL 60439, USA); BNL (Brookhaven National Laboratory, Upton, NY 11973, USA); LANL (Los Alamos National Laboratory, Los Alamos, NM 87545, USA); LBNL (Lawrence Berkeley National Laboratory, Berkeley, CA 94720, USA); ORNL (Oak Ridge National Laboratory, Oak Ridge, TN 37831, USA); PNNL (Pacific Northwest National Laboratory, Richland, WA 99352, USA); SNL (Sandia National Laboratories, Albuquerque,");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/institution_id", 12, "E3SM-Project");
     CHECK_ERR
@@ -6190,13 +6191,13 @@ int def_F_case_h1_scorpio (e3sm_io_driver &driver,
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/source_id", 10, "025f820fce");
     CHECK_ERR
-    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/time_period_freq", 5, "day_5");
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/time_period_freq", 6, "hour_1");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/title", 28, "EAM History file information");
     CHECK_ERR
     err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/topography_file", 96, "/global/cfs/cdirs/e3sm/inputdata/atm/cam/topo/USGS-gtopo30_ne120np4_16xdel2-PFC-consistentSGH.nc");
     CHECK_ERR
-    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/username", 4, "dqwu");
+    err = PUT_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "pio_global/username", 4, "E3SM");
     CHECK_ERR
 
     // PIO attributes
