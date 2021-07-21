@@ -372,6 +372,7 @@ AC_ARG_WITH([hdf5],
    fi
    if test "x$have_hdf5" = xyes ; then
       AC_SEARCH_LIBS([H5Dwrite_multi], [hdf5], [have_multi_dset=yes], [have_multi_dset=no])
+      AC_SUBST(HDF5_LIB_PATH, [$hdf5_lib])
    fi
 ])
 AM_CONDITIONAL(ENABLE_HDF5, [test "x$have_hdf5" = xyes])
