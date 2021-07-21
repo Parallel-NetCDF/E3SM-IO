@@ -26,7 +26,7 @@
 #define PUT_ATT_TEXT(F, D, N, S, B) e3sm_io_scorpio_put_att (driver, F, D, N, MPI_CHAR, S, (void *)B);
 #define PUT_ATT_FLOAT(F, D, N, T, S, B) \
     e3sm_io_scorpio_put_att (driver, F, D, N, MPI_FLOAT, S, (float *)B);
-#define PUT_ATT_INT(F, D, N, T, S, B) e3sm_io_scorpio_put_att (driver, F, D, N, MPI_FLOAT, S, (int *)B);
+#define PUT_ATT_INT(F, D, N, T, S, B) e3sm_io_scorpio_put_att (driver, F, D, N, MPI_INT, S, (int *)B);
 
 #define GET_ATT_TEXT(F, D, N, S, B)     driver.get_att (F, D, N, (void *)attbuf);
 #define GET_ATT_FLOAT(F, D, N, T, S, B) driver.get_att (F, D, N, (float *)attbuf);
