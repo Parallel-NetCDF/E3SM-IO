@@ -28,7 +28,7 @@
 #include <e3sm_io_profile.hpp>
 
 e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
-    int err = 0;
+    int err     = 0;
     herr_t herr = 0;
     int i;
 #ifdef ENABLE_LOGVOL
@@ -88,7 +88,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
 #endif
     }
 #ifdef E3SM_IO_DEBUG
-    else if (cfg->api == hdf5_ra) {  
+    else if (cfg->api == hdf5_ra) {
     }
 #endif
 
@@ -1019,68 +1019,95 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
     } else
 #endif
     {
-        // Call H5DWrite
-        for (i = 0; i < nreq; i++) {
-            rsize = esize;
-            for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
-
-            if (rsize) {
-                for (j = 0; j < ndim; j++) {
-                    start[j] = (hsize_t)starts[i][j];
-                    block[j] = (hsize_t)counts[i][j];
-                }
-
+        // Call H5Dwrite immediately if blocking or Log VOL is used
+        if ((mode == indep) || (mode == coll)
 #ifdef ENABLE_LOGVOL
-                if (!(this->use_logvol)) {
+            || this->use_logvol
 #endif
-                    // Recreate only when size mismatch
-                    if (rsize != rsize_old) {
-                        if (msid >= 0) H5Sclose (msid);
-                        msid = H5Screate_simple (1, &rsize, &rsize);
-                        CHECK_HID (msid)
+        ) {
+            // Call H5DWrite
+            for (i = 0; i < nreq; i++) {
+                rsize = esize;
+                for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
 
-                        rsize_old = rsize;
+                if (rsize) {
+                    for (j = 0; j < ndim; j++) {
+                        start[j] = (hsize_t)starts[i][j];
+                        block[j] = (hsize_t)counts[i][j];
                     }
+
 #ifdef ENABLE_LOGVOL
-                }
+                    if (!(this->use_logvol)) {
+#endif
+                        // Recreate only when size mismatch
+                        if (rsize != rsize_old) {
+                            if (msid >= 0) H5Sclose (msid);
+                            msid = H5Screate_simple (1, &rsize, &rsize);
+                            CHECK_HID (msid)
+
+                            rsize_old = rsize;
+                        }
+#ifdef ENABLE_LOGVOL
+                    }
 #endif
 
-                E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
-                herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, start, NULL, one, block);
-                CHECK_HERR
+                    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+                    herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, start, NULL, one, block);
+                    CHECK_HERR
 
-                E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
-                // Call H5Dwrite immediately if blocking or Log VOL is used
-                if ((mode == indep) || (mode == coll)
-#ifdef ENABLE_LOGVOL
-                    || this->use_logvol
-#endif
-                ) {
+                    E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+
                     herr = H5Dwrite (did, mtype, msid, dsid, dxplid, bufp);
                     CHECK_HERR
-                }
-// #ifdef HDF5_HAVE_DWRITE_MULTI
-                else {  // Otherwier, queue request in driver
-                    herr = fp->register_multidataset (bufp, did, dsid, msid, mtype, 1);
-                    CHECK_HERR
-                    // Prevent freeing of dsid and msid, they will be freed after flush
-                    dsid = msid = -1;
-                }
-// #endif
-                E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
-                bufp += rsize;
+                    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
+
+                    bufp += rsize;
+                }
             }
+        } else {  // Otherwise, queue request in driver
+            hid_t dsid_clone;
+
+            // Call H5DWrite
+            for (i = 0; i < nreq; i++) {
+                rsize = 1;
+                for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
+
+                if (rsize) {
+                    for (j = 0; j < ndim; j++) {
+                        start[j] = (hsize_t)starts[i][j];
+                        block[j] = (hsize_t)counts[i][j];
+                    }
+
+                    msid = H5Screate_simple (1, &rsize, &rsize);
+                    CHECK_HID (msid)
+
+                    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+                    dsid_clone = H5Scopy (dsid);
+                    CHECK_HID (dsid_clone)
+                    herr =
+                        H5Sselect_hyperslab (dsid_clone, H5S_SELECT_SET, start, NULL, one, block);
+                    CHECK_HERR
+
+                    E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+                    herr = fp->register_multidataset (bufp, did, dsid_clone, msid, mtype, 1);
+                    CHECK_HERR
+                    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
+
+                    bufp += rsize * esize;
+                }
+            }
+
+            msid = -1;
         }
     }
 
     tid   = H5Dget_type (did);
     tsize = H5Tget_size (tid);
 
-    for (j=0; j<nreq; j++) {
+    for (j = 0; j < nreq; j++) {
         putsize = tsize;
-        for (i=0; i<ndim; i++)
-            putsize *= counts[j][i];
+        for (i = 0; i < ndim; i++) putsize *= counts[j][i];
         fp->putsize += putsize;
     }
 
@@ -1448,57 +1475,80 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
     } else
 #endif
     {
-        // Call H5DWrite
-        for (i = 0; i < nreq; i++) {
-            rsize = esize;
-            for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
-
-            if (rsize) {
-                for (j = 0; j < ndim; j++) {
-                    start[j] = (hsize_t)starts[i][j];
-                    block[j] = (hsize_t)counts[i][j];
-                }
-
+        // Call H5Dread immediately if blocking or Log VOL is used
+        if ((mode == indep) || (mode == coll)
 #ifdef ENABLE_LOGVOL
-                if (!(this->use_logvol)) {
+            || this->use_logvol
 #endif
-                    // Recreate only when size mismatch
-                    if (rsize != rsize_old) {
-                        if (msid >= 0) H5Sclose (msid);
-                        msid = H5Screate_simple (1, &rsize, &rsize);
-                        CHECK_HID (msid)
+        ) {
+            // Call H5DWrite
+            for (i = 0; i < nreq; i++) {
+                rsize = esize;
+                for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
 
-                        rsize_old = rsize;
+                if (rsize) {
+                    for (j = 0; j < ndim; j++) {
+                        start[j] = (hsize_t)starts[i][j];
+                        block[j] = (hsize_t)counts[i][j];
                     }
+
 #ifdef ENABLE_LOGVOL
-                }
+                    if (!(this->use_logvol)) {
+#endif
+                        // Recreate only when size mismatch
+                        if (rsize != rsize_old) {
+                            if (msid >= 0) H5Sclose (msid);
+                            msid = H5Screate_simple (1, &rsize, &rsize);
+                            CHECK_HID (msid)
+
+                            rsize_old = rsize;
+                        }
+#ifdef ENABLE_LOGVOL
+                    }
 #endif
 
-                E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
-                herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, start, NULL, one, block);
-                CHECK_HERR
+                    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+                    herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, start, NULL, one, block);
+                    CHECK_HERR
 
-                E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
-                // Call H5Dread immediately if blocking or Log VOL is used
-                if ((mode == indep) || (mode == coll)
-#ifdef ENABLE_LOGVOL
-                    || this->use_logvol
-#endif
-                ) {
+                    E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
                     herr = H5Dread (did, mtype, msid, dsid, dxplid, bufp);
                     CHECK_HERR
+                    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
+
+                    bufp += rsize;
                 }
-// #ifdef HDF5_HAVE_DWRITE_MULTI
-                else {  // Otherwier, queue request in driver
+            }
+        } else {  // Otherwier, queue request in driver
+            hid_t dsid_clone;
+            
+            for (i = 0; i < nreq; i++) {
+                rsize = 1;
+                for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
+
+                if (rsize) {
+                    for (j = 0; j < ndim; j++) {
+                        start[j] = (hsize_t)starts[i][j];
+                        block[j] = (hsize_t)counts[i][j];
+                    }
+
+                    msid = H5Screate_simple (1, &rsize, &rsize);
+                    CHECK_HID (msid)
+
+                    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+                    dsid_clone = H5Scopy (dsid);
+                    CHECK_HID (dsid_clone)
+                    herr =
+                        H5Sselect_hyperslab (dsid_clone, H5S_SELECT_SET, start, NULL, one, block);
+                    CHECK_HERR
+
+                    E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
                     herr = fp->register_multidataset (bufp, did, dsid, msid, mtype, 0);
                     CHECK_HERR
-                    // Prevent freeing of dsid and msid, they will be freed after flush
-                    dsid = msid = -1;
-                }
-// #endif
-                E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
+                    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
 
-                bufp += rsize;
+                    bufp += rsize * esize;
+                }
             }
         }
     }
