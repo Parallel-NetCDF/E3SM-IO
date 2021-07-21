@@ -300,7 +300,9 @@ int def_F_case_h0(e3sm_io_config &cfg,
     else
         varid = varids - 1;
 
-    /* Total 414 climate variables */
+    /* Total 414 climate variables (15 fixed-size and 399 record variables) */
+
+    /* below 10 are fixed-size climate variables ---------------------------*/
 
     /* double lat(ncol) */
     DEF_VAR("lat", MPI_DOUBLE, 1, fix_D[1])
@@ -356,7 +358,7 @@ int def_F_case_h0(e3sm_io_config &cfg,
     DEF_VAR("hybi", MPI_DOUBLE, 1, &dim_ilev)
     PUT_ATTR_TXT("long_name", "hybrid B coefficient at layer interfaces")
 
-    /* below are all record variables ---------------------------------------*/
+    /* below 6 are record climate variables --------------------------------*/
 
     /* double time(time) */
     DEF_VAR("time", MPI_DOUBLE, 1, &dim_time)
@@ -389,6 +391,8 @@ int def_F_case_h0(e3sm_io_config &cfg,
     dimids[1] = dim_chars;
     DEF_VAR("time_written", MPI_CHAR, 2, dimids)
 
+    /* below 5 are fixed-size climate variables ----------------------------*/
+
     /* int ndbase */
     DEF_VAR("ndbase", MPI_INT, 0, NULL)
     PUT_ATTR_TXT("long_name", "base day")
@@ -409,6 +413,8 @@ int def_F_case_h0(e3sm_io_config &cfg,
     DEF_VAR("mdt", MPI_INT, 0, NULL)
     PUT_ATTR_TXT("long_name", "timestep")
     PUT_ATTR_TXT("units", "s")
+
+    /* below 393 are record climate variables ------------------------------*/
 
     /* int ndcur(time) */
     DEF_VAR("ndcur", MPI_INT, 1, &dim_time)
@@ -3447,7 +3453,9 @@ int def_F_case_h1(e3sm_io_config &cfg,
     else
         varid = varids - 1;
 
-    /* Total 51 climate variables */
+    /* Total 51 climate variables (15 fixed-size and 36 record variables) */
+
+    /* below 10 are fixed-size climate variables ---------------------------*/
 
     /* double lat(ncol) */
     DEF_VAR("lat", MPI_DOUBLE, 1, fix_D[1])
@@ -3503,7 +3511,7 @@ int def_F_case_h1(e3sm_io_config &cfg,
     DEF_VAR("hybi", MPI_DOUBLE, 1, &dim_ilev)
     PUT_ATTR_TXT("long_name", "hybrid B coefficient at layer interfaces")
 
-    /* below are all record variables ---------------------------------------*/
+    /* below 6 are record climate variables --------------------------------*/
 
     /* double time(time) */
     DEF_VAR("time", MPI_DOUBLE, 1, &dim_time)
@@ -3536,6 +3544,8 @@ int def_F_case_h1(e3sm_io_config &cfg,
     dimids[1] = dim_chars;
     DEF_VAR("time_written", MPI_CHAR, 2, dimids)
 
+    /* below 5 are fixed-size climate variables ----------------------------*/
+
     /* int ndbase */
     DEF_VAR("ndbase", MPI_INT, 0, NULL)
     PUT_ATTR_TXT("long_name", "base day")
@@ -3556,6 +3566,8 @@ int def_F_case_h1(e3sm_io_config &cfg,
     DEF_VAR("mdt", MPI_INT, 0, NULL)
     PUT_ATTR_TXT("long_name", "timestep")
     PUT_ATTR_TXT("units", "s")
+
+    /* below 30 are record climate variables --------------------------------*/
 
     /* int ndcur(time) */
     DEF_VAR("ndcur", MPI_INT, 1, &dim_time)

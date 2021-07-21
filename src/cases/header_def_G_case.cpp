@@ -975,7 +975,7 @@ int def_G_case(e3sm_io_config   &cfg,
         }
     }
 
-    /* define climate variables */
+    /* define 52 climate variables (11 fixed-size and 41 record variables) */
 
     /* double salinitySurfaceRestoringTendency(Time, nCells) */
     DEF_VAR("salinitySurfaceRestoringTendency", MPI_DOUBLE, 2, rec_D[0])
