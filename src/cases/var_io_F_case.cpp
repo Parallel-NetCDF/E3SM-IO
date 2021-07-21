@@ -526,7 +526,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     /* construct h0/h1 file name */
     const char *hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
     ext = strrchr(cfg.out_path, '.');
-    if (ext == NULL || strcmp(ext, ".nc"))
+    if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))
         sprintf(outfile, "%s%s", cfg.out_path, hist);
     else {
         sprintf(outfile, "%s", cfg.out_path);
@@ -1040,7 +1040,7 @@ int run_varn_F_case(e3sm_io_config &cfg,
     /* construct h0/h1 file name */
     const char *hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
     ext = strrchr(cfg.out_path, '.');
-    if (ext == NULL || strcmp(ext, ".nc"))
+    if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))
         sprintf(outfile, "%s%s", cfg.out_path, hist);
     else {
         sprintf(outfile, "%s", cfg.out_path);
