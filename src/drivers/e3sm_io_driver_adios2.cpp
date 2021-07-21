@@ -520,9 +520,6 @@ int e3sm_io_driver_adios2::put_att (
     adios2_type atype = mpi_type_to_adios2_type (type);
     size_t esize;
 
-    // adios2 can't create empty attr
-    if (size == 0) goto err_out;
-
     if (vid == E3SM_IO_GLOBAL_ATTR) {
         // ADIOS2 have no char type, we translate char array into unit sized string
         // MPI has not string type, we use WCHAR to represent string

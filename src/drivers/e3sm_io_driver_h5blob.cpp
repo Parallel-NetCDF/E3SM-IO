@@ -47,11 +47,13 @@ int e3sm_io_driver_h5blob::create(std::string path,
     CHECK_HID (faplid)
     herr = H5Pset_fapl_mpio(faplid, fp->comm, info);
     CHECK_HERR
+    /* make all HDF5 metadata operations collective */
     herr = H5Pset_all_coll_metadata_ops(faplid, true);
     CHECK_HERR
     herr = H5Pset_coll_metadata_write(faplid, true);
     CHECK_HERR
 
+    /* create the new file and truncate it if already exists */
     fp->id = H5Fcreate(path.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, faplid);
     CHECK_HID (fp->id)
 
@@ -63,7 +65,9 @@ int e3sm_io_driver_h5blob::create(std::string path,
     fp->header = ncp;
     fp->num_puts = 0;
 
-    /* allocate write buffer pointer array, one for each variable */
+    /* allocate write buffer pointer array, one for each variable.
+     * fp->vars is essentailly the write cache buffers.
+     */
     nvars = cfg->nvars + MAX_NUM_DECOMP * NVARS_DECOMP;
     fp->vars = (var_buf*) malloc(nvars * sizeof(var_buf));
     for (i=0; i<nvars; i++) {
@@ -181,12 +185,13 @@ int e3sm_io_driver_h5blob::close (int fid)
         memcpy(buf_ptr, fp->vars[i].buf[0], fp->vars[i].len[0]);
         free(fp->vars[i].buf[0]);
         buf_ptr += fp->vars[i].len[0];
+        /* copy over the written records of this variable i */
         for (j=1; j<fp->vars[i].nrecs; j++) {
             memcpy(buf_ptr, fp->vars[i].buf[j], fp->vars[i].len[j]);
             free(fp->vars[i].buf[j]);
             buf_ptr += fp->vars[i].len[j];
         }
-        free(fp->vars[i].buf); /* free the cache buffer */
+        free(fp->vars[i].buf); /* free the cache buffer used for variable i */
         free(fp->vars[i].len);
     }
     assert(buf_ptr - (char*)buf == (long)fp->total_len);
@@ -220,7 +225,6 @@ int e3sm_io_driver_h5blob::close (int fid)
     CHECK_HERR
     herr = H5Sclose(mspace);
     CHECK_HERR
-
     herr = H5Sclose(fspace);
     CHECK_HERR
 
@@ -277,7 +281,9 @@ int e3sm_io_driver_h5blob::inq_file_info (int fid, MPI_Info *info) {
     h5blob_file *fp = this->files[fid];
     hid_t pid;
 
-
+    /* HDF5 currently has no function to obtain MPI info used by the system.
+     * This inquire function just returns the I/O hints set by the user.
+     */
     pid = H5Fget_access_plist (fp->id);
     CHECK_HID (pid);
     herr = H5Pget_fapl_mpio (pid, NULL, info);
@@ -335,7 +341,7 @@ int e3sm_io_driver_h5blob::def_var(int          fid,
                                    int         *dimids,
                                    int         *varidp)
 {
-    /* add a variable object in NC */
+    /* add a variable object in the NC header object */
     return blob_ncmpio_add_var(this->files[fid]->header, name.c_str(), xtype,
                                ndims, dimids, varidp);
 }
@@ -360,11 +366,9 @@ err_out:
 }
 
 int e3sm_io_driver_h5blob::inq_var_name (int fid, int varid, char *name) {
-    NC *ncp = this->files[fid]->header;
-    NC_var *varp = ncp->vars.value[varid];
 
-    if (name != NULL) strcpy(name, varp->name);
-
+    if (name != NULL)
+        strcpy(name, this->files[fid]->header->vars.value[varid]->name);
     return 0;
 }
 
