@@ -73,7 +73,7 @@
     CHECK_VAR_ERR(*varid)                                                    \
 }
 #define PUT_ATTR_DECOMP(D, ndims, dimids) {                                    \
-    if (cfg.strategy == blob) {                                                \
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {     \
         err = driver.put_att(ncid,*varid,"decomposition_ID",MPI_INT,1,&D);     \
         CHECK_VAR_ERR(*varid)                                                  \
         err = driver.put_att(ncid,*varid,"global_dimids",MPI_INT,ndims,dimids);\
@@ -91,7 +91,7 @@ int add_gattrs(e3sm_io_config &cfg,
     int err=0, nprocs;
 
     /* save number of processes as global attributes */
-    if (cfg.strategy == blob) {
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
         MPI_Comm_size(cfg.io_comm, &nprocs);
         PUT_GATTR_INT("global_nprocs", nprocs)
         PUT_GATTR_INT("num_decompositions", decom.num_decomp)
@@ -912,7 +912,7 @@ int def_G_case(e3sm_io_config   &cfg,
     dimids_D[4][1] = dim_nVertices; dimids_D[4][2] = dim_nVertLevels;
     dimids_D[5][1] = dim_nCells;    dimids_D[5][2] = dim_nVertLevelsP1;
 
-    if (cfg.strategy == blob) {
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
         MPI_Comm_size(cfg.sub_comm, &nprocs);
         DEF_DIM("nblobs", (MPI_Offset)nprocs, &nprocs_ID)
 
@@ -932,7 +932,7 @@ int def_G_case(e3sm_io_config   &cfg,
             rec_D[i][1] = nelems_D[i];
         }
     }
-    else { /* canonical */
+    else { /* canonical or ADIOS blob */
         fix_D[0][0] = dim_nCells;
         fix_D[1][0] = dim_nEdges;
         fix_D[2][0] = dim_nCells;    fix_D[2][1] = dim_nVertLevels;
@@ -957,7 +957,7 @@ int def_G_case(e3sm_io_config   &cfg,
     varid = varids - 1;
 
     /* define decomposition variables */
-    if (cfg.strategy == blob) {
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
         for (i=0; i<decom.num_decomp; i++) {
             dimids[0] = nprocs_ID;
             dimids[1] = max_nreqs_dimid[i];
@@ -1318,7 +1318,7 @@ int def_G_case(e3sm_io_config   &cfg,
     PUT_ATTR_TXT("units", "grams salt per kilogram seawater")
     PUT_ATTR_DECOMP(three, 3, dimids_D[2])
 
-    if (cfg.strategy == blob)
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5))
         assert (varid - varids + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
     else
         assert (varid - varids + 1 == cfg.nvars);

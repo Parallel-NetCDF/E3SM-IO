@@ -66,7 +66,7 @@
     CHECK_VAR_ERR(*varid)                                                \
 }
 #define PUT_ATTR_DECOMP(D, ndims, dimids) {                                    \
-    if (cfg.strategy == blob) {                                                \
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {     \
         err = driver.put_att(ncid,*varid,"decomposition_ID",MPI_INT,1,&D);     \
         CHECK_VAR_ERR(*varid)                                                  \
         err = driver.put_att(ncid,*varid,"global_dimids",MPI_INT,ndims,dimids);\
@@ -84,7 +84,7 @@ int add_gattrs(e3sm_io_config &cfg,
     int err, nprocs;
 
     /* save number of processes as global attributes */
-    if (cfg.strategy == blob) {
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
         MPI_Comm_size(cfg.io_comm, &nprocs);
         PUT_GATTR_INT("global_nprocs", 1, nprocs)
         PUT_GATTR_INT("num_decompositions", 1, decom.num_decomp)
@@ -164,7 +164,7 @@ int def_dims(e3sm_io_config &cfg,
     dimids_D[1][1] = *dim_ncol;
     dimids_D[2][1] = *dim_lev;  dimids_D[2][2] = *dim_ncol;
 
-    if (cfg.strategy == blob) {
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
         MPI_Comm_size(cfg.sub_comm, &nprocs);
         DEF_DIM("nblobs", (MPI_Offset)nprocs, nblobs_ID)
 
@@ -181,7 +181,7 @@ int def_dims(e3sm_io_config &cfg,
             rec_D[i][1] = nelems_D[i];
         }
     }
-    else { /* canonical */
+    else { /* canonical or ADIOS blob */
         fix_D[0][0] = *dim_ncol;
         fix_D[1][0] = *dim_ncol;
         fix_D[2][0] = *dim_lev;  fix_D[2][1] = *dim_ncol;
@@ -290,7 +290,7 @@ int def_F_case_h0(e3sm_io_config &cfg,
     CHECK_ERR
 
     /* define variables related to decompositions */
-    if (cfg.strategy == blob) {
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
         err = def_var_decomp(cfg, decom, driver, ncid, nblobs_ID, max_nreqs_D,
                              dimids_D, varids, &nvars_decomp);
         CHECK_ERR
@@ -3443,7 +3443,7 @@ int def_F_case_h1(e3sm_io_config &cfg,
     CHECK_ERR
 
     /* define variables related to decompositions */
-    if (cfg.strategy == blob) {
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
         err = def_var_decomp(cfg, decom, driver, ncid, nblobs_ID, max_nreqs_D,
                              dimids_D, varids, &nvars_decomp);
         CHECK_ERR
