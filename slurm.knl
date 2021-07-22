@@ -31,24 +31,29 @@ NP=$(($nprocs_per_node * $SLURM_JOB_NUM_NODES))
 
 KNL_OPTS="-c $cpus_per_task --cpu_bind=cores"
 
-echo "--------------------------------------------------"
-echo "---- Running on $NP MPI processes on Cori NKL ----"
+echo "----------------------------------------------------"
+echo "---- Running $NP MPI processes on Cori NKL nodes ---"
 echo "---- SLURM_JOB_NUM_NODES = $SLURM_JOB_NUM_NODES"
 echo "---- Running $nprocs_per_node MPI processes per KNL node"
 echo "---- command: srun -n $NP $KNL_OPTS"
-echo "--------------------------------------------------"
+echo "----------------------------------------------------"
 echo ""
 
 # input/output files
 OUTDIR=$SCRATCH/FS_1M_64
-INFILE=$OUTDIR/f_case_48602x72_512p.nc
+INFILE=$SCRATCH/f_case_48602x72_512p.nc
 
 # run command
-RUN_CMMD=e3sm_io
 RUN_OPTS="-k -o $OUTDIR $INFILE"
 
+# A trick for faster loading the executable by copying the executable to
+# the local disks of all compute nodes. See
+# https://docs.nersc.gov/jobs/best-practices/#large-jobs
+sbcast src/e3sm_io /tmp/${USER}_e3sm_io
+RUN_CMMD=/tmp/${USER}_e3sm_io
+
 echo "---- KNL $RUN_CMMD ----"
-command="srun -n $NP $KNL_OPTS ./$RUN_CMMD $RUN_OPTS"
+command="srun -n $NP $KNL_OPTS $RUN_CMMD $RUN_OPTS"
 echo "command=$command"
 $command
 
