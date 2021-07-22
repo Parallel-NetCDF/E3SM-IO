@@ -28,8 +28,8 @@ H_SRCS =    e3sm_io_case.hpp
 if ENABLE_ADIOS2
 CXX_SRCS += e3sm_io_case_F_scorpio.cpp \
             e3sm_io_case_G_scorpio.cpp \
-            header_io_F_case_scorpio.cpp \
-            header_io_G_case_scorpio.cpp \
+            header_def_F_case_scorpio.cpp \
+            header_def_G_case_scorpio.cpp \
             var_io_F_case_scorpio.cpp \
             var_io_G_case_scorpio.cpp
 
