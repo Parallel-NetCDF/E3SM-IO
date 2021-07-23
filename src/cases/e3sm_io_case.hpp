@@ -24,8 +24,8 @@ class e3sm_io_case_F : public e3sm_io_case {
    protected:
     double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
     itype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
-    char txt_buf[2][16];
-    int int_buf[2][10];
+    char *txt_buf = NULL;
+    int *int_buf = NULL;
 
    public:
     e3sm_io_case_F ();

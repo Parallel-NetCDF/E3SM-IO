@@ -455,7 +455,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     e3sm_io_scorpio_var *varids;
     int scorpiovars[6];
     int rec_no = -1, gap = 0, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
-    size_t ii, dbl_buflen, rec_buflen, nelems[3];
+    size_t ii, txt_buflen, int_buflen, dbl_buflen, rec_buflen, nelems[3];
     itype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
     MPI_Offset metadata_size=0, total_size;
@@ -486,29 +486,69 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     /* calculate number of variable elements from 3 decompositions */
     my_nreqs = 0;
     for (i = 0; i < 3; i++) {
-        for (nelems[i] = 0, k = 0; k < xnreqs[i]; k++) nelems[i] += decom.blocklens[i][k];
+        nelems[i] = decom.raw_nreqs[i];
     }
     if (cfg.verbose && rank == 0) printf ("nelems=%zd %zd %zd\n", nelems[0], nelems[1], nelems[2]);
 
     /* allocate and initialize write buffer for small variables */
-    dbl_buflen = nelems[1] * 2
-               + nelems[0]
-               + 3 * decom.dims[2][0]
-               + 3 * (decom.dims[2][0] + 1)
-               + 8 + 2 + 20 * gap + 27 * 2;
+
+    /* allocate write buffer for small climate variables */
+    dbl_buflen = nelems[1] * 2               /* lat[ncol] and lon[ncol] */
+               + nelems[0]                   /* area[ncol] */
+               + 3 * gap
+               + 3 * decom.dims[2][0]        /* 3 [lev] */
+               + 3 * (decom.dims[2][0] + 1)  /* 3 [ilev] */
+               + 2                           /* 1 [nbnd] */
+               + 8                           /* 8 single-element variables */
+               + 15 * gap
+               + 8;                          /* Space for packed start and count */
+
+    txt_buflen = 2 * 8     /* 2 [nchars] */
+               + 10 * gap
+               + 64;                         /* Space for packed start and count */
+
+    int_buflen = 10        /* 10 [1] */
+               + 10 * gap
+               + 16;                         /* Space for packed start and count */
+
 
     if (dbl_bufp != NULL)
         dbl_buf = dbl_bufp;
     else {
-        dbl_buf = (double *)malloc (dbl_buflen * sizeof (double) + 64);
+        dbl_buf = (double *)malloc (dbl_buflen * sizeof (double));
         for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = rank;
+    }
+
+    if (int_bufp != NULL)
+        int_buf = int_bufp;
+    else {
+        int_buf = (int*) malloc(int_buflen * sizeof(int));
+        for (ii=0; ii<int_buflen; ii++) int_buf[ii] = rank;
+    }
+    if (txt_bufp != NULL)
+        txt_buf = txt_bufp;
+    else {
+        txt_buf = (char*) malloc(txt_buflen * sizeof(char));
+        for (ii=0; ii<txt_buflen; ii++) txt_buf[ii] = 'a' + rank;
     }
 
     /* allocate and initialize write buffer for large variables */
     if (cfg.nvars == 414)
-        rec_buflen = nelems[1] * 323 + nelems[2] * 63 + (323 + 63) * gap;
+        rec_buflen = nelems[1] * 323
+                   + nelems[2] * 63
+                   + (323 + 63) * gap;
     else
-        rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
+        rec_buflen = nelems[1] * 22
+                   + nelems[2]
+                   + (22 + 1) * gap;
+
+#define FLUSH_ALL_RECORDS_AT_ONCE
+#ifdef FLUSH_ALL_RECORDS_AT_ONCE
+    dbl_buflen *= cfg.nrecs;
+    txt_buflen *= cfg.nrecs;
+    int_buflen *= cfg.nrecs;
+    rec_buflen *= cfg.nrecs;
+#endif
 
     if (rec_bufp != NULL)
         rec_buf = rec_bufp;
@@ -516,18 +556,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         rec_buf = (itype *)malloc (rec_buflen * sizeof (itype) + 64);
         for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
     }
-    if (int_bufp != NULL)
-        int_buf = int_bufp;
-    else {
-        int_buf = (int*) malloc(10 * sizeof(int) + 64);
-        for (ii=0; ii<10; ii++) int_buf[ii] = rank;
-    }
-    if (txt_bufp != NULL)
-        txt_buf = txt_bufp;
-    else {
-        txt_buf = (char*) malloc(16 * sizeof(char) + 64);
-        for (ii=0; ii<16; ii++) txt_buf[ii] = 'a' + rank;
-    }
+
 
     // Assign decom ID
     i = 0;
@@ -603,7 +632,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         ASSIGN_DECOMID (3, 1, 43)  /* U */
         ASSIGN_DECOMID (2, 7, 44)  /* U250 ... Z500 */
     }
-
+    
     cfg.pre_time = MPI_Wtime() - cfg.pre_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
