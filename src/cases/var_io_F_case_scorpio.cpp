@@ -7,56 +7,79 @@
  *
  *********************************************************************/
 
-/* Mimic the I/O kernel of E3SM's scorpio module on F case
- * Compared to the canonical method used by PnetCDF, the blob strategy used by 
- * 
- * The file written by scorpio blob strategy differs in the canonical layout 
- * in the following points:
- * 
- * Scorpio saves the decomposition maps as global variables.
- * Each decomposition map contains 3 attributes - "dimlen" (size of the dimensions), 
- * "ndims" (dimensionality), and "piotype" (datatype in PIO type enum).
- * The decomposition variables and their attributes are written by all processes.
- * 
- * E3SM dimensions are stored as scalar variables of type uint64_t.
- * The dimensions are "chars", "ilev", "lev", "nbnd", "ncol", and "time".
- * The time dimension is not used and is always 0.
- * 
- * All E3SM variables are stored as 1-dimensional ADIOS2 local variables.
- * 
- * For each E3SM variable that is associated with a decomposition map, Scorpio
- * adds additional scalar variables and attributes.
- * The variables are "decomp_id" (ID of the associated decomposition map),
- * and frame_id (time steps). If the variable is of double type, there is an 
- * additional variable "fillval_id" attached.
- * When a process writes a block of data to the E3SM variable it will also write
- * a block (cell) to the associated scalar variables.
- * The attributes are "decomp" (decomposition map ID in string representation), "dims"
- * (name of the dimensions as string array), "ncop" (string representation of the 
- * type of NetCDF operation performed to write the variable), "nctype" (datatype 
- * in NetCDF type enum), "ndims" (dimensionality). The attributes are only written 
- * by rank 0.
+/* This function performs the I/O operations for the variables. It is called
+ * after metadata (header) has been defined. It carries out the same variable
+ * write sequence as in the Scorpio's implementation when using ADIOS as it
+ * underneath I/O engine. Note the design used here is referred to as "blob"
+ * I/O strategy, in which all write data of an MPI process is packed into a
+ * contiguous buffer and flushed to a contiguous location in the file. Data
+ * stored in the file does not follow the natural array canonical order.
  *
- * For each small E3SM variable that is not associated with a decomposition map, 
- * Scorpio does not introduce additional variables but attaches attributes to them.
- * The attributes are "adiostype" (datatype in ADIOS2 type enum), "ncop" (string 
- * representation of the type of NetCDF operation performed to write the variable), 
- * "nctype" (datatype in NetCDF type enum), "ndims" (dimensionality), and, if the
- * variable is not a scalar, "dims" (name of the dimensions as string array). 
- * The attributes are only written by rank 0.
- * Unlike variables associated with a decomposition map, small variables are stored
- * as byte stream (uint_8) together with their metadata (start and count). The actual 
- * type of the data is stored as an attribute. An exception is scalar variables which 
- * retains its original type.
- * 
- * There is one scalar global variable "Nproc" (number of processes writing the file) 
- * written by rank 0.
- * 
- * There is one scalar global attribute "fillmode" written by all processes.
- * 
- * When sub-filling is enabled, ADIOS2 records data objects in a subfile only when one of
- * the process writing to the subfile writes those data objects. As a result, the data 
- * objects written only by rank 0 will only appear in the first subfile.
+ * The write sequence is described as the followings.
+ * 1. The decomposition maps are saved as variables, for example,
+ *    int64_t   /__pio__/decomp/515             [65]*{36}
+ *    Each decomposition map contains 3 attributes:
+ *    + "dimlen" (dimension sizes),
+ *    + "ndims" (number of dimensions), and
+ *    + "piotype" (PIO type: e.g. PIO_DOUBLE or NC_DOUBLE)
+ *    The decomposition variables are partitioned among all processes and thus
+ *    are written in parallel. All processes also call the put_att APIs to
+ *    write the attributes with the same contents.
+ * 2. Dimensions are stored as scalar variables of type uint64_t. For F case,
+ *    they are 6 dimensions: "chars", "ilev", "lev", "nbnd", "ncol", and
+ *    "time". Dimension time is not used by Scorpio and its content is always
+ *    set to 0.
+ * 3. All climate variables are either partitioned among all processes using
+ *    one of the 3 decomposition maps or not partitioned at all. Each
+ *    partitioned variable has a decomposition ID associated with it as the
+ *    variable's attribute.
+ * 4. All climate variables are defined as 1-dimensional ADIOS local variables
+ *    of size equal to the number of offsets in the decomposition map. The local
+ *    variables are not shared with other processes. Multiple records can be
+ *    stored in the local variables. One process's write requests to a variable
+ *    are appended one after another in its local variable. The request's file
+ *    location metadata, i.e. file offsets and lengths, requires no additional
+ *    storage, as it can can be obtained from the decomposition maps.
+ * 5. For each climate variable created in the file, there are 2 additional
+ *    variables created and associated with them.
+ *    + "decomp_id" (ID of the decomposition map), e.g.
+ *      int32_t   decomp_id/AEROD_v               [8]*{1}
+ *    + "frame_id" (time steps, or number of NetCDF records), e.g.
+ *      int32_t   frame_id/AEROD_v                [8]*{1}
+ * 6. Each partitioned variable contains the following additional attributes:
+ *    + "_FillValue", e.g.
+ *      float     AEROD_v/_FillValue              attr
+ *    + "decomp" (decomposition map ID of type string), e.g.
+ *      string    AEROD_v/__pio__/decomp          attr
+ *    + "dims" (name of the dimensions of type string array), e.g.
+ *      string    AEROD_v/__pio__/dims            attr
+ *    + "ncop" (type of NetCDF operation), e.g.
+ *      string    AEROD_v/__pio__/ncop            attr
+ *    + "nctype" (NetCDF data type), e.g.
+ *      int32_t   AEROD_v/__pio__/nctype          attr
+ *    + "ndims" (number of dimensions), e.g.
+ *      int32_t   AEROD_v/__pio__/ndims           attr
+ *    + The variable attributes are only "put" by rank 0.
+ * 7. For each small E3SM variable that is not partitioned, Scorpio does not
+ *    create additional variables but only attributes to them. The attributes
+ *    are
+ *    + "adiostype" (ADIOS data type)
+ *    + "ncop" (NetCDF operation)
+ *    + "nctype" (NetCDF data type),
+ *    + "ndims" (number of dimensions), and,
+ *    + "dims" (name of the dimensions as string array), if the variable is not a
+ *      scalar,
+ *    + The attributes are only "put" by rank 0.
+ * 8. Unlike partitioned variables, small variables are stored as byte streams
+ *    of type uint_8, together with their metadata (start and count). The
+ *    actual type of the data is stored as an attribute. An exception is scalar
+ *    variables which retains its original type.
+ * 9. There is one scalar global variable "nproc" (number of processes writing
+ *    the file) "put" by rank 0, e.g.
+ *    int32_t   /__pio__/info/nproc             scalar
+ * 10. There is one scalar global attribute named "fillmode". It is "put" by all
+ *     processes.
+ * 11. All data "put" by root process is stored in the first subfile.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -626,7 +649,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     /* I/O amount so far */
     err = driver.inq_put_size (ncid, &metadata_size);
     CHECK_ERR
-    
+
     err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
 
@@ -636,7 +659,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     cfg.post_time = MPI_Wtime ();
 
     // Write pio scalar vars (one time)
-    
+
     // Nproc only written by rank 0
     if (rank == 0) {
         err = driver.put_varl (ncid, scorpiovars[5], MPI_LONG_LONG, &(cfg.np), nb);
