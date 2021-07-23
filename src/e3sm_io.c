@@ -126,13 +126,17 @@ static void usage (char *argv0) {
 int main (int argc, char **argv) {
     int err;
     int i;
-    double timing[2], max_t[2];
+    double timing[3], max_t[3];
     e3sm_io_config cfg;
     e3sm_io_decom decom;
 
     MPI_Init (&argc, &argv);
+
+    timing[0] = MPI_Wtime();
+
     MPI_Comm_rank (MPI_COMM_WORLD, &(cfg.rank));
     MPI_Comm_size (MPI_COMM_WORLD, &(cfg.np));
+
     cfg.io_comm        = MPI_COMM_WORLD;
     cfg.info           = MPI_INFO_NULL;
     cfg.num_iotasks    = cfg.np;
@@ -166,7 +170,8 @@ int main (int argc, char **argv) {
     }
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dmtf:ha:x:g:")) != EOF) switch (i) {
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dmtf:ha:x:g:")) != EOF)
+        switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
@@ -329,15 +334,15 @@ int main (int argc, char **argv) {
     PRINT_MSG (1, "Output data file/folder name = %s\n", cfg.out_path);
 
     MPI_Barrier(MPI_COMM_WORLD);
-    timing[0] = MPI_Wtime();
+    timing[1] = MPI_Wtime();
 
     /* read request information from decomposition file */
     err = read_decomp(&cfg, &decom);
     CHECK_ERR
 
-    timing[0] = MPI_Wtime() - timing[0];
+    timing[1] = MPI_Wtime() - timing[1];
     MPI_Barrier(MPI_COMM_WORLD);
-    timing[1] = MPI_Wtime();
+    timing[2] = MPI_Wtime();
 
     /* set MPI-IO and PnetCDF hints */
     err = MPI_Info_create (&(cfg.info));
@@ -349,14 +354,7 @@ int main (int argc, char **argv) {
     err = e3sm_io_core (&cfg, &decom);
     CHECK_ERR
 
-    timing[1] = MPI_Wtime() - timing[1];
-
-    MPI_Reduce(timing, max_t, 2, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-    if (cfg.rank == 0) {
-        printf("read_decomp=%.2f e3sm_io_core=%.2f\n", max_t[0],max_t[1]);
-        printf("-----------------------------------------------------------\n");
-        printf("\n\n");
-    }
+    timing[2] = MPI_Wtime() - timing[2];
 
 err_out:
     if (cfg.info != MPI_INFO_NULL)
@@ -369,6 +367,16 @@ err_out:
         if (decom.blocklens[i]) free (decom.blocklens[i]);
         if (decom.disps[i]) free (decom.disps[i]);
         if (decom.raw_offsets[i]) free (decom.raw_offsets[i]);
+    }
+
+    timing[0] = MPI_Wtime() - timing[0];
+
+    MPI_Reduce(timing, max_t, 3, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    if (cfg.rank == 0) {
+        printf("read_decomp=%.2f e3sm_io_core=%.2f run_total=%.2f\n",
+               max_t[1],max_t[2],max_t[0]);
+        printf("-----------------------------------------------------------\n");
+        printf("\n\n");
     }
 
     MPI_Finalize ();
