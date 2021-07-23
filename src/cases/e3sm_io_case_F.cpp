@@ -56,8 +56,10 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
             CHECK_ERR
         }
 
-        if (cfg.sub_comm != MPI_COMM_NULL)
+        if (cfg.sub_comm != MPI_COMM_NULL) {
             MPI_Comm_free(&cfg.sub_comm);
+            cfg.sub_comm = MPI_COMM_NULL;
+        }
     }
     else if (cfg.vard) { /* using PnetCDF vard APIs to write/read */
         /* vard APIs require internal data type matches external one */
@@ -105,6 +107,9 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
     cfg.nrecs = nrecs;
 
 err_out:
+    if (err != 0 && cfg.sub_comm != MPI_COMM_NULL)
+        MPI_Comm_free(&cfg.sub_comm);
+
     return err;
 }
 
