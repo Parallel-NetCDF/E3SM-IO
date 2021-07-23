@@ -34,28 +34,26 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 6).
 
 ### Software Requirements
-* [PnetCDF 1.12.2](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz)
-* MPI C and C++ compilers
-  + The plugin uses the constant initializer; a C++ compiler supporting std 11
-    is required
 * Autotools utility
   + autoconf 2.69
   + automake 1.16.1
   + libtoolize 2.4.6
   + m4 1.4.18
+* MPI C and C++ compilers
+  + Configured with a std 11 C++ compiler (supporting constant initializer)
+* [PnetCDF 1.12.2](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz)
 * (Optional) [HDF5 1.12.0](https://hdf-wordpress-1.s3.amazonaws.com/wp-content/uploads/manual/HDF5/HDF5_1_12_0/source/hdf5-1.12.0.tar.gz)
-  + Parallel I/O support (--enable-parallel) is required
-* (Optional) [Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
-  + Experimental
-  + Must have HDF5
+  + Configured with parallel I/O support (--enable-parallel is required)
+* (Optional) [HDF5 Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
+  + Experimental software developed as part of the Datalib project
 * (Optional) [ADIOS2 2.7.1](https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz)
-  + Parallel I/O support (-DADIOS2_USE_MPI=ON) is required
+  + Configured with parallel I/O support (-DADIOS2_USE_MPI=ON is required)
 
 ### Building Steps
 * Build PnetCDF
   + Download and extract the PnetCDF source code
-  + Configure PnetCDF with mpi C compiler
-  + Run make install
+  + Configure PnetCDF with MPI C compiler
+  + Run `make install`
   + Example build commands are given below. This example will install
     the PnetCDF library under folder `${HOME}/PnetCDF/1.12.2`.
     ```
@@ -65,11 +63,10 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % ./configure --prefix=${HOME}/PnetCDF/1.12.2 CC=mpicc
     % make -j 16 install
     ```
-    The PnetCDF library is now installed under folder `${HOME}/PnetCDF/1.12.2`.
 * (Optional) Build HDF5 with parallel I/O support
   + Download and extract the HDF5 source code
   + Configure HDF5 with parallel I/O enabled
-  + Run make install
+  + Run `make install`
   + Example build commands are given below. This example will install
     the HD5 library under the folder `${HOME}/HDF5/1.12.0`.
     ```
@@ -79,14 +76,12 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % ./configure --prefix=${HOME}/HDF5/1.12.0 --enable-parallel CC=mpicc
     % make -j 16 install
     ```
-    The HDF5 library is now installed under folder `${HOME}/HDF5/1.12.0`.
 * (Optional) Build log-based VOL plugin.
   + Clone the source code from the log-based VOL repository
-  + Run command autoreconf -i
+  + Run command `autoreconf -i`
   + Configure log-based VOL 
-    + Shared library is required to enable log-based VOL by environment
-      variables
-    + Compile with zlib library to enable metadata compression
+    + Enable shared library support (--enable-shared)
+    + Compile with zlib library to enable metadata compression (--enable-zlib)
   + Example commands are given below.
     ```
     % git clone https://github.com/DataLib-ECP/vol-log-based.git
@@ -95,11 +90,10 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % ./configure --prefix=${HOME}/Log_IO_VOL --with-hdf5=${HOME}/HDF5/1.12.0 --enable-shared --enable-zlib
     % make -j 16 install
     ```
-    The VOL plugin library is now installed under folder `${HOME}/Log_IO_VOL`.
-* (Optional) Build ADIOS2 with parallel I/O support
-  + Download and extract the ADIOS2 source code
-  + Configure ADIOS2 with MPI support enabled
-  + Run make install
+* (Optional) Build ADIOS with parallel I/O support
+  + Download and extract the ADIOS source codes
+  + Configure ADIOS with MPI support enabled (-DADIOS2_USE_MPI=ON)
+  + Run `make install`
   + Example build commands are given below. This example will install
     the ADIOS2 library under the folder `${HOME}/ADIOS2/2.7.1`.
     ```
@@ -111,23 +105,22 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     % make -j 16
     % make -j 16 install
     ```
-    The ADIOS2 library is now installed under folder `${HOME}/ADIOS2/2.7.1`.
 * Build the E3SM-I/O benchmark
   + Clone this E3SM-I/O benchmark repository
-  + Run command autoreconf -i
-  + Configure the E3SM-I/O benchmark with mpi compilers
+  + Run command `autoreconf -i`
+  + Configure the E3SM-I/O benchmark with MPI C and C++ compilers
     + Add HDF5 installation path (--with-hdf5=/path/to/implementation) to
-      enable HDF5 API support. Using native HDF5 is supported only when running
-      the benchmark with command-line option `-a hdf5_ra`.
+      enable HDF5 support. Using native HDF5 is supported only when running
+      the benchmark with command-line option `-a hdf5 -x blob`.
     + Add HDF5 installation path (--with-hdf5=/path/to/implementation) that
       contains the implementation of multi-dataset APIs. This is required when
-      running the benchmark with command-line option `-a hdf5_md`.
-    + Add log-based VOL installation path
+      running the benchmark with command-line option `-a hdf5_md -x canonical`.
+    + Add HDF5 log-based VOL installation path
       (--with-logvol=/path/to/implementation). This is required when running
-      the benchmark with command-line option `-a hdf5_log`.
+      the benchmark with command-line option `-a hdf5_log -x log`.
     + Add ADIOS2 installation path (--with-adios2=/path/to/implementation) to
       enable ADIOS API support. This is required when running the benchmark
-      with command-line option `-a adios`.
+      with command-line option `-a adios -x log`.
   + Run `make install`
   + Example commands are given below.
     ```
@@ -153,31 +146,28 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
 
 ### Run command:
 * Example run commands using `mpiexec` and 16 MPI processes:
-  + Run write test with the default settings.
+  + Run write tests with the default settings, i.e. using PnetCDF library and
+    producing files in canonical data layouts.
     ```
-      % mpiexec -n 16 ./e3sm_io -o ${Output_File_Path} datasets/f_case_866x72_16p.nc
+      % mpiexec -n 16 src/e3sm_io -o can_F_out.nc datasets/f_case_866x72_16p.nc
     ```
-  + Using ADIOS2 APIs (if enabled) to run write test.
+  + Using ADIOS2 APIs (if enabled) to run write tests.
     ```
-      % mpiexec -n 16 ./e3sm_io -a adios -o ${Output_File_Path} datasets/f_case_866x72_16p.nc
+      % mpiexec -n 16 src/e3sm_io -a adios -o blob_F_out datasets/f_case_866x72_16p.nc
     ```
-  + Run read the test using HDF5 API with rearranger in the E3SM benchmark.
+  + Run read and write tests using HDF5 API with multi-dataset APIs
     ```
-      % ln -s ${Path_to_E3SM_F_Case_H0_File} ${Input_File_Path}_h0.h5
-      % ln -s ${Path_to_E3SM_F_Case_H1_File} ${Input_File_Path}_h1.h5
-      % mpiexec -n 16 ./e3sm_io -a hdf5_ra -i ${Input_File_Path}.h5 datasets/f_case_866x72_16p.nc
-  + Run read the test with PnetCDF and use the data read to run write test with ADIOS2.
+      % mpiexec -n 16 src/e3sm_io -i can_F_in.h5 -a hdf5_md -x canonical -o can_F_out.h5 datasets/f_case_866x72_16p.nc
+  + Run read tests using PnetCDF APIs and use the data read to run write tests using ADIOS2 APIs.
     ```
-      % ln -s ${Path_to_E3SM_F_Case_H0_File} ${Input_File_Path}_h0.nc
-      % ln -s ${Path_to_E3SM_F_Case_H1_File} ${Input_File_Path}_h1.nc
-      % mpiexec -n 16 ./e3sm_io -a adios -i ${Input_File_Path}.nc -o ${Output_File_Path} datasets/f_case_866x72_16p.nc
+      % mpiexec -n 16 src/e3sm_io -i can_F_in.nc -a adios -x blob -o blob_F_out datasets/f_case_866x72_16p.nc
     ```
 * The number of MPI processes used to run this benchmark can be different from
   the value of variable `decomp_nprocs` stored in the decomposition NetCDF
   file. For example, in file `f_case_866x72_16p.nc`, the value of
   `decomp_nprocs` is 16, the number of MPI processes originally used to
-  generate the decomposition .dat files. When running this benchmark using less
-  number of MPI processes, the I/O workload will be divided among all the
+  generate the decomposition `.dat` files. When running this benchmark using
+  less number of MPI processes, the I/O workload will be divided among all the
   allocated MPI processes. When using more processes than `decomp_nprocs`, the
   processes with MPI ranks greater than or equal to `decomp_nprocs` will have
   no data to write but still participate the collective I/O in the benchmark.
@@ -203,7 +193,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
                  (folder) path
        [-a api]  I/O library name to perform write operation
            pnetcdf:   PnetCDF library (default)
-           hdf5:      HDF5 library
+           hdf5:      HDF5 library (official release)
            hdf5_log:  HDF5 library with Log-based VOL
            hdf5_md:   HDF5 library with multi-dataset APIs
            adios:     ADIOS2 library using BP3 format
@@ -218,20 +208,20 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
                  filter name (default: none)
        FILE: Name of input NetCDF file describing data decompositions
   ```
-* For option `-i`, the API to be used in the read test is determined by the
-  input file format, which is detected internally. The API selected in option
-  `-a` is for write only, except for when the input file is an HDF5 and option
-  `-a` is either `hdf5_ra` or `hdf5_md`, in which case the HDF5 rearranger API
-  or multi-dataset API is used to read the input file.
+* For option `-i`, the API to be used in the read tests is determined by the
+  input file format, which is detected internally. Once the file format is
+  detected, the proper I/O library will be used to read the file.  `-a` is for
+  write tests only.
 * The F write case will create two history files. The supplied file name in
   option `-o` will be used to create two new files name by inserting/appending
-  strings "_h0" and "_h1" to indicate the two history files.  If the input path
-  contains file extension `.nc`, "_h0" and "_h1" will be inserted before the
-  file extension. Otherwise, they will be appended at the end.  See examples in
-  "Output files" section below.
+  strings "_h0" and "_h1" to indicate the two history files. If the input path
+  contains file extension `.nc` or `.h5`, "_h0" and "_h1" will be inserted
+  before the file extension. Otherwise, they will be appended at the end. See
+  examples in "Output files" section below.
 * If both read and write options are enabled, i.e. both `-i` and `-o` are set,
-  the benchmark will first read the input file and use it to write to the
-  output file. If read option is not set, the benchmark will write random data.
+  the benchmark will first read the input file and use the data to write to the
+  output file. If read option is not set, the benchmark will write some
+  non-zero data.
 * Current supported APIs (option `-a`) and I/O strategies (option `-x`)
   + **pnetcdf + canonical**
     * A single NetCDF file in the classic CDF5 format will be created. All data
@@ -240,6 +230,10 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     * If the output file systems allow users to customize the file striping
       configuration, such as Lustre, users are recommended to write to a folder
       with a high file striping count to obtain a good I/O performance.
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.nc -x canonical -a pnetcdf -r 25
+      ```
   + **pnetcdf + blob**
     * Multiple subfiles in NetCDF format will be created. The files conform
       with NetCDF file format specification.
@@ -255,6 +249,10 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     * The blobs are per-record based, which means all writes by different
       processes to the same variable are stored in a blob. Within that blob,
       data layout follows the process rank order.
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o blob_F_out.nc -x blob -a pnetcdf -r 25
+      ```
   + **hdf5 + blob**
     * This is the blob I/O implemented with HDF5. Different from the PnetCDF
       blob I/O, the implementation of uses the per-process based blob I/O
@@ -272,6 +270,10 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
     * The HDF5 subfiles cannot be understood by the traditional HDF5 software.
       A utility tool program will be developed in the future to convert the
       subfiles into a single regular HDF5 filet.
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o blob_F_out.h5 -x blob -a hdf5 -r 25
+      ```
   + **hdf5_md + canonical**
     * hdf5_md reads/writes data using the multi-dataset APIs, which is a new
       HDF5 feature and currently under development. The APIs allow users to
@@ -282,12 +284,20 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
       of HDF5 that implements the multi-dataset APIs.
     * The output file is a regular HDF5, which is understandable by regular
       HDF5 and its third-party software.
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.h5 -x canonical -a hdf5_md -r 25
+      ```
   + **hdf5_log + log**
     * hdf5_log reads/writes data using the log-based VOL, which stores data in
       a log layout, rather than a canonical layout. The output file is a valid
       HDF5 file, but requires the log-based VOL to read and understand the data
       structures.
     * The output file is a single HDF5 file.
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o log_F_out.h5 -x blob -a hdf5_log -r 25
+      ```
   + **adios + blob**
     * Multiple subfiles in BP format will be created.
     * The number of subfile is determined by command-line option `-g`.
@@ -306,7 +316,10 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
       If the original decomposition map is not in the decomposition file, the E3SM benchmark
       will simulate it by expanding the offset and length pairs in the converted decomposition
       map into list of offsets accessed.
-
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o blob_F_out -x blob -a adios -r 25
+      ```
 
 ### Example files
 * An example batch script file for running a job on Cori @NERSC with 8 KNL
@@ -320,15 +333,17 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   available upon request.
 
 ### Environment variables
-* E3SM_IO_HDF5_USE_LOGVOL_WRITEN
-  + 1: Use the H5Dwrite_N API in Log I/O VOL
-  + 0: Use the HDF5 driver varn implementation (default)
-  + Only effective when E3SM_IO_HDF5_ENABLE_LOGVOL is 1
-* E3SM_IO_HDF5_MERGE_VARN
-  + 1: Merge varn hyper-slabs into one dataspace selection
-  + 0: Call H5Dwrite per hyper-slab (default)
+* **hdf5_log + log**
+  * E3SM_IO_HDF5_USE_LOGVOL_WRITEN
+    + 1: Use the H5Dwrite_N API in Log I/O VOL
+    + 0: Use the HDF5 driver varn implementation (default)
+    + Only effective when E3SM_IO_HDF5_ENABLE_LOGVOL is 1
+* **hdf5_md + canonical**
+  * E3SM_IO_HDF5_MERGE_VARN
+    + 1: Merge varn's hyper-slabs of a variable into one dataspace selection
+    + 0: Call one H5Dwrite per hyper-slab (default)
 
-### example outputs shown on screen
+### Example output shown on screen
 ```
   % mpiexec -n 512 ./e3sm_io -k -r 3 -o $SCRATCH/FS_1M_64/can_F_out.nc datasets/f_case_48602x72_512p.nc
 
