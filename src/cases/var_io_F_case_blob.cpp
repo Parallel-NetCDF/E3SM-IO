@@ -359,7 +359,7 @@ int blob_F_case(e3sm_io_config &cfg,
     char outfile[1040], base_name[1024], *ext;;
     const char *hist;
     int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, *varids;
-    int rec_no, gap = 0, my_nreqs, num_decomp_vars;
+    int rec_no, gap = 0, my_nreqs, num_decomp_vars, one_flush;
     int contig_nreqs[MAX_NUM_DECOMP], *nvars_D=cfg.nvars_D;
     double timing;
     MPI_Offset previous_size, metadata_size, total_size;
@@ -386,6 +386,18 @@ int blob_F_case(e3sm_io_config &cfg,
 
     MPI_Comm_rank(cfg.io_comm,  &global_rank);
     MPI_Comm_rank(cfg.sub_comm, &sub_rank);
+
+#define FLUSH_ALL_RECORDS_AT_ONCE
+#ifdef FLUSH_ALL_RECORDS_AT_ONCE
+    one_flush = 1;
+#else
+    one_flush = 0;
+    if (cfg.strategy == blob && cfg.api == hdf5) {
+        printf("Error in %s:%d: %s() FLUSH_ALL_RECORDS_AT_ONCE must be enabled when using HDF5 blob I/O",
+               __FILE__, __LINE__, __func__);
+        return -1;
+    }
+#endif
 
     if (cfg.non_contig_buf) gap = 10;
 
@@ -414,9 +426,7 @@ int blob_F_case(e3sm_io_config &cfg,
                    + decom.count[2]
                    + (22 + 1) * gap;
 
-#define FLUSH_ALL_RECORDS_AT_ONCE
-#ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    if (cfg.api == pnetcdf) {
+    if (one_flush && cfg.api == pnetcdf) {
         /* write buffers should not be touched when using PnetCDF iput before
          * ncmpi_wait_all is called. For HDF5 and ADIOS blob I/O, write data
          * will be copied and cached into internally allocated buffers and user
@@ -427,14 +437,6 @@ int blob_F_case(e3sm_io_config &cfg,
         int_buflen *= cfg.nrecs;
         rec_buflen *= cfg.nrecs;
     }
-#else
-    if (cfg.api == hdf5) {
-        printf("Error in %s:%d: %s() FLUSH_ALL_RECORDS_AT_ONCE must be enabled when using HDF5 blob I/O",
-               __FILE__, __LINE__, __func__);
-        err = -1;
-        goto err_out;
-    }
-#endif
 
     dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
     txt_buf = (char*)   malloc(txt_buflen * sizeof(char));
@@ -539,6 +541,9 @@ int blob_F_case(e3sm_io_config &cfg,
 
     /* Now, write climate variables */
     dbl_buf_ptr = dbl_buf;
+    int_buf_ptr = int_buf;
+    txt_buf_ptr = txt_buf;
+    rec_buf_ptr = rec_buf;
 
     /* lat */
     start[0] = decom.start[1];
@@ -556,19 +561,18 @@ int blob_F_case(e3sm_io_config &cfg,
     IPUT_VARA_DBL(dbl_buf_ptr, decom.count[0])
     nvars_D[0]++;
 
-#ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    rec_buf_ptr = rec_buf;
-    int_buf_ptr = int_buf;
-    txt_buf_ptr = txt_buf;
-#endif
-
     for (rec_no=0; rec_no<cfg.nrecs; rec_no++) {
-#ifndef FLUSH_ALL_RECORDS_AT_ONCE
-        dbl_buf_ptr = dbl_buf;
-        int_buf_ptr = int_buf;
-        txt_buf_ptr = txt_buf;
-        rec_buf_ptr = rec_buf;
-#endif
+        if (!one_flush || (cfg.strategy == blob && cfg.api == hdf5)) {
+            /* reset the pointers to the beginning of the buffers */
+            dbl_buf_ptr = dbl_buf
+                        + decom.count[1] * 2 /* lat[ncol] and lon[ncol] */
+                        + decom.count[0]     /* area[ncol] */
+                        + 3 * gap;
+            int_buf_ptr = int_buf;
+            txt_buf_ptr = txt_buf;
+            rec_buf_ptr = rec_buf;
+        }
+
         i = 3 + num_decomp_vars;   /* 3 is lat, lon, and area */
 
         /* next 27 small variables are written by sub_rank 0 only */
@@ -705,31 +709,33 @@ int blob_F_case(e3sm_io_config &cfg,
                 POST_VARA(2,  7, 44)  /* U250 ... Z500 */
             }
         }
-#ifndef FLUSH_ALL_RECORDS_AT_ONCE
+
+        if (!one_flush) {
+            cfg.post_time += MPI_Wtime() - timing;
+
+            MPI_Barrier(cfg.sub_comm); /*-----------------------------------*/
+            timing = MPI_Wtime();
+
+            /* flush once per time record */
+            WAIT_ALL_REQS
+
+            cfg.flush_time += MPI_Wtime() - timing;
+
+            timing = MPI_Wtime();
+        }
+    }
+
+    if (one_flush) {
         cfg.post_time += MPI_Wtime() - timing;
 
         MPI_Barrier(cfg.sub_comm); /*---------------------------------------*/
         timing = MPI_Wtime();
 
-        /* flush once per time record */
+        /* flush once for all time records */
         WAIT_ALL_REQS
 
         cfg.flush_time += MPI_Wtime() - timing;
-
-        timing = MPI_Wtime();
-#endif
     }
-#ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    cfg.post_time += MPI_Wtime() - timing;
-
-    MPI_Barrier(cfg.sub_comm); /*---------------------------------------*/
-    timing = MPI_Wtime();
-
-    /* flush once for all time records */
-    WAIT_ALL_REQS
-
-    cfg.flush_time += MPI_Wtime() - timing;
-#endif
     MPI_Barrier(cfg.sub_comm); /*---------------------------------------*/
     timing = MPI_Wtime();
 
