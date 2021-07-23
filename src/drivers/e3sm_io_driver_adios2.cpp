@@ -72,21 +72,20 @@ e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_dri
 }
 
 e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {
-    int err = 0;
-    int rank;
-    double tsel_all, twrite_all, text_all;
 
-    // printf("adios2 destructor\n");
+    if (cfg->verbose) {
+        int err = 0, rank;
+        double tsel_all, twrite_all, text_all;
 
-    MPI_Allreduce (&twrite, &twrite_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
-    MPI_Allreduce (&tsel, &tsel_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
-    MPI_Allreduce (&text, &text_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
-
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
-    if (rank == 0) {
-        printf ("#%%$: H5Dwrite_time_max: %lf\n", twrite_all);
-        printf ("#%%$: H5Sselect_hyperslab_time_max: %lf\n", tsel_all);
-        printf ("#%%$: H5Dset_extent_time_max: %lf\n", text_all);
+        MPI_Allreduce (&twrite, &twrite_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+        MPI_Allreduce (&tsel, &tsel_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+        MPI_Allreduce (&text, &text_all, 1, MPI_DOUBLE, MPI_MAX, MPI_COMM_WORLD);
+        MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+        if (rank == 0) {
+            printf ("#%%$: H5Dwrite_time_max: %lf\n", twrite_all);
+            printf ("#%%$: H5Sselect_hyperslab_time_max: %lf\n", tsel_all);
+            printf ("#%%$: H5Dset_extent_time_max: %lf\n", text_all);
+        }
     }
 }
 
