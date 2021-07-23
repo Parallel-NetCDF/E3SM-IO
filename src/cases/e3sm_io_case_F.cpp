@@ -70,8 +70,8 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
             err = run_vard_F_case(cfg, decom, driver,
                                   this->dbl_buf_h0,
                                   this->rec_buf_h0,
-                                  this->txt_buf[0],
-                                  this->int_buf[0]);
+                                  this->txt_buf,
+                                  this->int_buf);
             CHECK_ERR
         }
 
@@ -81,8 +81,8 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
             err = run_vard_F_case (cfg, decom, driver,
                                   this->dbl_buf_h0,
                                   this->rec_buf_h0,
-                                  this->txt_buf[0],
-                                  this->int_buf[0]);
+                                  this->txt_buf,
+                                  this->int_buf);
             CHECK_ERR
         }
     } else { /* using PnetCDF/HDF5 varn APIs to write/read */
@@ -128,8 +128,8 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
             err = run_varn_F_case_rd(cfg, decom, driver,
                                      &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0),
-                                     this->txt_buf[0],
-                                     this->int_buf[0]);
+                                     this->txt_buf,
+                                     this->int_buf);
             CHECK_ERR
         }
         if (cfg.hx == 0 || cfg.hx == -1) {
@@ -139,8 +139,8 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
             err = run_varn_F_case_rd(cfg, decom, driver,
                                      &(this->dbl_buf_h0),
                                      &(this->rec_buf_h0),
-                                     this->txt_buf[0],
-                                     this->int_buf[0]);
+                                     this->txt_buf,
+                                     this->int_buf);
             CHECK_ERR
         }
     }

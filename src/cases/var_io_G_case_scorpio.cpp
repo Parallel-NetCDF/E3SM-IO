@@ -284,7 +284,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     MPI_Offset start[2]      = {0, 0};
     MPI_Offset count[2]      = {1, 1};
     double *dummy_double_buf = NULL;
-    char dummy_char_buf[64];
+    char dummy_char_buf[64 + 64];
     int xnreqs[6]; /* number of requests after combination */
     MPI_Offset previous_size;
     std::vector<int> decomids;
@@ -305,7 +305,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     /* number of variable elements from 6 decompositions */
     my_nreqs = 0;
     for (i = 0; i < 6; i++) {
-        for (nelems[i] = 0, k = 0; k < xnreqs[i]; k++) nelems[i] += decom.blocklens[i][k];
+        nelems[i] = decom.raw_nreqs[i];
     }
 
     if (cfg.verbose && rank == 0)
@@ -438,7 +438,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D1_fix_dbl_bufp != NULL) {
             D1_fix_dbl_buf = D1_fix_dbl_bufp;
         } else {
-            D1_fix_dbl_buf = (double *)malloc (nelems[0] * sizeof (double) + 64);
+            D1_fix_dbl_buf = (double *)malloc (nelems[0] * sizeof (double));
             for (ii = 0; ii < nelems[0]; ii++) D1_fix_dbl_buf[ii] = rank + ii;
         }
     } else
@@ -461,7 +461,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D3_rec_dbl_bufp != NULL) {
             D3_rec_dbl_buf = D3_rec_dbl_bufp;
         } else {
-            D3_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double) + 64);
+            D3_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
             for (ii = 0; ii < rec_buflen; ii++) D3_rec_dbl_buf[ii] = rank + ii;
         }
     } else
@@ -472,7 +472,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D4_rec_dbl_bufp != NULL) {
             D4_rec_dbl_buf = D4_rec_dbl_bufp;
         } else {
-            D4_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double) + 64);
+            D4_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
             for (ii = 0; ii < rec_buflen; ii++) D4_rec_dbl_buf[ii] = rank + ii;
         }
     } else
@@ -483,7 +483,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D5_rec_dbl_bufp != NULL) {
             D5_rec_dbl_buf = D5_rec_dbl_bufp;
         } else {
-            D5_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double) + 64);
+            D5_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
             for (ii = 0; ii < rec_buflen; ii++) D5_rec_dbl_buf[ii] = rank + ii;
         }
     } else
@@ -494,16 +494,16 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         if (D6_rec_dbl_bufp != NULL) {
             D6_rec_dbl_buf = D6_rec_dbl_bufp;
         } else {
-            D6_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double) + 64);
+            D6_rec_dbl_buf = (double *)malloc (rec_buflen * sizeof (double));
             for (ii = 0; ii < rec_buflen; ii++) D6_rec_dbl_buf[ii] = rank + ii;
         }
     } else
         D6_rec_dbl_buf = NULL;
 
     /* initialize write buffer for 11 small variables */
-    dummy_double_buf = (double *)malloc (decom.dims[2][1] * sizeof (double));
-    for (i = 0; i < decom.dims[2][1]; i++) dummy_double_buf[i] = rank + i;
-    for (i = 0; i < 64; i++) dummy_char_buf[i] = 'a' + rank + i;
+    dummy_double_buf = (double *)malloc ((decom.dims[2][1] + 8) * sizeof (double));
+    for (i = 0; i < decom.dims[2][1] + 8; i++) dummy_double_buf[i] = rank + i;
+    for (i = 0; i < 64 + 64; i++) dummy_char_buf[i] = 'a' + rank + i;
 
     varids = (e3sm_io_scorpio_var *)malloc (cfg.nvars * sizeof (e3sm_io_scorpio_var));
     decomids.resize (cfg.nvars);
