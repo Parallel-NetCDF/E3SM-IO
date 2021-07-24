@@ -3434,6 +3434,7 @@ int def_F_case_h1_scorpio (e3sm_io_driver &driver,
             driver.put_att (ncid, scorpiovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
         CHECK_ERR
 
+        k = 6;
         err = driver.put_att (ncid, scorpiovars[j], "piotype", MPI_INT, 1, &k);
         CHECK_ERR
     }
