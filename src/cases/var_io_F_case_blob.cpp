@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
 #include <unistd.h> /* unlink() */
 
 #include <mpi.h>
@@ -78,6 +77,7 @@
     err = ncmpi_iput_var_double(ncid, varids[i], buf, NULL); \
     CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
+    my_nreqs++; \
     i++; \
 }
 #define IPUT_VAR_INT(buf, adv) { \
@@ -190,6 +190,7 @@
     err = driver.put_vara(ncid, varids[i], MPI_DOUBLE, NULL, NULL, buf, nb); \
     CHECK_VAR_ERR(varids[i]) \
     buf += (adv); \
+    my_nreqs++; \
     i++; \
 }
 #define IPUT_VAR_INT(buf, adv) { \
@@ -258,54 +259,77 @@
 }
 #endif
 
-/*----< write_small_vars_F_case() >------------------------------------------*/
+/*----< write_small_fix_vars_F_case() >--------------------------------------*/
 static
-int write_small_vars_F_case(e3sm_io_driver &driver,
-                            int             ncid,
-                            int             vid, /* starting variable ID */
-                            int            *varids,
-                            int             rec_no,
-                            int             gap,
-                            MPI_Offset      lev,
-                            MPI_Offset      ilev,
-                            MPI_Offset      nbnd,
-                            MPI_Offset      nchars,
-                            int           **int_buf,
-                            char          **txt_buf,
-                            double        **dbl_buf,
-                            int            *nreqs)
+int write_small_fix_vars_F_case(e3sm_io_driver  &driver,
+                                int              ncid,
+                                int              start_varid,
+                                int              gap,
+                                MPI_Offset       lev,
+                                MPI_Offset       ilev,
+                                int            **int_buf,
+                                double         **dbl_buf,
+                                int             *nreqs)
 {
+    /* small fixed-size variable IDs */
+    int varids[12] = {3, 4, 5, 6, 7, 8, 9,
+                      16, 17, 18, 19, 20};
+
+    int i, err, my_nreqs=0;
+
+    for (i=0; i<15; i++) varids[i] += start_varid;
+
+    i = 0;
+
+    /* 7 of type double */
+    IPUT_VAR_DBL(*dbl_buf,  lev + gap) /* lev */
+    IPUT_VAR_DBL(*dbl_buf,  lev + gap) /* hyam */
+    IPUT_VAR_DBL(*dbl_buf,  lev + gap) /* hybm */
+    IPUT_VAR_DBL(*dbl_buf,    1 + gap) /* P0 */
+    IPUT_VAR_DBL(*dbl_buf, ilev + gap) /* ilev */
+    IPUT_VAR_DBL(*dbl_buf, ilev + gap) /* hyai */
+    IPUT_VAR_DBL(*dbl_buf, ilev + gap) /* hybi */
+
+    /* 5 of type int */
+    IPUT_VAR_INT(*int_buf, 1) /* ndbase */
+    IPUT_VAR_INT(*int_buf, 1) /* nsbase */
+    IPUT_VAR_INT(*int_buf, 1) /* nbdate */
+    IPUT_VAR_INT(*int_buf, 1) /* nbsec */
+    IPUT_VAR_INT(*int_buf, 1) /* mdt */
+
+    if (nreqs != NULL) *nreqs = my_nreqs;
+
+err_out:
+    return err;
+}
+
+/*----< write_small_rec_vars_F_case() >--------------------------------------*/
+static
+int write_small_rec_vars_F_case(e3sm_io_driver  &driver,
+                                int              ncid,
+                                int              start_varid,
+                                int              rec_no,
+                                int              gap,
+                                MPI_Offset       nbnd,
+                                MPI_Offset       nchars,
+                                int            **int_buf,
+                                char           **txt_buf,
+                                double         **dbl_buf,
+                                int             *nreqs)
+{
+    /* small record variable IDs */
+    int varids[15] = {10, 11, 12, 13, 14, 15,
+                      21, 22, 23, 24, 25, 26, 27, 28, 29};
+
     int i, err, my_nreqs=0;
     MPI_Offset start[2], count[2];
 
-    /* There are 27 variables in total written in this function.
-     * double type:
-     *        3 [lev], 3 [ilev], 1 [nbnd], 8 [1]
-     * int type:
-     *        10 [1]
-     * char type:
-     *        2 [nchars]
-     */
+    for (i=0; i<15; i++) varids[i] += start_varid;
 
-    /* scalar and small variables are written by sub_rank 0 only */
-    i = vid;
-
-    if (rec_no == 0) {
-        /* write 7 fixed-size variables */
-        IPUT_VAR_DBL(*dbl_buf,  lev + gap) /* lev */
-        IPUT_VAR_DBL(*dbl_buf,  lev + gap) /* hyam */
-        IPUT_VAR_DBL(*dbl_buf,  lev + gap) /* hybm */
-        IPUT_VAR_DBL(*dbl_buf,    1 + gap) /* P0 */
-        IPUT_VAR_DBL(*dbl_buf, ilev + gap) /* ilev */
-        IPUT_VAR_DBL(*dbl_buf, ilev + gap) /* hyai */
-        IPUT_VAR_DBL(*dbl_buf, ilev + gap) /* hybi */
-    } else
-        i += 7;
-
-    /* below are all record variables */
     start[0] = rec_no;
     start[1] = 0;
     count[0] = 1;
+    i = 0;
 
     IPUT_VAR1_DBL(*dbl_buf,       1 + gap) /* time */
     IPUT_VAR1_INT(*int_buf,       1 + gap) /* date */
@@ -317,15 +341,6 @@ int write_small_vars_F_case(e3sm_io_driver &driver,
     count[1] = nchars;
     IPUT_VARA_TXT(*txt_buf, nchars + gap) /* time_written */
 
-    if (rec_no == 0) {
-        IPUT_VAR_INT(*int_buf, 1) /* ndbase */
-        IPUT_VAR_INT(*int_buf, 1) /* nsbase */
-        IPUT_VAR_INT(*int_buf, 1) /* nbdate */
-        IPUT_VAR_INT(*int_buf, 1) /* nbsec */
-        IPUT_VAR_INT(*int_buf, 1) /* mdt */
-    } else
-        i += 5;
-
     IPUT_VAR1_INT(*int_buf, 1 + gap) /* ndcur */
     IPUT_VAR1_INT(*int_buf, 1 + gap) /* nscur */
     IPUT_VAR1_DBL(*dbl_buf, 1 + gap) /* co2vmr */
@@ -336,7 +351,7 @@ int write_small_vars_F_case(e3sm_io_driver &driver,
     IPUT_VAR1_DBL(*dbl_buf, 1 + gap) /* sol_tsi */
     IPUT_VAR1_INT(*int_buf, 1 + gap) /* nsteph */
 
-    *nreqs = my_nreqs;
+    if (nreqs != NULL) *nreqs = my_nreqs;
 
 err_out:
     return err;
@@ -356,9 +371,9 @@ int blob_F_case(e3sm_io_config &cfg,
                 e3sm_io_decom  &decom,
                 e3sm_io_driver &driver)
 {
-    char outfile[1040], base_name[1024], *ext;;
+    char outfile[1040], base_name[1024], *ext;
     const char *hist;
-    int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, *varids;
+    int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, *varids=NULL;
     int rec_no, gap = 0, my_nreqs, num_decomp_vars, one_flush;
     int contig_nreqs[MAX_NUM_DECOMP], *nvars_D=cfg.nvars_D;
     double timing;
@@ -367,11 +382,16 @@ int blob_F_case(e3sm_io_config &cfg,
     MPI_Offset start_D2[2], count_D2[2], start_D3[2], count_D3[2];
     MPI_Offset blob_start[MAX_NUM_DECOMP], blob_count[MAX_NUM_DECOMP];
     MPI_Info info_used = MPI_INFO_NULL;
-    size_t ii, txt_buflen, int_buflen, dbl_buflen, rec_buflen;
-    itype  *rec_buf=NULL, *rec_buf_ptr; /* buffer for rec float var */
-    double *dbl_buf=NULL, *dbl_buf_ptr; /* buffer for fixed double var */
-    char   *txt_buf=NULL, *txt_buf_ptr; /* buffer for char var */
-    int    *int_buf=NULL, *int_buf_ptr; /* buffer for int var */
+
+    size_t ii, rec_buflen;
+    size_t                 fix_int_buflen, fix_dbl_buflen;
+    size_t rec_txt_buflen, rec_int_buflen, rec_dbl_buflen;
+    int    *fix_int_buf=NULL, *fix_int_buf_ptr;
+    double *fix_dbl_buf=NULL, *fix_dbl_buf_ptr;
+    int    *rec_int_buf=NULL, *rec_int_buf_ptr;
+    char   *rec_txt_buf=NULL, *rec_txt_buf_ptr;
+    double *rec_dbl_buf=NULL, *rec_dbl_buf_ptr;
+    itype  *rec_buf=NULL, *rec_buf_ptr;
 
     MPI_Barrier(cfg.io_comm); /*-----------------------------------------*/
     cfg.end2end_time = cfg.pre_time = MPI_Wtime();
@@ -401,30 +421,41 @@ int blob_F_case(e3sm_io_config &cfg,
 
     if (cfg.non_contig_buf) gap = 10;
 
-    /* allocate write buffer for small climate variables */
-    dbl_buflen = decom.count[1] * 2          /* lat[ncol] and lon[ncol] */
-               + decom.count[0]              /* area[ncol] */
-               + 3 * gap
-               + 3 * decom.dims[2][0]        /* 3 [lev] */
-               + 3 * (decom.dims[2][0] + 1)  /* 3 [ilev] */
-               + 2                           /* 1 [nbnd] */
-               + 8                           /* 8 single-element variables */
-               + 15 * gap;
+    /* allocate write buffer for fixed-size variables */
+    fix_dbl_buflen = decom.count[1] * 2          /* lat[ncol] and lon[ncol] */
+                   + decom.count[0]              /* area[ncol] */
+                   + 3 * decom.dims[2][0]        /* [lev]: lev, hyam, hybm */
+                   + 3 * (decom.dims[2][0] + 1)  /* [ilev]: ilev, hyai, hybi */
+                   + 1                           /* P0 */
+                   + 5                           /* ndbase ... mdt */
+                   + 15 * gap;
 
-    txt_buflen = 2 * 8     /* 2 [nchars] */
-               + 10 * gap;
-    int_buflen = 10        /* 10 [1] */
-               + 10 * gap;
+    fix_int_buflen = 5         /* ndbase ... mdt */
+                   + 5 * gap;
 
-    /* allocate and initialize write buffer for large climate variables */
+    /* allocate write buffer for record variables */
+    rec_txt_buflen = 2 * 8     /* [nchars]: date_written, time_written */
+                   + 2 * gap;
+
+    rec_int_buflen = 2         /* date, datesec */
+                   + 2         /* ndcur, nscur */
+                   + 1         /* nsteph */
+                   + 5 * gap;
+
+    rec_dbl_buflen = 1         /* time */
+                   + 2         /* [nbnd]: time_bnds */
+                   + 6         /* co2vmr ... sol_tsi */
+                   + 8 * gap;
+
     if (cfg.nvars == 414)
         rec_buflen = decom.count[1] * 323
                    + decom.count[2] * 63
                    + (323 + 63) * gap;
     else
-        rec_buflen = decom.count[1] * 22
-                   + decom.count[2]
-                   + (22 + 1) * gap;
+        rec_buflen = 13 * decom.count[1]   /* CLDHGH ... TS */
+                   +  1 * decom.count[2]   /* U */
+                   +  7 * decom.count[1]   /* U250 ... Z500 */
+                   + 21 * gap;
 
     if (one_flush && cfg.api == pnetcdf) {
         /* write buffers should not be touched when using PnetCDF iput before
@@ -432,21 +463,26 @@ int blob_F_case(e3sm_io_config &cfg,
          * will be copied and cached into internally allocated buffers and user
          * buffers can be reused after put call returned.
          */
-        dbl_buflen *= cfg.nrecs;
-        txt_buflen *= cfg.nrecs;
-        int_buflen *= cfg.nrecs;
-        rec_buflen *= cfg.nrecs;
+        rec_dbl_buflen *= cfg.nrecs;
+        rec_txt_buflen *= cfg.nrecs;
+        rec_int_buflen *= cfg.nrecs;
+        rec_buflen     *= cfg.nrecs;
     }
 
-    dbl_buf = (double*) malloc(dbl_buflen * sizeof(double));
-    txt_buf = (char*)   malloc(txt_buflen * sizeof(char));
-    int_buf = (int*)    malloc(int_buflen * sizeof(int));
-    rec_buf = (itype*)  malloc(rec_buflen * sizeof(itype));
+    /* allocate and initialize write buffer */
+    fix_dbl_buf = (double*) malloc(fix_dbl_buflen * sizeof(double));
+    fix_int_buf = (int*)    malloc(fix_int_buflen * sizeof(int));
+    rec_dbl_buf = (double*) malloc(rec_dbl_buflen * sizeof(double));
+    rec_txt_buf = (char*)   malloc(rec_txt_buflen * sizeof(char));
+    rec_int_buf = (int*)    malloc(rec_int_buflen * sizeof(int));
+    rec_buf     = (itype*)  malloc(rec_buflen     * sizeof(itype));
 
-    for (ii=0; ii<dbl_buflen; ii++) dbl_buf[ii] = global_rank;
-    for (ii=0; ii<txt_buflen; ii++) txt_buf[ii] = 'a' + global_rank;
-    for (ii=0; ii<int_buflen; ii++) int_buf[ii] = global_rank;
-    for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = global_rank;
+    for (ii=0; ii<fix_dbl_buflen; ii++) fix_dbl_buf[ii] = global_rank;
+    for (ii=0; ii<fix_int_buflen; ii++) fix_int_buf[ii] = global_rank;
+    for (ii=0; ii<rec_dbl_buflen; ii++) rec_dbl_buf[ii] = global_rank;
+    for (ii=0; ii<rec_txt_buflen; ii++) rec_txt_buf[ii] = 'a' + global_rank;
+    for (ii=0; ii<rec_int_buflen; ii++) rec_int_buf[ii] = global_rank;
+    for (ii=0; ii<rec_buflen;     ii++) rec_buf[ii]     = global_rank;
 
     /* there are num_decomp_vars number of decomposition variables */
     num_decomp_vars = decom.num_decomp * NVARS_DECOMP;
@@ -540,51 +576,59 @@ int blob_F_case(e3sm_io_config &cfg,
     }
 
     /* Now, write climate variables */
-    dbl_buf_ptr = dbl_buf;
-    int_buf_ptr = int_buf;
-    txt_buf_ptr = txt_buf;
-    rec_buf_ptr = rec_buf;
+    fix_dbl_buf_ptr = fix_dbl_buf;
 
     /* lat */
     start[0] = decom.start[1];
     count[0] = decom.count[1];
-    IPUT_VARA_DBL(dbl_buf_ptr, decom.count[1])
+    IPUT_VARA_DBL(fix_dbl_buf_ptr, decom.count[1])
     nvars_D[1]++;
 
     /* lon */
-    IPUT_VARA_DBL(dbl_buf_ptr, decom.count[1])
+    IPUT_VARA_DBL(fix_dbl_buf_ptr, decom.count[1])
     nvars_D[1]++;
 
     /* area */
     start[0] = decom.start[0];
     count[0] = decom.count[0];
-    IPUT_VARA_DBL(dbl_buf_ptr, decom.count[0])
+    IPUT_VARA_DBL(fix_dbl_buf_ptr, decom.count[0])
     nvars_D[0]++;
 
+    /* post iput for the remaining fixed-size variables */
+    fix_int_buf_ptr = fix_int_buf;
+    err = write_small_fix_vars_F_case(driver, ncid, num_decomp_vars, gap,
+                                      decom.dims[2][0],
+                                      decom.dims[2][0] + 1,
+                                      &fix_int_buf_ptr, &fix_dbl_buf_ptr,
+                                      &my_nreqs);
+    CHECK_ERR
+
+    rec_int_buf_ptr = rec_int_buf;
+    rec_txt_buf_ptr = rec_txt_buf;
+    rec_dbl_buf_ptr = rec_dbl_buf;
+    rec_buf_ptr     = rec_buf;
+
+    /* now write record variables */
     for (rec_no=0; rec_no<cfg.nrecs; rec_no++) {
         if (!one_flush || (cfg.strategy == blob && cfg.api == hdf5)) {
             /* reset the pointers to the beginning of the buffers */
-            dbl_buf_ptr = dbl_buf
-                        + decom.count[1] * 2 /* lat[ncol] and lon[ncol] */
-                        + decom.count[0]     /* area[ncol] */
-                        + 3 * gap;
-            int_buf_ptr = int_buf;
-            txt_buf_ptr = txt_buf;
-            rec_buf_ptr = rec_buf;
+            rec_int_buf_ptr = rec_int_buf;
+            rec_txt_buf_ptr = rec_txt_buf;
+            rec_dbl_buf_ptr = rec_dbl_buf;
+            rec_buf_ptr     = rec_buf;
         }
-
-        i = 3 + num_decomp_vars;   /* 3 is lat, lon, and area */
 
         /* next 27 small variables are written by sub_rank 0 only */
         if (sub_rank == 0) {
-            /* post nonblocking requests for small datasets */
-            err = write_small_vars_F_case(driver, ncid, i, varids, rec_no, gap,
-                                          decom.dims[2][0], decom.dims[2][0] +
-                                          1, 2, 8, &int_buf_ptr, &txt_buf_ptr,
-                                          &dbl_buf_ptr, &my_nreqs);
+            /* write 15 small record variables by rank 0 only */
+            err = write_small_rec_vars_F_case(driver, ncid, num_decomp_vars,
+                                              rec_no, gap, 2, 8,
+                                              &rec_int_buf_ptr,
+                                              &rec_txt_buf_ptr,
+                                              &rec_dbl_buf_ptr,
+                                              &my_nreqs);
             CHECK_ERR
         }
-        i += 27;
 
         start_D2[0] = rec_no; start_D2[1] = decom.start[1];
         count_D2[0] = 1;      count_D2[1] = decom.count[1];
@@ -739,11 +783,13 @@ int blob_F_case(e3sm_io_config &cfg,
     MPI_Barrier(cfg.sub_comm); /*---------------------------------------*/
     timing = MPI_Wtime();
 
-    if (rec_buf != NULL) free(rec_buf);
-    if (dbl_buf != NULL) free(dbl_buf);
-    if (txt_buf != NULL) free(txt_buf);
-    if (int_buf != NULL) free(int_buf);
-    free(varids);
+    if (fix_int_buf != NULL) free(fix_int_buf);
+    if (fix_dbl_buf != NULL) free(fix_dbl_buf);
+    if (rec_int_buf != NULL) free(rec_int_buf);
+    if (rec_txt_buf != NULL) free(rec_txt_buf);
+    if (rec_dbl_buf != NULL) free(rec_dbl_buf);
+    if (rec_buf     != NULL) free(rec_buf);
+    if (varids      != NULL) free(varids);
 
     /* obtain the write amount made by far */
     if (cfg.api == pnetcdf) INQ_PUT_SIZE(total_size)
