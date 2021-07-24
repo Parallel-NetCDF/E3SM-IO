@@ -116,7 +116,7 @@ int write_small_fix_vars_F_case(e3sm_io_driver  &driver,
                                 double         **dbl_buf,
                                 int             *nreqs)
 {
-    /* small fixed-size variable IDs */
+    /* small fixed-size variable IDs (relative) */
     int varids[12] = {3, 4, 5, 6, 7, 8, 9,
                       16, 17, 18, 19, 20};
 
@@ -162,7 +162,7 @@ int write_small_rec_vars_F_case(e3sm_io_driver  &driver,
                                 double         **dbl_buf,
                                 int             *nreqs)
 {
-    /* small record variable IDs */
+    /* small record variable IDs (relative) */
     int varids[15] = {10, 11, 12, 13, 14, 15,
                       21, 22, 23, 24, 25, 26, 27, 28, 29};
 
@@ -176,6 +176,7 @@ int write_small_rec_vars_F_case(e3sm_io_driver  &driver,
     count[0] = 1;
     i = 0;
 
+    /* 8 of type double, 5 of type int, and 2 of type char */
     IPUT_VAR1_DBL(*dbl_buf,       1 + gap) /* time */
     IPUT_VAR1_INT(*int_buf,       1 + gap) /* date */
     IPUT_VAR1_INT(*int_buf,       1 + gap) /* datesec */
@@ -314,8 +315,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
                    + 3 * decom.dims[2][0]        /* [lev]: lev, hyam, hybm */
                    + 3 * (decom.dims[2][0] + 1)  /* [ilev]: ilev, hyai, hybi */
                    + 1                           /* P0 */
-                   + 5                           /* ndbase ... mdt */
-                   + 15 * gap;
+                   + 10 * gap;
 
     fix_int_buflen = 5         /* ndbase ... mdt */
                    + 5 * gap;
@@ -335,9 +335,9 @@ int run_vard_F_case (e3sm_io_config &cfg,
                    + 8 * gap;
 
     if (cfg.nvars == 414)
-        rec_buflen = nelems[1] * 323
+        rec_buflen = nelems[1] * 321
                    + nelems[2] * 63
-                   + (323 + 63) * gap;
+                   + (321 + 63) * gap;
     else
         rec_buflen = 13 * nelems[1]   /* CLDHGH ... TS */
                    +  1 * nelems[2]   /* U */
@@ -561,9 +561,9 @@ int run_vard_F_case (e3sm_io_config &cfg,
         fix_buflen = rec_buflen = 1;
     else {
         if (cfg.nvars == 414)
-            rec_buflen = nelems[1] * 323 + nelems[2] * 63;
+            rec_buflen = nelems[1] * 321 + nelems[2] * 63;
         else
-            rec_buflen = nelems[1] * 22 + nelems[2];
+            rec_buflen = nelems[1] * 20 + nelems[2];
     }
 
     /* write lat, lon, and area in one vard call */
@@ -582,6 +582,7 @@ int run_vard_F_case (e3sm_io_config &cfg,
     free(fix_dbl_buf);
     free(fix_int_buf);
 
+    /* write record variables */
     for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
         rec_int_buf_ptr = rec_int_buf;
         rec_txt_buf_ptr = rec_txt_buf;
@@ -869,7 +870,7 @@ int run_varn_F_case(e3sm_io_config &cfg,
                    + 3 * decom.dims[2][0]        /* [lev]: lev, hyam, hybm */
                    + 3 * (decom.dims[2][0] + 1)  /* [ilev]: ilev, hyai, hybi */
                    + 1                           /* P0 */
-                   + 15 * gap;
+                   + 10 * gap;
 
     fix_int_buflen = 5         /* ndbase ... mdt */
                    + 5 * gap;
@@ -889,9 +890,9 @@ int run_varn_F_case(e3sm_io_config &cfg,
                    + 8 * gap;
 
     if (cfg.nvars == 414)
-        rec_buflen = nelems[1] * 323
+        rec_buflen = nelems[1] * 321
                    + nelems[2] * 63
-                   + (323 + 63) * gap;
+                   + (321 + 63) * gap;
     else
         rec_buflen = 13 * nelems[1]   /* CLDHGH ... TS */
                    +  1 * nelems[2]   /* U */
@@ -910,7 +911,7 @@ int run_varn_F_case(e3sm_io_config &cfg,
         rec_buflen     *= cfg.nrecs;
     }
 
-    /* allocate and initialize write buffer */
+    /* allocate and initialize write buffers */
     fix_dbl_buf = (double*) malloc(fix_dbl_buflen * sizeof(double));
     fix_int_buf = (int*)    malloc(fix_int_buflen * sizeof(int));
     rec_dbl_buf = (double*) malloc(rec_dbl_buflen * sizeof(double));
@@ -1503,9 +1504,9 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
 
     /* allocate read buffer for large variables */
     if (cfg.nvars == 414)
-        rec_buflen = nelems[1] * 323 + nelems[2] * 63 + (323 + 63) * gap;
+        rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321 + 63) * gap;
     else
-        rec_buflen = nelems[1] * 22 + nelems[2] + (22 + 1) * gap;
+        rec_buflen = nelems[1] * 20 + nelems[2] + (20 + 1) * gap;
 
     rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
     if (rec_bufp != NULL) { *rec_bufp = rec_buf; }

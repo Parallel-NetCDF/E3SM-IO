@@ -343,6 +343,8 @@ int blob_G_case(e3sm_io_config &cfg,
     if (cfg.non_contig_buf) gap = 10;
 
     /* allocate write buffer for climate variables */
+
+    /* 45 variables of type double */
     dbl_buflen = decom.dims[2][1] * 4
                + decom.count[0] * 5
                + decom.count[2] * 24
@@ -352,6 +354,7 @@ int blob_G_case(e3sm_io_config &cfg,
                + 6                     /* 6 single-element variables */
                + 45 * gap;
 
+    /* 6 variables of type int */
     int_buflen = decom.count[0]
                + decom.count[1] * 2
                + decom.count[2]
@@ -359,6 +362,7 @@ int blob_G_case(e3sm_io_config &cfg,
                + decom.count[4]
                + 6 * gap;
 
+    /* 1 variable of type char */
     chr_buflen = 64 + gap;
 
     /* allocate and initialize write buffer for large variables */
