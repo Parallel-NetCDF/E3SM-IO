@@ -289,15 +289,10 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 printf("Variable write order: same as variables are defined\n");
 
             if (cfg->strategy == canonical) {
-                if (cfg->api == pnetcdf) {
-                    if (cfg->vard)
-                        printf("==== PnetCDF canonical I/O using vard API ============\n");
-                    else
-                        printf("==== PnetCDF canonical I/O using varn API ============\n");
-                }
-                else if (cfg->api == hdf5_md) {
+                if (cfg->api == pnetcdf)
+                    printf("==== PnetCDF canonical I/O using varn API ============\n");
+                else if (cfg->api == hdf5_md)
                     printf("==== HDF5 canonical I/O using multi-dataset API ======\n");
-                }
                 else
                     ERR_OUT ("I/O strategy and API used is not supported yet")
             }

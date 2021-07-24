@@ -3,12 +3,6 @@
  * Copyright (C) 2021, Northwestern University
  * See COPYRIGHT notice in top-level directory.
  *
- * This program uses the E3SM I/O patterns recorded by the PIO library to
- * evaluate the performance of two PnetCDF APIs: ncmpi_vard_all(), and
- * ncmpi_iput_varn(). The E3SM I/O patterns consist of a large number of small,
- * noncontiguous requests on each MPI process, which presents a challenge for
- * achieving a good performance.
- *
  * See README.md for compile and run instructions.
  *
  *********************************************************************/
@@ -90,7 +84,6 @@ static void usage (char *argv0) {
 "       [-h] Print this help message\n"
 "       [-v] Verbose mode\n"
 "       [-k] Keep the output files when program exits\n"
-"       [-d] Run test that uses PnetCDF vard API (default is varn APIs)\n"
 "       [-m] Run test using noncontiguous write buffer\n"
 "       [-t] Write 2D variables followed by 3D variables\n"
 "       [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for h1\n"
@@ -153,7 +146,6 @@ int main (int argc, char **argv) {
     cfg.api            = undef_api;
     cfg.chunksize      = 0;
     cfg.filter         = none;
-    cfg.vard           = 0;
     cfg.verbose        = 0;
     cfg.keep_outfile   = 0;
     cfg.two_buf        = 0;
@@ -226,9 +218,6 @@ int main (int argc, char **argv) {
             case 'i':
                 strncpy (cfg.in_path, optarg, E3SM_IO_MAX_PATH);
                 cfg.rd = 1;
-                break;
-            case 'd':
-                cfg.vard = 1;
                 break;
             case 'm':
                 cfg.non_contig_buf = 1;

@@ -587,17 +587,6 @@ int e3sm_io_driver_h5blob::put_varn (int fid,
     return -1;
 }
 
-int e3sm_io_driver_h5blob::put_vard (int fid,
-                                   int vid,
-                                   MPI_Datatype type,
-                                   MPI_Offset nelem,
-                                   MPI_Datatype ftype,
-                                   void *buf,
-                                   e3sm_io_op_mode mode) {
-    throw "HDF5 blob I/O does not support put_vard yet";
-    return -1;
-}
-
 int e3sm_io_driver_h5blob::get_vara (int fid,
                                    int vid,
                                    MPI_Datatype type,
@@ -633,13 +622,3 @@ int e3sm_io_driver_h5blob::get_varn (int fid,
     return -1;
 }
 
-int e3sm_io_driver_h5blob::get_vard (int fid,
-                                   int vid,
-                                   MPI_Datatype type,
-                                   MPI_Offset nelem,
-                                   MPI_Datatype ftype,
-                                   void *buf,
-                                   e3sm_io_op_mode mode) {
-    throw "HDF5 blob I/O does not support get_vard yet";
-    return -1;
-}

@@ -60,33 +60,6 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
             MPI_Comm_free(&cfg.sub_comm);
             cfg.sub_comm = MPI_COMM_NULL;
         }
-    }
-    else if (cfg.vard) { /* using PnetCDF vard APIs to write/read */
-        /* vard APIs require internal data type matches external one */
-#if REC_XTYPE != NC_FLOAT
-        ERR_OUT ("PnetCDF vard API requires internal and external data types match, skip\n");
-#endif
-        if (cfg.hx == 0 || cfg.hx == -1) {
-            cfg.nvars = 414;
-            cfg.nrecs = 1;
-            err = run_vard_F_case(cfg, decom, driver,
-                                  this->dbl_buf_h0,
-                                  this->rec_buf_h0,
-                                  this->txt_buf,
-                                  this->int_buf);
-            CHECK_ERR
-        }
-
-        if (cfg.hx == 0 || cfg.hx == -1) {
-            cfg.nvars = 51;
-            cfg.nrecs = nrecs;
-            err = run_vard_F_case (cfg, decom, driver,
-                                  this->dbl_buf_h0,
-                                  this->rec_buf_h0,
-                                  this->txt_buf,
-                                  this->int_buf);
-            CHECK_ERR
-        }
     } else { /* using PnetCDF/HDF5 varn APIs to write/read */
         if (cfg.hx == 0 || cfg.hx == -1) {
             cfg.nvars = 414;
@@ -119,35 +92,27 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
     nvars = cfg.nvars;
     nrecs = cfg.nrecs;
 
-    /* vard APIs require internal data type matches external one */
-    if (cfg.vard) {
-        //#if REC_XTYPE != NC_FLOAT
-        ERR_OUT ("Low level API requires internal and external data types match, skip\n");
-        //#endif
-        ERR_OUT ("Reading not supported for low-level API\n");
-    } else {
-        if (cfg.hx == 0 || cfg.hx == -1) {
-            MPI_Barrier (cfg.io_comm);
-            cfg.nvars = 414;
-            cfg.nrecs = 1;
-            err = run_varn_F_case_rd(cfg, decom, driver,
-                                     &(this->dbl_buf_h0),
-                                     &(this->rec_buf_h0),
-                                     this->txt_buf,
-                                     this->int_buf);
-            CHECK_ERR
-        }
-        if (cfg.hx == 0 || cfg.hx == -1) {
-            MPI_Barrier (cfg.io_comm);
-            cfg.nvars = 51;
-            cfg.nrecs = nrecs;
-            err = run_varn_F_case_rd(cfg, decom, driver,
-                                     &(this->dbl_buf_h0),
-                                     &(this->rec_buf_h0),
-                                     this->txt_buf,
-                                     this->int_buf);
-            CHECK_ERR
-        }
+    if (cfg.hx == 0 || cfg.hx == -1) {
+        MPI_Barrier (cfg.io_comm);
+        cfg.nvars = 414;
+        cfg.nrecs = 1;
+        err = run_varn_F_case_rd(cfg, decom, driver,
+                                 &(this->dbl_buf_h0),
+                                 &(this->rec_buf_h0),
+                                 this->txt_buf,
+                                 this->int_buf);
+        CHECK_ERR
+    }
+    if (cfg.hx == 0 || cfg.hx == -1) {
+        MPI_Barrier (cfg.io_comm);
+        cfg.nvars = 51;
+        cfg.nrecs = nrecs;
+        err = run_varn_F_case_rd(cfg, decom, driver,
+                                 &(this->dbl_buf_h0),
+                                 &(this->rec_buf_h0),
+                                 this->txt_buf,
+                                 this->int_buf);
+        CHECK_ERR
     }
 
     cfg.nvars = nvars;

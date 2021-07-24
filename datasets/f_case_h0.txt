@@ -1,4 +1,4 @@
-netcdf f_case_h0_vard {
+netcdf f_case_h0.nc {
 // file format: CDF-5 (big variables)
 dimensions:
 	ncol = 866 ;

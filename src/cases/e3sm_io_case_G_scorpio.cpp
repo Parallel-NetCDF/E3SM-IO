@@ -24,27 +24,19 @@ int e3sm_io_case_G_scorpio::wr_test(e3sm_io_config &cfg,
 {
     int err=0;
 
-    if (cfg.vard) {
-        /* vard APIs require internal data type matches external one */
-#if REC_XTYPE != NC_FLOAT
-        ERR_OUT ("PnetCDF vard API requires internal and external data types match, skip\n");
-#endif
-        ERR_OUT ("Low level API not supported in g case\n");
-    } else {
-        err = run_varn_G_case_scorpio(cfg, decom, driver,
-                                      this->D1_fix_int_buf,
-                                      this->D2_fix_int_buf,
-                                      this->D3_fix_int_buf,
-                                      this->D4_fix_int_buf,
-                                      this->D5_fix_int_buf,
-                                      this->D1_rec_dbl_buf,
-                                      this->D3_rec_dbl_buf,
-                                      this->D4_rec_dbl_buf,
-                                      this->D5_rec_dbl_buf,
-                                      this->D6_rec_dbl_buf,
-                                      this->D1_fix_dbl_buf);
-        CHECK_ERR
-    }
+    err = run_varn_G_case_scorpio(cfg, decom, driver,
+                                  this->D1_fix_int_buf,
+                                  this->D2_fix_int_buf,
+                                  this->D3_fix_int_buf,
+                                  this->D4_fix_int_buf,
+                                  this->D5_fix_int_buf,
+                                  this->D1_rec_dbl_buf,
+                                  this->D3_rec_dbl_buf,
+                                  this->D4_rec_dbl_buf,
+                                  this->D5_rec_dbl_buf,
+                                  this->D6_rec_dbl_buf,
+                                  this->D1_fix_dbl_buf);
+    CHECK_ERR
 
 err_out:
     return err;

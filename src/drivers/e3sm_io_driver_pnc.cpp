@@ -495,31 +495,6 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_pnc::put_vard (int fid,
-                                  int vid,
-                                  MPI_Datatype type,
-                                  MPI_Offset bufcount,
-                                  MPI_Datatype ftype,
-                                  void *buf,
-                                  e3sm_io_op_mode mode) {
-    int err=NC_NOERR;
-
-    switch (mode) {
-        case coll:
-            err = ncmpi_put_vard_all (fid, vid, ftype, buf, bufcount, type);
-            break;
-        case indep:
-            err = ncmpi_put_vard (fid, vid, ftype, buf, bufcount, type);
-            break;
-        default:
-            throw "Unrecognized mode";
-    }
-    CHECK_NCERR
-
-err_out:
-    return err;
-}
-
 int e3sm_io_driver_pnc::get_vara (int fid,
                                   int vid,
                                   MPI_Datatype type,
@@ -638,28 +613,4 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_pnc::get_vard (int fid,
-                                  int vid,
-                                  MPI_Datatype type,
-                                  MPI_Offset bufcount,
-                                  MPI_Datatype ftype,
-                                  void *buf,
-                                  e3sm_io_op_mode mode) {
-    int err=NC_NOERR;
-
-    switch (mode) {
-        case coll:
-            err = ncmpi_get_vard_all (fid, vid, ftype, buf, bufcount, type);
-            break;
-        case indep:
-            err = ncmpi_get_vard (fid, vid, ftype, buf, bufcount, type);
-            break;
-        default:
-            throw "Unrecognized mode";
-    }
-    CHECK_NCERR
-
-err_out:
-    return err;
-}
 

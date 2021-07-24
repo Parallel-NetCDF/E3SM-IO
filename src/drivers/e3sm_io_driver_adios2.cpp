@@ -929,17 +929,6 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::put_vard (int fid,
-                                     int vid,
-                                     MPI_Datatype type,
-                                     MPI_Offset nelem,
-                                     MPI_Datatype ftype,
-                                     void *buf,
-                                     e3sm_io_op_mode mode) {
-    throw "vard API not supported for HDF5 driver";
-    return 1;
-}
-
 int e3sm_io_driver_adios2::get_vara (int fid,
                                      int vid,
                                      MPI_Datatype type,
@@ -1206,13 +1195,3 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::get_vard (int fid,
-                                     int vid,
-                                     MPI_Datatype type,
-                                     MPI_Offset nelem,
-                                     MPI_Datatype ftype,
-                                     void *buf,
-                                     e3sm_io_op_mode mode) {
-    throw "vard API not supported for HDF5 driver";
-    return 1;
-}

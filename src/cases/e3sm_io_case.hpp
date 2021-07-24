@@ -96,15 +96,6 @@ inq_F_case_h1(e3sm_io_driver &driver,
               int *varids);       /* variable IDs */
 
 extern int
-run_vard_F_case(e3sm_io_config &cfg,
-                e3sm_io_decom &decom,
-                e3sm_io_driver &driver,
-                double *dbl_bufp,    /* buffer for fixed size double var */
-                itype *rec_bufp,     /* buffer for rec floating point var */
-                char *txt_buf,       /* buffer for char var */
-                int *int_buf);       /* request's block lengths */
-
-extern int
 run_varn_F_case(e3sm_io_config &cfg,
                 e3sm_io_decom &decom,
                 e3sm_io_driver &driver);

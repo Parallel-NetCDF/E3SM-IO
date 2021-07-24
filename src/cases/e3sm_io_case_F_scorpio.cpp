@@ -27,32 +27,28 @@ int e3sm_io_case_F_scorpio::wr_test(e3sm_io_config &cfg,
     nvars = cfg.nvars;
     nrecs = cfg.nrecs;
 
-    /* vard APIs require internal data type matches external one */
-    if (cfg.vard) {
-        ERR_OUT ("PIO case does not support vard API")
-    } else {
-        if (cfg.hx == 0 || cfg.hx == -1) {
-            cfg.nvars = 414;
-            cfg.nrecs = 1;
-            err = run_varn_F_case_scorpio(cfg, decom, driver,
-                                          this->dbl_buf_h0,
-                                          this->rec_buf_h0,
-                                          this->txt_buf,
-                                          this->int_buf);
-            CHECK_ERR
-        }
-
-        if (cfg.hx == 1 || cfg.hx == -1) {
-            cfg.nvars = 51;
-            cfg.nrecs = nrecs;
-            err = run_varn_F_case_scorpio(cfg, decom, driver,
-                                          this->dbl_buf_h0,
-                                          this->rec_buf_h0,
-                                          this->txt_buf,
-                                          this->int_buf);
-            CHECK_ERR
-        }
+    if (cfg.hx == 0 || cfg.hx == -1) {
+        cfg.nvars = 414;
+        cfg.nrecs = 1;
+        err = run_varn_F_case_scorpio(cfg, decom, driver,
+                                      this->dbl_buf_h0,
+                                      this->rec_buf_h0,
+                                      this->txt_buf,
+                                      this->int_buf);
+        CHECK_ERR
     }
+
+    if (cfg.hx == 1 || cfg.hx == -1) {
+        cfg.nvars = 51;
+        cfg.nrecs = nrecs;
+        err = run_varn_F_case_scorpio(cfg, decom, driver,
+                                      this->dbl_buf_h0,
+                                      this->rec_buf_h0,
+                                      this->txt_buf,
+                                      this->int_buf);
+        CHECK_ERR
+    }
+
     cfg.nvars = nvars;
     cfg.nrecs = nrecs;
 

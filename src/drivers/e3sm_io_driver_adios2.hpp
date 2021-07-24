@@ -114,13 +114,6 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
                   MPI_Offset **counts,
                   void *buf,
                   e3sm_io_op_mode mode);
-    int put_vard (int fid,
-                  int vid,
-                  MPI_Datatype type,
-                  MPI_Offset nelem,
-                  MPI_Datatype ftype,
-                  void *buf,
-                  e3sm_io_op_mode mode);
     int get_vara (int fid,
                   int vid,
                   MPI_Datatype type,
@@ -142,13 +135,6 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
                   int nreq,
                   MPI_Offset **starts,
                   MPI_Offset **counts,
-                  void *buf,
-                  e3sm_io_op_mode mode);
-    int get_vard (int fid,
-                  int vid,
-                  MPI_Datatype type,
-                  MPI_Offset nelem,
-                  MPI_Datatype ftype,
                   void *buf,
                   e3sm_io_op_mode mode);
 };

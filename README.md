@@ -178,7 +178,6 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-h] Print this help message
        [-v] Verbose mode
        [-k] Keep the output files when program exits
-       [-d] Run test that uses PnetCDF vard API (default is varn APIs)
        [-m] Run test using noncontiguous write buffer
        [-t] Write 2D variables followed by 3D variables
        [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for h1

@@ -45,8 +45,6 @@
 #define BPUT_VARA_DOUBLE(F, D, S, C, B, R) driver.put_vara (F, D, MPI_DOUBLE, S, C, B, nbe);
 #define BPUT_VARA_CHAR(F, D, S, C, B, R)   driver.put_vara (F, D, MPI_CHAR, S, C, B, nbe);
 
-#define PUT_VARD_ALL(F, D, FT, B, N, T) driver.put_vard (F, D, T, N, FT, B, coll);
-#define PUT_VARD(F, D, FT, B, N, T)     driver.put_vard (F, D, T, N, FT, B, indep);
 
 #define IGET_VAR_DOUBLE(F, D, B, R)            driver.get_vara (F, D, MPI_DOUBLE, NULL, NULL, B, nb);
 #define IGET_VAR_FLOAT(F, D, B, R)             driver.get_vara (F, D, MPI_FLOAT, NULL, NULL, B, nb);
@@ -62,8 +60,6 @@
 #define IGET_VARA_CHAR(F, D, S, C, B, R)       driver.get_vara (F, D, MPI_CHAR, S, C, B, nb);
 #define IGET_VARN(F, D, N, S, C, B, BC, BT, R) driver.get_varn (F, D, BT, N, S, C, B, nb);
 
-#define GET_VARD_ALL(F, D, FT, B, N, T) driver.get_vard (F, D, T, N, FT, B, coll);
-#define GET_VARD(F, D, FT, B, N, T)     driver.get_vard (F, D, T, N, FT, B, indep);
 
 #define WAIT_ALL_REQS { \
     err = driver.wait(ncid); \
