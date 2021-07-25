@@ -26,9 +26,9 @@ class e3sm_io_driver {
     virtual int inq_malloc_max_size (MPI_Offset *size)                            = 0;
     virtual int inq_rec_size (int fid, MPI_Offset *size)                          = 0;
     virtual int def_var (
-        int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did) = 0;
+        int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did) = 0;
     virtual int def_local_var (
-        int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) = 0;
+        int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did) = 0;
     virtual int inq_var (int fid, std::string name, int *did)                                = 0;
     virtual int inq_var_name (int fid, int did, char *name)                                  = 0;
     virtual int inq_var_off (int fid, int vid, MPI_Offset *off)                              = 0;
@@ -39,19 +39,19 @@ class e3sm_io_driver {
     virtual int redef (int fid)                                                              = 0;
     virtual int wait (int fid)                                                               = 0;
     virtual int put_att (
-        int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, const void *buf)= 0;
+        int fid, int vid, std::string name, nc_type xtype, MPI_Offset size, const void *buf)= 0;
     virtual int get_att (int fid, int vid, std::string name, void *buf)                         = 0;
-    virtual int put_varl (int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) = 0;
+    virtual int put_varl (int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) = 0;
     virtual int put_vara (int fid,
                           int vid,
-                          MPI_Datatype type,
+                          MPI_Datatype itype,
                           MPI_Offset *start,
                           MPI_Offset *count,
                           void *buf,
                           e3sm_io_op_mode mode)                                                 = 0;
     virtual int put_vars (int fid,
                           int vid,
-                          MPI_Datatype type,
+                          MPI_Datatype itype,
                           MPI_Offset *start,
                           MPI_Offset *count,
                           MPI_Offset *stride,
@@ -59,7 +59,7 @@ class e3sm_io_driver {
                           e3sm_io_op_mode mode)                                                 = 0;
     virtual int put_varn (int fid,
                           int vid,
-                          MPI_Datatype type,
+                          MPI_Datatype itype,
                           int nreq,
                           MPI_Offset **starts,
                           MPI_Offset **counts,
@@ -67,14 +67,14 @@ class e3sm_io_driver {
                           e3sm_io_op_mode mode)                                                 = 0;
     virtual int get_vara (int fid,
                           int vid,
-                          MPI_Datatype type,
+                          MPI_Datatype itype,
                           MPI_Offset *start,
                           MPI_Offset *count,
                           void *buf,
                           e3sm_io_op_mode mode)                                                 = 0;
     virtual int get_vars (int fid,
                           int vid,
-                          MPI_Datatype type,
+                          MPI_Datatype itype,
                           MPI_Offset *start,
                           MPI_Offset *count,
                           MPI_Offset *stride,
@@ -82,10 +82,11 @@ class e3sm_io_driver {
                           e3sm_io_op_mode mode)                                                 = 0;
     virtual int get_varn (int fid,
                           int vid,
-                          MPI_Datatype type,
+                          MPI_Datatype itype,
                           int nreq,
                           MPI_Offset **starts,
                           MPI_Offset **counts,
                           void *buf,
                           e3sm_io_op_mode mode)                                                 = 0;
 };
+
