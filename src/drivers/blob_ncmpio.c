@@ -936,19 +936,20 @@ static MPI_Offset
 x_len_NC_attrV(MPI_Datatype    xtype,
                MPI_Offset nelems)
 {
-    switch(xtype) {
-        case MPI_BYTE:
-        case MPI_CHAR:  return _RNDUP(nelems, 4);
-        case MPI_SHORT:
-        case MPI_UNSIGNED_SHORT: return ((nelems + nelems%2) * 2);
-        case MPI_INT:
-        case MPI_UNSIGNED:
-        case MPI_FLOAT:  return (nelems * 4);
-        case MPI_DOUBLE:
-        case MPI_LONG_LONG:
-        case MPI_UNSIGNED_LONG_LONG: return (nelems * 8);
-        default: fprintf(stderr, "Error: bad type(%d) in %s\n",xtype,__func__);
+    if ((xtype == MPI_BYTE) || (xtype == MPI_CHAR)) {
+        return _RNDUP(nelems, 4);
     }
+    else if ((xtype == MPI_SHORT) || (xtype == MPI_UNSIGNED_SHORT)) {
+        return ((nelems + nelems%2) * 2);
+    }
+    else if ((xtype == MPI_INT) || (xtype == MPI_UNSIGNED) || (xtype == MPI_FLOAT)) {
+        return (nelems * 4);
+    }
+    else if ((xtype == MPI_DOUBLE) || (xtype == MPI_LONG_LONG) || (xtype == MPI_UNSIGNED_LONG_LONG)) {
+        return (nelems * 8);
+    }
+
+    fprintf(stderr, "Error: bad type(%d) in %s\n",xtype,__func__);
     return 0;
 }
 
