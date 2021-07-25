@@ -337,7 +337,7 @@ int e3sm_io_driver_h5blob::inq_rec_size (int fid, MPI_Offset *size) {
 
 int e3sm_io_driver_h5blob::def_var(int          fid,
                                    std::string  name,
-                                   MPI_Datatype      xtype,
+                                   nc_type      xtype,
                                    int          ndims,
                                    int         *dimids,
                                    int         *varidp)
@@ -348,7 +348,7 @@ int e3sm_io_driver_h5blob::def_var(int          fid,
 }
 
 int e3sm_io_driver_h5blob::def_local_var (
-    int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) {
+    int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did) {
     int err = 0;
 
     ERR_OUT ("HDF5 blob I/O does not support local variables")
@@ -427,7 +427,7 @@ int e3sm_io_driver_h5blob::wait (int fid) { return 0; }
 int e3sm_io_driver_h5blob::put_att(int          fid,
                                    int          varid,
                                    std::string  name,
-                                   MPI_Datatype      xtype,
+                                   nc_type      xtype,
                                    MPI_Offset   nelems,
                                    const void  *buf)
 {
@@ -445,7 +445,7 @@ int e3sm_io_driver_h5blob::get_att(int          fid,
 }
 
 int e3sm_io_driver_h5blob::put_varl (
-    int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) {
+    int fid, int vid, nc_type xtype, void *buf, e3sm_io_op_mode mode) {
     int err = 0;
 
     ERR_OUT ("HDF5 does not support local variables")
@@ -459,16 +459,16 @@ err_out:
  * into a newly allocated intern buffer and cached until file close. After this
  * function returns the user write buffer can be reused by users.
  */
-int e3sm_io_driver_h5blob::put_vara(int fid,
-                                    int varid,
-                                    MPI_Datatype itype,
-                                    MPI_Offset *start,
-                                    MPI_Offset *count,
-                                    void *buf,  /* user's write buffer */
-                                    e3sm_io_op_mode mode)
+int e3sm_io_driver_h5blob::put_vara(int              fid,
+                                    int              varid,
+                                    MPI_Datatype     itype,
+                                    MPI_Offset      *start,
+                                    MPI_Offset      *count,
+                                    void            *buf,  /* user's buffer */
+                                    e3sm_io_op_mode  mode)
 {
-    int i, xsz;
-    MPI_Datatype xtype;
+    int i, xsz, isz;
+    nc_type xtype;
     MPI_Offset nelems, len;
     NC *ncp = this->files[fid]->header;
     NC_var *varp = ncp->vars.value[varid];
@@ -478,7 +478,8 @@ int e3sm_io_driver_h5blob::put_vara(int fid,
 
     /* external data type, i.e. for the variable in the file */
     xtype = varp->xtype;
-    MPI_Type_size(xtype, &xsz);
+    e3sm_io_xlen_nc_type(xtype, &xsz);
+    MPI_Type_size(itype, &isz);
 
     /* calculate the number of elements in this put request */
     nelems = 1;
@@ -496,9 +497,9 @@ int e3sm_io_driver_h5blob::put_vara(int fid,
     /* calculate write request amount in bytes */
     len = nelems * xsz;
 
-    if (itype != xtype) {
+    if (isz != xsz) {
         /* when external and internal data type sizes are different */
-        if (itype == MPI_DOUBLE && xtype == MPI_FLOAT) {
+        if (itype == MPI_DOUBLE && xtype == NC_FLOAT) {
             double *dbl_buf = (double*)buf;
             float *flt_buf = (float*) malloc(nelems * sizeof(float));
             /* type casting from doube to float is required */
@@ -506,7 +507,7 @@ int e3sm_io_driver_h5blob::put_vara(int fid,
                 flt_buf[i] = (float) dbl_buf[i];
             buf = flt_buf;
         }
-        else {
+        else { /* E3SM has no other mismatch types */
             printf("var %s itype xtype mismatched\n",varp->name);
             return -1;
         }
@@ -566,7 +567,7 @@ int e3sm_io_driver_h5blob::put_vara(int fid,
 
 int e3sm_io_driver_h5blob::put_vars (int fid,
                                    int vid,
-                                   MPI_Datatype type,
+                                   MPI_Datatype itype,
                                    MPI_Offset *start,
                                    MPI_Offset *count,
                                    MPI_Offset *stride,
@@ -578,7 +579,7 @@ int e3sm_io_driver_h5blob::put_vars (int fid,
 
 int e3sm_io_driver_h5blob::put_varn (int fid,
                                    int vid,
-                                   MPI_Datatype type,
+                                   MPI_Datatype itype,
                                    int nreq,
                                    MPI_Offset **starts,
                                    MPI_Offset **counts,
@@ -590,7 +591,7 @@ int e3sm_io_driver_h5blob::put_varn (int fid,
 
 int e3sm_io_driver_h5blob::get_vara (int fid,
                                    int vid,
-                                   MPI_Datatype type,
+                                   MPI_Datatype itype,
                                    MPI_Offset *start,
                                    MPI_Offset *count,
                                    void *buf,
@@ -601,7 +602,7 @@ int e3sm_io_driver_h5blob::get_vara (int fid,
 
 int e3sm_io_driver_h5blob::get_vars (int fid,
                                    int vid,
-                                   MPI_Datatype type,
+                                   MPI_Datatype itype,
                                    MPI_Offset *start,
                                    MPI_Offset *count,
                                    MPI_Offset *stride,
@@ -613,7 +614,7 @@ int e3sm_io_driver_h5blob::get_vars (int fid,
 
 int e3sm_io_driver_h5blob::get_varn (int fid,
                                    int vid,
-                                   MPI_Datatype type,
+                                   MPI_Datatype itype,
                                    int nreq,
                                    MPI_Offset **starts,
                                    MPI_Offset **counts,

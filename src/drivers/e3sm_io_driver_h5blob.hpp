@@ -57,9 +57,9 @@ class e3sm_io_driver_h5blob : public e3sm_io_driver {
     int inq_malloc_size (MPI_Offset *size);
     int inq_malloc_max_size (MPI_Offset *size);
     int inq_rec_size (int fid, MPI_Offset *size);
-    int def_var (int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did);
+    int def_var (int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did);
     int def_local_var (
-        int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did);
+        int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did);
     int inq_var (int fid, std::string name, int *did);
     int inq_var_name(int ncid, int varid, char *name);
     int inq_var_off (int fid, int vid, MPI_Offset *off);
@@ -69,19 +69,19 @@ class e3sm_io_driver_h5blob : public e3sm_io_driver {
     int enddef (int fid);
     int redef (int fid);
     int wait (int fid);
-    int put_att (int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, const void *buf);
+    int put_att (int fid, int vid, std::string name, nc_type xtype, MPI_Offset size, const void *buf);
     int get_att (int fid, int vid, std::string name, void *buf);
-    int put_varl (int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode);
+    int put_varl (int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode);
     int put_vara (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   MPI_Offset *start,
                   MPI_Offset *count,
                   void *buf,
                   e3sm_io_op_mode mode);
     int put_vars (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   MPI_Offset *start,
                   MPI_Offset *count,
                   MPI_Offset *stride,
@@ -89,7 +89,7 @@ class e3sm_io_driver_h5blob : public e3sm_io_driver {
                   e3sm_io_op_mode mode);
     int put_varn (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   int nreq,
                   MPI_Offset **starts,
                   MPI_Offset **counts,
@@ -97,14 +97,14 @@ class e3sm_io_driver_h5blob : public e3sm_io_driver {
                   e3sm_io_op_mode mode);
     int get_vara (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   MPI_Offset *start,
                   MPI_Offset *count,
                   void *buf,
                   e3sm_io_op_mode mode);
     int get_vars (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   MPI_Offset *start,
                   MPI_Offset *count,
                   MPI_Offset *stride,
@@ -112,7 +112,7 @@ class e3sm_io_driver_h5blob : public e3sm_io_driver {
                   e3sm_io_op_mode mode);
     int get_varn (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   int nreq,
                   MPI_Offset **starts,
                   MPI_Offset **counts,
