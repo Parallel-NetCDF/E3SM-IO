@@ -131,7 +131,7 @@ typedef struct NC_dimarray {
 typedef struct {
     MPI_Offset nelems;   /* number of attribute elements */
     MPI_Offset xsz;      /* amount of space at xvalue (4-byte aligned) */
-    MPI_Datatype    xtype;    /* external NC data type of the attribute */
+    nc_type    xtype;    /* external NC data type of the attribute */
     size_t     name_len; /* strlen(name) for faster string compare */
     char      *name;     /* name of the attributes */
     void      *xvalue;   /* the actual data, in external representation */
@@ -148,7 +148,7 @@ typedef struct {
 typedef struct {
     int           varid;   /* variable ID */
     int           xsz;     /* byte size of 1 array element */
-    MPI_Datatype       xtype;   /* variable's external NC data type */
+    nc_type       xtype;   /* variable's external NC data type */
     int           no_fill; /* whether fill mode is disabled */
     size_t        name_len;/* strlen(name) for faster string compare */
     char         *name;    /* name of the variable */
@@ -197,12 +197,12 @@ typedef struct {
 
 extern int blob_ncmpio_create_NC(NC *ncp);
 extern int blob_ncmpio_free_NC(NC *ncp);
-extern int blob_ncmpio_add_var(NC *ncp, const char *name, MPI_Datatype xtype,
+extern int blob_ncmpio_add_var(NC *ncp, const char *name, nc_type xtype,
                                int ndims, int *dimids, int *varidp);
 extern int blob_ncmpio_add_dim(NC *ncp, const char *name, MPI_Offset size,
                                int *dimidp);
 extern int blob_ncmpio_put_att(NC *ncp, int varid, const char *name,
-                               MPI_Datatype xtype, MPI_Offset nelems,
+                               nc_type xtype, MPI_Offset nelems,
                                const void *buf);
 extern int blob_ncmpio_get_att(NC *ncp, int varid, const char *name, void *buf);
 extern int blob_ncmpio_pack_NC(NC *ncp, size_t *buf_len, void **buf);
