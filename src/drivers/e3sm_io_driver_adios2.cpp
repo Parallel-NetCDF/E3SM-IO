@@ -288,7 +288,7 @@ int e3sm_io_driver_adios2::inq_rec_size (int fid, MPI_Offset *size) {
 }
 
 int e3sm_io_driver_adios2::def_var (
-    int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did) {
+    int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
@@ -303,7 +303,7 @@ int e3sm_io_driver_adios2::def_var (
         zero[i] = 0;
     }
 
-    dp = adios2_define_variable (fp->iop, name.c_str (), mpi_type_to_adios2_type (type),
+    dp = adios2_define_variable (fp->iop, name.c_str (), e3sm_io_type_nc2adios(xtype),
                                  (size_t)ndim, dims, zero, zero, adios2_constant_dims_false);
     CHECK_APTR (dp)
 
@@ -320,7 +320,7 @@ err_out:;
     return err;
 }
 int e3sm_io_driver_adios2::def_local_var (
-    int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did) {
+    int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
@@ -329,7 +329,7 @@ int e3sm_io_driver_adios2::def_local_var (
     size_t dims[E3SM_IO_DRIVER_MAX_RANK];
     size_t *ldim;
     size_t opidx;
-    adios2_type dtype = mpi_type_to_adios2_type (type);
+    adios2_type dtype = e3sm_io_type_nc2adios (xtype);
 
     for (i = 0; i < ndim; i++) {
         dims[i] = (size_t)dsize[i];
@@ -444,7 +444,7 @@ int e3sm_io_driver_adios2::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
 
 int e3sm_io_driver_adios2::enddef (int fid) {
     int err = 0;
-    int i;
+    size_t i;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_step_status stat;
@@ -510,21 +510,21 @@ err_out:
 }
 
 int e3sm_io_driver_adios2::put_att (
-    int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, const void *buf) {
+    int fid, int vid, std::string name, nc_type xtype, MPI_Offset size, const void *buf) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_variable *did;
     adios2_attribute *aid;
-    adios2_type atype = mpi_type_to_adios2_type (type);
+    adios2_type atype = e3sm_io_type_nc2adios (xtype);
     size_t esize;
 
-    if (vid == E3SM_IO_GLOBAL_ATTR) {
+    if (vid == NC_GLOBAL) {
         // ADIOS2 have no char type, we translate char array into unit sized string
         // MPI has not string type, we use WCHAR to represent string
-        if (type == MPI_CHAR) {
+        if (xtype == NC_CHAR) {
             aid = adios2_define_attribute (fp->iop, name.c_str (), adios2_type_string, buf);
-        } else {
+        } else { /* NC_STRING */
             aid = adios2_define_attribute_array (fp->iop, name.c_str (), atype, buf, (size_t)size);
         }
         CHECK_APTR (aid);
@@ -538,9 +538,9 @@ int e3sm_io_driver_adios2::put_att (
         vname[namesize] = '\0';
         // ADIOS2 have no char type, we translate char array into unit sized string
         // MPI has not string type, we use WCHAR to represent string
-        if (type == MPI_CHAR) {
+        if (xtype == NC_CHAR) {
             aid = adios2_define_variable_attribute (fp->iop, name.c_str (), adios2_type_string, buf, vname, "/");
-        } else {
+        } else { /* NC_STRING */
             aid = adios2_define_variable_attribute_array (fp->iop, name.c_str (), atype, buf,
                                                           (size_t)size, vname, "/");
         }
@@ -565,7 +565,7 @@ int e3sm_io_driver_adios2::get_att (int fid, int vid, std::string name, void *bu
     adios2_type atype;
     size_t asize, esize;
 
-    if (vid == E3SM_IO_GLOBAL_ATTR) {
+    if (vid == NC_GLOBAL) {
         aid = adios2_inquire_attribute (fp->iop, name.c_str ());
         CHECK_APTR (aid)
     } else {
@@ -596,7 +596,7 @@ err_out:;
 }
 
 int e3sm_io_driver_adios2::put_varl (
-    int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) {
+    int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
@@ -649,7 +649,7 @@ err_out:;
 
 int e3sm_io_driver_adios2::put_vara (int fid,
                                      int vid,
-                                     MPI_Datatype type,
+                                     MPI_Datatype itype,
                                      MPI_Offset *start,
                                      MPI_Offset *count,
                                      void *buf,
@@ -657,8 +657,7 @@ int e3sm_io_driver_adios2::put_vara (int fid,
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
-    int i;
-    size_t ndim;
+    size_t i, ndim;
     adios2_variable *did;
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
@@ -735,7 +734,7 @@ err_out:;
 
 int e3sm_io_driver_adios2::put_vars (int fid,
                                      int vid,
-                                     MPI_Datatype type,
+                                     MPI_Datatype itype,
                                      MPI_Offset *start,
                                      MPI_Offset *count,
                                      MPI_Offset *stride,
@@ -744,9 +743,8 @@ int e3sm_io_driver_adios2::put_vars (int fid,
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
-    int i;
     size_t esize;
-    size_t ndim;
+    size_t i, ndim;
     adios2_type atype;
     adios2_variable *did;
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], aend[E3SM_IO_DRIVER_MAX_RANK],
@@ -837,7 +835,7 @@ err_out:;
 }
 int e3sm_io_driver_adios2::put_varn (int fid,
                                      int vid,
-                                     MPI_Datatype type,
+                                     MPI_Datatype itype,
                                      int nreq,
                                      MPI_Offset **starts,
                                      MPI_Offset **counts,
@@ -931,7 +929,7 @@ err_out:;
 
 int e3sm_io_driver_adios2::get_vara (int fid,
                                      int vid,
-                                     MPI_Datatype type,
+                                     MPI_Datatype itype,
                                      MPI_Offset *start,
                                      MPI_Offset *count,
                                      void *buf,
@@ -939,8 +937,7 @@ int e3sm_io_driver_adios2::get_vara (int fid,
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
-    int i;
-    size_t ndim;
+    size_t i, ndim;
     adios2_variable *did;
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
@@ -1009,7 +1006,7 @@ err_out:;
 }
 int e3sm_io_driver_adios2::get_vars (int fid,
                                      int vid,
-                                     MPI_Datatype type,
+                                     MPI_Datatype itype,
                                      MPI_Offset *start,
                                      MPI_Offset *count,
                                      MPI_Offset *stride,
@@ -1018,9 +1015,8 @@ int e3sm_io_driver_adios2::get_vars (int fid,
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
-    int i;
     size_t esize;
-    size_t ndim;
+    size_t i, ndim;
     adios2_type atype;
     adios2_variable *did;
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], aend[E3SM_IO_DRIVER_MAX_RANK],
@@ -1107,7 +1103,7 @@ err_out:;
 }
 int e3sm_io_driver_adios2::get_varn (int fid,
                                      int vid,
-                                     MPI_Datatype type,
+                                     MPI_Datatype itype,
                                      int nreq,
                                      MPI_Offset **starts,
                                      MPI_Offset **counts,
