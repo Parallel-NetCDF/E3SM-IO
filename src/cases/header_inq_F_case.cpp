@@ -88,35 +88,35 @@ int ncid,           /* file ID */
 
     /* global attributes: */
     iattr = 4;
-    err   = GET_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = GET_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "Conventions", 6, "CF-1.0");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "Conventions", 6, "CF-1.0");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "source", 3, "CAM");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "source", 3, "CAM");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "case", 20, "FC5AV1C-H01B_ne4_ne4");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "case", 20, "FC5AV1C-H01B_ne4_ne4");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "title", 5, "UNSET");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "title", 5, "UNSET");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "logname", 6, "wkliao");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "logname", 6, "wkliao");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "host", 10, "compute001");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "host", 10, "compute001");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "Version", 6, "$Name$");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "Version", 6, "$Name$");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "revision_Id", 4, "$Id$");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "revision_Id", 4, "$Id$");
     CHECK_ERR
     err = GET_ATT_TEXT (
-        ncid, E3SM_IO_GLOBAL_ATTR, "initial_file", 86,
+        ncid, NC_GLOBAL, "initial_file", 86,
         "/home/climate1/acme/inputdata/atm/cam/inic/homme/cami_mam3_Linoz_ne4np4_L72_c160909.nc");
     CHECK_ERR
     err = GET_ATT_TEXT (
-        ncid, E3SM_IO_GLOBAL_ATTR, "topography_file", 79,
+        ncid, NC_GLOBAL, "topography_file", 79,
         "/home/climate1/acme/inputdata/atm/cam/topo/USGS-gtopo30_ne4np4_16x.c20160612.nc");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "time_period_freq", 5, "day_5");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "time_period_freq", 5, "day_5");
     CHECK_ERR
 
     /* inquery dimensions */
@@ -5615,35 +5615,35 @@ int inq_F_case_h1 (e3sm_io_driver &driver,
 
     /* global attributes: */
     iattr = 4;
-    err   = GET_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "ne", MPI_INT, 1, &iattr);
+    err   = GET_ATT (ncid, NC_GLOBAL, "ne", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = GET_ATT (ncid, E3SM_IO_GLOBAL_ATTR, "np", MPI_INT, 1, &iattr);
+    err = GET_ATT (ncid, NC_GLOBAL, "np", MPI_INT, 1, &iattr);
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "Conventions", 6, "CF-1.0");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "Conventions", 6, "CF-1.0");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "source", 3, "CAM");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "source", 3, "CAM");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "case", 20, "FC5AV1C-H01B_ne4_ne4");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "case", 20, "FC5AV1C-H01B_ne4_ne4");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "title", 5, "UNSET");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "title", 5, "UNSET");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "logname", 6, "wkliao");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "logname", 6, "wkliao");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "host", 10, "compute001");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "host", 10, "compute001");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "Version", 6, "$Name$");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "Version", 6, "$Name$");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "revision_Id", 4, "$Id$");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "revision_Id", 4, "$Id$");
     CHECK_ERR
     err = GET_ATT_TEXT (
-        ncid, E3SM_IO_GLOBAL_ATTR, "initial_file", 86,
+        ncid, NC_GLOBAL, "initial_file", 86,
         "/home/climate1/acme/inputdata/atm/cam/inic/homme/cami_mam3_Linoz_ne4np4_L72_c160909.nc");
     CHECK_ERR
     err = GET_ATT_TEXT (
-        ncid, E3SM_IO_GLOBAL_ATTR, "topography_file", 79,
+        ncid, NC_GLOBAL, "topography_file", 79,
         "/home/climate1/acme/inputdata/atm/cam/topo/USGS-gtopo30_ne4np4_16x.c20160612.nc");
     CHECK_ERR
-    err = GET_ATT_TEXT (ncid, E3SM_IO_GLOBAL_ATTR, "time_period_freq", 6, "hour_2");
+    err = GET_ATT_TEXT (ncid, NC_GLOBAL, "time_period_freq", 6, "hour_2");
     CHECK_ERR
 
     /* inquery dimensions */
