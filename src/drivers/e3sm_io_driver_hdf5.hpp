@@ -94,9 +94,9 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     int inq_malloc_size (MPI_Offset *size);
     int inq_malloc_max_size (MPI_Offset *size);
     int inq_rec_size (int fid, MPI_Offset *size);
-    int def_var (int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *did);
+    int def_var (int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did);
     int def_local_var (
-        int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *did);
+        int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did);
     int inq_var (int fid, std::string name, int *did);
     int inq_var_name(int ncid, int varid, char *name);
     int inq_var_off (int fid, int vid, MPI_Offset *off);
@@ -106,19 +106,19 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     int enddef (int fid);
     int redef (int fid);
     int wait (int fid);
-    int put_att (int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, const void *buf);
+    int put_att (int fid, int vid, std::string name, nc_type xtype, MPI_Offset size, const void *buf);
     int get_att (int fid, int vid, std::string name, void *buf);
-    int put_varl (int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode);
+    int put_varl (int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode);
     int put_vara (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   MPI_Offset *start,
                   MPI_Offset *count,
                   void *buf,
                   e3sm_io_op_mode mode);
     int put_vars (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   MPI_Offset *start,
                   MPI_Offset *count,
                   MPI_Offset *stride,
@@ -126,7 +126,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
                   e3sm_io_op_mode mode);
     int put_varn (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   int nreq,
                   MPI_Offset **starts,
                   MPI_Offset **counts,
@@ -134,14 +134,14 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
                   e3sm_io_op_mode mode);
     int get_vara (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   MPI_Offset *start,
                   MPI_Offset *count,
                   void *buf,
                   e3sm_io_op_mode mode);
     int get_vars (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   MPI_Offset *start,
                   MPI_Offset *count,
                   MPI_Offset *stride,
@@ -149,7 +149,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
                   e3sm_io_op_mode mode);
     int get_varn (int fid,
                   int vid,
-                  MPI_Datatype type,
+                  MPI_Datatype itype,
                   int nreq,
                   MPI_Offset **starts,
                   MPI_Offset **counts,
@@ -170,7 +170,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
     int put_varn_expand (int fid,
                          int vid,
-                         MPI_Datatype type,
+                         MPI_Datatype itype,
                          int nreq,
                          MPI_Offset **starts,
                          MPI_Offset **counts,
@@ -179,7 +179,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
     int get_varn_expand (int fid,
                          int vid,
-                         MPI_Datatype type,
+                         MPI_Datatype itype,
                          int nreq,
                          MPI_Offset **starts,
                          MPI_Offset **counts,
@@ -187,7 +187,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
                          e3sm_io_op_mode mode);
     int put_varn_merge (int fid,
                         int vid,
-                        MPI_Datatype type,
+                        MPI_Datatype itype,
                         int nreq,
                         MPI_Offset **starts,
                         MPI_Offset **counts,
@@ -196,10 +196,31 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
     int get_varn_merge (int fid,
                         int vid,
-                        MPI_Datatype type,
+                        MPI_Datatype itype,
                         int nreq,
                         MPI_Offset **starts,
                         MPI_Offset **counts,
                         void *buf,
                         e3sm_io_op_mode mode);
 };
+
+/*----< e3sm_io_type_nc2hdf5() >---------------------------------------------*/
+inline hid_t
+e3sm_io_type_nc2hdf5(nc_type xtype)
+{
+    switch(xtype) {
+        case NC_BYTE:   return H5T_NATIVE_UINT8;
+        case NC_UBYTE:  return H5T_NATIVE_UCHAR;
+        case NC_CHAR:   return H5T_NATIVE_CHAR;
+        case NC_SHORT:  return H5T_NATIVE_SHORT;
+        case NC_USHORT: return H5T_NATIVE_USHORT;
+        case NC_INT:    return H5T_NATIVE_INT;
+        case NC_UINT:   return H5T_NATIVE_UINT;
+        case NC_FLOAT : return H5T_NATIVE_FLOAT;
+        case NC_DOUBLE: return H5T_NATIVE_DOUBLE;
+        case NC_INT64:  return H5T_NATIVE_INT64;
+        case NC_UINT64: return H5T_NATIVE_UINT64;
+        default: return -1;
+    }
+}
+
