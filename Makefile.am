@@ -1,5 +1,4 @@
-SUBDIRS = src utils
-DIST_SUBDIRS = src utils
+SUBDIRS = src utils datasets
 
 TESTS_ENVIRONMENT  = export srcdir="$(srcdir)";
 if ENABLE_ADIOS2

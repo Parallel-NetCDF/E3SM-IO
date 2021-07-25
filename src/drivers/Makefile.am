@@ -6,6 +6,7 @@
 SUFFIXES = .a .o .c .m4 .h
 
 AM_CPPFLAGS  = -I${top_srcdir}/src
+AM_CPPFLAGS += -I${top_builddir}/src
 AM_CPPFLAGS += -I${top_srcdir}/src/drivers
 AM_CPPFLAGS += -I${top_srcdir}/src/cases
 

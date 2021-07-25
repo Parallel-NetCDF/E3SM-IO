@@ -535,7 +535,8 @@ AC_CONFIG_FILES(  Makefile \
                   src/Makefile \
                   src/drivers/Makefile \
                   src/cases/Makefile \
-                  utils/Makefile
+                  utils/Makefile \
+                  datasets/Makefile
 )
 
 AC_OUTPUT
