@@ -255,20 +255,20 @@ inline int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
                                 int fid,
                                 int vid,
                                 std::string name,
-                                MPI_Datatype itype,
+                                nc_type xtype,
                                 MPI_Offset size,
                                 void *buf) {
-    return driver.put_att (fid, vid, name, itype, size, buf);
+    return driver.put_att (fid, vid, name, xtype, size, buf);
 }
 
 inline int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
                                 int fid,
                                 e3sm_io_scorpio_var &var,
                                 std::string name,
-                                MPI_Datatype itype,
+                                nc_type xtype,
                                 MPI_Offset size,
                                 void *buf) {
-    return driver.put_att (fid, var.data, name, itype, size, buf);
+    return driver.put_att (fid, var.data, name, xtype, size, buf);
 }
 
 extern int
