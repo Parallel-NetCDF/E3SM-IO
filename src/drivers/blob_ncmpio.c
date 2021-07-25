@@ -36,19 +36,20 @@ static const char nada[X_ALIGN] = {0, 0, 0, 0};
 static int
 ncmpii_xlen_nc_type(MPI_Datatype xtype, int *size)
 {
-    switch(xtype) {
-        case MPI_BYTE:
-        case MPI_CHAR:              *size = 1; return NC_NOERR;
-        case MPI_SHORT:
-        case MPI_UNSIGNED_SHORT:    *size = 2; return NC_NOERR;
-        case MPI_INT:
-        case MPI_UNSIGNED:
-        case MPI_FLOAT:              *size = 4; return NC_NOERR;
-        case MPI_DOUBLE:
-        case MPI_LONG_LONG:
-        case MPI_UNSIGNED_LONG_LONG: *size = 8; return NC_NOERR;
-        default: return 0;
+    if ((xtype == MPI_BYTE) || (xtype == MPI_CHAR)) {
+        *size = 1; return NC_NOERR;
     }
+    else if ((xtype == MPI_SHORT) || (xtype == MPI_UNSIGNED_SHORT)) {
+        *size = 2; return NC_NOERR;
+    }
+    else if ((xtype == MPI_INT) || (xtype == MPI_UNSIGNED) || (xtype == MPI_FLOAT)) {
+        *size = 4; return NC_NOERR;
+    }
+    else if ((xtype == MPI_DOUBLE) || (xtype == MPI_LONG_LONG) || (xtype == MPI_UNSIGNED_LONG_LONG)) {
+        *size = 8; return NC_NOERR;
+    }
+
+    return 0;
 }
 
 /*----< hdr_len_NC_dim() >---------------------------------------------------*/
