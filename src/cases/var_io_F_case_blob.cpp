@@ -277,7 +277,7 @@ int write_small_fix_vars_F_case(e3sm_io_driver  &driver,
 
     int i, err, my_nreqs=0;
 
-    for (i=0; i<15; i++) varids[i] += start_varid;
+    for (i=0; i<12; i++) varids[i] += start_varid;
 
     i = 0;
 
