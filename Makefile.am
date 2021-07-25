@@ -26,8 +26,8 @@ CLEANFILES = can_F_out_h0.nc         can_F_out_h1.nc \
              blob_F_out_h0.h5.0000   blob_F_out_h0.h5.0001 \
              blob_F_out_h1.h5.0000   blob_F_out_h1.h5.0001 \
              can_G_out.nc \
-             blob_G_out.nc.0000   blob_F_out.nc.0001 \
-             blob_G_out.h5.0000   blob_F_out.h5.0001
+             blob_G_out.nc.0000   blob_G_out.nc.0001 \
+             blob_G_out.h5.0000   blob_G_out.h5.0001
 
 ptest: $(check_PROGRAMS)
 	@echo "==========================================================="
