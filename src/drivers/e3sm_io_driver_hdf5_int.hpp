@@ -59,21 +59,24 @@ static inline hid_t nc_type_to_hdf5_type (nc_type nctype) {
     return -1;
 }
 
-static inline hid_t mpi_type_to_hdf5_type (MPI_Datatype mpitype) {
-    switch (mpitype) {
-        case MPI_INT:
-            return H5T_NATIVE_INT;
-        case MPI_FLOAT:
-            return H5T_NATIVE_FLOAT;
-        case MPI_DOUBLE:
-            return H5T_NATIVE_DOUBLE;
-        case MPI_CHAR:
-            return H5T_NATIVE_CHAR;
-        case MPI_BYTE:
-            return H5T_NATIVE_UINT8;
-        default:
-            printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, mpitype);
-            DEBUG_ABORT
+static inline hid_t mpi_type_to_hdf5_type (MPI_Datatype type) {
+    if (type == MPI_DOUBLE){
+        return H5T_NATIVE_DOUBLE;
+    }
+    else if (type == MPI_FLOAT){
+        return H5T_NATIVE_FLOAT;
+    }
+    else if (type == MPI_INT){
+        return H5T_NATIVE_INT;
+    }
+    else if (type == MPI_LONG_LONG){
+        return H5T_NATIVE_INT64;
+    }
+    else if (type == MPI_CHAR){
+        return H5T_NATIVE_CHAR;
+    }
+    else if (type == MPI_BYTE){
+        return H5T_NATIVE_UINT8;
     }
 
     return -1;

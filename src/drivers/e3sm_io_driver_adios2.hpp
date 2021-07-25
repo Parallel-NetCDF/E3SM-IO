@@ -19,26 +19,31 @@
 
 #include <e3sm_io_driver.hpp>
 
-inline adios2_type mpi_type_to_adios2_type (MPI_Datatype mpitype) {
-    switch (mpitype) {
-        case MPI_INT:
-            return adios2_type_int32_t;
-        case MPI_FLOAT:
-            return adios2_type_float;
-        case MPI_DOUBLE:
-            return adios2_type_double;
-        case MPI_LONG_LONG:
-            return adios2_type_int64_t;
-        case MPI_CHAR:
-            return adios2_type_int8_t;
-        case MPI_WCHAR:
-            return adios2_type_string;
-        case MPI_BYTE:
-            return adios2_type_uint8_t;
-        default:
-            printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, mpitype);
-            DEBUG_ABORT
+inline adios2_type mpi_type_to_adios2_type (MPI_Datatype type) {
+    if (type == MPI_DOUBLE){
+        return adios2_type_double;
     }
+    else if (type == MPI_FLOAT){
+        return adios2_type_float;
+    }
+    else if (type == MPI_INT){
+        return adios2_type_int32_t;
+    }
+    else if (type == MPI_LONG_LONG){
+        return adios2_type_int64_t;
+    }
+    else if (type == MPI_CHAR){
+        return adios2_type_int8_t;
+    }
+    else if (type == MPI_WCHAR){
+        return adios2_type_string;
+    }
+    else if (type == MPI_BYTE){
+        return adios2_type_uint8_t;
+    }
+
+    printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, type);
+    DEBUG_ABORT
 
     return adios2_type_unknown;
 }
