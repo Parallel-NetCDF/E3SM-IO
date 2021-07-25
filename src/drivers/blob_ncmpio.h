@@ -23,7 +23,6 @@
 extern "C" {
 #endif
 
-typedef MPI_Datatype nc_type;
 #define NC_NOERR 0
 #define NC_UNLIMITED 0L
 #define NC_GLOBAL -1
@@ -132,7 +131,7 @@ typedef struct NC_dimarray {
 typedef struct {
     MPI_Offset nelems;   /* number of attribute elements */
     MPI_Offset xsz;      /* amount of space at xvalue (4-byte aligned) */
-    nc_type    xtype;    /* external NC data type of the attribute */
+    MPI_Datatype    xtype;    /* external NC data type of the attribute */
     size_t     name_len; /* strlen(name) for faster string compare */
     char      *name;     /* name of the attributes */
     void      *xvalue;   /* the actual data, in external representation */
@@ -149,7 +148,7 @@ typedef struct {
 typedef struct {
     int           varid;   /* variable ID */
     int           xsz;     /* byte size of 1 array element */
-    nc_type       xtype;   /* variable's external NC data type */
+    MPI_Datatype       xtype;   /* variable's external NC data type */
     int           no_fill; /* whether fill mode is disabled */
     size_t        name_len;/* strlen(name) for faster string compare */
     char         *name;    /* name of the variable */
@@ -198,12 +197,12 @@ typedef struct {
 
 extern int blob_ncmpio_create_NC(NC *ncp);
 extern int blob_ncmpio_free_NC(NC *ncp);
-extern int blob_ncmpio_add_var(NC *ncp, const char *name, nc_type xtype,
+extern int blob_ncmpio_add_var(NC *ncp, const char *name, MPI_Datatype xtype,
                                int ndims, int *dimids, int *varidp);
 extern int blob_ncmpio_add_dim(NC *ncp, const char *name, MPI_Offset size,
                                int *dimidp);
 extern int blob_ncmpio_put_att(NC *ncp, int varid, const char *name,
-                               nc_type xtype, MPI_Offset nelems,
+                               MPI_Datatype xtype, MPI_Offset nelems,
                                const void *buf);
 extern int blob_ncmpio_get_att(NC *ncp, int varid, const char *name, void *buf);
 extern int blob_ncmpio_pack_NC(NC *ncp, size_t *buf_len, void **buf);
