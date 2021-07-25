@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <mpi.h>
 
+#include <e3sm_io.h>
 #include <blob_ncmpio.h>
 
 #define NC_MAGIC_LEN 4
@@ -32,25 +33,6 @@
 static const char ncmagic5[] = {'C', 'D', 'F', 0x05};
 
 static const char nada[X_ALIGN] = {0, 0, 0, 0};
-
-static int
-ncmpii_xlen_nc_type(MPI_Datatype xtype, int *size)
-{
-    if ((xtype == MPI_BYTE) || (xtype == MPI_CHAR)) {
-        *size = 1; return NC_NOERR;
-    }
-    else if ((xtype == MPI_SHORT) || (xtype == MPI_UNSIGNED_SHORT)) {
-        *size = 2; return NC_NOERR;
-    }
-    else if ((xtype == MPI_INT) || (xtype == MPI_UNSIGNED) || (xtype == MPI_FLOAT)) {
-        *size = 4; return NC_NOERR;
-    }
-    else if ((xtype == MPI_DOUBLE) || (xtype == MPI_LONG_LONG) || (xtype == MPI_UNSIGNED_LONG_LONG)) {
-        *size = 8; return NC_NOERR;
-    }
-
-    return 0;
-}
 
 /*----< hdr_len_NC_dim() >---------------------------------------------------*/
 static MPI_Offset
@@ -444,10 +426,10 @@ hdr_put_NC_attrV(bufferinfo    *pbp,
     int xsz;
     MPI_Offset padding, sz;
 
-    /* ncmpii_xlen_nc_type() returns the element size (unaligned) of
+    /* e3sm_io_xlen_nc_type() returns the element size (unaligned) of
      * attrp->xtype attrp->xsz is the aligned total size of attribute values
      */
-    ncmpii_xlen_nc_type(attrp->xtype, &xsz);
+    e3sm_io_xlen_nc_type(attrp->xtype, &xsz);
     sz = attrp->nelems * xsz;
     padding = attrp->xsz - sz;
 
@@ -860,7 +842,7 @@ ncmpio_new_NC_var(const char *name, int ndims)
 
 int blob_ncmpio_add_var(NC         *ncp,
                         const char *name,
-                        MPI_Datatype     xtype,
+                        nc_type     xtype,
                         int         ndims,
                         int        *dimids,
                         int        *varidp)
@@ -870,7 +852,7 @@ int blob_ncmpio_add_var(NC         *ncp,
     NC_var *varp=NULL;
     varp = ncmpio_new_NC_var(name, ndims);
     varp->xtype = xtype;
-    ncmpii_xlen_nc_type(xtype, &varp->xsz);
+    e3sm_io_xlen_nc_type(xtype, &varp->xsz);
 
     /* copy dimids[] */
     if (ndims != 0 && dimids != NULL)
@@ -932,32 +914,36 @@ int blob_ncmpio_add_dim(NC         *ncp,
     return err;
 }
 
+/*----< x_len_NC_attrV() >---------------------------------------------------*/
+/* How much space will 'nelems' of 'xtype' take in external representation.
+ * Note the space is aligned in 4-byte boundary.
+ */
 static MPI_Offset
-x_len_NC_attrV(MPI_Datatype    xtype,
+x_len_NC_attrV(nc_type    xtype,
                MPI_Offset nelems)
 {
-    if ((xtype == MPI_BYTE) || (xtype == MPI_CHAR)) {
-        return _RNDUP(nelems, 4);
+    switch(xtype) {
+        case NC_BYTE:
+        case NC_CHAR:
+        case NC_UBYTE:  return _RNDUP(nelems, 4);
+        case NC_SHORT:
+        case NC_USHORT: return ((nelems + nelems%2) * 2);
+        case NC_INT:
+        case NC_UINT:
+        case NC_FLOAT:  return (nelems * 4);
+        case NC_DOUBLE:
+        case NC_INT64:
+        case NC_UINT64: return (nelems * 8);
+        default: return -1;
     }
-    else if ((xtype == MPI_SHORT) || (xtype == MPI_UNSIGNED_SHORT)) {
-        return ((nelems + nelems%2) * 2);
-    }
-    else if ((xtype == MPI_INT) || (xtype == MPI_UNSIGNED) || (xtype == MPI_FLOAT)) {
-        return (nelems * 4);
-    }
-    else if ((xtype == MPI_DOUBLE) || (xtype == MPI_LONG_LONG) || (xtype == MPI_UNSIGNED_LONG_LONG)) {
-        return (nelems * 8);
-    }
-
-    fprintf(stderr, "Error: bad type(%d) in %s\n",xtype,__func__);
     return 0;
 }
 
 static int
 ncmpio_new_NC_attr(const char  *name,
-                        MPI_Datatype      xtype,
-                        MPI_Offset   nelems,
-                        NC_attr    **attrp)
+                   nc_type      xtype,
+                   MPI_Offset   nelems,
+                   NC_attr    **attrp)
 {
     *attrp = (NC_attr*) NCI_Malloc(sizeof(NC_attr));
 
@@ -1011,7 +997,7 @@ ncmpio_NC_findattr(const NC_attrarray *ncap,
 int blob_ncmpio_put_att(NC         *ncp,
                         int         varid,
                         const char *name,
-                        MPI_Datatype     xtype,
+                        nc_type     xtype,
                         MPI_Offset  nelems,
                         const void *buf)
 {
@@ -1042,24 +1028,24 @@ int blob_ncmpio_put_att(NC         *ncp,
     err = incr_NC_attrarray(ncap, attrp);
     if (err != NC_NOERR) return err;
 
-    if (nelems != 0 && buf != NULL) { /* non-zero length attribute */
-        void *xp = attrp->xvalue;
-        if (xtype == MPI_CHAR || xtype == MPI_BYTE)
-            memcpy(xp, buf, nelems);
-        else if (xtype == MPI_SHORT || xtype == MPI_UNSIGNED_SHORT)
-            memcpy(xp, buf, nelems*sizeof(short));
-        else if (xtype == MPI_INT || xtype == MPI_UNSIGNED)
-            memcpy(xp, buf, nelems*sizeof(int));
-        else if (xtype == MPI_FLOAT)
-            memcpy(xp, buf, nelems*sizeof(float));
-        else if (xtype == MPI_DOUBLE)
-            memcpy(xp, buf, nelems*sizeof(double));
-        else if (xtype == MPI_LONG_LONG)
-            memcpy(xp, buf, nelems*sizeof(long long));
-        else if (xtype == MPI_UNSIGNED_LONG_LONG)
-            memcpy(xp, buf, nelems*sizeof(unsigned long long));
-        else err = -1;
-    }
+    if (nelems == 0) return NC_NOERR; /* non-zero length attribute */
+
+    if (buf == NULL) return NC_NOERR;
+
+    void *xp = attrp->xvalue;
+    if (xtype == NC_CHAR || xtype == NC_BYTE || xtype == NC_UBYTE)
+        memcpy(xp, buf, nelems);
+    else if (xtype == NC_SHORT || xtype == NC_USHORT)
+        memcpy(xp, buf, nelems*sizeof(short));
+    else if (xtype == NC_INT || xtype == NC_UINT)
+        memcpy(xp, buf, nelems*sizeof(int));
+    else if (xtype == NC_FLOAT)
+        memcpy(xp, buf, nelems*sizeof(float));
+    else if (xtype == NC_DOUBLE)
+        memcpy(xp, buf, nelems*sizeof(double));
+    else if (xtype == NC_INT64 || xtype == NC_UINT64)
+        memcpy(xp, buf, nelems*sizeof(long long));
+    else err = -1;
 
     return err;
 }
@@ -1072,7 +1058,7 @@ int blob_ncmpio_get_att(NC         *ncp,
     int indx=0, err=NC_NOERR;
     NC_attrarray *ncap=NULL;
     NC_attr *attrp=NULL;
-    MPI_Datatype xtype;
+    nc_type xtype;
 
     if (buf == NULL) return -1;
 
@@ -1088,20 +1074,18 @@ int blob_ncmpio_get_att(NC         *ncp,
 
     xtype = attrp->xtype;
 
-    if (xtype == MPI_CHAR || xtype == MPI_BYTE)
+    if (xtype == NC_CHAR || xtype == NC_BYTE || xtype == NC_UBYTE)
         memcpy(buf, attrp->xvalue, attrp->nelems);
-    else if (xtype == MPI_SHORT || xtype == MPI_UNSIGNED_SHORT)
+    else if (xtype == NC_SHORT || xtype == NC_USHORT)
         memcpy(buf, attrp->xvalue, attrp->nelems*sizeof(short));
-    else if (xtype == MPI_INT || xtype == MPI_UNSIGNED)
+    else if (xtype == NC_INT || xtype == NC_UINT)
         memcpy(buf, attrp->xvalue, attrp->nelems*sizeof(int));
-    else if (xtype == MPI_FLOAT)
+    else if (xtype == NC_FLOAT)
         memcpy(buf, attrp->xvalue, attrp->nelems*sizeof(float));
-    else if (xtype == MPI_DOUBLE)
+    else if (xtype == NC_DOUBLE)
         memcpy(buf, attrp->xvalue, attrp->nelems*sizeof(double));
-    else if (xtype == MPI_LONG_LONG)
+    else if (xtype == NC_INT64 || xtype == NC_UINT64)
         memcpy(buf, attrp->xvalue, attrp->nelems*sizeof(long long));
-    else if (xtype == MPI_UNSIGNED_LONG_LONG)
-        memcpy(buf, attrp->xvalue, attrp->nelems*sizeof(unsigned long long));
     else err = -1;
 
     return err;
