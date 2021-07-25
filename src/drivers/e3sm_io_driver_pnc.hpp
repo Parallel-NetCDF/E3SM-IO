@@ -19,22 +19,26 @@
 #include <e3sm_io_driver.hpp>
 
 inline nc_type mpitype2nctype (MPI_Datatype type) {
-    switch (type) {
-        case MPI_DOUBLE:
-            return NC_DOUBLE;
-        case MPI_FLOAT:
-            return NC_FLOAT;
-        case MPI_INT:
-            return NC_INT;
-        case MPI_LONG_LONG:
-            return NC_INT64;
-        case MPI_CHAR:
-            return NC_CHAR;
-        case MPI_BYTE:
-            return NC_BYTE;
-        default:
-            throw "Unsupported datatype";
+    if (type == MPI_DOUBLE){
+        return NC_DOUBLE;
     }
+    else if (type == MPI_FLOAT){
+        return NC_FLOAT;
+    }
+    else if (type == MPI_INT){
+        return NC_INT;
+    }
+    else if (type == MPI_LONG_LONG){
+        return NC_INT64;
+    }
+    else if (type == MPI_CHAR){
+        return NC_CHAR;
+    }
+    else if (type == MPI_BYTE){
+        return NC_BYTE;
+    }
+
+    throw "Unsupported datatype";
 }
 
 class e3sm_io_driver_pnc : public e3sm_io_driver {
