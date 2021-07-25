@@ -48,44 +48,44 @@
     }
 #define PUT_GATTR_TXT(name, buf)                                                          \
     {                                                                                     \
-        err = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, name, MPI_CHAR, \
+        err = e3sm_io_scorpio_put_att (driver, ncid, NC_GLOBAL, name, NC_CHAR, \
                                        strlen (buf), (void *)buf);                        \
         CHECK_ERR                                                                         \
     }
 #define PUT_GATTR_INT(name, val)                                                                \
     {                                                                                           \
         int buf = val;                                                                          \
-        err     = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, name, MPI_INT, 1, \
+        err     = e3sm_io_scorpio_put_att (driver, ncid, NC_GLOBAL, name, NC_INT, 1, \
                                        (void *)(&buf));                                     \
         CHECK_ERR                                                                               \
     }
 #define PUT_GATTR_DBL(name, val)                                                               \
     {                                                                                          \
         double buf = val;                                                                      \
-        err = e3sm_io_scorpio_put_att (driver, ncid, E3SM_IO_GLOBAL_ATTR, name, MPI_DOUBLE, 1, \
+        err = e3sm_io_scorpio_put_att (driver, ncid, NC_GLOBAL, name, NC_DOUBLE, 1, \
                                        (void *)(&buf));                                        \
         CHECK_ERR                                                                              \
     }
 #define PUT_ATTR_TXT(name, buf)                                                            \
     {                                                                                      \
-        err = e3sm_io_scorpio_put_att (driver, ncid, *varid, name, MPI_CHAR, strlen (buf), \
+        err = e3sm_io_scorpio_put_att (driver, ncid, *varid, name, NC_CHAR, strlen (buf), \
                                        (void *)buf);                                       \
         CHECK_VAR_ERR (*varid)                                                             \
     }
 #define PUT_ATTR_INT(name, num, buf)                                                           \
     {                                                                                          \
-        err = e3sm_io_scorpio_put_att (driver, ncid, *varid, name, MPI_INT, num, (void *)buf); \
+        err = e3sm_io_scorpio_put_att (driver, ncid, *varid, name, NC_INT, num, (void *)buf); \
         CHECK_VAR_ERR (*varid)                                                                 \
     }
 #define PUT_ATTR_FLOAT(name, num, buf)                                                           \
     {                                                                                            \
-        err = e3sm_io_scorpio_put_att (driver, ncid, *varid, name, MPI_FLOAT, num, (void *)buf); \
+        err = e3sm_io_scorpio_put_att (driver, ncid, *varid, name, NC_FLOAT, num, (void *)buf); \
         CHECK_VAR_ERR (*varid)                                                                   \
     }
 #define PUT_ATTR_INT64(name, num, buf)                                                             \
     {                                                                                              \
         err = err =                                                                                \
-            e3sm_io_scorpio_put_att (driver, ncid, *varid, name, MPI_LONG_LONG, num, (void *)buf); \
+            e3sm_io_scorpio_put_att (driver, ncid, *varid, name, NC_INT64, num, (void *)buf); \
         CHECK_VAR_ERR (*varid)                                                                     \
     }
 #define PUT_ATTR_DECOMP(A, B, C) \
@@ -1039,40 +1039,40 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
         int piodims[5];
 
         sprintf (name, "/__pio__/decomp/%d", (j + 512));
-        err = driver.def_local_var (ncid, name, MPI_LONG_LONG, 1, decom.raw_nreqs + piodecomid[j],
+        err = driver.def_local_var (ncid, name, NC_INT64, 1, decom.raw_nreqs + piodecomid[j],
                                     scorpiovars + j);
         CHECK_ERR
 
         for (i = 0; i < decom.ndims[piodecomid[j]]; i++) {
             piodims[i] = (int)decom.dims[piodecomid[j]][i];
         }
-        err = driver.put_att (ncid, scorpiovars[j], "dimlen", MPI_INT, decom.ndims[piodecomid[j]],
+        err = driver.put_att (ncid, scorpiovars[j], "dimlen", NC_INT, decom.ndims[piodecomid[j]],
                               piodims);
         CHECK_ERR
 
         err =
-            driver.put_att (ncid, scorpiovars[j], "ndims", MPI_INT, 1, decom.ndims + piodecomid[j]);
+            driver.put_att (ncid, scorpiovars[j], "ndims", NC_INT, 1, decom.ndims + piodecomid[j]);
         CHECK_ERR
 
         k   = 6;
-        err = driver.put_att (ncid, scorpiovars[j], "piotype", MPI_INT, 1, &k);
+        err = driver.put_att (ncid, scorpiovars[j], "piotype", NC_INT, 1, &k);
         CHECK_ERR
     }
-    err = driver.def_local_var (ncid, "/__pio__/info/nproc", MPI_INT, 0, NULL, scorpiovars + (j++));
+    err = driver.def_local_var (ncid, "/__pio__/info/nproc", NC_INT, 0, NULL, scorpiovars + (j++));
     CHECK_ERR
 
     /* define 52 climate variables (11 fixed-size and 41 record variables) */
     varid = varids - 1;
 
     /* double salinitySurfaceRestoringTendency(Time, nCells) */
-    DEF_VAR ("salinitySurfaceRestoringTendency", MPI_DOUBLE, 2, rec_D[0])
+    DEF_VAR ("salinitySurfaceRestoringTendency", NC_DOUBLE, 2, rec_D[0])
     PUT_ATTR_TXT ("units", "m PSU/s")
     PUT_ATTR_TXT ("long_name", "salinity tendency due to surface restoring")
     PUT_ATTR_DECOMP (one, 2, dimids_D[0])
 
     /* double vertTransportVelocityTop(Time, nCells, nVertLevelsP1) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("vertTransportVelocityTop", MPI_DOUBLE, ndims, rec_D[5])
+    DEF_VAR ("vertTransportVelocityTop", NC_DOUBLE, ndims, rec_D[5])
     PUT_ATTR_TXT ("units", "m s^{-1}")
     PUT_ATTR_TXT ("long_name",
                   "vertical tracer-transport velocity defined at center (horizontally) and top "
@@ -1083,7 +1083,7 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* double vertGMBolusVelocityTop(Time, nCells, nVertLevelsP1) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("vertGMBolusVelocityTop", MPI_DOUBLE, ndims, rec_D[5])
+    DEF_VAR ("vertGMBolusVelocityTop", NC_DOUBLE, ndims, rec_D[5])
     PUT_ATTR_TXT ("units", "m s^{-1}")
     PUT_ATTR_TXT ("long_name",
                   "vertical tracer-transport velocity defined at center (horizontally) and top "
@@ -1094,47 +1094,47 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* double vertAleTransportTop(Time, nCells, nVertLevelsP1) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("vertAleTransportTop", MPI_DOUBLE, ndims, rec_D[5])
+    DEF_VAR ("vertAleTransportTop", NC_DOUBLE, ndims, rec_D[5])
     PUT_ATTR_TXT ("units", "m s^{-1}")
     PUT_ATTR_TXT ("long_name",
                   "vertical transport through the layer interface at the top of the cell")
     PUT_ATTR_DECOMP (six, 3, dimids_D[5])
 
     /* double tendSSH(Time, nCells) */
-    DEF_VAR ("tendSSH", MPI_DOUBLE, 2, rec_D[0])
+    DEF_VAR ("tendSSH", NC_DOUBLE, 2, rec_D[0])
     PUT_ATTR_TXT ("units", "m s^{-1}")
     PUT_ATTR_TXT ("long_name", "time tendency of sea-surface height")
     PUT_ATTR_DECOMP (one, 2, dimids_D[0])
 
     /* double layerThickness(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("layerThickness", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("layerThickness", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "m")
     PUT_ATTR_TXT ("long_name", "layer thickness")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double normalVelocity(Time, nEdges, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("normalVelocity", MPI_DOUBLE, ndims, rec_D[3])
+    DEF_VAR ("normalVelocity", NC_DOUBLE, ndims, rec_D[3])
     PUT_ATTR_TXT ("units", "m s^{-1}")
     PUT_ATTR_TXT ("long_name", "horizonal velocity, normal component to an edge")
     PUT_ATTR_DECOMP (four, 3, dimids_D[3])
 
     /* double ssh(Time, nCells) */
-    DEF_VAR ("ssh", MPI_DOUBLE, 2, rec_D[0])
+    DEF_VAR ("ssh", NC_DOUBLE, 2, rec_D[0])
     PUT_ATTR_TXT ("units", "m")
     PUT_ATTR_TXT ("long_name", "sea surface height")
     PUT_ATTR_DECOMP (one, 2, dimids_D[0])
 
     /* int maxLevelEdgeTop(nEdges) */
-    DEF_VAR ("maxLevelEdgeTop", MPI_INT, 1, fix_D[1])
+    DEF_VAR ("maxLevelEdgeTop", NC_INT, 1, fix_D[1])
     PUT_ATTR_TXT ("units", "unitless")
     PUT_ATTR_TXT ("long_name",
                   "Index to the last edge in a column with active ocean cells on both sides of it.")
     PUT_ATTR_DECOMP (two, 1, dimids_D[1] + 1)
 
     /* double vertCoordMovementWeights(nVertLevels) */
-    DEF_VAR ("vertCoordMovementWeights", MPI_DOUBLE, 1, &dim_nVertLevels)
+    DEF_VAR ("vertCoordMovementWeights", NC_DOUBLE, 1, &dim_nVertLevels)
     PUT_ATTR_TXT ("units", "unitless")
     PUT_ATTR_TXT ("long_name",
                   "Weights used for distribution of sea surface height perturbations through "
@@ -1142,7 +1142,7 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* int edgeMask(nEdges, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 1 : 2;
-    DEF_VAR ("edgeMask", MPI_INT, ndims, fix_D[3])
+    DEF_VAR ("edgeMask", NC_INT, ndims, fix_D[3])
     PUT_ATTR_TXT ("units", "unitless")
     PUT_ATTR_TXT ("long_name",
                   "Mask on edges that determines if computations should be done on edges.")
@@ -1150,7 +1150,7 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* int cellMask(nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 1 : 2;
-    DEF_VAR ("cellMask", MPI_INT, ndims, fix_D[2])
+    DEF_VAR ("cellMask", NC_INT, ndims, fix_D[2])
     PUT_ATTR_TXT ("units", "unitless")
     PUT_ATTR_TXT ("long_name",
                   "Mask on cells that determines if computations should be done on cells.")
@@ -1158,41 +1158,41 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* int vertexMask(nVertices, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 1 : 2;
-    DEF_VAR ("vertexMask", MPI_INT, ndims, fix_D[4])
+    DEF_VAR ("vertexMask", NC_INT, ndims, fix_D[4])
     PUT_ATTR_TXT ("units", "unitless")
     PUT_ATTR_TXT ("long_name",
                   "Mask on vertices that determines if computations should be done on vertices.")
     PUT_ATTR_DECOMP (five, 2, dimids_D[4] + 1)
 
     /* double refZMid(nVertLevels) */
-    DEF_VAR ("refZMid", MPI_DOUBLE, 1, &dim_nVertLevels)
+    DEF_VAR ("refZMid", NC_DOUBLE, 1, &dim_nVertLevels)
     PUT_ATTR_TXT ("units", "m")
     PUT_ATTR_TXT (
         "long_name",
         "Reference mid z-coordinate of ocean for each vertical level. This has a negative value.")
 
     /* double refLayerThickness(nVertLevels) */
-    DEF_VAR ("refLayerThickness", MPI_DOUBLE, 1, &dim_nVertLevels)
+    DEF_VAR ("refLayerThickness", NC_DOUBLE, 1, &dim_nVertLevels)
     PUT_ATTR_TXT ("units", "m")
     PUT_ATTR_TXT ("long_name", "Reference layerThickness of ocean for each vertical level.")
 
     /* char xtime(Time, StrLen) */
     dimids[0] = dim_Time;
     dimids[1] = dim_StrLen;
-    DEF_VAR ("xtime", MPI_CHAR, 2, dimids)
+    DEF_VAR ("xtime", NC_CHAR, 2, dimids)
     PUT_ATTR_TXT ("units", "unitless")
     PUT_ATTR_TXT ("long_name", "model time, with format \'YYYY-MM-DD_HH:MM:SS\'")
 
     /* double kineticEnergyCell(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("kineticEnergyCell", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("kineticEnergyCell", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "m^2 s^{-2}")
     PUT_ATTR_TXT ("long_name", "kinetic energy of horizontal velocity on cells")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double relativeVorticityCell(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("relativeVorticityCell", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("relativeVorticityCell", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "s^{-1}")
     PUT_ATTR_TXT ("long_name",
                   "curl of horizontal velocity, averaged from vertices to cell centers")
@@ -1200,61 +1200,61 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* double relativeVorticity(Time, nVertices, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("relativeVorticity", MPI_DOUBLE, ndims, rec_D[4])
+    DEF_VAR ("relativeVorticity", NC_DOUBLE, ndims, rec_D[4])
     PUT_ATTR_TXT ("units", "s^{-1}")
     PUT_ATTR_TXT ("long_name", "curl of horizontal velocity, defined at vertices")
     PUT_ATTR_DECOMP (five, 3, dimids_D[4])
 
     /* double divergence(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("divergence", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("divergence", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "s^{-1}")
     PUT_ATTR_TXT ("long_name", "divergence of horizontal velocity")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double areaCellGlobal(Time) */
-    DEF_VAR ("areaCellGlobal", MPI_DOUBLE, 1, &dim_Time)
+    DEF_VAR ("areaCellGlobal", NC_DOUBLE, 1, &dim_Time)
     PUT_ATTR_TXT ("units", "m^2")
     PUT_ATTR_TXT (
         "long_name",
         "sum of the areaCell variable over the full domain, used to normalize global statistics")
 
     /* double areaEdgeGlobal(Time) */
-    DEF_VAR ("areaEdgeGlobal", MPI_DOUBLE, 1, &dim_Time)
+    DEF_VAR ("areaEdgeGlobal", NC_DOUBLE, 1, &dim_Time)
     PUT_ATTR_TXT ("units", "m^2")
     PUT_ATTR_TXT (
         "long_name",
         "sum of the areaEdge variable over the full domain, used to normalize global statistics")
 
     /* double areaTriangleGlobal(Time) */
-    DEF_VAR ("areaTriangleGlobal", MPI_DOUBLE, 1, &dim_Time)
+    DEF_VAR ("areaTriangleGlobal", NC_DOUBLE, 1, &dim_Time)
     PUT_ATTR_TXT ("units", "m^2")
     PUT_ATTR_TXT ("long_name",
                   "sum of the areaTriangle variable over the full domain, used to normalize global "
                   "statistics")
 
     /* double volumeCellGlobal(Time) */
-    DEF_VAR ("volumeCellGlobal", MPI_DOUBLE, 1, &dim_Time)
+    DEF_VAR ("volumeCellGlobal", NC_DOUBLE, 1, &dim_Time)
     PUT_ATTR_TXT ("units", "m^3")
     PUT_ATTR_TXT (
         "long_name",
         "sum of the volumeCell variable over the full domain, used to normalize global statistics")
 
     /* double volumeEdgeGlobal(Time) */
-    DEF_VAR ("volumeEdgeGlobal", MPI_DOUBLE, 1, &dim_Time)
+    DEF_VAR ("volumeEdgeGlobal", NC_DOUBLE, 1, &dim_Time)
     PUT_ATTR_TXT ("units", "m^3")
     PUT_ATTR_TXT (
         "long_name",
         "sum of the volumeEdge variable over the full domain, used to normalize global statistics")
 
     /* double CFLNumberGlobal(Time) */
-    DEF_VAR ("CFLNumberGlobal", MPI_DOUBLE, 1, &dim_Time)
+    DEF_VAR ("CFLNumberGlobal", NC_DOUBLE, 1, &dim_Time)
     PUT_ATTR_TXT ("units", "unitless")
     PUT_ATTR_TXT ("long_name", "maximum CFL number over the full domain")
 
     /* double BruntVaisalaFreqTop(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("BruntVaisalaFreqTop", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("BruntVaisalaFreqTop", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "s^{-2}")
     PUT_ATTR_TXT (
         "long_name",
@@ -1263,7 +1263,7 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* double vertVelocityTop(Time, nCells, nVertLevelsP1) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("vertVelocityTop", MPI_DOUBLE, ndims, rec_D[5])
+    DEF_VAR ("vertVelocityTop", NC_DOUBLE, ndims, rec_D[5])
     PUT_ATTR_TXT ("units", "m s^{-1}")
     PUT_ATTR_TXT ("long_name",
                   "vertical velocity defined at center (horizontally) and top (vertically) of cell")
@@ -1271,21 +1271,21 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* double velocityZonal(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("velocityZonal", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("velocityZonal", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "m s^{-1}")
     PUT_ATTR_TXT ("long_name", "component of horizontal velocity in the eastward direction")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double velocityMeridional(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("velocityMeridional", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("velocityMeridional", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "m s^{-1}")
     PUT_ATTR_TXT ("long_name", "component of horizontal velocity in the northward direction")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double displacedDensity(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("displacedDensity", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("displacedDensity", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "kg m^{-3}")
     PUT_ATTR_TXT ("long_name",
                   "Density displaced adiabatically to the mid-depth one layer deeper.  That is, "
@@ -1294,7 +1294,7 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* double potentialDensity(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("potentialDensity", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("potentialDensity", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "kg m^{-3}")
     PUT_ATTR_TXT (
         "long_name",
@@ -1303,13 +1303,13 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* double pressure(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("pressure", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("pressure", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "N m^{-2}")
     PUT_ATTR_TXT ("long_name", "pressure used in the momentum equation")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double refBottomDepth(nVertLevels) */
-    DEF_VAR ("refBottomDepth", MPI_DOUBLE, 1, &dim_nVertLevels)
+    DEF_VAR ("refBottomDepth", NC_DOUBLE, 1, &dim_nVertLevels)
     PUT_ATTR_TXT ("units", "m")
     PUT_ATTR_TXT (
         "long_name",
@@ -1317,26 +1317,26 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* double zMid(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("zMid", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("zMid", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "m")
     PUT_ATTR_TXT ("long_name", "z-coordinate of the mid-depth of the layer")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double bottomDepth(nCells) */
-    DEF_VAR ("bottomDepth", MPI_DOUBLE, 1, fix_D[0])
+    DEF_VAR ("bottomDepth", NC_DOUBLE, 1, fix_D[0])
     PUT_ATTR_TXT ("units", "m")
     PUT_ATTR_TXT ("long_name",
                   "Depth of the bottom of the ocean. Given as a positive distance from sea level.")
     PUT_ATTR_DECOMP (one, 1, dimids_D[0] + 1)
 
     /* int maxLevelCell(nCells) */
-    DEF_VAR ("maxLevelCell", MPI_INT, 1, fix_D[0])
+    DEF_VAR ("maxLevelCell", NC_INT, 1, fix_D[0])
     PUT_ATTR_TXT ("units", "unitless")
     PUT_ATTR_TXT ("long_name", "Index to the last active ocean cell in each column.")
     PUT_ATTR_DECOMP (one, 1, dimids_D[0] + 1)
 
     /* int maxLevelEdgeBot(nEdges) */
-    DEF_VAR ("maxLevelEdgeBot", MPI_INT, 1, fix_D[1])
+    DEF_VAR ("maxLevelEdgeBot", NC_INT, 1, fix_D[1])
     PUT_ATTR_TXT ("units", "unitless")
     PUT_ATTR_TXT ("long_name",
                   "Index to the last edge in a column with at least one active ocean cell on "
@@ -1344,7 +1344,7 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
     PUT_ATTR_DECOMP (two, 1, dimids_D[1] + 1)
 
     /* double columnIntegratedSpeed(Time, nCells) */
-    DEF_VAR ("columnIntegratedSpeed", MPI_DOUBLE, 2, rec_D[0])
+    DEF_VAR ("columnIntegratedSpeed", NC_DOUBLE, 2, rec_D[0])
     PUT_ATTR_TXT ("units", "m^2 s^{-1}")
     PUT_ATTR_TXT ("long_name",
                   "speed = sum(h*sqrt(2*ke)), where ke is kineticEnergyCell and the sum is over "
@@ -1353,91 +1353,91 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
 
     /* double temperatureHorizontalAdvectionTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("temperatureHorizontalAdvectionTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("temperatureHorizontalAdvectionTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "potential temperature tendency due to horizontal advection")
     PUT_ATTR_TXT ("units", "degrees Celsius per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double salinityHorizontalAdvectionTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("salinityHorizontalAdvectionTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("salinityHorizontalAdvectionTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "salinity tendency due to horizontal advection")
     PUT_ATTR_TXT ("units", "PSU per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double temperatureVerticalAdvectionTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("temperatureVerticalAdvectionTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("temperatureVerticalAdvectionTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "potential temperature tendency due to vertical advection")
     PUT_ATTR_TXT ("units", "degrees Celsius per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double salinityVerticalAdvectionTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("salinityVerticalAdvectionTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("salinityVerticalAdvectionTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "salinity tendency due to vertical advection")
     PUT_ATTR_TXT ("units", "PSU per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double temperatureVertMixTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("temperatureVertMixTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("temperatureVertMixTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "potential temperature tendency due to vertical mixing")
     PUT_ATTR_TXT ("units", "degrees Celsius per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double salinityVertMixTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("salinityVertMixTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("salinityVertMixTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "salinity tendency due to vertical mixing")
     PUT_ATTR_TXT ("units", "PSU per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double temperatureSurfaceFluxTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("temperatureSurfaceFluxTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("temperatureSurfaceFluxTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "potential temperature tendency due to surface fluxes")
     PUT_ATTR_TXT ("units", "degrees Celsius per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double salinitySurfaceFluxTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("salinitySurfaceFluxTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("salinitySurfaceFluxTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "salinity tendency due to surface fluxes")
     PUT_ATTR_TXT ("units", "PSU per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double temperatureShortWaveTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("temperatureShortWaveTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("temperatureShortWaveTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("units", "degrees Celsius per second")
     PUT_ATTR_TXT ("long_name", "potential temperature tendency due to penetrating shortwave")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double temperatureNonLocalTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("temperatureNonLocalTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("temperatureNonLocalTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "potential temperature tendency due to kpp non-local flux")
     PUT_ATTR_TXT ("units", "degrees Celsius per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double salinityNonLocalTendency(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("salinityNonLocalTendency", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("salinityNonLocalTendency", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "salinity tendency due to kpp non-local flux")
     PUT_ATTR_TXT ("units", "PSU per second")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double temperature(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("temperature", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("temperature", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "potential temperature")
     PUT_ATTR_TXT ("units", "degrees Celsius")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
 
     /* double salinity(Time, nCells, nVertLevels) */
     ndims = ((cfg.strategy == blob) && false) ? 2 : 3;
-    DEF_VAR ("salinity", MPI_DOUBLE, ndims, rec_D[2])
+    DEF_VAR ("salinity", NC_DOUBLE, ndims, rec_D[2])
     PUT_ATTR_TXT ("long_name", "salinity")
     PUT_ATTR_TXT ("units", "grams salt per kilogram seawater")
     PUT_ATTR_DECOMP (three, 3, dimids_D[2])
