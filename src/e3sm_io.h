@@ -16,7 +16,6 @@
 
 #define E3SM_IO_MAX_PATH    1024
 #define MAX_NUM_DECOMP      6
-#define E3SM_IO_GLOBAL_ATTR -1
 
 #define PRINT_MSG(V, ...)                                                    \
     {                                                                        \
@@ -29,6 +28,29 @@
 #ifndef MIN
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
 #endif
+
+#ifndef PNETCDF_VERSION
+#define NC_NAT          0       /**< Not A Type */
+#define NC_BYTE         1       /**< signed 1 byte integer */
+#define NC_CHAR         2       /**< ISO/ASCII character */
+#define NC_SHORT        3       /**< signed 2 byte integer */
+#define NC_INT          4       /**< signed 4 byte integer */
+#define NC_LONG         NC_INT
+#define NC_FLOAT        5       /**< single precision floating point number */
+#define NC_DOUBLE       6       /**< double precision floating point number */
+#define NC_UBYTE        7       /**< unsigned 1 byte int */
+#define NC_USHORT       8       /**< unsigned 2-byte int */
+#define NC_UINT         9       /**< unsigned 4-byte int */
+#define NC_INT64        10      /**< signed 8-byte int */
+#define NC_UINT64       11      /**< unsigned 8-byte int */
+#define NC_STRING       12      /**< string */
+
+#define NC_NOERR        0   /**< No Error */
+#define NC_GLOBAL 	-1
+
+typedef int nc_type;
+#endif
+
 /* In E3SM production runs, the write buffers are of type double in memory,
  * and the variables stored in NetCDF files are of type NC_FLOAT. This default
  * behavior can be changed (i.e. memory buffer of type float) by removing the
@@ -37,11 +59,11 @@
 #define _DOUBLE_TYPE_
 
 #ifdef _DOUBLE_TYPE_
-typedef double itype; /* internal data type of buffer in memory */
+typedef double vtype; /* internal data type of buffer in memory */
 #define REC_ITYPE MPI_DOUBLE
 #define REC_XTYPE NC_DOUBLE
 #else
-typedef float itype; /* internal data type of buffer in memory */
+typedef float vtype; /* internal data type of buffer in memory */
 #define REC_ITYPE MPI_FLOAT
 #define REC_XTYPE NC_FLOAT
 #endif
@@ -163,6 +185,7 @@ extern int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern int blob_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern void print_info (MPI_Info *info_used);
 extern int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);
+int e3sm_io_xlen_nc_type(nc_type xtype, int *size);
 #ifdef __cplusplus
 }
 #endif
