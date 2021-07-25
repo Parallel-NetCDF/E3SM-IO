@@ -392,7 +392,7 @@ int blob_F_case(e3sm_io_config &cfg,
     int    *rec_int_buf=NULL, *rec_int_buf_ptr;
     char   *rec_txt_buf=NULL, *rec_txt_buf_ptr;
     double *rec_dbl_buf=NULL, *rec_dbl_buf_ptr;
-    itype  *rec_buf=NULL, *rec_buf_ptr;
+    vtype  *rec_buf=NULL, *rec_buf_ptr;
 
     MPI_Barrier(cfg.io_comm); /*-----------------------------------------*/
     cfg.end2end_time = cfg.pre_time = MPI_Wtime();
@@ -475,7 +475,7 @@ int blob_F_case(e3sm_io_config &cfg,
     rec_dbl_buf = (double*) malloc(rec_dbl_buflen * sizeof(double));
     rec_txt_buf = (char*)   malloc(rec_txt_buflen * sizeof(char));
     rec_int_buf = (int*)    malloc(rec_int_buflen * sizeof(int));
-    rec_buf     = (itype*)  malloc(rec_buflen     * sizeof(itype));
+    rec_buf     = (vtype*)  malloc(rec_buflen     * sizeof(vtype));
 
     for (ii=0; ii<fix_dbl_buflen; ii++) fix_dbl_buf[ii] = global_rank;
     for (ii=0; ii<fix_int_buflen; ii++) fix_int_buf[ii] = global_rank;

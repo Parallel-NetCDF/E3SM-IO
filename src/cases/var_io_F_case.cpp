@@ -365,7 +365,7 @@ int run_varn_F_case(e3sm_io_config &cfg,
     int    *rec_int_buf=NULL, *rec_int_buf_ptr;
     char   *rec_txt_buf=NULL, *rec_txt_buf_ptr;
     double *rec_dbl_buf=NULL, *rec_dbl_buf_ptr;
-    itype  *rec_buf=NULL, *rec_buf_ptr;
+    vtype  *rec_buf=NULL, *rec_buf_ptr;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     cfg.end2end_time = cfg.pre_time = MPI_Wtime();
@@ -453,7 +453,7 @@ int run_varn_F_case(e3sm_io_config &cfg,
     rec_dbl_buf = (double*) malloc(rec_dbl_buflen * sizeof(double));
     rec_txt_buf = (char*)   malloc(rec_txt_buflen * sizeof(char));
     rec_int_buf = (int*)    malloc(rec_int_buflen * sizeof(int));
-    rec_buf     = (itype*)  malloc(rec_buflen     * sizeof(itype));
+    rec_buf     = (vtype*)  malloc(rec_buflen     * sizeof(vtype));
 
     for (ii=0; ii<fix_dbl_buflen; ii++) fix_dbl_buf[ii] = rank;
     for (ii=0; ii<fix_int_buflen; ii++) fix_int_buf[ii] = rank;
@@ -988,7 +988,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
                         e3sm_io_decom &decom,
                         e3sm_io_driver &driver,
                         double **dbl_bufp,   /* buffer for fixed size double var */
-                        itype **rec_bufp,    /* buffer for rec floating point var */
+                        vtype **rec_bufp,    /* buffer for rec floating point var */
                         char *txt_buf,       /* buffer for char var */
                         int *int_buf)        /* buffer for int var */
 {
@@ -996,7 +996,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     int i, j, k, err, rank, ncid, *varids, nflushes=0;
     int rec_no, gap = 0, my_nreqs, *int_buf_ptr;
     size_t dbl_buflen, rec_buflen, nelems[3];
-    itype *rec_buf, *rec_buf_ptr;
+    vtype *rec_buf, *rec_buf_ptr;
     double *dbl_buf, *dbl_buf_ptr;
     double pre_timing, open_timing, post_timing, wait_timing, close_timing;
     double timing, total_timing, max_timing;
@@ -1044,7 +1044,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20 + 1) * gap;
 
-    rec_buf = (itype *)malloc (rec_buflen * sizeof (itype));
+    rec_buf = (vtype *)malloc (rec_buflen * sizeof (vtype));
     if (rec_bufp != NULL) { *rec_bufp = rec_buf; }
 
     varids = (int *)malloc (cfg.nvars * sizeof (int));

@@ -445,7 +445,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                          e3sm_io_decom &decom,
                          e3sm_io_driver &driver,
                          double *dbl_bufp,    /* buffer for fixed size double var */
-                         itype *rec_bufp,     /* buffer for rec floating point var */
+                         vtype *rec_bufp,     /* buffer for rec floating point var */
                          char *txt_bufp,      /* buffer for char var */
                          int *int_bufp)       /* buffer for int var */
 {
@@ -456,7 +456,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     int scorpiovars[6];
     int rec_no = -1, gap = 0, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
     size_t ii, txt_buflen, int_buflen, dbl_buflen, rec_buflen, nelems[3];
-    itype *rec_buf  = NULL, *rec_buf_ptr;
+    vtype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
     MPI_Offset metadata_size=0, total_size;
     MPI_Offset **starts_D2 = NULL, **counts_D2 = NULL;
@@ -553,7 +553,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (rec_bufp != NULL)
         rec_buf = rec_bufp;
     else {
-        rec_buf = (itype *)malloc (rec_buflen * sizeof (itype) + 64);
+        rec_buf = (vtype *)malloc (rec_buflen * sizeof (vtype) + 64);
         for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
     }
 

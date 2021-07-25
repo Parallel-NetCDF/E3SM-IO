@@ -23,7 +23,7 @@ class e3sm_io_case {
 class e3sm_io_case_F : public e3sm_io_case {
    protected:
     double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
-    itype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
+    vtype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
     char *txt_buf = NULL;
     int *int_buf = NULL;
 
@@ -105,7 +105,7 @@ run_varn_F_case_rd(e3sm_io_config &cfg,
                    e3sm_io_decom &decom,
                    e3sm_io_driver &driver,
                    double **dbl_bufp,   /* buffer for fixed size double var */
-                   itype **rec_bufp,    /* buffer for rec floating point var */
+                   vtype **rec_bufp,    /* buffer for rec floating point var */
                    char *txt_buf,       /* buffer for char var */
                    int *int_buf);       /* buffer for int var */
 
