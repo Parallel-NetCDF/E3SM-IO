@@ -153,22 +153,21 @@ err_out:
 }
 
 int e3sm_io_driver_pnc::def_var (
-    int fid, std::string name, MPI_Datatype type, int ndim, int *dimids, int *varid) {
+    int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *varid) {
     int err;
-    int i;
-    int cdim[E3SM_IO_DRIVER_MAX_RANK];
-    int tsize;
-    size_t csize = 0;
 
-    err = ncmpi_def_var (fid, name.c_str (), mpitype2nctype (type), ndim, dimids, varid);
+    err = ncmpi_def_var (fid, name.c_str (), xtype, ndim, dimids, varid);
     CHECK_NCERR
 
     /* skip the followings if compression is not enabled */
     if (cfg->chunksize == 0) return err;
 
     if (ndim) {
+        int i, tsize, cdim[E3SM_IO_DRIVER_MAX_RANK];
+        int csize = 0;
+
         if ((cfg->chunksize > 0) || (this->dim_lens[dimids[0]] == NC_UNLIMITED)) {
-            csize = MPI_Type_size (type, &tsize);
+            e3sm_io_xlen_nc_type(xtype, &csize);
             for (i = 0; i < ndim; i++) {
                 if (csize < cfg->chunksize) {
                     cdim[i] = this->dim_lens[dimids[i]];
@@ -213,7 +212,7 @@ err_out:
 }
 
 int e3sm_io_driver_pnc::def_local_var (
-    int fid, std::string name, MPI_Datatype type, int ndim, MPI_Offset *dsize, int *varid) {
+    int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *varid) {
     int err;
 
     ERR_OUT ("PNC does not support local variables")
@@ -329,12 +328,10 @@ err_out:
 }
 
 int e3sm_io_driver_pnc::put_att (
-    int fid, int vid, std::string name, MPI_Datatype type, MPI_Offset size, const void *buf) {
+    int fid, int vid, std::string name, nc_type xtype, MPI_Offset size, const void *buf) {
     int err;
 
-    if (vid == E3SM_IO_GLOBAL_ATTR) { vid = NC_GLOBAL; }
-
-    err = ncmpi_put_att (fid, vid, name.c_str (), mpitype2nctype (type), size, buf);
+    err = ncmpi_put_att (fid, vid, name.c_str (), xtype, size, buf);
     CHECK_NCERR
 
 err_out:
@@ -344,8 +341,6 @@ err_out:
 int e3sm_io_driver_pnc::get_att (int fid, int vid, std::string name, void *buf) {
     int err;
 
-    if (vid == E3SM_IO_GLOBAL_ATTR) { vid = NC_GLOBAL; }
-
     err = ncmpi_get_att (fid, vid, name.c_str (), buf);
     CHECK_NCERR
 
@@ -354,7 +349,7 @@ err_out:
 }
 
 int e3sm_io_driver_pnc::put_varl (
-    int fid, int vid, MPI_Datatype type, void *buf, e3sm_io_op_mode mode) {
+    int fid, int vid, nc_type xtype, void *buf, e3sm_io_op_mode mode) {
     int err;
 
     ERR_OUT ("PNC does not support local variables")
@@ -365,7 +360,7 @@ err_out:
 
 int e3sm_io_driver_pnc::put_vara (int fid,
                                   int vid,
-                                  MPI_Datatype type,
+                                  MPI_Datatype itype,
                                   MPI_Offset *start,
                                   MPI_Offset *count,
                                   void *buf,
@@ -376,16 +371,16 @@ int e3sm_io_driver_pnc::put_vara (int fid,
         if (count) {
             switch (mode) {
                 case nb:
-                    err = ncmpi_iput_vara (fid, vid, start, count, buf, -1, type, NULL);
+                    err = ncmpi_iput_vara (fid, vid, start, count, buf, -1, itype, NULL);
                     break;
                 case nbe:
-                    err = ncmpi_bput_vara (fid, vid, start, count, buf, -1, type, NULL);
+                    err = ncmpi_bput_vara (fid, vid, start, count, buf, -1, itype, NULL);
                     break;
                 case coll:
-                    err = ncmpi_put_vara_all (fid, vid, start, count, buf, -1, type);
+                    err = ncmpi_put_vara_all (fid, vid, start, count, buf, -1, itype);
                     break;
                 case indep:
-                    err = ncmpi_put_vara (fid, vid, start, count, buf, -1, type);
+                    err = ncmpi_put_vara (fid, vid, start, count, buf, -1, itype);
                     break;
                 default:
                     throw "Unrecognized mode";
@@ -393,16 +388,16 @@ int e3sm_io_driver_pnc::put_vara (int fid,
         } else {
             switch (mode) {
                 case nb:
-                    err = ncmpi_iput_var1 (fid, vid, start, buf, -1, type, NULL);
+                    err = ncmpi_iput_var1 (fid, vid, start, buf, -1, itype, NULL);
                     break;
                 case nbe:
-                    err = ncmpi_bput_var1 (fid, vid, start, buf, -1, type, NULL);
+                    err = ncmpi_bput_var1 (fid, vid, start, buf, -1, itype, NULL);
                     break;
                 case coll:
-                    err = ncmpi_put_var1_all (fid, vid, start, buf, -1, type);
+                    err = ncmpi_put_var1_all (fid, vid, start, buf, -1, itype);
                     break;
                 case indep:
-                    err = ncmpi_put_var1 (fid, vid, start, buf, -1, type);
+                    err = ncmpi_put_var1 (fid, vid, start, buf, -1, itype);
                     break;
                 default:
                     throw "Unrecognized mode";
@@ -411,16 +406,16 @@ int e3sm_io_driver_pnc::put_vara (int fid,
     } else {
         switch (mode) {
             case nb:
-                err = ncmpi_iput_var (fid, vid, buf, -1, type, NULL);
+                err = ncmpi_iput_var (fid, vid, buf, -1, itype, NULL);
                 break;
             case nbe:
-                err = ncmpi_bput_var (fid, vid, buf, -1, type, NULL);
+                err = ncmpi_bput_var (fid, vid, buf, -1, itype, NULL);
                 break;
             case coll:
-                err = ncmpi_put_var_all (fid, vid, buf, -1, type);
+                err = ncmpi_put_var_all (fid, vid, buf, -1, itype);
                 break;
             case indep:
-                err = ncmpi_put_var (fid, vid, buf, -1, type);
+                err = ncmpi_put_var (fid, vid, buf, -1, itype);
                 break;
             default:
                 throw "Unrecognized mode";
@@ -433,7 +428,7 @@ err_out:
 }
 int e3sm_io_driver_pnc::put_vars (int fid,
                                   int vid,
-                                  MPI_Datatype type,
+                                  MPI_Datatype itype,
                                   MPI_Offset *start,
                                   MPI_Offset *count,
                                   MPI_Offset *stride,
@@ -443,16 +438,16 @@ int e3sm_io_driver_pnc::put_vars (int fid,
 
     switch (mode) {
         case nb:
-            err = ncmpi_iput_vars (fid, vid, start, count, stride, buf, -1, type, NULL);
+            err = ncmpi_iput_vars (fid, vid, start, count, stride, buf, -1, itype, NULL);
             break;
         case nbe:
-            err = ncmpi_bput_vars (fid, vid, start, count, stride, buf, -1, type, NULL);
+            err = ncmpi_bput_vars (fid, vid, start, count, stride, buf, -1, itype, NULL);
             break;
         case coll:
-            err = ncmpi_put_vars_all (fid, vid, start, count, stride, buf, -1, type);
+            err = ncmpi_put_vars_all (fid, vid, start, count, stride, buf, -1, itype);
             break;
         case indep:
-            err = ncmpi_put_vars (fid, vid, start, count, stride, buf, -1, type);
+            err = ncmpi_put_vars (fid, vid, start, count, stride, buf, -1, itype);
             break;
         default:
             throw "Unrecognized mode";
@@ -465,7 +460,7 @@ err_out:
 
 int e3sm_io_driver_pnc::put_varn (int fid,
                                   int vid,
-                                  MPI_Datatype type,
+                                  MPI_Datatype itype,
                                   int nreq,
                                   MPI_Offset **starts,
                                   MPI_Offset **counts,
@@ -475,16 +470,16 @@ int e3sm_io_driver_pnc::put_varn (int fid,
 
     switch (mode) {
         case nb:
-            err = ncmpi_iput_varn (fid, vid, nreq, starts, counts, buf, -1, type, NULL);
+            err = ncmpi_iput_varn (fid, vid, nreq, starts, counts, buf, -1, itype, NULL);
             break;
         case nbe:
-            err = ncmpi_bput_varn (fid, vid, nreq, starts, counts, buf, -1, type, NULL);
+            err = ncmpi_bput_varn (fid, vid, nreq, starts, counts, buf, -1, itype, NULL);
             break;
         case coll:
-            err = ncmpi_put_varn_all (fid, vid, nreq, starts, counts, buf, -1, type);
+            err = ncmpi_put_varn_all (fid, vid, nreq, starts, counts, buf, -1, itype);
             break;
         case indep:
-            err = ncmpi_put_varn (fid, vid, nreq, starts, counts, buf, -1, type);
+            err = ncmpi_put_varn (fid, vid, nreq, starts, counts, buf, -1, itype);
             break;
         default:
             throw "Unrecognized mode";
@@ -497,7 +492,7 @@ err_out:
 
 int e3sm_io_driver_pnc::get_vara (int fid,
                                   int vid,
-                                  MPI_Datatype type,
+                                  MPI_Datatype itype,
                                   MPI_Offset *start,
                                   MPI_Offset *count,
                                   void *buf,
@@ -508,13 +503,13 @@ int e3sm_io_driver_pnc::get_vara (int fid,
         if (count) {
             switch (mode) {
                 case nb:
-                    err = ncmpi_iget_vara (fid, vid, start, count, buf, -1, type, NULL);
+                    err = ncmpi_iget_vara (fid, vid, start, count, buf, -1, itype, NULL);
                     break;
                 case coll:
-                    err = ncmpi_get_vara_all (fid, vid, start, count, buf, -1, type);
+                    err = ncmpi_get_vara_all (fid, vid, start, count, buf, -1, itype);
                     break;
                 case indep:
-                    err = ncmpi_get_vara (fid, vid, start, count, buf, -1, type);
+                    err = ncmpi_get_vara (fid, vid, start, count, buf, -1, itype);
                     break;
                 default:
                     throw "Unrecognized mode";
@@ -522,13 +517,13 @@ int e3sm_io_driver_pnc::get_vara (int fid,
         } else {
             switch (mode) {
                 case nb:
-                    err = ncmpi_iget_var1 (fid, vid, start, buf, -1, type, NULL);
+                    err = ncmpi_iget_var1 (fid, vid, start, buf, -1, itype, NULL);
                     break;
                 case coll:
-                    err = ncmpi_get_var1_all (fid, vid, start, buf, -1, type);
+                    err = ncmpi_get_var1_all (fid, vid, start, buf, -1, itype);
                     break;
                 case indep:
-                    err = ncmpi_get_var1 (fid, vid, start, buf, -1, type);
+                    err = ncmpi_get_var1 (fid, vid, start, buf, -1, itype);
                     break;
                 default:
                     throw "Unrecognized mode";
@@ -537,13 +532,13 @@ int e3sm_io_driver_pnc::get_vara (int fid,
     } else {
         switch (mode) {
             case nb:
-                err = ncmpi_iget_var (fid, vid, buf, -1, type, NULL);
+                err = ncmpi_iget_var (fid, vid, buf, -1, itype, NULL);
                 break;
             case coll:
-                err = ncmpi_get_var_all (fid, vid, buf, -1, type);
+                err = ncmpi_get_var_all (fid, vid, buf, -1, itype);
                 break;
             case indep:
-                err = ncmpi_get_var (fid, vid, buf, -1, type);
+                err = ncmpi_get_var (fid, vid, buf, -1, itype);
                 break;
             default:
                 throw "Unrecognized mode";
@@ -557,7 +552,7 @@ err_out:
 
 int e3sm_io_driver_pnc::get_vars (int fid,
                                   int vid,
-                                  MPI_Datatype type,
+                                  MPI_Datatype itype,
                                   MPI_Offset *start,
                                   MPI_Offset *count,
                                   MPI_Offset *stride,
@@ -567,13 +562,13 @@ int e3sm_io_driver_pnc::get_vars (int fid,
 
     switch (mode) {
         case nb:
-            err = ncmpi_iget_vars (fid, vid, start, count, stride, buf, -1, type, NULL);
+            err = ncmpi_iget_vars (fid, vid, start, count, stride, buf, -1, itype, NULL);
             break;
         case coll:
-            err = ncmpi_get_vars_all (fid, vid, start, count, stride, buf, -1, type);
+            err = ncmpi_get_vars_all (fid, vid, start, count, stride, buf, -1, itype);
             break;
         case indep:
-            err = ncmpi_get_vars (fid, vid, start, count, stride, buf, -1, type);
+            err = ncmpi_get_vars (fid, vid, start, count, stride, buf, -1, itype);
             break;
         default:
             throw "Unrecognized mode";
@@ -586,7 +581,7 @@ err_out:
 
 int e3sm_io_driver_pnc::get_varn (int fid,
                                   int vid,
-                                  MPI_Datatype type,
+                                  MPI_Datatype itype,
                                   int nreq,
                                   MPI_Offset **starts,
                                   MPI_Offset **counts,
@@ -596,13 +591,13 @@ int e3sm_io_driver_pnc::get_varn (int fid,
 
     switch (mode) {
         case nb:
-            err = ncmpi_iget_varn (fid, vid, nreq, starts, counts, buf, -1, type, NULL);
+            err = ncmpi_iget_varn (fid, vid, nreq, starts, counts, buf, -1, itype, NULL);
             break;
         case coll:
-            err = ncmpi_get_varn_all (fid, vid, nreq, starts, counts, buf, -1, type);
+            err = ncmpi_get_varn_all (fid, vid, nreq, starts, counts, buf, -1, itype);
             break;
         case indep:
-            err = ncmpi_get_varn (fid, vid, nreq, starts, counts, buf, -1, type);
+            err = ncmpi_get_varn (fid, vid, nreq, starts, counts, buf, -1, itype);
             break;
         default:
             throw "Unrecognized mode";
@@ -613,4 +608,22 @@ err_out:
     return err;
 }
 
+/*----< e3sm_io_xlen_nc_type() >---------------------------------------------*/
+int e3sm_io_xlen_nc_type(nc_type xtype, int *size)
+{
+    switch(xtype) {
+        case NC_BYTE:
+        case NC_CHAR:
+        case NC_UBYTE:  *size = 1; return NC_NOERR;
+        case NC_SHORT:
+        case NC_USHORT: *size = 2; return NC_NOERR;
+        case NC_INT:
+        case NC_UINT:
+        case NC_FLOAT:  *size = 4; return NC_NOERR;
+        case NC_DOUBLE:
+        case NC_INT64:
+        case NC_UINT64: *size = 8; return NC_NOERR;
+        default: return -1;
+    }
+}
 
