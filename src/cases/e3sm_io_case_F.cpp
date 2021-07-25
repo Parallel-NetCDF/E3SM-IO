@@ -9,9 +9,10 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
+//
 #include <assert.h>
-
+#include <stdlib.h>
+//
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 #include <e3sm_io_case.hpp>
