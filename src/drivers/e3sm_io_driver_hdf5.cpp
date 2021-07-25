@@ -509,7 +509,6 @@ int e3sm_io_driver_hdf5::put_att (
     int fid, int vid, std::string name, nc_type xtype, MPI_Offset size, const void *buf) {
     int err = 0;
     herr_t herr;
-    int esize;
     hdf5_file *fp = this->files[fid];
     hid_t asid = -1, aid = -1;
     hid_t did, h5_xtype;
@@ -544,7 +543,7 @@ int e3sm_io_driver_hdf5::put_att (
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 
     if (fp->rank == 0) {
-        err = MPI_Type_size (xtype, &esize);
+        size_t esize = H5Tget_size(h5_xtype);
         CHECK_MPIERR
         fp->putsize += asize * esize;
     }
@@ -925,7 +924,7 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
 
     did = fp->dids[vid];
 
-    mtype = e3sm_io_type_nc2hdf5 (itype);
+    mtype = mpi_type_to_hdf5_type (itype);
     esize = (hsize_t)H5Tget_size (mtype);
     CHECK_HID (esize)
 
@@ -1363,7 +1362,7 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
 
     did = fp->dids[vid];
 
-    mtype = e3sm_io_type_nc2hdf5 (itype);
+    mtype = mpi_type_to_hdf5_type (itype);
     esize = (hsize_t)H5Tget_size (mtype);
     CHECK_HID (esize)
 
