@@ -77,6 +77,12 @@ AC_ARG_WITH(mpi,
    MPI_INSTALL=${withval}
    ]
 )
+if test "x$MPI_INSTALL" = x ; then
+   TESTMPIRUN=mpiexec
+else
+   TESTMPIRUN=$MPI_INSTALL/bin/mpiexec
+fi
+AC_SUBST(TESTMPIRUN, [$TESTMPIRUN])
 
 AC_ARG_VAR(MPICC,  [MPI C compiler, @<:@default: CC@:>@])
 AC_ARG_VAR(MPICXX, [MPI C++ compiler, @<:@default: CXX@:>@])

@@ -1,6 +1,7 @@
 SUBDIRS = src utils datasets
 
 TESTS_ENVIRONMENT  = export srcdir="$(srcdir)";
+TESTS_ENVIRONMENT += export TESTMPIRUN="@TESTMPIRUN@";
 if ENABLE_ADIOS2
    TESTS_ENVIRONMENT += export ENABLE_ADIOS2=1;
 endif
