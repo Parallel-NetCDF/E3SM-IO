@@ -349,7 +349,7 @@ err_out:
 }
 
 int e3sm_io_driver_pnc::put_varl (
-    int fid, int vid, nc_type xtype, void *buf, e3sm_io_op_mode mode) {
+    int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
     int err;
 
     ERR_OUT ("PNC does not support local variables")
