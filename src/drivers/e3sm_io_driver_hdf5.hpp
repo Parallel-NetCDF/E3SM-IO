@@ -50,7 +50,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 #endif
         std::vector<H5D_rw_multi_t> multi_datasets;
 
-        std::vector<std::vector<e3sm_io_driver_hdf5::Index_order>> dataset_segments;
+        std::vector<std::vector<e3sm_io_driver_hdf5::Index_order> > dataset_segments;
 
         std::vector<hid_t> memspace_recycle;
         std::vector<hid_t> dataspace_recycle;
