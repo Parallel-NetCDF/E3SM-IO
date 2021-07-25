@@ -337,7 +337,7 @@ int e3sm_io_driver_h5blob::inq_rec_size (int fid, MPI_Offset *size) {
 
 int e3sm_io_driver_h5blob::def_var(int          fid,
                                    std::string  name,
-                                   nc_type      xtype,
+                                   MPI_Datatype      xtype,
                                    int          ndims,
                                    int         *dimids,
                                    int         *varidp)
@@ -427,7 +427,7 @@ int e3sm_io_driver_h5blob::wait (int fid) { return 0; }
 int e3sm_io_driver_h5blob::put_att(int          fid,
                                    int          varid,
                                    std::string  name,
-                                   nc_type      xtype,
+                                   MPI_Datatype      xtype,
                                    MPI_Offset   nelems,
                                    const void  *buf)
 {

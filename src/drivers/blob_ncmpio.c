@@ -34,7 +34,7 @@ static const char ncmagic5[] = {'C', 'D', 'F', 0x05};
 static const char nada[X_ALIGN] = {0, 0, 0, 0};
 
 static int
-ncmpii_xlen_nc_type(nc_type xtype, int *size)
+ncmpii_xlen_nc_type(MPI_Datatype xtype, int *size)
 {
     switch(xtype) {
         case MPI_BYTE:
@@ -859,7 +859,7 @@ ncmpio_new_NC_var(const char *name, int ndims)
 
 int blob_ncmpio_add_var(NC         *ncp,
                         const char *name,
-                        nc_type     xtype,
+                        MPI_Datatype     xtype,
                         int         ndims,
                         int        *dimids,
                         int        *varidp)
@@ -932,7 +932,7 @@ int blob_ncmpio_add_dim(NC         *ncp,
 }
 
 static MPI_Offset
-x_len_NC_attrV(nc_type    xtype,
+x_len_NC_attrV(MPI_Datatype    xtype,
                MPI_Offset nelems)
 {
     switch(xtype) {
@@ -953,7 +953,7 @@ x_len_NC_attrV(nc_type    xtype,
 
 static int
 ncmpio_new_NC_attr(const char  *name,
-                        nc_type      xtype,
+                        MPI_Datatype      xtype,
                         MPI_Offset   nelems,
                         NC_attr    **attrp)
 {
@@ -1009,7 +1009,7 @@ ncmpio_NC_findattr(const NC_attrarray *ncap,
 int blob_ncmpio_put_att(NC         *ncp,
                         int         varid,
                         const char *name,
-                        nc_type     xtype,
+                        MPI_Datatype     xtype,
                         MPI_Offset  nelems,
                         const void *buf)
 {
@@ -1070,7 +1070,7 @@ int blob_ncmpio_get_att(NC         *ncp,
     int indx=0, err=NC_NOERR;
     NC_attrarray *ncap=NULL;
     NC_attr *attrp=NULL;
-    nc_type xtype;
+    MPI_Datatype xtype;
 
     if (buf == NULL) return -1;
 
