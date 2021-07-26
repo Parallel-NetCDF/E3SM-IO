@@ -225,10 +225,16 @@ inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
         memcpy((char*)buf + var.ndim * sizeof(int64_t), var.bsize, var.ndim * sizeof(int64_t));
     }
 
+    // Small variables are stored as byte array
+    if ((var.frame_id < 0) && var.ndim){
+        itype = MPI_BYTE;
+    }
+
     err = driver.put_varl (fid, var.data, itype, buf, nbe);
     CHECK_ERR
 
     if (var.frame_id >= 0) {
+
         err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, nbe);
         CHECK_ERR
 
