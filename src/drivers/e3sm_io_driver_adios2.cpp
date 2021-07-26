@@ -67,12 +67,45 @@ size_t adios2_type_size (adios2_type type) {
     return 0;
 }
 
+inline int adios2_type_convert (
+    adios2_type in_type, size_t len, void *inbuf, adios2_type out_type, void *outbuf) {
+    int err = 0;
+
+    if (in_type == adios2_type_double) {
+        if (out_type == adios2_type_float) {
+            double *inptr = (double *)inbuf;
+            float *outptr = (float *)outbuf;
+
+            for (; inptr < ((double *)inbuf) + len; inptr++, outptr++) {
+                *outptr = (float)(*inptr);
+            }
+        } else {
+            ERR_OUT ("Output type not supproted")
+        }
+    } else if (in_type == adios2_type_float) {
+        if (out_type == adios2_type_double) {
+            float *inptr   = (float *)inbuf;
+            double *outptr = (double *)outbuf;
+
+            for (; inptr < ((float *)inbuf) + len; inptr++, outptr++) {
+                *outptr = (double)(*inptr);
+            }
+        } else {
+            ERR_OUT ("Output type not supproted")
+        }
+    } else {
+        ERR_OUT ("Input type not supproted")
+    }
+
+err_out:;
+    return err;
+}
+
 e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
     twrite = tsel = text = 0;
 }
 
 e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {
-
     if (cfg->verbose) {
         int err = 0, rank;
         double tsel_all, twrite_all, text_all;
@@ -303,7 +336,7 @@ int e3sm_io_driver_adios2::def_var (
         zero[i] = 0;
     }
 
-    dp = adios2_define_variable (fp->iop, name.c_str (), e3sm_io_type_nc2adios(xtype),
+    dp = adios2_define_variable (fp->iop, name.c_str (), e3sm_io_type_nc2adios (xtype),
                                  (size_t)ndim, dims, zero, zero, adios2_constant_dims_false);
     CHECK_APTR (dp)
 
@@ -381,7 +414,7 @@ err_out:;
 
 int e3sm_io_driver_adios2::inq_var_name (int fid, int vid, char *name) {
     name[0] = '\0';
-    printf("inq_var_name is not yet implementaed\n");
+    printf ("inq_var_name is not yet implementaed\n");
     return 0;
 }
 
@@ -539,7 +572,8 @@ int e3sm_io_driver_adios2::put_att (
         // ADIOS2 have no char type, we translate char array into unit sized string
         // MPI has not string type, we use WCHAR to represent string
         if (xtype == NC_CHAR) {
-            aid = adios2_define_variable_attribute (fp->iop, name.c_str (), adios2_type_string, buf, vname, "/");
+            aid = adios2_define_variable_attribute (fp->iop, name.c_str (), adios2_type_string, buf,
+                                                    vname, "/");
         } else { /* NC_STRING */
             aid = adios2_define_variable_attribute_array (fp->iop, name.c_str (), atype, buf,
                                                           (size_t)size, vname, "/");
@@ -606,12 +640,34 @@ int e3sm_io_driver_adios2::put_varl (
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
     size_t putsize, esize;
-    adios2_type atype;
+    adios2_type dtype, mtype;
+    void *xbuf = NULL;
     double ts, te;
 
     did = fp->dids[vid];
 
+    // Size of selection
+    aerr = adios2_selection_size (&putsize, did);
+    CHECK_AERR
+
     te = MPI_Wtime ();
+
+    // Memory tpye
+    mtype = mpi_type_to_adios2_type (itype);
+    // Variable type
+    aerr = adios2_variable_type (&dtype, did);
+    CHECK_AERR
+    esize = adios2_type_size (dtype);
+    // Need convert
+    if (mtype != dtype) {
+        xbuf = malloc (esize * putsize);
+        CHECK_PTR (xbuf)
+
+        err = adios2_type_convert (mtype, putsize, buf, dtype, xbuf);
+        CHECK_ERR
+    } else {
+        xbuf = buf;
+    }
 
     switch (mode) {
         case indep:
@@ -631,19 +687,14 @@ int e3sm_io_driver_adios2::put_varl (
             throw "Unrecognized mode";
     }
 
-    aerr = adios2_put (fp->ep, did, buf, iomode);
+    aerr = adios2_put (fp->ep, did, xbuf, iomode);
     CHECK_AERR
     this->twrite += MPI_Wtime () - te;
 
-    aerr = adios2_variable_type (&atype, did);
-    CHECK_AERR
-    esize = adios2_type_size (atype);
-
-    aerr = adios2_selection_size (&putsize, did);
-    CHECK_AERR
     fp->putsize += putsize * esize;
 
 err_out:;
+    if (xbuf && (xbuf != buf)) { free (xbuf); }
     return err;
 }
 
@@ -662,7 +713,8 @@ int e3sm_io_driver_adios2::put_vara (int fid,
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
     size_t putsize, esize;
-    adios2_type atype;
+    adios2_type dtype, mtype;
+    void *xbuf = NULL;
     double ts, te;
 
     did  = fp->dids[vid];
@@ -698,6 +750,29 @@ int e3sm_io_driver_adios2::put_vara (int fid,
     te = MPI_Wtime ();
     this->tsel += te - ts;
 
+    // Size of selection
+    aerr = adios2_selection_size (&putsize, did);
+    CHECK_AERR
+
+    te = MPI_Wtime ();
+
+    // Memory tpye
+    mtype = mpi_type_to_adios2_type (itype);
+    // Variable type
+    aerr = adios2_variable_type (&dtype, did);
+    CHECK_AERR
+    esize = adios2_type_size (dtype);
+    // Need convert
+    if (mtype != dtype) {
+        xbuf = malloc (esize * putsize);
+        CHECK_PTR (xbuf)
+
+        err = adios2_type_convert (mtype, putsize, buf, dtype, xbuf);
+        CHECK_ERR
+    } else {
+        xbuf = buf;
+    }
+
     switch (mode) {
         case indep:
         case coll: {
@@ -716,19 +791,14 @@ int e3sm_io_driver_adios2::put_vara (int fid,
             throw "Unrecognized mode";
     }
 
-    aerr = adios2_put (fp->ep, did, buf, iomode);
+    aerr = adios2_put (fp->ep, did, xbuf, iomode);
     CHECK_AERR
     this->twrite += MPI_Wtime () - te;
 
-    aerr = adios2_variable_type (&atype, did);
-    CHECK_AERR
-    esize = adios2_type_size (atype);
-
-    aerr = adios2_selection_size (&putsize, did);
-    CHECK_AERR
     fp->putsize += putsize * esize;
 
 err_out:;
+    if (xbuf && (xbuf != buf)) { free (xbuf); }
     return err;
 }
 
@@ -745,21 +815,18 @@ int e3sm_io_driver_adios2::put_vars (int fid,
     adios2_file *fp = this->files[fid];
     size_t esize;
     size_t i, ndim;
-    adios2_type atype;
+    adios2_type dtype, mtype;
     adios2_variable *did;
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], aend[E3SM_IO_DRIVER_MAX_RANK],
         ablock[E3SM_IO_DRIVER_MAX_RANK], dims[E3SM_IO_DRIVER_MAX_RANK];
     char *bufp;
     adios2_mode iomode;
     size_t putsize;
+    void *xbuf = NULL;
     double ts, te;
 
     did  = fp->dids[vid];
     ndim = fp->ndims[vid];
-
-    aerr = adios2_variable_type (&atype, did);
-    CHECK_AERR
-    esize = adios2_type_size (atype);
 
     // Extend rec dim
     ts = MPI_Wtime ();
@@ -779,6 +846,27 @@ int e3sm_io_driver_adios2::put_vars (int fid,
         aend[0]   = 1;
     }
 
+    // Size of selection
+    putsize = 1;
+    for (i = 0; i < ndim; i++) { putsize *= count[i]; }
+
+    // Memory tpye
+    mtype = mpi_type_to_adios2_type (itype);
+    // Variable type
+    aerr = adios2_variable_type (&dtype, did);
+    CHECK_AERR
+    esize = adios2_type_size (dtype);
+    // Need convert
+    if (mtype != dtype) {
+        xbuf = malloc (esize * putsize);
+        CHECK_PTR (xbuf)
+
+        err = adios2_type_convert (mtype, putsize, buf, dtype, xbuf);
+        CHECK_ERR
+    } else {
+        xbuf = buf;
+    }
+
     switch (mode) {
         case indep:
         case coll: {
@@ -797,7 +885,7 @@ int e3sm_io_driver_adios2::put_vars (int fid,
             throw "Unrecognized mode";
     }
 
-    bufp = (char *)buf;
+    bufp = (char *)xbuf;
     while (astart[0] < aend[0]) {
         // Record dim replaced by time step
         if (astart[0] + ablock[0] > dims[0]) { astart[0] = 0; }
@@ -824,13 +912,12 @@ int e3sm_io_driver_adios2::put_vars (int fid,
                 astart[i - 1] += stride[i - 1];
             }
         }
-
-        aerr = adios2_selection_size (&putsize, did);
-        CHECK_AERR
-        fp->putsize += putsize * esize;
     }
 
+    fp->putsize += putsize * esize;
+
 err_out:;
+    if (xbuf && (xbuf != buf)) { free (xbuf); }
     return err;
 }
 int e3sm_io_driver_adios2::put_varn (int fid,
@@ -847,21 +934,18 @@ int e3sm_io_driver_adios2::put_varn (int fid,
     int i, j;
     double ts, te;
     size_t esize, rsize, rsize_old = 0;
-    size_t putsize;
+    size_t putsize, reqsize;
     int ndim;
-    adios2_type atype;
+    adios2_type dtype, mtype;
     adios2_variable *did;
     char *bufp;
     size_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
     size_t dims[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
+    void *xbuf = NULL;
 
     did  = fp->dids[vid];
     ndim = fp->ndims[vid];
-
-    aerr = adios2_variable_type (&atype, did);
-    CHECK_AERR
-    esize = adios2_type_size (atype);
 
     // Extend rec dim if needed
     ts = MPI_Wtime ();
@@ -870,6 +954,31 @@ int e3sm_io_driver_adios2::put_varn (int fid,
     CHECK_AERR
 
     text += MPI_Wtime () - ts;
+
+    // Size of selection
+    putsize = 0;
+    for (j = 0; j < nreq; j++) {
+        reqsize = 1;
+        for (i = 0; i < ndim; i++) { reqsize *= counts[j][i]; }
+        putsize += reqsize;
+    }
+
+    // Memory tpye
+    mtype = mpi_type_to_adios2_type (itype);
+    // Variable type
+    aerr = adios2_variable_type (&dtype, did);
+    CHECK_AERR
+    esize = adios2_type_size (dtype);
+    // Need convert
+    if (mtype != dtype) {
+        xbuf = malloc (esize * putsize);
+        CHECK_PTR (xbuf)
+
+        err = adios2_type_convert (mtype, putsize, buf, dtype, xbuf);
+        CHECK_ERR
+    } else {
+        xbuf = buf;
+    }
 
     switch (mode) {
         case indep:
@@ -890,7 +999,7 @@ int e3sm_io_driver_adios2::put_varn (int fid,
     }
 
     // Call adios2_put_vara
-    bufp = (char *)buf;
+    bufp = (char *)xbuf;
     for (i = 0; i < nreq; i++) {
         rsize = esize;
         for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
@@ -916,14 +1025,13 @@ int e3sm_io_driver_adios2::put_varn (int fid,
 
             twrite += MPI_Wtime () - te;
             bufp += rsize;
-
-            aerr = adios2_selection_size (&putsize, did);
-            CHECK_AERR
-            fp->putsize += putsize * esize;
         }
     }
 
+    fp->putsize += putsize * esize;
+
 err_out:;
+    if (xbuf && (xbuf != buf)) { free (xbuf); }
     return err;
 }
 
@@ -942,7 +1050,8 @@ int e3sm_io_driver_adios2::get_vara (int fid,
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
     size_t getsize, esize;
-    adios2_type atype;
+    adios2_type dtype, mtype;
+    void *xbuf = NULL;
     double ts, te;
 
     did  = fp->dids[vid];
@@ -975,6 +1084,24 @@ int e3sm_io_driver_adios2::get_vara (int fid,
     te = MPI_Wtime ();
     this->tsel += te - ts;
 
+    // Size of selection
+    aerr = adios2_selection_size (&getsize, did);
+    CHECK_AERR
+
+    // Memory tpye
+    mtype = mpi_type_to_adios2_type (itype);
+    // Variable type
+    aerr = adios2_variable_type (&dtype, did);
+    CHECK_AERR
+    esize = adios2_type_size (dtype);
+    // Need convert
+    if (mtype != dtype) {
+        xbuf = malloc (esize * getsize);
+        CHECK_PTR (xbuf)
+    } else {
+        xbuf = buf;
+    }
+
     switch (mode) {
         case indep:
         case coll: {
@@ -989,19 +1116,20 @@ int e3sm_io_driver_adios2::get_vara (int fid,
             throw "Unrecognized mode";
     }
 
-    aerr = adios2_get (fp->ep, did, buf, iomode);
+    aerr = adios2_get (fp->ep, did, xbuf, iomode);
     CHECK_AERR
+
+    if (mtype != dtype) {
+        err = adios2_type_convert (dtype, getsize, xbuf, mtype, buf);
+        CHECK_ERR
+    }
+
     this->twrite += MPI_Wtime () - te;
 
-    aerr = adios2_variable_type (&atype, did);
-    CHECK_AERR
-    esize = adios2_type_size (atype);
-
-    aerr = adios2_selection_size (&getsize, did);
-    CHECK_AERR
     fp->getsize += getsize * esize;
 
 err_out:;
+    if (xbuf && (xbuf != buf)) { free (xbuf); }
     return err;
 }
 int e3sm_io_driver_adios2::get_vars (int fid,
@@ -1017,7 +1145,8 @@ int e3sm_io_driver_adios2::get_vars (int fid,
     adios2_file *fp = this->files[fid];
     size_t esize;
     size_t i, ndim;
-    adios2_type atype;
+    adios2_type dtype, mtype;
+    void *xbuf = NULL;
     adios2_variable *did;
     size_t astart[E3SM_IO_DRIVER_MAX_RANK], aend[E3SM_IO_DRIVER_MAX_RANK],
         ablock[E3SM_IO_DRIVER_MAX_RANK], dims[E3SM_IO_DRIVER_MAX_RANK];
@@ -1028,10 +1157,6 @@ int e3sm_io_driver_adios2::get_vars (int fid,
 
     did  = fp->dids[vid];
     ndim = fp->ndims[vid];
-
-    aerr = adios2_variable_type (&atype, did);
-    CHECK_AERR
-    esize = adios2_type_size (atype);
 
     // Extend rec dim
     ts = MPI_Wtime ();
@@ -1051,6 +1176,24 @@ int e3sm_io_driver_adios2::get_vars (int fid,
         aend[0]   = 1;
     }
 
+    // Size of selection
+    getsize = 1;
+    for (i = 0; i < ndim; i++) { getsize *= count[i]; }
+
+    // Memory tpye
+    mtype = mpi_type_to_adios2_type (itype);
+    // Variable type
+    aerr = adios2_variable_type (&dtype, did);
+    CHECK_AERR
+    esize = adios2_type_size (dtype);
+    // Need convert
+    if (mtype != dtype) {
+        xbuf = malloc (esize * getsize);
+        CHECK_PTR (xbuf)
+    } else {
+        xbuf = buf;
+    }
+
     switch (mode) {
         case indep:
         case coll: {
@@ -1065,7 +1208,7 @@ int e3sm_io_driver_adios2::get_vars (int fid,
             throw "Unrecognized mode";
     }
 
-    bufp = (char *)buf;
+    bufp = (char *)xbuf;
     while (astart[0] < aend[0]) {
         // Record dim replaced by time step
         if (astart[0] + ablock[0] > dims[0]) { astart[0] = 0; }
@@ -1092,13 +1235,17 @@ int e3sm_io_driver_adios2::get_vars (int fid,
                 astart[i - 1] += stride[i - 1];
             }
         }
-
-        aerr = adios2_selection_size (&getsize, did);
-        CHECK_AERR
-        fp->getsize += getsize * esize;
     }
 
+    if (mtype != dtype) {
+        err = adios2_type_convert (dtype, getsize, xbuf, mtype, buf);
+        CHECK_ERR
+    }
+
+    fp->getsize += getsize * esize;
+
 err_out:;
+    if (xbuf && (xbuf != buf)) { free (xbuf); }
     return err;
 }
 int e3sm_io_driver_adios2::get_varn (int fid,
@@ -1115,9 +1262,10 @@ int e3sm_io_driver_adios2::get_varn (int fid,
     int i, j;
     double ts, te;
     size_t esize, rsize, rsize_old = 0;
-    size_t getsize;
+    size_t getsize, reqsize;
     int ndim;
-    adios2_type atype;
+    adios2_type dtype, mtype;
+    void *xbuf = NULL;
     adios2_variable *did;
     char *bufp;
     size_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
@@ -1127,10 +1275,6 @@ int e3sm_io_driver_adios2::get_varn (int fid,
     did  = fp->dids[vid];
     ndim = fp->ndims[vid];
 
-    aerr = adios2_variable_type (&atype, did);
-    CHECK_AERR
-    esize = adios2_type_size (atype);
-
     // Extend rec dim if needed
     ts = MPI_Wtime ();
 
@@ -1138,6 +1282,27 @@ int e3sm_io_driver_adios2::get_varn (int fid,
     CHECK_AERR
 
     text += MPI_Wtime () - ts;
+
+    // Size of selection
+    getsize = 0;
+    for (j = 0; j < nreq; j++) {
+        reqsize = 1;
+        for (i = 0; i < ndim; i++) { reqsize *= counts[j][i]; }
+        getsize += reqsize;
+    }
+    // Memory tpye
+    mtype = mpi_type_to_adios2_type (itype);
+    // Variable type
+    aerr = adios2_variable_type (&dtype, did);
+    CHECK_AERR
+    esize = adios2_type_size (dtype);
+    // Need convert
+    if (mtype != dtype) {
+        xbuf = malloc (esize * getsize);
+        CHECK_PTR (xbuf)
+    } else {
+        xbuf = buf;
+    }
 
     switch (mode) {
         case indep:
@@ -1154,7 +1319,7 @@ int e3sm_io_driver_adios2::get_varn (int fid,
     }
 
     // Call adios2_put_vara
-    bufp = (char *)buf;
+    bufp = (char *)xbuf;
     for (i = 0; i < nreq; i++) {
         rsize = esize;
         for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
@@ -1180,14 +1345,17 @@ int e3sm_io_driver_adios2::get_varn (int fid,
 
             twrite += MPI_Wtime () - te;
             bufp += rsize;
-
-            aerr = adios2_selection_size (&getsize, did);
-            CHECK_AERR
-            fp->getsize += getsize * esize;
         }
     }
 
+    if (mtype != dtype) {
+        err = adios2_type_convert (dtype, getsize, xbuf, mtype, buf);
+        CHECK_ERR
+    }
+
+    fp->getsize += getsize * esize;
+
 err_out:;
+    if (xbuf && (xbuf != buf)) { free (xbuf); }
     return err;
 }
-
