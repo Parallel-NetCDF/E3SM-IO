@@ -65,9 +65,8 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                                    e3sm_io_scorpio_var *var) {
     int err, nerrs = 0;
     int i, j;
-    char cbuf[64], *cbufp;
+    char cbuf[64];
     int ibuf;
-    int ret;
     std::vector<const char*> dnames_array (ndim);
 
     var->piodecomid = pio_decomid + 512;

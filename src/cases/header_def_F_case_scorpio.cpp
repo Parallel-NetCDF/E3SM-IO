@@ -89,7 +89,7 @@ static int add_gattrs (e3sm_io_config &cfg,
                        e3sm_io_decom &decom,
                        e3sm_io_driver &driver,
                        int ncid) {
-    int err, nprocs;
+    int err;
 
     // PIO attributes
     PUT_GATTR_INT ("/__pio__/fillmode", 1, 256);
@@ -147,7 +147,7 @@ static int def_dims (e3sm_io_config &cfg,
                      int dimids_D[3][3],
                      int fix_D[3][3],
                      int rec_D[3][3]) {
-    int i, err = NC_NOERR, nprocs;
+    int i, err = NC_NOERR;
     MPI_Offset *dims = decom.dims[2];
 
     /*
