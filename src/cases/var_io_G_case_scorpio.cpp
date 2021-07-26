@@ -599,7 +599,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     
     // Nproc only written by rank 0
     if (rank == 0) {
-        err = driver.put_varl (ncid, scorpiovars[6], MPI_LONG_LONG, &(cfg.np), nb);
+        err = driver.put_varl (ncid, scorpiovars[6], MPI_INT, &(cfg.np), nb);
         CHECK_ERR
     }
 
