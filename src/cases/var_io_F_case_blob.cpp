@@ -297,7 +297,7 @@ int write_small_fix_vars_F_case(e3sm_io_driver  &driver,
     IPUT_VAR_INT(*int_buf, 1) /* nbsec */
     IPUT_VAR_INT(*int_buf, 1) /* mdt */
 
-    if (nreqs != NULL) *nreqs = my_nreqs;
+    if (nreqs != NULL) *nreqs += my_nreqs;
 
 err_out:
     return err;
@@ -352,7 +352,7 @@ int write_small_rec_vars_F_case(e3sm_io_driver  &driver,
     IPUT_VAR1_DBL(*dbl_buf, 1 + gap) /* sol_tsi */
     IPUT_VAR1_INT(*int_buf, 1 + gap) /* nsteph */
 
-    if (nreqs != NULL) *nreqs = my_nreqs;
+    if (nreqs != NULL) *nreqs += my_nreqs;
 
 err_out:
     return err;
@@ -596,12 +596,14 @@ int blob_F_case(e3sm_io_config &cfg,
 
     /* post iput for the remaining fixed-size variables */
     fix_int_buf_ptr = fix_int_buf;
-    err = write_small_fix_vars_F_case(driver, ncid, num_decomp_vars, gap,
-                                      decom.dims[2][0],
-                                      decom.dims[2][0] + 1,
-                                      &fix_int_buf_ptr, &fix_dbl_buf_ptr,
-                                      &my_nreqs);
-    CHECK_ERR
+    if (sub_rank == 0) {
+        err = write_small_fix_vars_F_case(driver, ncid, num_decomp_vars, gap,
+                                          decom.dims[2][0],
+                                          decom.dims[2][0] + 1,
+                                          &fix_int_buf_ptr, &fix_dbl_buf_ptr,
+                                          &my_nreqs);
+        CHECK_ERR
+    }
 
     rec_int_buf_ptr = rec_int_buf;
     rec_txt_buf_ptr = rec_txt_buf;
