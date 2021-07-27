@@ -156,7 +156,7 @@ int read_decomp(e3sm_io_config *cfg,
      * out the requests for other decomp_nprocs processes. The requests
      * responsible by this process starts from proc_start with the number
      * proc_count. When nprocs is bigger than decomp_nprocs, then processes
-     * with rank ID >= decomp_nprocs will have no write request and will simply
+     * with rank ID >= decomp_nprocs will have no write request and MUST
      * participate the collective I/O subroutines.
      */
     proc_count = decomp_nprocs / nprocs;
@@ -274,12 +274,17 @@ int read_decomp(e3sm_io_config *cfg,
         /* update number of true noncontiguous requests */
         if (nreqs > 0) decom->contig_nreqs[id] = j + 1;
 
-        /* ADIOS blob test requires the decomposition map in the orinal PIO format
-         * There is an option in dat2nc to include the orinal PIO decomposition map in the decomposition file
-         * The variables are named "Dx.raw_nreqs" (number of offsets accessed) and "Dx.raw_offsets" (offsets accessed)
-         * If variable "Dx.raw_nreqs" presents (the PIO decomposition was included), read the PIO decomposition map from the variables
-         * Otherwise, simulate it by converting the converted decomposition map back into the PIO format
-         * See README file for more details
+        /* ADIOS blob I/O requires the decomposition map in the original form,
+         * i.e. all offsets, no lengths, and may contains zero offsets (to be
+         * skipped). There is an option in dat2nc utility program to generate
+         * the decomposition map in original form. The decomposition variables
+         * stored the map in original form are named "Dx.raw_nreqs" (number of
+         * offsets) and "Dx.raw_offsets" (offsets). If variable "Dx.raw_nreqs"
+         * presents in the decomposition NetCDF file, which means the original
+         * PIO decomposition was included, the ADIOS blob driver will reads the
+         * PIO decomposition map from the variables. Otherwise, this functions
+         * will converted the offset-length pairs back into the original map.
+         * See README file for more details.
          */
         /* obtain varid of request variable Dx.raw_nreqs */
         sprintf(name, "D%d.raw_nreqs", id + 1);
@@ -298,9 +303,8 @@ int read_decomp(e3sm_io_config *cfg,
             CHECK_ERR
 
             /* calculate start index in Dx.offsets for this process */
-            i     = 0;
             start = 0;
-            for (start = 0, i = 0; i < proc_start; i++) start += all_raw_nreqs[i];
+            for (i=0; i<proc_start; i++) start += all_raw_nreqs[i];
 
             /* calculate number of requests for this process */
             count = 0;
@@ -313,7 +317,8 @@ int read_decomp(e3sm_io_config *cfg,
                         id + 1, rank, proc_start, proc_count, start, count);
 
             /* read starting offsets of requests into disps[] */
-            decom->raw_offsets[id] = (MPI_Offset *)malloc(decom->raw_nreqs[id] * sizeof(MPI_Offset));
+            decom->raw_offsets[id] = (MPI_Offset*) malloc(decom->raw_nreqs[id] *
+                                                          sizeof(MPI_Offset));
             sprintf(name, "D%d.raw_offsets", id + 1);
             err = ncmpi_inq_varid(ncid, name, &varid);
             CHECK_ERR
@@ -321,7 +326,7 @@ int read_decomp(e3sm_io_config *cfg,
                                         decom->raw_offsets[id]);
             CHECK_ERR
         }
-        else {    /* Generate (simualted) raw decomposition map */
+        else {    /* Generate (simulated) raw decomposition map */
             /* Count number of offsets before merge */
             decom->raw_nreqs[id] = 0;
             for (i = 0; i < nreqs; i++) {            
