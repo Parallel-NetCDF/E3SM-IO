@@ -124,9 +124,9 @@ def_F_case_h1(e3sm_io_config &cfg,
               int *varids);
 
 extern int
-blob_F_case(e3sm_io_config &cfg,
-            e3sm_io_decom &decom,
-            e3sm_io_driver &driver);
+var_wr_F_case(e3sm_io_config &cfg,
+              e3sm_io_decom &decom,
+              e3sm_io_driver &driver);
 
 
 /*---- functions for G case -------------------------------------------------*/
@@ -187,9 +187,9 @@ run_varn_G_case_rd(e3sm_io_config &cfg,
                    double **D1_fix_dbl_bufp); /* D1 fix double buffer */
 
 extern int
-blob_G_case(e3sm_io_config &cfg,
-            e3sm_io_decom &decom,
-            e3sm_io_driver &driver);
+var_wr_G_case(e3sm_io_config &cfg,
+              e3sm_io_decom &decom,
+              e3sm_io_driver &driver);
 
 extern int
 def_G_case(e3sm_io_config &cfg,
