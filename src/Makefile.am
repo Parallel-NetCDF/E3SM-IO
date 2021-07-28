@@ -19,7 +19,7 @@ H_SRCS          = e3sm_io.h \
 e3sm_io_SOURCES = e3sm_io.c \
                   e3sm_io_core.cpp \
                   read_decomp.c \
-                  blob_metadata.c
+                  calc_metadata.c
 
 e3sm_io_SOURCES += $(H_SRCS) \
                    $(M4_SRCS:.m4=.cpp) \
