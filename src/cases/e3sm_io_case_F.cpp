@@ -35,54 +35,32 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
     nvars = cfg.nvars;
     nrecs = cfg.nrecs;
 
-    if (cfg.strategy == blob) {
-        assert (cfg.api == pnetcdf || cfg.api == hdf5);
+    /* construct I/O metadata */
+    err = calc_metadata(&cfg, &decom);
+    CHECK_ERR
 
-        /* construct metadata for blob I/O strategy */
-        err = blob_metadata(&cfg, &decom);
+    if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
+        cfg.nvars = 414;
+        cfg.nrecs = 1;
+        err = var_wr_F_case(cfg, decom, driver);
         CHECK_ERR
+    }
 
-        /* Use one-file-per-compute-node blob I/O strategy */
-        if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
-            cfg.nvars = 414;
-            cfg.nrecs = 1;
-            err = blob_F_case(cfg, decom, driver);
-            CHECK_ERR
-        }
-
-        if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
-            cfg.nvars = 51;
-            cfg.nrecs = nrecs;
-            err = blob_F_case(cfg, decom, driver);
-            CHECK_ERR
-        }
-
-        if (cfg.sub_comm != MPI_COMM_NULL) {
-            MPI_Comm_free(&cfg.sub_comm);
-            cfg.sub_comm = MPI_COMM_NULL;
-        }
-    } else { /* using PnetCDF/HDF5 varn APIs to write/read */
-        if (cfg.hx == 0 || cfg.hx == -1) {
-            cfg.nvars = 414;
-            cfg.nrecs = 1;
-            err = run_varn_F_case(cfg, decom, driver);
-            CHECK_ERR
-        }
-
-        if (cfg.hx == 1 || cfg.hx == -1) {
-            cfg.nvars = 51;
-            cfg.nrecs = nrecs;
-            err = run_varn_F_case(cfg, decom, driver);
-            CHECK_ERR
-        }
+    if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
+        cfg.nvars = 51;
+        cfg.nrecs = nrecs;
+        err = var_wr_F_case(cfg, decom, driver);
+        CHECK_ERR
     }
 
     cfg.nvars = nvars;
     cfg.nrecs = nrecs;
 
 err_out:
-    if (err != 0 && cfg.sub_comm != MPI_COMM_NULL)
+    if (cfg.sub_comm != MPI_COMM_NULL) {
         MPI_Comm_free(&cfg.sub_comm);
+        cfg.sub_comm = MPI_COMM_NULL;
+    }
 
     return err;
 }
