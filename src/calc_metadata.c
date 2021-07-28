@@ -55,6 +55,7 @@ int split_communicator(MPI_Comm comm,
 }
 
 /*----< blob_metadata() >----------------------------------------------------*/
+static
 int blob_metadata(e3sm_io_config *cfg,
                   e3sm_io_decom  *decom)
 {
@@ -147,3 +148,81 @@ int blob_metadata(e3sm_io_config *cfg,
 
     return 0;
 }
+
+/*----< set_starts_counts() >------------------------------------------------*/
+static
+int set_starts_counts(e3sm_io_decom *dp)
+{
+    int i, j;
+
+    for (i=0; i<dp->num_decomp; i++) {
+        int nreqs = dp->contig_nreqs[i];
+
+        /* construct starts[] and counts[] for iput_varn */
+        dp->w_starts[i] = (MPI_Offset**) malloc(nreqs * 4 *
+                                                sizeof(MPI_Offset*));
+        dp->w_counts[i] = dp->w_starts[i] + nreqs;
+        dp->w_startx[i] = dp->w_counts[i] + nreqs;
+        dp->w_countx[i] = dp->w_startx[i] + nreqs;
+
+        dp->w_starts[i][0] = (MPI_Offset*) malloc(nreqs * 3 * 4 *
+                                                  sizeof(MPI_Offset));
+        dp->w_counts[i][0] = dp->w_starts[i][0] + nreqs * 3;
+        dp->w_startx[i][0] = dp->w_counts[i][0] + nreqs * 3;
+        dp->w_countx[i][0] = dp->w_startx[i][0] + nreqs * 3;
+        for (j=1; j<nreqs; j++) {
+            dp->w_starts[i][j] = dp->w_starts[i][j-1] + 3;
+            dp->w_counts[i][j] = dp->w_counts[i][j-1] + 3;
+            dp->w_startx[i][j] = dp->w_startx[i][j-1] + 3;
+            dp->w_countx[i][j] = dp->w_countx[i][j-1] + 3;
+        }
+
+        /* no fixed-size variables are 3 or more dimensional */
+        for (j=0; j<nreqs; j++) {
+            dp->w_starts[i][j][0] = 0;
+            dp->w_counts[i][j][0] = 1;
+            if (dp->ndims[i] == 1) { /* decomposition is 1D */
+                dp->w_starts[i][j][1] = dp->disps[i][j];
+                dp->w_counts[i][j][1] = dp->blocklens[i][j];
+                dp->w_startx[i][j][0] = dp->w_starts[i][j][1];
+                dp->w_countx[i][j][0] = dp->w_counts[i][j][1];
+            }
+            else if (dp->ndims[i] == 2) { /* decomposition is 2D */
+                dp->w_starts[i][j][1] = dp->disps[i][j] / dp->dims[i][1];
+                dp->w_starts[i][j][2] = dp->disps[i][j] % dp->dims[i][1];
+                dp->w_counts[i][j][1] = 1;
+                dp->w_counts[i][j][2] = dp->blocklens[i][j];
+                dp->w_startx[i][j][0] = dp->w_starts[i][j][1];
+                dp->w_startx[i][j][1] = dp->w_starts[i][j][2];
+                dp->w_countx[i][j][0] = dp->w_counts[i][j][1];
+                dp->w_countx[i][j][1] = dp->w_counts[i][j][2];
+            }
+            /* each blocklens[j] is no bigger than last dims[] */
+        }
+    }
+
+    return 0;
+}
+
+/*----< calc_metadata() >----------------------------------------------------*/
+int calc_metadata(e3sm_io_config *cfg,
+                  e3sm_io_decom  *decom)
+{
+    int i, j;
+
+    if (cfg->strategy == blob)
+        return blob_metadata(cfg, decom);
+
+    /* for canonical order I/O */
+    for (i=0; i<decom->num_decomp; i++) {
+        decom->count[i] = 0;
+        /* total request amount per decomposition by this process */
+        for (j=0; j<decom->contig_nreqs[i]; j++)
+            decom->count[i] += decom->blocklens[i][j];
+    }
+
+    set_starts_counts(decom);
+
+    return 0;
+}
+
