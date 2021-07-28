@@ -17,10 +17,10 @@ CXX_SRCS =  e3sm_io_case_F.cpp \
             header_def_G_case.cpp \
             header_inq_F_case.cpp \
             header_inq_G_case.cpp \
-            var_io_F_case.cpp \
-            var_io_G_case.cpp \
-            var_io_F_case_blob.cpp \
-            var_io_G_case_blob.cpp \
+            var_wr_F_case.cpp \
+            var_rd_F_case.cpp \
+            var_wr_G_case.cpp \
+            var_rd_G_case.cpp \
             report_timing.cpp
 
 H_SRCS =    e3sm_io_case.hpp
