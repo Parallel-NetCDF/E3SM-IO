@@ -39,36 +39,19 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
 {
     int err;
 
-    if (cfg.strategy == blob) {
-        assert (cfg.api == pnetcdf || cfg.api == hdf5);
+    /* construct I/O metadata */
+    err = calc_metadata(&cfg, &decom);
+    CHECK_ERR
 
-        /* construct metadata for blob I/O strategy */
-        err = blob_metadata(&cfg, &decom);
-        CHECK_ERR
-
-        /* Use one-file-per-compute-node blob I/O strategy */
-        err = blob_G_case(cfg, decom, driver);
-        CHECK_ERR
-
-        if (cfg.sub_comm != MPI_COMM_NULL)
-            MPI_Comm_free(&cfg.sub_comm);
-    } else { /* using PnetCDF/HDF5 varn APIs to write/read */
-        err = run_varn_G_case(cfg, decom, driver,
-                              this->D1_fix_int_buf,
-                              this->D2_fix_int_buf,
-                              this->D3_fix_int_buf,
-                              this->D4_fix_int_buf,
-                              this->D5_fix_int_buf,
-                              this->D1_rec_dbl_buf,
-                              this->D3_rec_dbl_buf,
-                              this->D4_rec_dbl_buf,
-                              this->D5_rec_dbl_buf,
-                              this->D6_rec_dbl_buf,
-                              this->D1_fix_dbl_buf);
-        CHECK_ERR
-    }
+    err = var_wr_G_case(cfg, decom, driver);
+    CHECK_ERR
 
 err_out:
+    if (cfg.sub_comm != MPI_COMM_NULL) {
+        MPI_Comm_free(&cfg.sub_comm);
+        cfg.sub_comm = MPI_COMM_NULL;
+    }
+
     return err;
 }
 
