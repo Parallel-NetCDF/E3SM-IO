@@ -538,6 +538,11 @@ int e3sm_io_driver_h5blob::put_vara(int              fid,
                 vbuf->len[vbuf->nalloc - 64 + i] = 0;
         }
 
+        if (vbuf->nrecs == start[0]+1) {
+            printf("Error: varid=%d repeated write to the same record\n",varid);
+            throw "Error: over write to the same variable is not supported yet";
+        }
+
         /* update the number of records */
         vbuf->nrecs = (start[0]+1 > vbuf->nrecs) ? start[0]+1 : vbuf->nrecs;
 
