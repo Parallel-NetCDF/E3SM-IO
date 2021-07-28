@@ -163,6 +163,12 @@ typedef struct e3sm_io_decom {
     MPI_Offset dims[MAX_NUM_DECOMP][2];/* global dimension sizes of each
                                           decomposition */
 
+    /* the following 4 are the starts[] and counts[] used in varn APIs */
+    MPI_Offset **w_starts[MAX_NUM_DECOMP]; /* [nreqs][] record variables */
+    MPI_Offset **w_counts[MAX_NUM_DECOMP]; /* [nreqs][] record variables */
+    MPI_Offset **w_startx[MAX_NUM_DECOMP]; /* [nreqs][] fixed-size variables */
+    MPI_Offset **w_countx[MAX_NUM_DECOMP]; /* [nreqs][] fixed-size variables */
+
     /* below 3 are used for PnetCDF blob I/O subfiling */
     MPI_Offset nelems[MAX_NUM_DECOMP]; /* total no. array elements in each
                                           decomposition */
@@ -182,7 +188,7 @@ typedef struct e3sm_io_decom {
 extern "C" {
 #endif
 extern int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom);
-extern int blob_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
+extern int calc_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern void print_info (MPI_Info *info_used);
 extern int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);
 int e3sm_io_xlen_nc_type(nc_type xtype, int *size);
