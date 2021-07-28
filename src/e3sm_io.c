@@ -119,7 +119,7 @@ static void usage (char *argv0) {
 int main (int argc, char **argv) {
     int err;
     int i;
-    double timing[3], max_t[3];
+    double t, timing[3], max_t[3];
     e3sm_io_config cfg;
     e3sm_io_decom decom;
 
@@ -159,6 +159,7 @@ int main (int argc, char **argv) {
         decom.blocklens[i]   = NULL;
         decom.disps[i]       = NULL;
         decom.raw_offsets[i] = NULL;
+        decom.w_starts[i]    = NULL;
     }
 
     /* command-line arguments */
@@ -343,8 +344,6 @@ int main (int argc, char **argv) {
     err = e3sm_io_core (&cfg, &decom);
     CHECK_ERR
 
-    timing[2] = MPI_Wtime() - timing[2];
-
 err_out:
     if (cfg.info != MPI_INFO_NULL)
         MPI_Info_free (&(cfg.info));
@@ -356,9 +355,15 @@ err_out:
         if (decom.blocklens[i]) free (decom.blocklens[i]);
         if (decom.disps[i]) free (decom.disps[i]);
         if (decom.raw_offsets[i]) free (decom.raw_offsets[i]);
+        if (decom.w_starts[i] != NULL) {
+            free(decom.w_starts[i][0]);
+            free(decom.w_starts[i]);
+        }
     }
 
-    timing[0] = MPI_Wtime() - timing[0];
+    t = MPI_Wtime();
+    timing[2] = t - timing[2];
+    timing[0] = t - timing[0];
 
     MPI_Reduce(timing, max_t, 3, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (cfg.rank == 0) {
