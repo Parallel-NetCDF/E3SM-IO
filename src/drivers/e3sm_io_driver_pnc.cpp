@@ -278,10 +278,10 @@ int e3sm_io_driver_pnc::inq_dim (int fid, std::string name, int *dimid) {
     err = ncmpi_inq_dimid (fid, name.c_str (), dimid);
     CHECK_NCERR
 
+    if (cfg->chunksize == 0) return err;
+
     err = ncmpi_inq_dim (fid, *dimid, NULL, &size);
     CHECK_NCERR
-
-    if (cfg->chunksize == 0) return err;
 
     /* dimension IDs in PnetCDF are always non-negative */
     if (this->dim_lens.size () <= (size_t)*dimid)
@@ -293,8 +293,17 @@ err_out:
 }
 
 int e3sm_io_driver_pnc::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
-    *size = this->dim_lens[dimid];
-    return 0;
+    int err=0;
+
+    if (cfg->chunksize == 0) {
+        err = ncmpi_inq_dimlen(fid, dimid, size);
+        CHECK_NCERR
+    }
+    else
+        *size = this->dim_lens[dimid];
+
+err_out:
+    return err;
 }
 
 int e3sm_io_driver_pnc::enddef (int fid) {
