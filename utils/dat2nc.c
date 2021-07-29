@@ -196,7 +196,13 @@ static int add_decomp (int ncid, const char *infname, int label) {
 
     /* check if the entire array is covered */
     for (k = 0, j = 0; j < gsize; j++) k += map[j];
-    if (k != gsize) printf ("Warning: global array size = %lld but only %lld written\n", gsize, k);
+    if (k != gsize) {
+        printf ("Warning: decomposition %d does not cover the entire array\n",label);
+        printf ("\tglobal %dD array size: %lld", ndims, dims[0]);
+        for (i=1; i<ndims; i++) printf(" x %lld", dims[i]);
+        printf(" = %lld\n", gsize);
+        printf ("\tthe decomposition map covers only %lld of them\n", k);
+    }
     free (map);
 
     /* check if dimension decomp_nprocs has been defined in the netCDF file */
@@ -513,9 +519,10 @@ int main (int argc, char **argv) {
         return 1;
     }
 
-    if (num_decomp != 3 && num_decomp != 6) {
+    if (num_decomp != 3 && num_decomp != 6 && num_decomp != 5) {
         printf ("Error: e3sm_io currently supports F case (3 decomposition files)\n");
-        printf ("       and G case (6 decomposition files) only.\n");
+        printf ("       G case (6 decomposition files) only.\n");
+        printf ("       and I case (5 decomposition files) only.\n");
         MPI_Finalize ();
         return 1;
     }
