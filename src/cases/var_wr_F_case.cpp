@@ -134,7 +134,7 @@
     int varid = vid + num_decomp_vars;                                    \
     if (cfg.strategy == blob) {                                           \
         for (j=0; j<numVars; j++) {                                       \
-            err = driver.put_vara(ncid, varid, MPI_DOUBLE, starts[dp],    \
+            err = driver.put_vara(ncid, varid, REC_ITYPE, starts[dp],     \
                                   counts[dp], rec_buf_ptr, nb);           \
             CHECK_VAR_ERR(varid)                                          \
             rec_buf_ptr += decom.count[dp] + gap;                         \
