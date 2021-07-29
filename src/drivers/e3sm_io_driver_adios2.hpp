@@ -87,7 +87,6 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
         int rank;
     } adios2_file;
     std::vector<adios2_file *> files;
-    double tsel, twrite, tread, text;
 
    public:
     e3sm_io_driver_adios2 (e3sm_io_config *cfg);
