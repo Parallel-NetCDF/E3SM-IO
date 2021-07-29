@@ -6,8 +6,7 @@ AM_M4FLAGS = -I${srcdir}
 
 M4FLAGS += -I${top_srcdir}/m4
 
-M4_SRCS = e3sm_io_profile.m4 \
-          e3sm_io_profile_timers.m4
+M4_SRCS = e3sm_io_profile.m4
 
 M4H_SRCS = e3sm_io_profile.m4h
 
@@ -33,13 +32,13 @@ if ENABLE_LOGVOL
 e3sm_io_LDADD += -lH5VL_log
 endif
 
-$(M4_SRCS:.m4=.cpp): Makefile
-$(M4H_SRCS:.m4h=.hpp): Makefile
+$(M4_SRCS:.m4=.cpp): Makefile e3sm_io_profile_timers.m4
+$(M4H_SRCS:.m4h=.hpp): Makefile e3sm_io_profile_timers.m4
 
-.m4.cpp:
+.m4.cpp: e3sm_io_profile_timers.m4
 	$(M4) $(AM_M4FLAGS) $(M4FLAGS) $< >$@
 
-.m4h.hpp:
+.m4h.hpp: e3sm_io_profile_timers.m4
 	$(M4) $(AM_M4FLAGS) $(M4FLAGS) $< >$@
 
 BUILT_SOURCES = $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
