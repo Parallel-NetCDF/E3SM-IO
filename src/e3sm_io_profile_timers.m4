@@ -1,4 +1,9 @@
 define(`E3SM_IO_TIMERS', `( `total', dnl
+                            `core', dnl
+                            `wr', dnl
+                            `rd', dnl
+                            `init_case', dnl
+                            `init_driver', dnl
                             `hdf5', dnl
                             `hdf5_wr', dnl
                             `hdf5_sel', dnl

@@ -193,6 +193,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     e3sm_io_driver *driver = NULL;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_TOTAL)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_CORE)
 
     if ((cfg->verbose >= 0) && (cfg->rank == 0)) {
         printf ("Total number of MPI processes      = %d\n", cfg->np);
@@ -208,6 +209,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     }
 
     /* Select test case */
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_INIT_CASE)
     if (decom->num_decomp == 3) {
         /* F case has 3 decompositions */
         cfg->nvars = 414;
@@ -272,6 +274,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     } else {
         ERR_OUT ("Unknown decom file")
     }
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_CASE)
 
     /* perform read */
     if (cfg->rd) {
@@ -286,10 +289,14 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         e3sm_io_api api_tmp = cfg->api;
 
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_INIT_DRIVER)
         driver = e3sm_io_get_driver (cfg->in_path, cfg);
         CHECK_PTR (driver)
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_DRIVER)
 
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_RD)
         err = tcase->rd_test (*cfg, *decom, *driver);
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_RD)
         CHECK_ERR
 
         cfg->api = api_tmp;  // Restore API to user setting for write test
@@ -336,10 +343,14 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             }
         }
 
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_INIT_DRIVER)
         driver = e3sm_io_get_driver (NULL, cfg);
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_DRIVER)
         CHECK_PTR (driver)
 
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_WR)
         err = tcase->wr_test (*cfg, *decom, *driver);
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_WR)
         CHECK_ERR
 
         if (driver) {
@@ -352,6 +363,7 @@ err_out:
     if (driver) { delete driver; }
     if (tcase) { delete tcase; }
 
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_CORE)
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_TOTAL)
 
     if (cfg->verbose) e3sm_io_print_profile (cfg);
