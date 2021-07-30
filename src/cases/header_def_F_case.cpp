@@ -40,38 +40,38 @@
         goto err_out;                                                    \
     }                                                                    \
 }
-#define PUT_GATTR_TXT(name, buf) {                                       \
+#define PUT_GATTR_TXT(name, buf) {                                          \
     err = driver.put_att(ncid, NC_GLOBAL, name, NC_CHAR, strlen(buf), buf); \
-    CHECK_ERR                                                            \
+    CHECK_ERR                                                               \
 }
-#define PUT_GATTR_INT(name, num, val) {                                  \
+#define PUT_GATTR_INT(name, val) {                                       \
     int buf = val;                                                       \
-    err = driver.put_att(ncid, NC_GLOBAL, name, NC_INT, num, &buf); \
+    err = driver.put_att(ncid, NC_GLOBAL, name, NC_INT, 1, &buf);        \
     CHECK_ERR                                                            \
 }
 #define PUT_ATTR_TXT(name, buf) {                                        \
-    err = driver.put_att(ncid, *varid, name, NC_CHAR, strlen(buf), buf);\
+    err = driver.put_att(ncid, *varid, name, NC_CHAR, strlen(buf), buf); \
     CHECK_VAR_ERR(*varid)                                                \
 }
 #define PUT_ATTR_INT(name, num, buf) {                                   \
-    err = driver.put_att(ncid, *varid, name, NC_INT, num, buf);         \
+    err = driver.put_att(ncid, *varid, name, NC_INT, num, buf);          \
     CHECK_VAR_ERR(*varid)                                                \
 }
 #define PUT_ATTR_FLOAT(name, num, buf) {                                 \
-    err = driver.put_att(ncid, *varid, name, NC_FLOAT, num, buf);       \
+    err = driver.put_att(ncid, *varid, name, NC_FLOAT, num, buf);        \
     CHECK_VAR_ERR(*varid)                                                \
 }
 #define PUT_ATTR_INT64(name, num, buf) {                                 \
-    err = driver.put_att(ncid, *varid, name, NC_INT64, num, buf);   \
+    err = driver.put_att(ncid, *varid, name, NC_INT64, num, buf);        \
     CHECK_VAR_ERR(*varid)                                                \
 }
-#define PUT_ATTR_DECOMP(D, ndims, dimids) {                                    \
-    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {     \
+#define PUT_ATTR_DECOMP(D, ndims, dimids) {                                   \
+    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {    \
         err = driver.put_att(ncid,*varid,"decomposition_ID",NC_INT,1,&D);     \
-        CHECK_VAR_ERR(*varid)                                                  \
+        CHECK_VAR_ERR(*varid)                                                 \
         err = driver.put_att(ncid,*varid,"global_dimids",NC_INT,ndims,dimids);\
-        CHECK_VAR_ERR(*varid)                                                  \
-    }                                                                          \
+        CHECK_VAR_ERR(*varid)                                                 \
+    }                                                                         \
 }
 
 /*----< add_gattrs() >-------------------------------------------------------*/
@@ -86,13 +86,13 @@ int add_gattrs(e3sm_io_config &cfg,
     /* save number of processes as global attributes */
     if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
         MPI_Comm_size(cfg.io_comm, &nprocs);
-        PUT_GATTR_INT("global_nprocs", 1, nprocs)
-        PUT_GATTR_INT("num_decompositions", 1, decom.num_decomp)
-        PUT_GATTR_INT("num_subfiles", 1, cfg.num_subfiles)
+        PUT_GATTR_INT("global_nprocs", nprocs)
+        PUT_GATTR_INT("num_decompositions", decom.num_decomp)
+        PUT_GATTR_INT("num_subfiles", cfg.num_subfiles)
     }
 
-    PUT_GATTR_INT("ne", 1, 120)
-    PUT_GATTR_INT("np", 1, 21600)
+    PUT_GATTR_INT("ne", 120)
+    PUT_GATTR_INT("np", 21600)
     PUT_GATTR_TXT("title", "EAM History file information")
     PUT_GATTR_TXT("source", "E3SM Atmosphere Model")
     PUT_GATTR_TXT("source_id", "025f820fce")
