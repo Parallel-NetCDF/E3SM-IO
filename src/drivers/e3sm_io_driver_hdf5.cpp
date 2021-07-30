@@ -30,7 +30,6 @@
 e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
     int err = 0;
     herr_t herr = 0;
-    char *env   = NULL;
     int i;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
@@ -115,10 +114,6 @@ err_out:;
     if (err < 0) { throw "HDF5 driver init fail"; }
 }
 e3sm_io_driver_hdf5::~e3sm_io_driver_hdf5 () {
-    int rank;
-    int err = 0;
-    double tsel_all, twrite_all, text_all, tcpy_all, tsort_all;
-
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     if (dxplid_coll >= 0) H5Pclose (dxplid_coll);
@@ -261,7 +256,6 @@ err_out:;
 }
 int e3sm_io_driver_hdf5::inq_put_size (int fid, MPI_Offset *size) {
     int err = 0;
-    herr_t herr;
     hdf5_file *fp = this->files[fid];
     ssize_t namelen;
     struct stat file_stat;
@@ -389,7 +383,6 @@ err_out:;
 
 int e3sm_io_driver_hdf5::inq_var (int fid, std::string name, int *did) {
     int err = 0;
-    herr_t herr;
     hdf5_file *fp = this->files[fid];
     hid_t h5did;
 
@@ -409,12 +402,12 @@ err_out:;
 int e3sm_io_driver_hdf5::inq_var_name (int fid, int vid, char *name) {
     name[0] = '\0';
     printf("inq_var_name is not yet implementaed\n");
-    return 0;
+    return -1;
 }
 
 int e3sm_io_driver_hdf5::inq_var_off (int fid, int vid, MPI_Offset *off) {
     throw "Function not supported";
-    return 1;
+    return -1;
 }
 int e3sm_io_driver_hdf5::def_dim (int fid, std::string name, MPI_Offset size, int *dimid) {
     int err = 0;
@@ -438,6 +431,7 @@ int e3sm_io_driver_hdf5::def_dim (int fid, std::string name, MPI_Offset size, in
     CHECK_HID (aid)
 
     herr = H5Awrite (aid, H5T_NATIVE_HSIZE, &hsize);
+    CHECK_HERR
 
     *dimid = fp->dsizes.size ();
     fp->dsizes.push_back (hsize);
@@ -464,6 +458,7 @@ int e3sm_io_driver_hdf5::inq_dim (int fid, std::string name, int *dimid) {
     CHECK_HID (aid)
 
     herr = H5Aread (aid, H5T_NATIVE_HSIZE, &hsize);
+    CHECK_HERR
 
     *dimid = fp->dsizes.size ();
     fp->dsizes.push_back (hsize);
@@ -564,7 +559,6 @@ int e3sm_io_driver_hdf5::get_att (int fid, int vid, std::string name, void *buf)
     hid_t did;
     hid_t tid;
     hsize_t asize;
-    htri_t exists;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -659,7 +653,7 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_EXT_DIM)
     if (dims[0] < hstart[0] + hblock[0]) {
         dims[0] = hstart[0] + hblock[0];
-        if (fp->recsize < dims[0]) { fp->recsize = dims[0]; }
+        if (fp->recsize < (MPI_Offset)(dims[0])) { fp->recsize = dims[0]; }
 
         H5Sclose (dsid);
         herr = H5Dset_extent (did, dims);
@@ -793,7 +787,7 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_EXT_DIM)
     if (dims[0] < hstart[0] + (hblock[0] - 1) * hstride[0] + 1) {
         dims[0] = hstart[0] + (hblock[0] - 1) * hstride[0] + 1;
-        if (fp->recsize < dims[0]) { fp->recsize = dims[0]; }
+        if (fp->recsize < (MPI_Offset)(dims[0])) { fp->recsize = dims[0]; }
 
         H5Sclose (dsid);
         herr = H5Dset_extent (did, dims);
@@ -915,7 +909,6 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
     char *bufp = (char *)buf;
     hid_t did;
     hid_t dxplid;
-    hsize_t **hstarts = NULL, **hcounts = NULL;
     hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
     hid_t tid = -1;
@@ -926,7 +919,9 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
 
     mtype = mpi_type_to_hdf5_type (itype);
     esize = (hsize_t)H5Tget_size (mtype);
-    CHECK_HID (esize)
+    if (esize <= 0) {
+        ERR_OUT("Unknown memory type")
+    }
 
     dsid = H5Dget_space (did);
     CHECK_HID (dsid)
@@ -943,7 +938,7 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
         }
         if (dims[0] < (hsize_t)max_rec) {
             dims[0] = (hsize_t)max_rec;
-            if (fp->recsize < dims[0]) { fp->recsize = dims[0]; }
+            if (fp->recsize < (MPI_Offset)(dims[0])) { fp->recsize = dims[0]; }
 
             H5Sclose (dsid);
             herr = H5Dset_extent (did, dims);
@@ -1351,7 +1346,6 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
     char *bufp = (char *)buf;
     hid_t did;
     hid_t dxplid;
-    hsize_t **hstarts = NULL, **hcounts = NULL;
     hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
     hid_t tid = -1;
@@ -1364,7 +1358,9 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
 
     mtype = mpi_type_to_hdf5_type (itype);
     esize = (hsize_t)H5Tget_size (mtype);
-    CHECK_HID (esize)
+    if (esize <= 0) {
+        ERR_OUT("Unknown memory type")
+    }
 
     dsid = H5Dget_space (did);
     CHECK_HID (dsid)

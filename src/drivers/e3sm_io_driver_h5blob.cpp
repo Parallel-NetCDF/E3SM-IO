@@ -612,7 +612,7 @@ int e3sm_io_driver_h5blob::get_vars (int fid,
                                    MPI_Offset *count,
                                    MPI_Offset *stride,
                                    void *buf,
-                                   e3sm_io_op_mode mode) {
+                                   e3sm_io_op_mode mode ) {
     throw "HDF5 blob I/O does not support get_vars yet";
     return -1;
 }
@@ -624,7 +624,7 @@ int e3sm_io_driver_h5blob::get_varn (int fid,
                                    MPI_Offset **starts,
                                    MPI_Offset **counts,
                                    void *buf,
-                                   e3sm_io_op_mode mode) {
+                                   e3sm_io_op_mode mode ) {
     throw "HDF5 blob I/O does not support get_varn yet";
     return -1;
 }
