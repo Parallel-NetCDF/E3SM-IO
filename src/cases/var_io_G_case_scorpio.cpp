@@ -248,7 +248,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
                      double *D6_rec_dbl_bufp, /* D6 rec double buffer */
                      double *D1_fix_dbl_bufp) /* D1 fix double buffer */
 {
-    int i, j, k, err, rank, ncid;
+    int i, j, err, rank, ncid;
     e3sm_io_scorpio_var *varids;
     int scorpiovars[7];
     int rec_no = -1, my_nreqs, *nvars_D=cfg.nvars_D;
@@ -280,9 +280,6 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     int D5_rec_3d_varids[1]  = {18};
     int nD6_rec_3d_vars      = 4;
     int D6_rec_3d_varids[4]  = {1, 2, 3, 27};
-    MPI_Offset stride[2]     = {1, 1};
-    MPI_Offset start[2]      = {0, 0};
-    MPI_Offset count[2]      = {1, 1};
     double *dummy_double_buf = NULL;
     char dummy_char_buf[64 + 64];
     int xnreqs[6]; /* number of requests after combination */
@@ -656,7 +653,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
 
     /* next 11 small variables are written by rank 0 only */
     if (rank == 0) {
-        count[0] = decom.dims[2][1]; /* dimension nVertLevels */
+        // count[0] = decom.dims[2][1]; /* dimension nVertLevels */
 
         /* double vertCoordMovementWeights(nVertLevels) */
         err = BPUT_VARS_DOUBLE (ncid, varids[9], start, count, stride, dummy_double_buf, NULL);
@@ -687,9 +684,9 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     }
 
     for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
-        start[0] = rec_no;
-        count[0] = 1;
-        count[1] = 64; /* dimension StrLen */
+        // start[0] = rec_no;
+        // count[0] = 1;
+        // count[1] = 64; /* dimension StrLen */
 
         if (rank == 0) {
             /* char xtime(Time, StrLen) */

@@ -42,9 +42,9 @@ err_out:
     return err;
 }
 
-int e3sm_io_case_G_scorpio::rd_test(e3sm_io_config &cfg,
-                                    e3sm_io_decom &decom,
-                                    e3sm_io_driver &driver)
+int e3sm_io_case_G_scorpio::rd_test(e3sm_io_config &cfg E3SM_IO_UNUSED,
+                                    e3sm_io_decom &decom E3SM_IO_UNUSED,
+                                    e3sm_io_driver &driver E3SM_IO_UNUSED)
 {
     int err=0;
     ERR_OUT ("PIO case does not support reading")

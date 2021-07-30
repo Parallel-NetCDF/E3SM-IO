@@ -28,14 +28,11 @@
 static char attbuf[4096];
 
 static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
-    int err, iattr;
-    double dattr;
-    char txtbuf[1024];
+    int err;
 
     /* 963 global attributes: */
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "on_a_sphere", 3, "YES");
     CHECK_ERR
-    dattr = 6371229.;
     err   = GET_ATT (ncid, NC_GLOBAL, "sphere_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "model_name", 4, "mpas");
@@ -73,20 +70,20 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_write_output_on_startup", 2, "NO");
     CHECK_ERR
-    iattr = 0;
+    // iattr = 0;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_pio_num_iotasks", MPI_INT, 1, &iattr);
     CHECK_ERR
-    iattr = 1;
+    // iattr = 1;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_pio_stride", MPI_INT, 1, &iattr);
     CHECK_ERR
-    iattr = 3;
+    // iattr = 3;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_num_halos", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_block_decomp_file_prefix", 89,
                         "/project/projectdirs/acme/inputdata/ocn/mpas-o/oRRS18to6v3/"
                         "mpas-o.graph.info.170111.part.");
     CHECK_ERR
-    iattr = 0;
+    // iattr = 0;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_number_of_blocks", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_explicit_proc_decomp", 2, "NO");
@@ -94,7 +91,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_proc_decomp_file_prefix", 16,
                         "graph.info.part.");
     CHECK_ERR
-    iattr = -1;
+    // iattr = -1;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_init_configuration", 4, "none");
@@ -107,15 +104,15 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_vertical_grid", 7, "uniform");
     CHECK_ERR
-    dattr = 1.077;
+    // dattr = 1.077;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch1", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.0275;
+    // dattr = 1.0275;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_1dCVTgenerator_stretch2", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.2;
+    // dattr = 1.2;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_1dCVTgenerator_dzSeed", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -131,78 +128,78 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_min_max_thickness", 2, "NO");
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_min_thickness", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 6.;
+    // dattr = 6.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_max_thickness_factor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_dzdk_positive", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_freq_filtered_thickness", 2, "NO");
     CHECK_ERR
-    dattr = 5.;
+    // dattr = 5.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_thickness_filter_timescale", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_highFreqThick_restore", 2, "NO");
     CHECK_ERR
-    dattr = 30.;
+    // dattr = 30.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_highFreqThick_restore_time", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_highFreqThick_del2", 2, "NO");
     CHECK_ERR
-    dattr = 100.;
+    // dattr = 100.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_highFreqThick_del2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_alter_ICs_for_pbcs", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_pbc_alteration_type", 9, "full_cell");
     CHECK_ERR
-    dattr = 0.1;
+    // dattr = 0.1;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_min_pbc_fraction", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_hmix_scaleWithMesh", 3, "YES");
     CHECK_ERR
-    dattr = -1.;
+    // dattr = -1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_maxMeshDensity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_apvm_scale_factor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del2", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tracer_del2", 2, "NO");
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_tracer_del2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del4", 3, "YES");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tracer_del4", 2, "NO");
     CHECK_ERR
-    dattr = 3200000000.;
+    // dattr = 3200000000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_mom_del4_div_factor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_tracer_del4", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_Leith_del2", 2, "NO");
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_Leith_parameter", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 15000.;
+    // dattr = 15000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_Leith_dx", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2500.;
+    // dattr = 2500.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_Leith_visc2_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_standardGM", 2, "NO");
@@ -210,102 +207,102 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_Redi_surface_layer_tapering", 2, "NO");
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_Redi_surface_layer_tapering_extent",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_Redi_bottom_layer_tapering", 2, "NO");
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_Redi_bottom_layer_tapering_depth", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_function", 8, "constant");
     CHECK_ERR
-    dattr = 1800.;
+    // dattr = 1800.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_standardGM_tracer_kappa", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_min", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 600.;
+    // dattr = 600.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_kappa_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 20000.;
+    // dattr = 20000.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_min", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 30000.;
+    // dattr = 30000.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_GM_Bolus_cell_size_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_Redi_kappa", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.3;
+    // dattr = 0.3;
     err = GET_ATT (ncid, NC_GLOBAL, "config_gravWaveSpeed_trunc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.01;
+    // dattr = 0.01;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_max_relative_slope", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del2_tensor", 2, "NO");
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del2_tensor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_mom_del4_tensor", 2, "NO");
     CHECK_ERR
-    dattr = 50000000000000.;
+    // dattr = 50000000000000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_mom_del4_tensor", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_Rayleigh_friction", 2, "NO");
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_Rayleigh_damping_coeff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_Rayleigh_bottom_friction", 2, "NO");
     CHECK_ERR
-    dattr = 0.0001;
+    // dattr = 0.0001;
     err = GET_ATT (ncid, NC_GLOBAL, "config_Rayleigh_bottom_damping_coeff", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix", 3, "YES");
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_prandtl_number", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_background", 3, "YES");
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_background_diffusion", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.0001;
+    // dattr = 0.0001;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_background_viscosity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_convection", 3, "YES");
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_convective_diffusion", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_convective_viscosity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_convective_basedOnBVF", 3, "YES");
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_convective_triggerBVF", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_shear", 3, "YES");
     CHECK_ERR
-    iattr = 2;
+    // iattr = 2;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_cvmix_num_ri_smooth_loops", MPI_INT, 1, &iattr);
     CHECK_ERR
@@ -313,25 +310,25 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_shear_mixing_scheme", 3, "KPP");
     CHECK_ERR
-    dattr = 0.005;
+    // dattr = 0.005;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_PP_nu_zero", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 5.;
+    // dattr = 5.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_PP_alpha", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2.;
+    // dattr = 2.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_PP_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.005;
+    // dattr = 0.005;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_nu_zero", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.7;
+    // dattr = 0.7;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_Ri_zero", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 3.;
+    // dattr = 3.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_shear_KPP_exp", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_tidal_mixing", 2, "NO");
@@ -343,11 +340,11 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_cvmix_fixed_boundary_layer", 2, "NO");
     CHECK_ERR
-    dattr = 30.;
+    // dattr = 30.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_boundary_layer_depth", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 0.25;
+    // dattr = 0.25;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_criticalBulkRichardsonNumber",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -360,19 +357,19 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_kpp_interpolationOMLType", 9,
                         "quadratic");
     CHECK_ERR
-    dattr = 0.1;
+    // dattr = 0.1;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_extent", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 5.;
+    // dattr = 5.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_surface_layer_averaging",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "configure_cvmix_kpp_minimum_OBL_under_sea_ice",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 100.;
+    // dattr = 100.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_kpp_stop_OBL_search", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
@@ -385,66 +382,66 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_const_diff", 2, "NO");
     CHECK_ERR
-    dattr = 0.0001;
+    // dattr = 0.0001;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_visc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.e-05;
+    // dattr = 1.e-05;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_diff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_rich_visc", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_rich_diff", 2, "NO");
     CHECK_ERR
-    dattr = 0.0001;
+    // dattr = 0.0001;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_bkrd_vert_visc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.e-05;
+    // dattr = 1.e-05;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_bkrd_vert_diff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.005;
+    // dattr = 0.005;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rich_mix", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_convective_visc", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_convective_diff", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tanh_visc", 2, "NO");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_tanh_diff", 2, "NO");
     CHECK_ERR
-    dattr = 0.25;
+    // dattr = 0.25;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_max_visc_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.0001;
+    // dattr = 0.0001;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_min_visc_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.025;
+    // dattr = 0.025;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_max_diff_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.e-05;
+    // dattr = 1.e-05;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_min_diff_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -100.;
+    // dattr = -100.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_zMid_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 100.;
+    // dattr = 100.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_zWidth_tanh", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_bulk_wind_stress", 3, "YES");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_bulk_thickness_flux", 3, "YES");
     CHECK_ERR
-    dattr = 0.001;
+    // dattr = 0.001;
     err = GET_ATT (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_flux_attenuation_coefficient_runoff",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 86400.;
+    // dattr = 86400.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ssh_grad_relax_timescale", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
@@ -452,10 +449,10 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_sw_absorption_type", 6, "jerlov");
     CHECK_ERR
-    iattr = 3;
+    // iattr = 3;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_jerlov_water_type", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_surface_buoyancy_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -465,33 +462,33 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_frazil_under_land_ice", 3, "YES");
     CHECK_ERR
-    dattr = 333700.;
+    // dattr = 333700.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_frazil_heat_of_fusion", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1000.;
+    // dattr = 1000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_ice_density", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.1;
+    // dattr = 0.1;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_fractional_thickness_limit",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 3996.;
+    // dattr = 3996.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_specific_heat_sea_water", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 100.;
+    // dattr = 100.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_frazil_maximum_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 4.;
+    // dattr = 4.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_sea_ice_reference_salinity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_land_ice_reference_salinity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_frazil_maximum_freezing_temperature",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -506,169 +503,169 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_land_ice_flux_useHollandJenkinsAdvDiff",
                         2, "NO");
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_attenuation_coefficient",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_boundaryLayerThickness",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_boundaryLayerNeighborWeight",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2009.;
+    // dattr = 2009.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_cp_ice", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 918.;
+    // dattr = 918.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_rho_ice", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.0025;
+    // dattr = 0.0025;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_topDragCoeff", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.0001;
+    // dattr = 0.0001;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_ISOMIP_gammaT", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.05;
+    // dattr = 0.05;
     err = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_flux_rms_tidal_velocity", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 0.011;
+    // dattr = 0.011;
     err   = GET_ATT (ncid, NC_GLOBAL,
                    "config_land_ice_flux_jenkins_heat_transfer_coefficient", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.00031;
+    // dattr = 0.00031;
     err   = GET_ATT (ncid, NC_GLOBAL,
                    "config_land_ice_flux_jenkins_salt_transfer_coefficient", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_vert_tracer_adv", 7, "stencil");
     CHECK_ERR
-    iattr = 3;
+    // iattr = 3;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_vert_tracer_adv_order", MPI_INT, 1, &iattr);
     CHECK_ERR
-    iattr = 3;
+    // iattr = 3;
     err = GET_ATT (ncid, NC_GLOBAL, "config_horiz_tracer_adv_order", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = 0.25;
+    // dattr = 0.25;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_coef_3rd_order", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_monotonic", 3, "YES");
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_implicit_bottom_drag", 3, "YES");
     CHECK_ERR
-    dattr = 0.001;
+    // dattr = 0.001;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_implicit_bottom_drag_coeff", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_explicit_bottom_drag", 2, "NO");
     CHECK_ERR
-    dattr = 0.001;
+    // dattr = 0.001;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_explicit_bottom_drag_coeff", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1026.;
+    // dattr = 1026.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_density0", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_pressure_gradient_type", 16,
                         "Jacobian_from_TS");
     CHECK_ERR
-    dattr = 0.5;
+    // dattr = 0.5;
     err = GET_ATT (ncid, NC_GLOBAL, "config_common_level_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_eos_type", 2, "jm");
     CHECK_ERR
-    dattr = -1.8;
+    // dattr = -1.8;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_0",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_S",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_p",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_open_ocean_freezing_temperature_coeff_pS",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL,
                    "config_open_ocean_freezing_temperature_reference_pressure", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.0622;
+    // dattr = 0.0622;
     err = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_0",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -0.0563;
+    // dattr = -0.0563;
     err = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_S",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -7.43e-08;
+    // dattr = -7.43e-08;
     err = GET_ATT (ncid, NC_GLOBAL, "config_land_ice_cavity_freezing_temperature_coeff_p",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -1.74e-10;
+    // dattr = -1.74e-10;
     err   = GET_ATT (ncid, NC_GLOBAL,
                    "config_land_ice_cavity_freezing_temperature_coeff_pS", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL,
                    "config_land_ice_cavity_freezing_temperature_reference_pressure", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.2;
+    // dattr = 0.2;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_alpha", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.8;
+    // dattr = 0.8;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_beta", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 5.;
+    // dattr = 5.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_Tref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_Sref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1000.;
+    // dattr = 1000.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_eos_linear_densityref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = 2;
+    // iattr = 2;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_n_ts_iter", MPI_INT, 1, &iattr);
     CHECK_ERR
-    iattr = 1;
+    // iattr = 1;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_n_bcl_iter_beg", MPI_INT, 1, &iattr);
     CHECK_ERR
-    iattr = 2;
+    // iattr = 2;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_n_bcl_iter_mid", MPI_INT, 1, &iattr);
     CHECK_ERR
-    iattr = 2;
+    // iattr = 2;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_n_bcl_iter_end", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_btr_dt", 13, "0000_00:00:12");
     CHECK_ERR
-    iattr = 2;
+    // iattr = 2;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_n_btr_cor_iter", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_vel_correction", 3, "YES");
     CHECK_ERR
-    iattr = 2;
+    // iattr = 2;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_btr_subcycle_loop_factor", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = 0.5;
+    // dattr = 0.5;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_gam1_velWt1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_gam2_SSHWt1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_btr_gam3_velWt2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_btr_solve_SSH2", 2, "NO");
@@ -746,206 +743,206 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_use_rx1_constraint", 2, "NO");
     CHECK_ERR
-    iattr = 20;
+    // iattr = 20;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_outer_iter_count", MPI_INT, 1, &iattr);
     CHECK_ERR
-    iattr = 10;
+    // iattr = 10;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_inner_iter_count", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = 0.1;
+    // dattr = 0.1;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_rx1_init_inner_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 5.;
+    // dattr = 5.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_weight", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_rx1_vert_smooth_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.1;
+    // dattr = 0.1;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_slope_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_zstar_weight", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = 20;
+    // iattr = 20;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_horiz_smooth_open_ocean_cells", MPI_INT,
                    1, &iattr);
     CHECK_ERR
-    iattr = 3;
+    // iattr = 3;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_min_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_rx1_min_layer_thickness", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    iattr = 20;
+    // iattr = 20;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_vert_levels", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_baroclinic_channel_use_distances", 2,
                         "NO");
     CHECK_ERR
-    dattr = 13.1000003814697;
+    // dattr = 13.1000003814697;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_surface_temperature",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 10.1000003814697;
+    // dattr = 10.1000003814697;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_bottom_temperature",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.20000004768372;
+    // dattr = 1.20000004768372;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_temperature_difference",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.0799999982118607;
+    // dattr = 0.0799999982118607;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_gradient_width_frac",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 40000.;
+    // dattr = 40000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_gradient_width_dist",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1000.;
+    // dattr = 1000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_bottom_depth", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_salinity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = -0.000119999996968545;
+    // dattr = -0.000119999996968545;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_baroclinic_channel_coriolis_parameter",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = 20;
+    // iattr = 20;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = 20.;
+    // dattr = 20.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_bottom_depth", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 5.;
+    // dattr = 5.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_cold_temperature", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 30.;
+    // dattr = 30.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_warm_temperature", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_lock_exchange_direction", 1, "y");
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_lock_exchange_layer_type", 7, "z-level");
     CHECK_ERR
-    dattr = 0.00999999977648258;
+    // dattr = 0.00999999977648258;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_lock_exchange_isopycnal_min_thickness",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = 20;
+    // iattr = 20;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_vert_levels", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_internal_waves_use_distances", 2, "NO");
     CHECK_ERR
-    dattr = 20.1000003814697;
+    // dattr = 20.1000003814697;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_surface_temperature",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 10.1000003814697;
+    // dattr = 10.1000003814697;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_bottom_temperature",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2.;
+    // dattr = 2.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_temperature_difference",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.330000013113022;
+    // dattr = 0.330000013113022;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_frac",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 50000.;
+    // dattr = 50000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_amplitude_width_dist",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 500.;
+    // dattr = 500.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_bottom_depth", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_salinity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_internal_waves_layer_type", 7, "z-level");
     CHECK_ERR
-    dattr = 125.;
+    // dattr = 125.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_internal_waves_isopycnal_displacement",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = 100;
+    // iattr = 100;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_overflow_use_distances", 2, "NO");
     CHECK_ERR
-    dattr = 2000.;
+    // dattr = 2000.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_overflow_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 500.;
+    // dattr = 500.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_overflow_ridge_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_plug_temperature", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 20.;
+    // dattr = 20.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_domain_temperature", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.100000001490116;
+    // dattr = 0.100000001490116;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_plug_width_frac", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.200000002980232;
+    // dattr = 0.200000002980232;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_center_frac", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.0500000007450581;
+    // dattr = 0.0500000007450581;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_width_frac", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 20000.;
+    // dattr = 20000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_plug_width_dist", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 40000.;
+    // dattr = 40000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_center_dist", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 7000.;
+    // dattr = 7000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_overflow_slope_width_dist", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_overflow_layer_type", 7, "z-level");
     CHECK_ERR
-    dattr = 0.00999999977648258;
+    // dattr = 0.00999999977648258;
     err = GET_ATT (ncid, NC_GLOBAL, "config_overflow_isopycnal_min_thickness", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 15.;
+    // dattr = 15.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_minimum_depth", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
@@ -955,7 +952,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_depth_varname", 4, "none");
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_depth_conversion_factor",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -973,11 +970,11 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_tracer_ndepth_dimname", 4,
                         "none");
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_tracer_depth_conversion_factor",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = -1;
+    // iattr = -1;
     err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_tracer_vert_levels", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
@@ -1002,7 +999,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_tracer_method", 22,
                         "bilinear_interpolation");
     CHECK_ERR
-    iattr = 0;
+    // iattr = 0;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_smooth_TS_iterations", MPI_INT,
                    1, &iattr);
     CHECK_ERR
@@ -1035,11 +1032,11 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_clearSky_varname", 4, "none");
     CHECK_ERR
-    dattr = 4.99999987368938e-05;
+    // dattr = 4.99999987368938e-05;
     err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_piston_velocity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_interior_restore_rate",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -1115,7 +1112,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL,
                         "config_global_ocean_use_constant_land_ice_cavity_temperature", 2, "NO");
     CHECK_ERR
-    dattr = -1.79999995231628;
+    // dattr = -1.79999995231628;
     err =
         GET_ATT (ncid, NC_GLOBAL,
                  "config_global_ocean_constant_land_ice_cavity_temperature", MPI_DOUBLE, 1, &dattr);
@@ -1150,7 +1147,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_windstress_method", 22,
                         "bilinear_interpolation");
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_windstress_conversion_factor",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -1168,11 +1165,11 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_ndepth_dimname", 4,
                         "none");
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_depth_conversion_factor",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = -1;
+    // iattr = -1;
     err = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_ecosys_vert_levels", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
@@ -1194,607 +1191,607 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL,
                         "config_global_ocean_ecosys_forcing_time_dimname", 4, "none");
     CHECK_ERR
-    iattr = 0;
+    // iattr = 0;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_global_ocean_smooth_ecosys_iterations",
                    MPI_INT, 1, &iattr);
     CHECK_ERR
-    iattr = 100;
+    // iattr = 100;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = 15.;
+    // dattr = 15.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_temperature", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_salinity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 15.;
+    // dattr = 15.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_restoring_temperature",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_surface_restoring_salinity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 3.99999998990097e-06;
+    // dattr = 3.99999998990097e-06;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_piston_velocity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 3.99999998990097e-06;
+    // dattr = 3.99999998990097e-06;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_piston_velocity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_sensible_heat_flux", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_latent_heat_flux", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_shortwave_heat_flux", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_rain_flux", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_evaporation_flux", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 9.99999997475243e-07;
+    // dattr = 9.99999997475243e-07;
     err =
         GET_ATT (ncid, NC_GLOBAL,
                  "config_cvmix_WSwSBF_interior_temperature_restoring_rate", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 9.99999997475243e-07;
+    // dattr = 9.99999997475243e-07;
     err   = GET_ATT (ncid, NC_GLOBAL,
                    "config_cvmix_WSwSBF_interior_salinity_restoring_rate", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.00999999977648258;
+    // dattr = 0.00999999977648258;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_temperature_gradient",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_gradient", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL,
                    "config_cvmix_WSwSBF_temperature_gradient_mixed_layer", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_salinity_gradient_mixed_layer",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_depth_temperature",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_depth_salinity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_temperature_change",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_mixed_layer_salinity_change",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_vertical_grid", 7, "uniform");
     CHECK_ERR
-    dattr = 400.;
+    // dattr = 400.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_bottom_depth", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.100000001490116;
+    // dattr = 0.100000001490116;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_max_windstress", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 9.99999974737875e-05;
+    // dattr = 9.99999974737875e-05;
     err = GET_ATT (ncid, NC_GLOBAL, "config_cvmix_WSwSBF_coriolis_parameter", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    iattr = 100;
+    // iattr = 100;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = 4000.;
+    // dattr = 4000.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_main_channel_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -50.;
+    // dattr = -50.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_north_wall_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -70.;
+    // dattr = -70.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_south_wall_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_ridge_flag", 3, "YES");
     CHECK_ERR
-    dattr = 180.;
+    // dattr = 180.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_ridge_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2000.;
+    // dattr = 2000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_ridge_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2000000.;
+    // dattr = 2000000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_ridge_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_plateau_flag", 3, "YES");
     CHECK_ERR
-    dattr = 300.;
+    // dattr = 300.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -58.;
+    // dattr = -58.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2000.;
+    // dattr = 2000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 200000.;
+    // dattr = 200000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1000000.;
+    // dattr = 1000000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_plateau_slope_width", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_shelf_flag", 3, "YES");
     CHECK_ERR
-    dattr = 500.;
+    // dattr = 500.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_shelf_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 120000.;
+    // dattr = 120000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_shelf_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_cont_slope_flag", 3, "YES");
     CHECK_ERR
-    dattr = 0.00999999977648258;
+    // dattr = 0.00999999977648258;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_max_cont_slope", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_embayment_flag", 3, "YES");
     CHECK_ERR
-    dattr = 60.;
+    // dattr = 60.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_center_lon", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = -71.;
+    // dattr = -71.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_center_lat", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 500000.;
+    // dattr = 500000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2000.;
+    // dattr = 2000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_embayment_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_depression_flag", 3, "YES");
     CHECK_ERR
-    dattr = 60.;
+    // dattr = 60.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_center_lon", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = -72.;
+    // dattr = -72.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_south_lat", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = -65.;
+    // dattr = -65.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_north_lat", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 480000.;
+    // dattr = 480000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 800.;
+    // dattr = 800.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_depression_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.00999999977648258;
+    // dattr = 0.00999999977648258;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_wind_stress_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.200000002980232;
+    // dattr = 0.200000002980232;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_acc_wind", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -0.0500000007450581;
+    // dattr = -0.0500000007450581;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_asf_wind", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -65.;
+    // dattr = -65.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_wind_trans", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -5.;
+    // dattr = -5.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_south", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_middle", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -5.;
+    // dattr = -5.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_north", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -70.;
+    // dattr = -70.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_ss", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -65.;
+    // dattr = -65.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_sm", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -53.;
+    // dattr = -53.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_lat_mn", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 60.;
+    // dattr = 60.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_region1_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -75.;
+    // dattr = -75.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_region1_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 150.;
+    // dattr = 150.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_region2_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -71.;
+    // dattr = -71.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_region2_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 240.;
+    // dattr = 240.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_region3_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -71.;
+    // dattr = -71.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_region3_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 330.;
+    // dattr = 330.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_region4_center_lon", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -71.;
+    // dattr = -71.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_region4_center_lat", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_heat_flux_region1_flag", 2, "NO");
     CHECK_ERR
-    dattr = -5.;
+    // dattr = -5.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 300000.;
+    // dattr = 300000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region1_radius", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_heat_flux_region2_flag", 2, "NO");
     CHECK_ERR
-    dattr = -5.;
+    // dattr = -5.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 240000.;
+    // dattr = 240000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_heat_flux_region2_radius", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 5.80000014451798e-05;
+    // dattr = 5.80000014451798e-05;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_surface_temperature_piston_velocity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 3.5;
+    // dattr = 3.5;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 4.;
+    // dattr = 4.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_t2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1200.;
+    // dattr = 1200.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_h0", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 500.;
+    // dattr = 500.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_h1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 7.50000035623088e-05;
+    // dattr = 7.50000035623088e-05;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_mt", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -75.;
+    // dattr = -75.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_latS", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -50.;
+    // dattr = -50.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_iso_initial_temp_latN", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_t1", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1000.;
+    // dattr = 1000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_h1", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 120000.;
+    // dattr = 120000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_l1", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_sponge_tau1", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region1_flag", 3,
                         "YES");
     CHECK_ERR
-    dattr = -1.;
+    // dattr = -1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t1", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 600000.;
+    // dattr = 600000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx1", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 600000.;
+    // dattr = 600000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy1", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region2_flag", 3,
                         "YES");
     CHECK_ERR
-    dattr = -1.;
+    // dattr = -1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t2", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 600000.;
+    // dattr = 600000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx2", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 250000.;
+    // dattr = 250000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy2", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region3_flag", 3,
                         "YES");
     CHECK_ERR
-    dattr = -1.;
+    // dattr = -1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t3", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 600000.;
+    // dattr = 600000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx3", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 250000.;
+    // dattr = 250000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy3", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_iso_temperature_restore_region4_flag", 3,
                         "YES");
     CHECK_ERR
-    dattr = -1.;
+    // dattr = -1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_t4", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 600000.;
+    // dattr = 600000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcx4", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 250000.;
+    // dattr = 250000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_iso_temperature_restore_lcy4", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    iattr = 100;
+    // iattr = 100;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = 1250000.;
+    // dattr = 1250000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_domain_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_soma_center_latitude", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_soma_center_longitude", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.100000001490116;
+    // dattr = 0.100000001490116;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_phi", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2500.;
+    // dattr = 2500.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -0.400000005960464;
+    // dattr = -0.400000005960464;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_shelf_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 100.;
+    // dattr = 100.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_shelf_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1000.;
+    // dattr = 1000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_ref_density", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 4.;
+    // dattr = 4.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_density_difference", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 300.;
+    // dattr = 300.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_soma_thermocline_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.0500000007450581;
+    // dattr = 0.0500000007450581;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_density_difference_linear", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 20.;
+    // dattr = 20.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_surface_temperature", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 33.;
+    // dattr = 33.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_soma_surface_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_soma_use_surface_temp_restoring", 2, "NO");
     CHECK_ERR
-    dattr = 7.5;
+    // dattr = 7.5;
     err   = GET_ATT (ncid, NC_GLOBAL,
                    "config_soma_surface_temp_restoring_at_center_latitude", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.5;
+    // dattr = 0.5;
     err   = GET_ATT (ncid, NC_GLOBAL,
                    "config_soma_surface_temp_restoring_latitude_gradient", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 9.99999974737875e-06;
+    // dattr = 9.99999974737875e-06;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_soma_restoring_temp_piston_vel", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    iattr = 100;
+    // iattr = 100;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ziso_add_easterly_wind_stress_ASF", 2,
                         "NO");
     CHECK_ERR
-    dattr = 800000.;
+    // dattr = 800000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_wind_transition_position", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 600000.;
+    // dattr = 600000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_antarctic_shelf_front_width", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = -0.0500000007450581;
+    // dattr = -0.0500000007450581;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_wind_stress_shelf_front_max", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ziso_use_slopping_bathymetry", 2, "NO");
     CHECK_ERR
-    dattr = 2000000.;
+    // dattr = 2000000.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_ziso_meridional_extent", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1000000.;
+    // dattr = 1000000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_zonal_extent", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 2500.;
+    // dattr = 2500.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 500.;
+    // dattr = 500.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_shelf_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 100000.;
+    // dattr = 100000.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_ziso_slope_half_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 500000.;
+    // dattr = 500000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_slope_center_position", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = -9.99999974737875e-05;
+    // dattr = -9.99999974737875e-05;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_reference_coriolis", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_ziso_coriolis_gradient", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.200000002980232;
+    // dattr = 0.200000002980232;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_wind_stress_max", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 3.;
+    // dattr = 3.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_mean_restoring_temp", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 2.;
+    // dattr = 2.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_ta", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 2.;
+    // dattr = 2.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_dev_tb", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 30.;
+    // dattr = 30.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_tau", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.89999991562217e-05;
+    // dattr = 1.89999991562217e-05;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_piston_vel", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 1250.;
+    // dattr = 1250.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_temp_ze", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 80000.;
+    // dattr = 80000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ziso_restoring_sponge_l", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 6.;
+    // dattr = 6.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_t1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 3.59999990463257;
+    // dattr = 3.59999990463257;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_t2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 300.;
+    // dattr = 300.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_h1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 7.50000035623088e-05;
+    // dattr = 7.50000035623088e-05;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_initial_temp_mt", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ziso_frazil_enable", 2, "NO");
     CHECK_ERR
-    dattr = -3.;
+    // dattr = -3.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ziso_frazil_temperature_anomaly", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    iattr = 20;
+    // iattr = 20;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_vert_levels", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
-    dattr = 2000.;
+    // dattr = 2000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_depth", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 25.;
+    // dattr = 25.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_cavity_thickness",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 500.;
+    // dattr = 500.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_slope_height", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 15000.;
+    // dattr = 15000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_edge_width", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 30000.;
+    // dattr = 30000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 60000.;
+    // dattr = 60000.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_y2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_temperature", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 34.5;
+    // dattr = 34.5;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_surface_salinity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 34.7000007629395;
+    // dattr = 34.7000007629395;
     err = GET_ATT (ncid, NC_GLOBAL, "config_sub_ice_shelf_2D_bottom_salinity", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    iattr = 100;
+    // iattr = 100;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_periodic_planar_vert_levels", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
-    dattr = 2500.;
+    // dattr = 2500.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_periodic_planar_bottom_depth", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_periodic_planar_velocity_strength",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = 100;
+    // iattr = 100;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_ecosys_column_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
@@ -1807,11 +1804,11 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ecosys_column_ecosys_filename", 7,
                         "unknown");
     CHECK_ERR
-    dattr = 6000.;
+    // dattr = 6000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_ecosys_column_bottom_depth", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    iattr = 10;
+    // iattr = 10;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_sea_mount_layer_type", 5, "sigma");
@@ -1819,218 +1816,218 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_sea_mount_stratification_type", 11,
                         "exponential");
     CHECK_ERR
-    dattr = 1024.;
+    // dattr = 1024.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_coef_linear", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1028.;
+    // dattr = 1028.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_coef_exp", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.100000001490116;
+    // dattr = 0.100000001490116;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_linear",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 3.;
+    // dattr = 3.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_gradient_exp", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 4500.;
+    // dattr = 4500.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_depth_linear", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 500.;
+    // dattr = 500.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_depth_exp", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1028.;
+    // dattr = 1028.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_ref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 5.;
+    // dattr = 5.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_Tref", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.200000002980232;
+    // dattr = 0.200000002980232;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_density_alpha", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 5000.;
+    // dattr = 5000.;
     err =
         GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 4500.;
+    // dattr = 4500.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_height", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 10000.;
+    // dattr = 10000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_radius", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 40000.;
+    // dattr = 40000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_width", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 35.;
+    // dattr = 35.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -9.99999974737875e-05;
+    // dattr = -9.99999974737875e-05;
     err = GET_ATT (ncid, NC_GLOBAL, "config_sea_mount_coriolis_parameter", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    iattr = 30;
+    // iattr = 30;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_isomip_vertical_level_distribution", 8,
                         "constant");
     CHECK_ERR
-    dattr = -900.;
+    // dattr = -900.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_bottom_depth", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -1.89999997615814;
+    // dattr = -1.89999997615814;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_temperature", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 34.4000015258789;
+    // dattr = 34.4000015258789;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_salinity", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -1.89999997615814;
+    // dattr = -1.89999997615814;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_restoring_temperature", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.20000004244503e-05;
+    // dattr = 1.20000004244503e-05;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_temperature_piston_velocity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 34.4000015258789;
+    // dattr = 34.4000015258789;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_restoring_salinity", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.20000004244503e-05;
+    // dattr = 1.20000004244503e-05;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_salinity_piston_velocity", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = -0.00014000000373926;
+    // dattr = -0.00014000000373926;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_coriolis_parameter", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_southern_boundary", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1000000.;
+    // dattr = 1000000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_northern_boundary", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_western_boundary", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 500000.;
+    // dattr = 500000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_eastern_boundary", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 0.;
+    // dattr = 0.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_y1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -700.;
+    // dattr = -700.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_z1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_ice_fraction1", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 400000.;
+    // dattr = 400000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_y2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -200.;
+    // dattr = -200.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_z2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_ice_fraction2", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1000000.;
+    // dattr = 1000000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_y3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -200.;
+    // dattr = -200.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_z3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_ice_fraction3", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = 36;
+    // iattr = 36;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_vert_levels", MPI_INT, 1, &iattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_isomip_plus_vertical_level_distribution",
                         8, "constant");
     CHECK_ERR
-    dattr = -720.;
+    // dattr = -720.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_max_bottom_depth", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    iattr = 3;
+    // iattr = 3;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_minimum_levels", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_min_column_thickness", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 0.5;
+    // dattr = 0.5;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_min_ocean_fraction", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_isomip_plus_topography_file", 27,
                         "input_geometry_processed.nc");
     CHECK_ERR
-    dattr = -1.89999997615814;
+    // dattr = -1.89999997615814;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_top_temp", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = -1.89999997615814;
+    // dattr = -1.89999997615814;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_temp", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 33.7999992370605;
+    // dattr = 33.7999992370605;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_top_sal", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 34.5;
+    // dattr = 34.5;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_init_bot_sal", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = -1.89999997615814;
+    // dattr = -1.89999997615814;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_temp", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.;
+    // dattr = 1.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_temp", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 33.7999992370605;
+    // dattr = 33.7999992370605;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_top_sal", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 34.7000007629395;
+    // dattr = 34.7000007629395;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_bot_sal", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 10.;
+    // dattr = 10.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_rate", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 200.;
+    // dattr = 200.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_evap_rate", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 790000.;
+    // dattr = 790000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMin", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 800000.;
+    // dattr = 800000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_restore_xMax", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = -0.000140999996801838;
+    // dattr = -0.000140999996801838;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_coriolis_parameter", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 1026.;
+    // dattr = 1026.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_isomip_plus_effective_density", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
@@ -2060,11 +2057,11 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
                         "config_surface_salinity_monthly_restoring_compute_interval", 19,
                         "0000-00-01_00:00:00");
     CHECK_ERR
-    dattr = 1.585e-06;
+    // dattr = 1.585e-06;
     err = GET_ATT (ncid, NC_GLOBAL, "config_salinity_restoring_constant_piston_velocity",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 100;
+    // dattr = 100;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_salinity_restoring_max_difference",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -2099,7 +2096,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_ecosys_atm_alt_co2_use_eco", 2, "NO");
     CHECK_ERR
-    dattr = 379.;
+    // dattr = 379.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_ecosys_atm_co2_constant_value", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
@@ -2241,19 +2238,19 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_write_on_startup", 2,
                         "NO");
     CHECK_ERR
-    dattr = -2.;
+    // dattr = -2.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minTemperature",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 30.;
+    // dattr = 30.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxTemperature",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 32.;
+    // dattr = 32.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_minSalinity", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 37.;
+    // dattr = 37.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_waterMassCensus_maxSalinity", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
@@ -2292,13 +2289,13 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_zonalMean_output_stream", 15,
                         "zonalMeanOutput");
     CHECK_ERR
-    iattr = 180;
+    // iattr = 180;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_zonalMean_num_bins", MPI_INT, 1, &iattr);
     CHECK_ERR
-    dattr = -1.e+34;
+    // dattr = -1.e+34;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_zonalMean_min_bin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -1.e+34;
+    // dattr = -1.e+34;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_zonalMean_max_bin", MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_enable", 2, "NO");
@@ -2318,15 +2315,15 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_directory", 16,
                         "analysis_members");
     CHECK_ERR
-    dattr = -0.2;
+    // dattr = -0.2;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_threshold_value", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.e-10;
+    // dattr = 1.e-10;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_normalization", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = 1.e-10;
+    // dattr = 1.e-10;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_lambda2_normalization",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -2336,7 +2333,7 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_compute_eddy_census", 3,
                         "YES");
     CHECK_ERR
-    iattr = 20;
+    // iattr = 20;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_okuboWeiss_eddy_min_cells", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
@@ -2357,15 +2354,15 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_output_stream",
                       29, "meridionalHeatTransportOutput");
     CHECK_ERR
-    iattr = 180;
+    // iattr = 180;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_num_bins", MPI_INT,
                    1, &iattr);
     CHECK_ERR
-    dattr = -1.e+34;
+    // dattr = -1.e+34;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_min_bin",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = -1.e+34;
+    // dattr = -1.e+34;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_meridionalHeatTransport_max_bin",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -2446,11 +2443,11 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_write_on_startup", 2,
                         "NO");
     CHECK_ERR
-    iattr = 0;
+    // iattr = 0;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_filter_number", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
-    iattr = 2;
+    // iattr = 2;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_lagrPartTrack_timeIntegration", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
@@ -2488,15 +2485,15 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_debug", 2, "NO");
     CHECK_ERR
-    iattr = 45;
+    // iattr = 45;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_nBuoyancyLayers", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
-    dattr = 900.;
+    // dattr = 900.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomin_buoycoor", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
-    dattr = 1080.;
+    // dattr = 1080.;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_eliassenPalm_rhomax_buoycoor", MPI_DOUBLE,
                    1, &dattr);
     CHECK_ERR
@@ -2520,15 +2517,15 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err =
         GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_Dthreshold", 3, "YES");
     CHECK_ERR
-    dattr = 0.2;
+    // dattr = 0.2;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_crit_temp_threshold",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 0.03;
+    // dattr = 0.03;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_crit_dens_threshold",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 100000.;
+    // dattr = 100000.;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_reference_pressure",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
@@ -2536,15 +2533,15 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     CHECK_ERR
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_Dgradient", 2, "NO");
     CHECK_ERR
-    dattr = 5.e-07;
+    // dattr = 5.e-07;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_temp_gradient_threshold",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    dattr = 5.e-08;
+    // dattr = 5.e-08;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_den_gradient_threshold",
                    MPI_DOUBLE, 1, &dattr);
     CHECK_ERR
-    iattr = 1;
+    // iattr = 1;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mixedLayerDepths_interp_method", MPI_INT,
                    1, &iattr);
     CHECK_ERR
@@ -3031,15 +3028,15 @@ static int inq_global_attributes (e3sm_io_driver &driver, int ncid) {
     err = GET_ATT_TEXT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_write_on_startup",
                         2, "NO");
     CHECK_ERR
-    dattr = -1.e+34;
+    // dattr = -1.e+34;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_min_bin", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    dattr = -1.e+34;
+    // dattr = -1.e+34;
     err = GET_ATT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_max_bin", MPI_DOUBLE, 1,
                    &dattr);
     CHECK_ERR
-    iattr = 180;
+    // iattr = 180;
     err   = GET_ATT (ncid, NC_GLOBAL, "config_AM_mocStreamfunction_num_bins", MPI_INT, 1,
                    &iattr);
     CHECK_ERR
@@ -3069,7 +3066,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
                    MPI_Offset dims_D1[1], /* dimension sizes of decomposition 1 */
                    MPI_Offset dims_D2[1], /* dimension sizes of decomposition 2 */
                    MPI_Offset dims_D3[2], /* dimension sizes of decomposition 3 */
-                   MPI_Offset dims_D4[2], /* dimension sizes of decomposition 4 */
+                   MPI_Offset dims_D4[2] E3SM_IO_UNUSED, /* dimension sizes of decomposition 4 */
                    MPI_Offset dims_D5[2], /* dimension sizes of decomposition 5 */
                    MPI_Offset dims_D6[2], /* dimension sizes of decomposition 6 */
                    int nvars,             /* number of variables */
@@ -3089,9 +3086,8 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
         temperatureSurfaceFluxTendency, salinitySurfaceFluxTendency, temperatureShortWaveTendency,
         temperatureNonLocalTendency, salinityNonLocalTendency, temperature, salinity;
 
-    int i, err, dimids[3];
-    int dim_nVertLevelsP1, dim_nCells, dim_Time, dim_nVertLevels, dim_nEdges, dim_nVertices,
-        dim_StrLen;
+    int i, err;
+    int dim_nVertLevelsP1, dim_nCells, dim_nVertLevels, dim_nEdges, dim_nVertices;
 
     err = inq_global_attributes (driver, ncid);
     CHECK_ERR
@@ -3133,8 +3129,8 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
 
     /* define variables */
     /* 1 double (Time, nCells) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
 
     err = INQ_VID (ncid, "salinitySurfaceRestoringTendency", MPI_DOUBLE, 2, dimids,
                    &salinitySurfaceRestoringTendency);
@@ -3147,9 +3143,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = salinitySurfaceRestoringTendency;
 
     /* 3 double (Time, nCells, nVertLevelsP1) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
-    dimids[2] = dim_nVertLevelsP1;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
+    // dimids[2] = dim_nVertLevelsP1;
 
     err = INQ_VID (ncid, "vertTransportVelocityTop", MPI_DOUBLE, 3, dimids,
                    &vertTransportVelocityTop);
@@ -3187,8 +3183,8 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = vertAleTransportTop;
 
     /* 1 double (Time, nCells) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
 
     err = INQ_VID (ncid, "tendSSH", MPI_DOUBLE, 2, dimids, &tendSSH);
     CHECK_ERR
@@ -3199,9 +3195,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = tendSSH;
 
     /* 1 double (Time, nCells, nVertLevels) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
-    dimids[2] = dim_nVertLevels;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
+    // dimids[2] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "layerThickness", MPI_DOUBLE, 3, dimids, &layerThickness);
     CHECK_ERR
@@ -3212,9 +3208,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = layerThickness;
 
     /* 1 double (Time, nEdges, nVertLevels) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nEdges;
-    dimids[2] = dim_nVertLevels;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nEdges;
+    // dimids[2] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "normalVelocity", MPI_DOUBLE, 3, dimids, &normalVelocity);
     CHECK_ERR
@@ -3227,8 +3223,8 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = normalVelocity;
 
     /* 1 double (Time, nCells) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
 
     err = INQ_VID (ncid, "ssh", MPI_DOUBLE, 2, dimids, &ssh);
     CHECK_ERR
@@ -3239,7 +3235,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = ssh;
 
     /* 1 int (nEdges) */
-    dimids[0] = dim_nEdges;
+    // dimids[0] = dim_nEdges;
 
     err = INQ_VID (ncid, "maxLevelEdgeTop", MPI_INT, 1, dimids, &maxLevelEdgeTop);
     CHECK_ERR
@@ -3252,7 +3248,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = maxLevelEdgeTop;
 
     /* 1 double (nVertLevels) */
-    dimids[0] = dim_nVertLevels;
+    // dimids[0] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "vertCoordMovementWeights", MPI_DOUBLE, 1, dimids,
                    &vertCoordMovementWeights);
@@ -3267,8 +3263,8 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = vertCoordMovementWeights;
 
     /* 1 int (nEdges, nVertLevels) */
-    dimids[0] = dim_nEdges;
-    dimids[1] = dim_nVertLevels;
+    // dimids[0] = dim_nEdges;
+    // dimids[1] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "edgeMask", MPI_INT, 2, dimids, &edgeMask);
     CHECK_ERR
@@ -3281,8 +3277,8 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = edgeMask;
 
     /* 1 int (nCells, nVertLevels) */
-    dimids[0] = dim_nCells;
-    dimids[1] = dim_nVertLevels;
+    // dimids[0] = dim_nCells;
+    // dimids[1] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "cellMask", MPI_INT, 2, dimids, &cellMask);
     CHECK_ERR
@@ -3295,8 +3291,8 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = cellMask;
 
     /* 1 int (nVertices, nVertLevels) */
-    dimids[0] = dim_nVertices;
-    dimids[1] = dim_nVertLevels;
+    // dimids[0] = dim_nVertices;
+    // dimids[1] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "vertexMask", MPI_INT, 2, dimids, &vertexMask);
     CHECK_ERR
@@ -3309,7 +3305,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = vertexMask;
 
     /* 2 double (nVertLevels) */
-    dimids[0] = dim_nVertLevels;
+    // dimids[0] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "refZMid", MPI_DOUBLE, 1, dimids, &refZMid);
     CHECK_ERR
@@ -3332,8 +3328,8 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = refLayerThickness;
 
     /* 1 char (Time, StrLen) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_StrLen;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_StrLen;
 
     err = INQ_VID (ncid, "xtime", MPI_CHAR, 2, dimids, &xtime);
     CHECK_ERR
@@ -3345,9 +3341,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = xtime;
 
     /* 2 double (Time, nCells, nVertLevels) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
-    dimids[2] = dim_nVertLevels;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
+    // dimids[2] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "kineticEnergyCell", MPI_DOUBLE, 3, dimids, &kineticEnergyCell);
     CHECK_ERR
@@ -3370,9 +3366,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = relativeVorticityCell;
 
     /* 1 double (Time, nVertices, nVertLevels) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nVertices;
-    dimids[2] = dim_nVertLevels;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nVertices;
+    // dimids[2] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "relativeVorticity", MPI_DOUBLE, 3, dimids, &relativeVorticity);
     CHECK_ERR
@@ -3385,9 +3381,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = relativeVorticity;
 
     /* 1 double (Time, nCells, nVertLevels) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
-    dimids[2] = dim_nVertLevels;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
+    // dimids[2] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "divergence", MPI_DOUBLE, 3, dimids, &divergence);
     CHECK_ERR
@@ -3398,7 +3394,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = divergence;
 
     /* 6 double (Time) */
-    dimids[0] = dim_Time;
+    // dimids[0] = dim_Time;
 
     err = INQ_VID (ncid, "areaCellGlobal", MPI_DOUBLE, 1, dimids, &areaCellGlobal);
     CHECK_ERR
@@ -3460,9 +3456,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = CFLNumberGlobal;
 
     /* 1 double (Time, nCells, nVertLevels) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
-    dimids[2] = dim_nVertLevels;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
+    // dimids[2] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "BruntVaisalaFreqTop", MPI_DOUBLE, 3, dimids, &BruntVaisalaFreqTop);
     CHECK_ERR
@@ -3475,9 +3471,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = BruntVaisalaFreqTop;
 
     /* 1 double (Time, nCells, nVertLevelsP1) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
-    dimids[2] = dim_nVertLevelsP1;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
+    // dimids[2] = dim_nVertLevelsP1;
 
     err = INQ_VID (ncid, "vertVelocityTop", MPI_DOUBLE, 3, dimids, &vertVelocityTop);
     CHECK_ERR
@@ -3490,9 +3486,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = vertVelocityTop;
 
     /* 5 double (Time, nCells, nVertLevels) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
-    dimids[2] = dim_nVertLevels;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
+    // dimids[2] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "velocityZonal", MPI_DOUBLE, 3, dimids, &velocityZonal);
     CHECK_ERR
@@ -3545,7 +3541,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = pressure;
 
     /* 1 double (nVertLevels) */
-    dimids[0] = dim_nVertLevels;
+    // dimids[0] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "refBottomDepth", MPI_DOUBLE, 1, dimids, &refBottomDepth);
     CHECK_ERR
@@ -3558,9 +3554,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = refBottomDepth;
 
     /* 1 double (Time, nCells, nVertLevels) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
-    dimids[2] = dim_nVertLevels;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
+    // dimids[2] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "zMid", MPI_DOUBLE, 3, dimids, &zMid);
     CHECK_ERR
@@ -3571,7 +3567,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = zMid;
 
     /* 1 double (nCells) */
-    dimids[0] = dim_nCells;
+    // dimids[0] = dim_nCells;
 
     err = INQ_VID (ncid, "bottomDepth", MPI_DOUBLE, 1, dimids, &bottomDepth);
     CHECK_ERR
@@ -3584,7 +3580,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = bottomDepth;
 
     /* 1 int (nCells) */
-    dimids[0] = dim_nCells;
+    // dimids[0] = dim_nCells;
 
     err = INQ_VID (ncid, "maxLevelCell", MPI_INT, 1, dimids, &maxLevelCell);
     CHECK_ERR
@@ -3596,7 +3592,7 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = maxLevelCell;
 
     /* 1 int (nEdges) */
-    dimids[0] = dim_nEdges;
+    // dimids[0] = dim_nEdges;
 
     err = INQ_VID (ncid, "maxLevelEdgeBot", MPI_INT, 1, dimids, &maxLevelEdgeBot);
     CHECK_ERR
@@ -3609,8 +3605,8 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = maxLevelEdgeBot;
 
     /* 1 double (Time, nCells) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
 
     err = INQ_VID (ncid, "columnIntegratedSpeed", MPI_DOUBLE, 2, dimids, &columnIntegratedSpeed);
     CHECK_ERR
@@ -3624,9 +3620,9 @@ int inq_G_case_h0 (e3sm_io_driver &driver,
     varids[i++] = columnIntegratedSpeed;
 
     /* 13 double (Time, nCells, nVertLevels) */
-    dimids[0] = dim_Time;
-    dimids[1] = dim_nCells;
-    dimids[2] = dim_nVertLevels;
+    // dimids[0] = dim_Time;
+    // dimids[1] = dim_nCells;
+    // dimids[2] = dim_nVertLevels;
 
     err = INQ_VID (ncid, "temperatureHorizontalAdvectionTendency", MPI_DOUBLE, 3, dimids,
                    &temperatureHorizontalAdvectionTendency);
