@@ -199,7 +199,7 @@ err_out:
 
 /*----< def_var_decomp() >---------------------------------------------------*/
 static
-int def_var_decomp(e3sm_io_config &cfg,
+int def_var_decomp(e3sm_io_config &cfg E3SM_IO_UNUSED,
                    e3sm_io_decom  &decom,
                    e3sm_io_driver &driver,
                    int             ncid,

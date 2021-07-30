@@ -85,8 +85,8 @@
     {}
 
 /*----< add_gattrs() >-------------------------------------------------------*/
-static int add_gattrs (e3sm_io_config &cfg,
-                       e3sm_io_decom &decom,
+static int add_gattrs (e3sm_io_config &cfg E3SM_IO_UNUSED,
+                       e3sm_io_decom &decom E3SM_IO_UNUSED,
                        e3sm_io_driver &driver,
                        int ncid) {
     int err;
@@ -130,7 +130,7 @@ err_out:
 }
 
 /*----< def_dims() >---------------------------------------------------------*/
-static int def_dims (e3sm_io_config &cfg,
+static int def_dims (e3sm_io_config &cfg E3SM_IO_UNUSED,
                      e3sm_io_decom &decom,
                      e3sm_io_driver &driver,
                      std::map<int, std::string> &dnames,
@@ -141,9 +141,9 @@ static int def_dims (e3sm_io_config &cfg,
                      int *dim_chars,
                      int *dim_lev,
                      int *dim_ilev,
-                     int *nblobs_ID,
-                     int nelems_D[3],
-                     int max_nreqs_D[3],
+                     int *nblobs_ID E3SM_IO_UNUSED,
+                     int nelems_D[3] E3SM_IO_UNUSED,
+                     int max_nreqs_D[3] E3SM_IO_UNUSED,
                      int dimids_D[3][3],
                      int fix_D[3][3],
                      int rec_D[3][3]) {
@@ -200,13 +200,12 @@ int def_F_case_h0_scorpio (e3sm_io_driver &driver,
                            e3sm_io_config &cfg,
                            e3sm_io_decom &decom,
                            int ncid,                 /* file ID */
-                           const MPI_Offset dims[2], /* dimension sizes */
-                           int nvars,                /* number of variables */
+                           const MPI_Offset dims[2] E3SM_IO_UNUSED, /* dimension sizes */
+                           int nvars E3SM_IO_UNUSED,                /* number of variables */
                            std::vector<int> &decomids,
                            e3sm_io_scorpio_var *varids, /* variable IDs */
                            int *scorpiovars) {
     int i, j, k;
-    int one = 1, two = 2, three = 3;
     e3sm_io_scorpio_var *varid;
     int err, ndims, dimids[3], mdims = 1, nvars_decomp = 0;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
@@ -3386,13 +3385,12 @@ int def_F_case_h1_scorpio (e3sm_io_driver &driver,
                            e3sm_io_config &cfg,
                            e3sm_io_decom &decom,
                            int ncid,                 /* file ID */
-                           const MPI_Offset dims[2], /* dimension sizes */
-                           int nvars,                /* number of variables */
+                           const MPI_Offset dims[2] E3SM_IO_UNUSED, /* dimension sizes */
+                           int nvars E3SM_IO_UNUSED,                /* number of variables */
                            std::vector<int> &decomids,
                            e3sm_io_scorpio_var *varids, /* variable IDs */
                            int *scorpiovars) {
     int i, j, k;
-    int one = 1, two = 2, three = 3;
     e3sm_io_scorpio_var *varid;
     int err, ndims, dimids[3], mdims = 1, nvars_decomp = 0;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;

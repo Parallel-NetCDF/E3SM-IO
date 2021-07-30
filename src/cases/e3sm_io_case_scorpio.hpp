@@ -214,7 +214,7 @@ inline int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
                                   e3sm_io_scorpio_var &var,
                                   MPI_Datatype itype,
                                   void *buf,
-                                  e3sm_io_op_mode mode) {
+                                  e3sm_io_op_mode mode E3SM_IO_UNUSED) {
     int err, nerrs = 0;
     int decomid;
 
