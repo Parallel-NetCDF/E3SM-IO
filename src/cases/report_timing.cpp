@@ -54,6 +54,7 @@ int check_malloc(e3sm_io_config *cfg,
 /*---< report_timing_WR() >--------------------------------------------------*/
 int report_timing_WR(e3sm_io_config *cfg,
                      e3sm_io_driver *driver,
+                     e3sm_io_decom  *decom,
                      const char     *outfile)
 {
     int i, err=0, global_rank;
@@ -92,6 +93,8 @@ int report_timing_WR(e3sm_io_config *cfg,
     end2end_time = max_dbl[6];
 
     if (global_rank == 0) {
+        int nblobs = cfg->num_subfiles;
+        MPI_Offset decomp_amount;
         int nvars_noD = cfg->nvars;
         for (i=0; i<cfg->num_decomp; i++) nvars_noD -= cfg->nvars_D[i];
         int nvars = cfg->nvars + nvars_noD;
@@ -116,12 +119,21 @@ int report_timing_WR(e3sm_io_config *cfg,
             }
             else {
                 printf("History output subfile names       = %s.xxxx\n", outfile);
-                printf("Number of subfiles                 = %3d\n", cfg->num_subfiles);
+                printf("Number of subfiles                 = %3d\n", nblobs);
             }
+            decomp_amount = 0;
+            for (i=0; i<cfg->num_decomp; i++) {
+                decomp_amount += nblobs * sizeof(int); /* D*.nreqs */
+                decomp_amount += nblobs * sizeof(MPI_Offset); /* D*.blob_start */
+                decomp_amount += nblobs * sizeof(MPI_Offset); /* D*.blob_count */
+                decomp_amount += nblobs * decom->nelems[i] * sizeof(int); /* D*.offsets */
+                decomp_amount += nblobs * decom->nelems[i] * sizeof(int); /* D*.lengths */
+            }
+            printf("No. decomposition variables        = %3d\n", cfg->num_decomp_vars);
+            printf("Size of decomposition variables    = %.2f MiB\n", (float)decomp_amount/1048576.0);
         }
         else
             printf("History output file                = %s\n", outfile);
-        printf("No. decomposition variables        = %3d\n", cfg->num_decomp_vars);
         printf("No. variables use no decomposition = %3d\n", nvars_noD);
         for (i=0; i<cfg->num_decomp; i++)
             printf("No. variables use decomposition D%d = %3d\n",

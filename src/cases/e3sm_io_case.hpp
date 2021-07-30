@@ -205,5 +205,6 @@ check_malloc(e3sm_io_config *cfg,
 extern int
 report_timing_WR(e3sm_io_config *cfg,
                  e3sm_io_driver *driver,
+                 e3sm_io_decom *decom,
                  const char *outfile);
 
