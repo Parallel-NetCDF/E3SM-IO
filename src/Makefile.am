@@ -6,7 +6,8 @@ AM_M4FLAGS = -I${srcdir}
 
 M4FLAGS += -I${top_srcdir}/m4
 
-M4_SRCS = e3sm_io_profile.m4
+M4_SRCS = e3sm_io_profile.m4 \
+          e3sm_io_profile_timers.m4
 
 M4H_SRCS = e3sm_io_profile.m4h
 
@@ -45,6 +46,8 @@ BUILT_SOURCES = $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
 
 SUBDIRS = cases drivers
 DIST_SUBDIRS = cases drivers
+
+EXTRA_DIST = $(M4H_SRCS) $(M4_SRCS)
 
 CLEANFILES = $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
 
