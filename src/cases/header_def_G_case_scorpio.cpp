@@ -96,7 +96,7 @@ static int add_gattrs (e3sm_io_config &cfg,
                        e3sm_io_decom &decom,
                        e3sm_io_driver &driver,
                        int ncid) {
-    int err = 0, nprocs;
+    int err = 0;
 
     // PIO attributes
     PUT_GATTR_INT ("/__pio__/fillmode", 256);
@@ -942,12 +942,10 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
                         e3sm_io_scorpio_var *varids, /* variable IDs */
                         int *scorpiovars) {
     /* Total 52 variables */
-    int one = 1, two = 2, three = 3, four = 4, five = 5, six = 6;
-    int i, j, k, err, nprocs, nprocs_ID, ndims, dimids[2];
+    int i, j, k, err, ndims, dimids[2];
     e3sm_io_scorpio_var *varid;
-    int nelems_D[MAX_NUM_DECOMP], max_nreqs_dimid[MAX_NUM_DECOMP];
     int dim_Time, dim_nCells, dim_nEdges, dim_nVertices, dim_StrLen;
-    int dim_nVertLevels, dim_nVertLevelsP1, dimids_D[MAX_NUM_DECOMP][3];
+    int dim_nVertLevels, dim_nVertLevelsP1;
     int fix_D[MAX_NUM_DECOMP][3], rec_D[MAX_NUM_DECOMP][3];
     std::map<int, std::string> dnames;
     int piodecomid_inv[] = {0, 1, 2, 3, 4, 5};
@@ -986,23 +984,23 @@ int def_G_case_scorpio (e3sm_io_config &cfg,
     DEF_DIM ("nVertLevels", decom.dims[2][1], &dim_nVertLevels)
     DEF_DIM ("StrLen", 64, &dim_StrLen)
 
-    dimids_D[0][0] = dim_Time;
-    dimids_D[1][0] = dim_Time;
-    dimids_D[2][0] = dim_Time;
-    dimids_D[3][0] = dim_Time;
-    dimids_D[4][0] = dim_Time;
-    dimids_D[5][0] = dim_Time;
+    // dimids_D[0][0] = dim_Time;
+    // dimids_D[1][0] = dim_Time;
+    // dimids_D[2][0] = dim_Time;
+    // dimids_D[3][0] = dim_Time;
+    // dimids_D[4][0] = dim_Time;
+    // dimids_D[5][0] = dim_Time;
 
-    dimids_D[0][1] = dim_nCells;
-    dimids_D[1][1] = dim_nEdges;
-    dimids_D[2][1] = dim_nCells;
-    dimids_D[2][2] = dim_nVertLevels;
-    dimids_D[3][1] = dim_nEdges;
-    dimids_D[3][2] = dim_nVertLevels;
-    dimids_D[4][1] = dim_nVertices;
-    dimids_D[4][2] = dim_nVertLevels;
-    dimids_D[5][1] = dim_nCells;
-    dimids_D[5][2] = dim_nVertLevelsP1;
+    // dimids_D[0][1] = dim_nCells;
+    // dimids_D[1][1] = dim_nEdges;
+    // dimids_D[2][1] = dim_nCells;
+    // dimids_D[2][2] = dim_nVertLevels;
+    // dimids_D[3][1] = dim_nEdges;
+    // dimids_D[3][2] = dim_nVertLevels;
+    // dimids_D[4][1] = dim_nVertices;
+    // dimids_D[4][2] = dim_nVertLevels;
+    // dimids_D[5][1] = dim_nCells;
+    // dimids_D[5][2] = dim_nVertLevelsP1;
 
     /* canonical */
     fix_D[0][0] = dim_nCells;
