@@ -23,7 +23,7 @@
     {                                                                                          \
         if (err != NC_NOERR) {                                                                 \
             printf ("Error at line %d in %s: %s\n", __LINE__, __FILE__, ncmpi_strerrno (err)); \
-            nerrs++;                                                                           \
+            goto fn_exit;                                                                      \
         }                                                                                      \
     }
 
@@ -44,7 +44,7 @@ static int add_decomp (int ncid, const char *infname, int label) {
     char *buf, name[128], *map, *str;
     FILE *fd;
     int rank, nprocs, ndims;
-    int i, j, dimid, varid[5], *nreqs, *raw_nreqs = NULL, err, nerrs = 0, *off, *len, *raw_off;
+    int i, j, dimid, varid[5], *nreqs, *raw_nreqs = NULL, err = NC_NOERR, *off, *len, *raw_off;
     int total_nreqs, max_nreqs, min_nreqs, maxlen, minlen, total_raw_nreqs;
     MPI_Offset k, gsize, *dims, *dims_C, start, count, raw_start, raw_count;
 
@@ -427,7 +427,7 @@ fn_exit:
     free (raw_nreqs);
     free (buf);
 
-    return nerrs;
+    return err;
 }
 
 static void usage (char *argv0) {
@@ -450,7 +450,7 @@ static void usage (char *argv0) {
 /*----< main() >------------------------------------------------------------*/
 int main (int argc, char **argv) {
     char *infname[6], outfname[1024], cmd_line[4096];
-    int i, rank, ncid, num_decomp = 0, dimid, err, nerrs = 0;
+    int i, rank, ncid, num_decomp = 0, dimid, err = NC_NOERR;
 
     MPI_Init (&argc, &argv);
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
@@ -569,7 +569,6 @@ int main (int argc, char **argv) {
     if (err != NC_NOERR) {
         printf ("Error at line %d in %s: %s\n", __LINE__, __FILE__, ncmpi_strerrno (err));
         printf ("Abort\n");
-        nerrs++;
         goto fn_exit;
     }
 
@@ -583,7 +582,8 @@ int main (int argc, char **argv) {
 
     for (i = 0; i < 6; i++) {
         if (infname[i] == NULL) continue;
-        nerrs += add_decomp (ncid, infname[i], i + 1);
+        err = add_decomp (ncid, infname[i], i + 1);
+        ERR;
         err = ncmpi_redef (ncid);
         ERR;
     }
@@ -593,5 +593,5 @@ int main (int argc, char **argv) {
 
 fn_exit:
     MPI_Finalize ();
-    return (nerrs > 0);
+    return (err != NC_NOERR);
 }
