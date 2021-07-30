@@ -169,7 +169,7 @@ int e3sm_io_driver_pnc::def_var (
         if ((cfg->chunksize > 0) || (this->dim_lens[dimids[0]] == NC_UNLIMITED)) {
             e3sm_io_xlen_nc_type(xtype, &csize);
             for (i = 0; i < ndim; i++) {
-                if (csize < cfg->chunksize) {
+                if ((size_t)csize < cfg->chunksize) {
                     cdim[i] = this->dim_lens[dimids[i]];
                     csize *= cdim[i];
                 } else {
@@ -213,7 +213,7 @@ err_out:
 
 int e3sm_io_driver_pnc::def_local_var (
     int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *varid) {
-    int err;
+    int err = 0;
 
     ERR_OUT ("PNC does not support local variables")
 
@@ -359,7 +359,7 @@ err_out:
 
 int e3sm_io_driver_pnc::put_varl (
     int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
-    int err;
+    int err = 0;
 
     ERR_OUT ("PNC does not support local variables")
 
