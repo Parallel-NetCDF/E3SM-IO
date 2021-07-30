@@ -18,7 +18,12 @@ endif
 
 TESTS = seq_runs.sh
 
-EXTRA_DIST = seq_runs.sh parallel_run.sh
+EXTRA_DIST =   seq_runs.sh \
+               parallel_run.sh \
+               m4/foreach_idx.m4 \
+               m4/foreach.m4 \
+               m4/list_len.m4 \
+               m4/utils.m4 
 
 CLEANFILES = can_F_out_h0.nc         can_F_out_h1.nc \
              blob_F_out_h0.nc.0000   blob_F_out_h0.nc.0001 \
