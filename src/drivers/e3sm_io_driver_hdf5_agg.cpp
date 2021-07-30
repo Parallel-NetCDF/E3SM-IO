@@ -224,8 +224,7 @@ static inline void print_no_collective_cause (uint32_t local_no_collective_cause
 
 int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     herr_t herr=0;
-    int i, err=0;
-    uint32_t local_no_collective_cause, global_no_collective_cause;
+    int i, err = 0;
     int rank;
     size_t esize;
     hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
@@ -233,7 +232,8 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
 
 #ifdef HDF5_HAVE_DWRITE_MULTI
-    H5Dwrite_multi (this->driver.dxplid_coll, multi_datasets.size (), multi_datasets.data());
+    herr = H5Dwrite_multi (this->driver.dxplid_coll, multi_datasets.size (), multi_datasets.data());
+    CHECK_HERR
 #else
     for (i = 0; i < multi_datasets.size (); ++i) {
         // MPI_Barrier(MPI_COMM_WORLD);
@@ -251,7 +251,7 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
 #endif
 
     // Count data size
-    for (i = 0; i < multi_datasets.size (); ++i) {
+    for (i = 0; i < (int)(multi_datasets.size ()); ++i) {
         H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
         esize = H5Tget_size (multi_datasets[i].mem_type_id);
         E3SM_IO_TIMER_ADD (E3SM_IO_TIMER_HDF5_DSIZE, (dims[0] * esize))
@@ -265,17 +265,15 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     multi_datasets.clear ();
 
 err_out:;
-    return herr;
+    return err;
 }
 
 herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     int i;
     unsigned j;
-    uint32_t local_no_collective_cause, global_no_collective_cause;
     int rank;
     char *temp_buf   = NULL, *temp_buf_ptr;
     size_t temp_size = 0, esize;
-    double start;
     hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
 
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
@@ -315,7 +313,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
 #endif
 
     // Count data size
-    for (i = 0; i < multi_datasets.size (); ++i) {
+    for (i = 0; i < (int)(multi_datasets.size ()); ++i) {
         H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
         esize = H5Tget_size (multi_datasets[i].mem_type_id);
         // data using the recorded dataset_segments.
@@ -327,7 +325,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     // Read is completed here, but data is out-of-order in user buffer. We need to rearrange all
     // data using the recorded dataset_segments.
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_CPY)
-    for (i = 0; i < multi_datasets.size (); ++i) {
+    for (i = 0; i < (int)(multi_datasets.size ()); ++i) {
         // First, we make a copy of data in the current dataset.
         H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
 
