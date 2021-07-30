@@ -107,7 +107,7 @@ e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_dri
 
 e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {}
 
-int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
+int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info info  E3SM_IO_UNUSED, int *fid) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp;
@@ -156,7 +156,7 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
+int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info E3SM_IO_UNUSED, int *fid) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp;
@@ -235,34 +235,30 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::inq_file_info (int fid, MPI_Info *info) {
+int e3sm_io_driver_adios2::inq_file_info (int fid  E3SM_IO_UNUSED, MPI_Info *info) {
     *info = MPI_INFO_NULL;
     return 0;
 }
 
 int e3sm_io_driver_adios2::inq_put_size (int fid, MPI_Offset *size) {
     int err = 0;
-    adios2_error aerr;
     adios2_file *fp = this->files[fid];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
     *size = fp->putsize;
 
-err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
 }
 int e3sm_io_driver_adios2::inq_get_size (int fid, MPI_Offset *size) {
     int err = 0;
-    adios2_error aerr;
     adios2_file *fp = this->files[fid];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
     *size = fp->getsize;
 
-err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
 }
@@ -302,7 +298,6 @@ inline MPI_Offset get_dir_size (std::string path) {
 
 int e3sm_io_driver_adios2::inq_file_size (std::string path, MPI_Offset *size) {
     int err = 0;
-    adios2_error aerr;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
@@ -310,7 +305,6 @@ int e3sm_io_driver_adios2::inq_file_size (std::string path, MPI_Offset *size) {
     *size = get_dir_size (path + ".bp.dir");
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_GET_FSIZE)
 
-err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
 }
@@ -437,19 +431,18 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::inq_var_name (int fid, int vid, char *name) {
+int e3sm_io_driver_adios2::inq_var_name (int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, char *name E3SM_IO_UNUSED) {
     name[0] = '\0';
     printf ("inq_var_name is not yet implementaed\n");
-    return 0;
+    return -1;
 }
 
-int e3sm_io_driver_adios2::inq_var_off (int fid, int vid, MPI_Offset *off) {
+int e3sm_io_driver_adios2::inq_var_off (int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, MPI_Offset *off E3SM_IO_UNUSED) {
     throw "Function not supported";
-    return 1;
+    return -1;
 }
 int e3sm_io_driver_adios2::def_dim (int fid, std::string name, MPI_Offset size, int *dimid) {
     int err = 0;
-    adios2_error aerr;
     adios2_file *fp = this->files[fid];
     adios2_variable *dp;
 
@@ -580,11 +573,11 @@ err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
 }
-int e3sm_io_driver_adios2::wait (int fid) {
+int e3sm_io_driver_adios2::wait (int fid E3SM_IO_UNUSED) {
     int err = 0;
-    adios2_error aerr;
-    adios2_file *fp = this->files[fid];
-    adios2_step_status stat;
+//    adios2_error aerr;
+//   adios2_file *fp = this->files[fid];
+//   adios2_step_status stat;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
     /*
@@ -603,7 +596,7 @@ int e3sm_io_driver_adios2::wait (int fid) {
     CHECK_AERR
     */
 
-err_out:;
+// err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
 }
@@ -714,10 +707,7 @@ int e3sm_io_driver_adios2::put_varl (
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
-    int i;
-    size_t ndim;
     adios2_variable *did;
-    size_t astart[E3SM_IO_DRIVER_MAX_RANK], ablock[E3SM_IO_DRIVER_MAX_RANK];
     adios2_mode iomode;
     size_t putsize, esize;
     adios2_type dtype, mtype;
@@ -798,7 +788,6 @@ int e3sm_io_driver_adios2::put_vara (int fid,
     size_t putsize, esize;
     adios2_type dtype, mtype;
     void *xbuf = NULL;
-    double ts, te;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
@@ -906,7 +895,6 @@ int e3sm_io_driver_adios2::put_vars (int fid,
     adios2_mode iomode;
     size_t putsize;
     void *xbuf = NULL;
-    double ts, te;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
@@ -1015,8 +1003,7 @@ int e3sm_io_driver_adios2::put_varn (int fid,
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i, j;
-    double ts, te;
-    size_t esize, rsize, rsize_old = 0;
+    size_t esize, rsize;
     size_t putsize, reqsize;
     int ndim;
     adios2_type dtype, mtype;
@@ -1134,7 +1121,6 @@ int e3sm_io_driver_adios2::get_vara (int fid,
     size_t getsize, esize;
     adios2_type dtype, mtype;
     void *xbuf = NULL;
-    double ts, te;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
@@ -1239,7 +1225,6 @@ int e3sm_io_driver_adios2::get_vars (int fid,
     char *bufp;
     adios2_mode iomode;
     size_t getsize;
-    double ts, te;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
@@ -1345,8 +1330,7 @@ int e3sm_io_driver_adios2::get_varn (int fid,
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
     int i, j;
-    double ts, te;
-    size_t esize, rsize, rsize_old = 0;
+    size_t esize, rsize;
     size_t getsize, reqsize;
     int ndim;
     adios2_type dtype, mtype;
