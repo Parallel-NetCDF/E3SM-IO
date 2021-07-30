@@ -173,20 +173,20 @@ int def_I_case(e3sm_io_config   &cfg,
      *  decomp_nprocs = 1344 ;
      *
      *  dimensions:
-     *    lon = 720 ;
-     *    lat = 360 ;
-     *    levgrnd = 15 ;
-     *    levdcmp = 15 ;
-     *    levlak = 10 ;
-     *    ltype = 9 ;
-     *    natpft = 17 ;
+     *    lon     = 720 ;
+     *    lat     = 360 ;
+     *    levgrnd =  15 ;
+     *    levdcmp =  15 ;
+     *    levlak  =  10 ;
+     *    ltype   =   9 ;
+     *    natpft  =  17 ;
      *                                         total: 560 variables
-     *     D1: 720 360                   lat x lon    465 variables
-     *     D2: 720 360 15      levgrnd x lat x lon     19 variables
+     *     D1:    360 720                lat x lon    465 variables
+     *     D2: 15 360 720      levgrnd x lat x lon     19 variables
      *                         levdcmp x lat x lon     56 variables
-     *     D3: 720 360 10      levlak  x lat x lon      4 variables
-     *     D4: 720 360 9       ltype   x lat x lon      1 variables
-     *     D5: 720 360 17      natpft  x lat x lon      1 variables
+     *     D3: 10 360 720      levlak  x lat x lon      4 variables
+     *     D4:  9 360 720      ltype   x lat x lon      1 variables
+     *     D5: 17 360 720      natpft  x lat x lon      1 variables
      *                                 not decomposed: 14 variables
      */
 
