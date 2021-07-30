@@ -206,7 +206,6 @@ int def_F_case_h0_scorpio (e3sm_io_driver &driver,
                            e3sm_io_scorpio_var *varids, /* variable IDs */
                            int *scorpiovars) {
     int i, j, k;
-    int one = 1, two = 2, three = 3;
     e3sm_io_scorpio_var *varid;
     int err, ndims, dimids[3], mdims = 1, nvars_decomp = 0;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
@@ -3392,7 +3391,6 @@ int def_F_case_h1_scorpio (e3sm_io_driver &driver,
                            e3sm_io_scorpio_var *varids, /* variable IDs */
                            int *scorpiovars) {
     int i, j, k;
-    int one = 1, two = 2, three = 3;
     e3sm_io_scorpio_var *varid;
     int err, ndims, dimids[3], mdims = 1, nvars_decomp = 0;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
