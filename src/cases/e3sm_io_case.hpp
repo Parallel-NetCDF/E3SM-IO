@@ -48,6 +48,21 @@ class e3sm_io_case_G : public e3sm_io_case {
     int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
 };
 
+class e3sm_io_case_I : public e3sm_io_case {
+    protected:
+
+    public:
+         e3sm_io_case_I ();
+        ~e3sm_io_case_I ();
+
+        int wr_test(e3sm_io_config &cfg,
+                    e3sm_io_decom  &decom,
+                    e3sm_io_driver &driver);
+        int rd_test(e3sm_io_config &cfg,
+                    e3sm_io_decom  &decom,
+                    e3sm_io_driver &driver);
+};
+
 #ifdef ENABLE_ADIOS2
 class e3sm_io_case_F_scorpio : public e3sm_io_case_F {
    public:
@@ -197,6 +212,36 @@ def_G_case(e3sm_io_config &cfg,
            e3sm_io_driver &driver,
            int ncid,
            int *varids);
+
+typedef struct {
+    /* buffers for fixed-size variables */
+    size_t  fix_int_buflen;
+    int    *fix_int_buf;
+    size_t  fix_buflen;
+    vtype  *fix_buf;
+
+    /* buffers for record variables */
+    size_t  rec_txt_buflen;
+    char   *rec_txt_buf;
+    size_t  rec_int_buflen;
+    int    *rec_int_buf;
+    size_t  rec_dbl_buflen;
+    double *rec_dbl_buf;
+    size_t  rec_buflen;
+    vtype  *rec_buf;
+} io_buffers;
+
+extern
+int def_I_case(e3sm_io_config &cfg,
+               e3sm_io_decom  &decom,
+               e3sm_io_driver &driver,
+               int             ncid,
+               int            *varids,
+               io_buffers     *wr_buf);
+extern int
+var_wr_I_case(e3sm_io_config &cfg,
+              e3sm_io_decom &decom,
+              e3sm_io_driver &driver);
 
 extern int
 check_malloc(e3sm_io_config *cfg,

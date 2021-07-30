@@ -203,6 +203,8 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             printf("==== Benchmarking F case =============================\n");
         else if (decom->num_decomp == 6)
             printf("==== Benchmarking G case =============================\n");
+        else if (decom->num_decomp == 5)
+            printf("==== Benchmarking I case =============================\n");
     }
 
     /* Select test case */
@@ -241,6 +243,26 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 #ifdef ENABLE_ADIOS2
                 else
                     tcase = new e3sm_io_case_G_scorpio ();
+#endif
+                break;
+            default:
+                ERR_OUT ("I/O strategy is not set")
+                break;
+        }
+    } else if (decom->num_decomp == 5) {
+        /* I case has 5 decompositions */
+        cfg->nvars = 560;
+        switch (cfg->strategy) {
+            case canonical:
+            case log:
+                tcase = new e3sm_io_case_I ();
+                break;
+            case blob:
+                if (cfg->api == pnetcdf || cfg->api == hdf5)
+                    tcase = new e3sm_io_case_I();
+#ifdef ENABLE_ADIOS2
+                // else
+                    // tcase = new e3sm_io_case_I_scorpio ();
 #endif
                 break;
             default:
