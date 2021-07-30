@@ -87,10 +87,10 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_h5blob::open(std::string path,
-                                MPI_Comm comm,
-                                MPI_Info info,
-                                int *fid)
+int e3sm_io_driver_h5blob::open(std::string path E3SM_IO_UNUSED,
+                                MPI_Comm comm E3SM_IO_UNUSED,
+                                MPI_Info info E3SM_IO_UNUSED,
+                                int *fid E3SM_IO_UNUSED)
 {
     throw "HDF5 blob I/O does not support file open yet";
     return -1;
@@ -308,12 +308,12 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_h5blob::inq_put_size (int fid, MPI_Offset *size) {
+int e3sm_io_driver_h5blob::inq_put_size (int fid E3SM_IO_UNUSED, MPI_Offset *size) {
     *size = 0;
     return 0;
 }
 
-int e3sm_io_driver_h5blob::inq_get_size (int fid, MPI_Offset *size) {
+int e3sm_io_driver_h5blob::inq_get_size (int fid E3SM_IO_UNUSED, MPI_Offset *size) {
     *size = 0;
     return 0;
 }
@@ -348,7 +348,7 @@ int e3sm_io_driver_h5blob::def_var(int          fid,
 }
 
 int e3sm_io_driver_h5blob::def_local_var (
-    int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did) {
+    int fid E3SM_IO_UNUSED, std::string name E3SM_IO_UNUSED, nc_type xtype E3SM_IO_UNUSED, int ndim E3SM_IO_UNUSED, MPI_Offset *dsize E3SM_IO_UNUSED, int *did E3SM_IO_UNUSED) {
     int err = 0;
 
     ERR_OUT ("HDF5 blob I/O does not support local variables")
@@ -357,7 +357,7 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_h5blob::inq_var (int fid, std::string name, int *did) {
+int e3sm_io_driver_h5blob::inq_var (int fid E3SM_IO_UNUSED, std::string name E3SM_IO_UNUSED, int *did E3SM_IO_UNUSED) {
     int err = 0;
 
     ERR_OUT ("HDF5 blob I/O does not implement inq_var yet")
@@ -373,7 +373,7 @@ int e3sm_io_driver_h5blob::inq_var_name (int fid, int varid, char *name) {
     return 0;
 }
 
-int e3sm_io_driver_h5blob::inq_var_off (int fid, int vid, MPI_Offset *off) {
+int e3sm_io_driver_h5blob::inq_var_off (int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, MPI_Offset *off E3SM_IO_UNUSED) {
     throw "Function not supported";
     return -1;
 }
@@ -420,9 +420,9 @@ int e3sm_io_driver_h5blob::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
     return 0;
 }
 
-int e3sm_io_driver_h5blob::enddef (int fid) { return 0; }
-int e3sm_io_driver_h5blob::redef (int fid) { return 0; }
-int e3sm_io_driver_h5blob::wait (int fid) { return 0; }
+int e3sm_io_driver_h5blob::enddef (int fid E3SM_IO_UNUSED) { return 0; }
+int e3sm_io_driver_h5blob::redef (int fid E3SM_IO_UNUSED) { return 0; }
+int e3sm_io_driver_h5blob::wait (int fid E3SM_IO_UNUSED) { return 0; }
 
 int e3sm_io_driver_h5blob::put_att(int          fid,
                                    int          varid,
@@ -445,7 +445,7 @@ int e3sm_io_driver_h5blob::get_att(int          fid,
 }
 
 int e3sm_io_driver_h5blob::put_varl (
-    int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
+    int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, MPI_Datatype itype E3SM_IO_UNUSED, void *buf E3SM_IO_UNUSED, e3sm_io_op_mode mode E3SM_IO_UNUSED) {
     int err = 0;
 
     ERR_OUT ("HDF5 does not support local variables")
@@ -465,7 +465,7 @@ int e3sm_io_driver_h5blob::put_vara(int              fid,
                                     MPI_Offset      *start,
                                     MPI_Offset      *count,
                                     void            *buf,  /* user's buffer */
-                                    e3sm_io_op_mode  mode)
+                                    e3sm_io_op_mode  mode E3SM_IO_UNUSED)
 {
     int i, xsz, isz;
     nc_type xtype;
@@ -570,61 +570,61 @@ int e3sm_io_driver_h5blob::put_vara(int              fid,
     return 0;
 }
 
-int e3sm_io_driver_h5blob::put_vars (int fid,
-                                   int vid,
-                                   MPI_Datatype itype,
-                                   MPI_Offset *start,
-                                   MPI_Offset *count,
-                                   MPI_Offset *stride,
-                                   void *buf,
-                                   e3sm_io_op_mode mode) {
+int e3sm_io_driver_h5blob::put_vars (int fid E3SM_IO_UNUSED,
+                                   int vid E3SM_IO_UNUSED,
+                                   MPI_Datatype itype E3SM_IO_UNUSED,
+                                   MPI_Offset *start E3SM_IO_UNUSED,
+                                   MPI_Offset *count E3SM_IO_UNUSED,
+                                   MPI_Offset *stride E3SM_IO_UNUSED,
+                                   void *buf E3SM_IO_UNUSED,
+                                   e3sm_io_op_mode mode E3SM_IO_UNUSED) {
     throw "HDF5 blob I/O does not support put_vars yet";
     return -1;
 }
 
-int e3sm_io_driver_h5blob::put_varn (int fid,
-                                   int vid,
-                                   MPI_Datatype itype,
-                                   int nreq,
-                                   MPI_Offset **starts,
-                                   MPI_Offset **counts,
-                                   void *buf,
-                                   e3sm_io_op_mode mode) {
+int e3sm_io_driver_h5blob::put_varn (int fid E3SM_IO_UNUSED,
+                                   int vid E3SM_IO_UNUSED,
+                                   MPI_Datatype itype E3SM_IO_UNUSED,
+                                   int nreq E3SM_IO_UNUSED,
+                                   MPI_Offset **starts E3SM_IO_UNUSED,
+                                   MPI_Offset **counts E3SM_IO_UNUSED,
+                                   void *buf E3SM_IO_UNUSED,
+                                   e3sm_io_op_mode mode E3SM_IO_UNUSED) {
     throw "HDF5 blob I/O does not support put_varn yet";
     return -1;
 }
 
-int e3sm_io_driver_h5blob::get_vara (int fid,
-                                   int vid,
-                                   MPI_Datatype itype,
-                                   MPI_Offset *start,
-                                   MPI_Offset *count,
-                                   void *buf,
-                                   e3sm_io_op_mode mode) {
+int e3sm_io_driver_h5blob::get_vara (int fid E3SM_IO_UNUSED,
+                                   int vid E3SM_IO_UNUSED,
+                                   MPI_Datatype itype E3SM_IO_UNUSED,
+                                   MPI_Offset *start E3SM_IO_UNUSED,
+                                   MPI_Offset *count E3SM_IO_UNUSED,
+                                   void *buf E3SM_IO_UNUSED,
+                                   e3sm_io_op_mode mode E3SM_IO_UNUSED) {
     throw "HDF5 blob I/O does not support get_vara yet";
     return -1;
 }
 
-int e3sm_io_driver_h5blob::get_vars (int fid,
-                                   int vid,
-                                   MPI_Datatype itype,
-                                   MPI_Offset *start,
-                                   MPI_Offset *count,
-                                   MPI_Offset *stride,
-                                   void *buf,
-                                   e3sm_io_op_mode mode) {
+int e3sm_io_driver_h5blob::get_vars (int fid  E3SM_IO_UNUSED,
+                                   int vid  E3SM_IO_UNUSED,
+                                   MPI_Datatype itype  E3SM_IO_UNUSED,
+                                   MPI_Offset *start  E3SM_IO_UNUSED,
+                                   MPI_Offset *count  E3SM_IO_UNUSED,
+                                   MPI_Offset *stride  E3SM_IO_UNUSED,
+                                   void *buf  E3SM_IO_UNUSED,
+                                   e3sm_io_op_mode mode  E3SM_IO_UNUSED) {
     throw "HDF5 blob I/O does not support get_vars yet";
     return -1;
 }
 
-int e3sm_io_driver_h5blob::get_varn (int fid,
-                                   int vid,
-                                   MPI_Datatype itype,
-                                   int nreq,
-                                   MPI_Offset **starts,
-                                   MPI_Offset **counts,
-                                   void *buf,
-                                   e3sm_io_op_mode mode) {
+int e3sm_io_driver_h5blob::get_varn (int fid  E3SM_IO_UNUSED,
+                                   int vid  E3SM_IO_UNUSED,
+                                   MPI_Datatype itype  E3SM_IO_UNUSED,
+                                   int nreq  E3SM_IO_UNUSED,
+                                   MPI_Offset **starts  E3SM_IO_UNUSED,
+                                   MPI_Offset **counts  E3SM_IO_UNUSED,
+                                   void *buf  E3SM_IO_UNUSED,
+                                   e3sm_io_op_mode mode  E3SM_IO_UNUSED) {
     throw "HDF5 blob I/O does not support get_varn yet";
     return -1;
 }
