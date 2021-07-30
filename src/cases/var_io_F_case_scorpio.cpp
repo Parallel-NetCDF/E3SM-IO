@@ -143,7 +143,6 @@ static int write_small_vars_F_case_scorpio (e3sm_io_driver &driver,
                                         char **txt_buf,
                                         double **dbl_buf) {
     int i, err=0;
-    MPI_Offset start[2], count[2];
 
     /* scalar and small variables are written by rank 0 only */
     i = vid;
@@ -181,41 +180,41 @@ static int write_small_vars_F_case_scorpio (e3sm_io_driver &driver,
         i += 7;
 
     /* time */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_DOUBLE (ncid, varids[i++], start, *dbl_buf, NULL);
     CHECK_ERR
     *dbl_buf += 1 + gap;
     /* date */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_INT (ncid, varids[i++], start, *int_buf, NULL);
     CHECK_ERR
     *int_buf += 1;
     /* datesec */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_INT (ncid, varids[i++], start, *int_buf, NULL);
     CHECK_ERR
     *int_buf += 1;
     /* time_bnds */
-    start[0] = rec_no;
-    start[1] = 0;
-    count[0] = 1;
-    count[1] = nbnd;
+    // start[0] = rec_no;
+    // start[1] = 0;
+    // count[0] = 1;
+    // count[1] = nbnd;
     err      = IPUT_VARA_DOUBLE (ncid, varids[i++], start, count, *dbl_buf, NULL);
     CHECK_ERR
     *dbl_buf += nbnd + gap;
     /* date_written */
-    start[0] = rec_no;
-    start[1] = 0;
-    count[0] = 1;
-    count[1] = nchars;
+    // start[0] = rec_no;
+    // start[1] = 0;
+    // count[0] = 1;
+    // count[1] = nchars;
     err      = IPUT_VARA_CHAR (ncid, varids[i++], start, count, *txt_buf, NULL);
     CHECK_ERR
     *txt_buf += nchars;
     /* time_written */
-    start[0] = rec_no;
-    start[1] = 0;
-    count[0] = 1;
-    count[1] = nchars;
+    // start[0] = rec_no;
+    // start[1] = 0;
+    // count[0] = 1;
+    // count[1] = nchars;
     err      = IPUT_VARA_CHAR (ncid, varids[i++], start, count, *txt_buf, NULL);
     CHECK_ERR
     *txt_buf += nchars;
@@ -245,47 +244,47 @@ static int write_small_vars_F_case_scorpio (e3sm_io_driver &driver,
         i += 5;
 
     /* ndcur */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_INT (ncid, varids[i++], start, *int_buf, NULL);
     CHECK_ERR
     *int_buf += 1;
     /* nscur */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_INT (ncid, varids[i++], start, *int_buf, NULL);
     CHECK_ERR
     *int_buf += 1;
     /* co2vmr */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_DOUBLE (ncid, varids[i++], start, *dbl_buf, NULL);
     CHECK_ERR
     *dbl_buf += 1 + gap;
     /* ch4vmr */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_DOUBLE (ncid, varids[i++], start, *dbl_buf, NULL);
     CHECK_ERR
     *dbl_buf += 1 + gap;
     /* n2ovmr */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_DOUBLE (ncid, varids[i++], start, *dbl_buf, NULL);
     CHECK_ERR
     *dbl_buf += 1 + gap;
     /* f11vmr */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_DOUBLE (ncid, varids[i++], start, *dbl_buf, NULL);
     CHECK_ERR
     *dbl_buf += 1 + gap;
     /* f12vmr */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_DOUBLE (ncid, varids[i++], start, *dbl_buf, NULL);
     CHECK_ERR
     *dbl_buf += 1 + gap;
     /* sol_tsi */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_DOUBLE (ncid, varids[i++], start, *dbl_buf, NULL);
     CHECK_ERR
     *dbl_buf += 1 + gap;
     /* nsteph */
-    start[0] = rec_no;
+    // start[0] = rec_no;
     err      = IPUT_VAR1_INT (ncid, varids[i++], start, *int_buf, NULL);
     CHECK_ERR
     *int_buf += 1;
@@ -451,7 +450,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
 {
     const char *hist;
     char *txt_buf=NULL, *txt_buf_ptr, outfile[1040], *ext;
-    int i, j, k, err=0, rank, ncid, *nvars_D=cfg.nvars_D;
+    int i, j, err=0, rank, ncid, *nvars_D=cfg.nvars_D;
     e3sm_io_scorpio_var *varids;
     int scorpiovars[6];
     int rec_no = -1, gap = 0, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
