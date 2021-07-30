@@ -565,7 +565,7 @@ int main (int argc, char **argv) {
     }
 
     /* create a new NC file */
-    err = ncmpi_create (MPI_COMM_WORLD, outfname, NC_NOCLOBBER, MPI_INFO_NULL, &ncid);
+    err = ncmpi_create (MPI_COMM_WORLD, outfname, NC_NOCLOBBER|NC_64BIT_DATA, MPI_INFO_NULL, &ncid);
     if (err != NC_NOERR) {
         printf ("Error at line %d in %s: %s\n", __LINE__, __FILE__, ncmpi_strerrno (err));
         printf ("Abort\n");
