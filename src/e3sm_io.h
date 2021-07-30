@@ -148,6 +148,9 @@ typedef struct e3sm_io_config {
  */
 #define NVARS_DECOMP 5
 
+/* maximum number of dimensions of a climate variable */
+#define MAX_NDIMS    4
+
 typedef struct e3sm_io_decom {
     int  num_decomp;                   /* number of decompositions: 3 or 6 */
     int  contig_nreqs[MAX_NUM_DECOMP]; /* number of noncontiguous requests in
@@ -160,7 +163,8 @@ typedef struct e3sm_io_decom {
                                           individual requests */
     int  ndims[MAX_NUM_DECOMP];        /* number of dimensions in each
                                           decomposition */
-    MPI_Offset dims[MAX_NUM_DECOMP][2];/* global dimension sizes of each
+    MPI_Offset dims[MAX_NUM_DECOMP][MAX_NDIMS];
+                                       /* global dimension sizes of each
                                           decomposition */
 
     /* the following 4 are the starts[] and counts[] used in varn APIs */

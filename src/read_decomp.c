@@ -186,8 +186,8 @@ int read_decomp(e3sm_io_config *cfg,
         CHECK_ERR
 
         /* ndims: number of decomposition dimensions, not variable dimensions
-         * In E3SM, decomposition is along the lowest 1 or 2 dimensions of 2D
-         * or 3D variables.
+         * In E3SM, decomposition is along the lowest dimensions of 2D, 3D,
+         * or 4D variables.
          */
         sprintf(name, "D%d.dims", id + 1);
         /* obtain the number of dimensions of this decomposition */

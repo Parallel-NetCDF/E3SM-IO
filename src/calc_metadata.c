@@ -165,19 +165,18 @@ int set_starts_counts(e3sm_io_decom *dp)
         dp->w_startx[i] = dp->w_counts[i] + nreqs;
         dp->w_countx[i] = dp->w_startx[i] + nreqs;
 
-        dp->w_starts[i][0] = (MPI_Offset*) malloc(nreqs * 3 * 4 *
+        dp->w_starts[i][0] = (MPI_Offset*) malloc(nreqs * MAX_NDIMS * 4 *
                                                   sizeof(MPI_Offset));
-        dp->w_counts[i][0] = dp->w_starts[i][0] + nreqs * 3;
-        dp->w_startx[i][0] = dp->w_counts[i][0] + nreqs * 3;
-        dp->w_countx[i][0] = dp->w_startx[i][0] + nreqs * 3;
+        dp->w_counts[i][0] = dp->w_starts[i][0] + nreqs * MAX_NDIMS;
+        dp->w_startx[i][0] = dp->w_counts[i][0] + nreqs * MAX_NDIMS;
+        dp->w_countx[i][0] = dp->w_startx[i][0] + nreqs * MAX_NDIMS;
         for (j=1; j<nreqs; j++) {
-            dp->w_starts[i][j] = dp->w_starts[i][j-1] + 3;
-            dp->w_counts[i][j] = dp->w_counts[i][j-1] + 3;
-            dp->w_startx[i][j] = dp->w_startx[i][j-1] + 3;
-            dp->w_countx[i][j] = dp->w_countx[i][j-1] + 3;
+            dp->w_starts[i][j] = dp->w_starts[i][j-1] + MAX_NDIMS;
+            dp->w_counts[i][j] = dp->w_counts[i][j-1] + MAX_NDIMS;
+            dp->w_startx[i][j] = dp->w_startx[i][j-1] + MAX_NDIMS;
+            dp->w_countx[i][j] = dp->w_countx[i][j-1] + MAX_NDIMS;
         }
 
-        /* no fixed-size variables are 3 or more dimensional */
         for (j=0; j<nreqs; j++) {
             dp->w_starts[i][j][0] = 0;
             dp->w_counts[i][j][0] = 1;
@@ -196,6 +195,23 @@ int set_starts_counts(e3sm_io_decom *dp)
                 dp->w_startx[i][j][1] = dp->w_starts[i][j][2];
                 dp->w_countx[i][j][0] = dp->w_counts[i][j][1];
                 dp->w_countx[i][j][1] = dp->w_counts[i][j][2];
+            }
+            else if (dp->ndims[i] == 3) { /* decomposition is 3D */
+                int xy = dp->dims[i][2] * dp->dims[i][1];
+
+                dp->w_starts[i][j][1] = dp->disps[i][j] / xy;
+                dp->w_starts[i][j][2] = dp->disps[i][j] % xy / dp->dims[i][2];
+                dp->w_starts[i][j][3] = dp->disps[i][j] % dp->dims[i][2];
+                dp->w_counts[i][j][1] = 1;
+                dp->w_counts[i][j][2] = 1;
+                dp->w_counts[i][j][3] = dp->blocklens[i][j];
+
+                dp->w_startx[i][j][0] = dp->w_starts[i][j][1];
+                dp->w_startx[i][j][1] = dp->w_starts[i][j][2];
+                dp->w_startx[i][j][2] = dp->w_starts[i][j][3];
+                dp->w_countx[i][j][0] = dp->w_counts[i][j][1];
+                dp->w_countx[i][j][1] = dp->w_counts[i][j][2];
+                dp->w_countx[i][j][2] = dp->w_counts[i][j][3];
             }
             /* each blocklens[j] is no bigger than last dims[] */
         }
