@@ -81,6 +81,38 @@ class e3sm_io_case_G_scorpio : public e3sm_io_case_G {
 };
 #endif
 
+typedef struct {
+    int vid;        /* variable ID */
+    int decomp_id;  /* decomposition map ID */
+    int isRecVar;   /* whether is a record variable */
+    size_t vlen;    /* length to be written by this rank */
+    MPI_Datatype itype;
+} var_meta;
+
+typedef struct {
+    size_t  gap;
+
+    /* buffers for fixed-size variables */
+    size_t  fix_txt_buflen;
+    char   *fix_txt_buf;
+    size_t  fix_int_buflen;
+    int    *fix_int_buf;
+    size_t  fix_dbl_buflen;
+    double *fix_dbl_buf;
+    size_t  fix_buflen;
+    vtype  *fix_buf;
+
+    /* buffers for record variables */
+    size_t  rec_txt_buflen;
+    char   *rec_txt_buf;
+    size_t  rec_int_buflen;
+    int    *rec_int_buf;
+    size_t  rec_dbl_buflen;
+    double *rec_dbl_buf;
+    size_t  rec_buflen;
+    vtype  *rec_buf;
+} io_buffers;
+
 /*---- functions for F case -------------------------------------------------*/
 extern int
 def_F_case_h0(e3sm_io_driver &driver,
@@ -125,23 +157,18 @@ run_varn_F_case_rd(e3sm_io_config &cfg,
                    int *int_buf);       /* buffer for int var */
 
 extern int
-def_F_case_h0(e3sm_io_config &cfg,
-              e3sm_io_decom  &decom,
-              e3sm_io_driver &driver,
-              int ncid,
-              int *varids);
-
-extern int
-def_F_case_h1(e3sm_io_config &cfg,
-              e3sm_io_decom  &decom,
-              e3sm_io_driver &driver,
-              int ncid,
-              int *varids);
+def_F_case(e3sm_io_config &cfg,
+           e3sm_io_decom  &decom,
+           e3sm_io_driver &driver,
+           int             ncid,
+           var_meta       *vars,
+           io_buffers     *wr_buf);
 
 extern int
 var_wr_F_case(e3sm_io_config &cfg,
-              e3sm_io_decom &decom,
-              e3sm_io_driver &driver);
+              e3sm_io_decom  &decom,
+              e3sm_io_driver &driver,
+              char           *outfile);
 
 
 /*---- functions for G case -------------------------------------------------*/
@@ -213,38 +240,6 @@ def_G_case(e3sm_io_config &cfg,
            int ncid,
            int *varids);
 
-typedef struct {
-    int vid;        /* variable ID */
-    int decomp_id;  /* decomposition map ID */
-    int isRecVar;   /* whether is a record variable */
-    size_t vlen;    /* length to be written by this rank */
-    MPI_Datatype itype;
-} var_meta;
-
-typedef struct {
-    size_t  gap;
-
-    /* buffers for fixed-size variables */
-    size_t  fix_txt_buflen;
-    char   *fix_txt_buf;
-    size_t  fix_int_buflen;
-    int    *fix_int_buf;
-    size_t  fix_dbl_buflen;
-    double *fix_dbl_buf;
-    size_t  fix_buflen;
-    vtype  *fix_buf;
-
-    /* buffers for record variables */
-    size_t  rec_txt_buflen;
-    char   *rec_txt_buf;
-    size_t  rec_int_buflen;
-    int    *rec_int_buf;
-    size_t  rec_dbl_buflen;
-    double *rec_dbl_buf;
-    size_t  rec_buflen;
-    vtype  *rec_buf;
-} io_buffers;
-
 extern
 int def_I_case(e3sm_io_config &cfg,
                e3sm_io_decom  &decom,
@@ -254,8 +249,9 @@ int def_I_case(e3sm_io_config &cfg,
                io_buffers     *wr_buf);
 extern int
 var_wr_I_case(e3sm_io_config &cfg,
-              e3sm_io_decom &decom,
-              e3sm_io_driver &driver);
+              e3sm_io_decom  &decom,
+              e3sm_io_driver &driver,
+              char           *outfile);
 
 extern int
 check_malloc(e3sm_io_config *cfg,
@@ -266,4 +262,13 @@ report_timing_WR(e3sm_io_config *cfg,
                  e3sm_io_driver *driver,
                  e3sm_io_decom *decom,
                  const char *outfile);
+
+extern
+void wr_buf_init(io_buffers &buf, int gap);
+
+extern
+int wr_buf_malloc(e3sm_io_config &cfg, int one_flush, io_buffers &buf);
+
+extern
+void wr_buf_free(io_buffers &buf);
 
