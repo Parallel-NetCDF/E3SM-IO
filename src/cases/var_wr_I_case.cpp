@@ -23,6 +23,8 @@
 #include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
 
+#define VAR_ITYPE REC_ITYPE
+
 #define CHECK_VAR_ERR(varid) {                                \
     if (err != 0) {                                           \
         char var_name[64];                                    \
@@ -59,58 +61,20 @@
     err = driver.inq_file_info(ncid, &info); \
     CHECK_ERR                                \
 }
-#define IPUT_VAR_VTYPE(varid, buf, adv) { \
-    err = driver.put_vara(ncid, varid, REC_ITYPE, NULL, NULL, buf, nb); \
-    CHECK_VAR_ERR(varid) \
-    buf += (adv); \
-    my_nreqs++; \
-}
-#define IPUT_VAR_DBL(buf, adv) { \
-    err = driver.put_vara(ncid, varids[i], MPI_DOUBLE, NULL, NULL, buf, nb); \
-    CHECK_VAR_ERR(varids[i]) \
-    buf += (adv); \
-    my_nreqs++; \
-    i++; \
-}
-#define IPUT_VAR_INT(buf, adv) { \
-    err = driver.put_vara(ncid, varids[i], MPI_INT, NULL, NULL, buf, nb); \
-    CHECK_VAR_ERR(varids[i]) \
-    buf += (adv); \
-    my_nreqs++; \
-    i++; \
-}
-#define IPUT_VAR1_VTYPE(varid, buf, adv) { \
-    err = driver.put_vara(ncid, varid, REC_ITYPE, start, NULL, buf, nb); \
-    CHECK_VAR_ERR(varid) \
-    buf += (adv); \
-    my_nreqs++; \
-}
-#define IPUT_VAR1_INT(varid, buf, adv) { \
-    err = driver.put_vara(ncid, varid, MPI_INT, start, NULL, buf, nb); \
-    CHECK_VAR_ERR(varid) \
-    buf += (adv); \
-    my_nreqs++; \
-}
-#define IPUT_VARA_INT_NOADV(buf) { \
-    err = driver.put_vara(ncid, varid, MPI_INT, start, count, buf, nb); \
+#define IPUT_VARA_NOADV(itype, buf) { \
+    err = driver.put_vara(ncid, varid, itype, start, count, buf, nb); \
     CHECK_VAR_ERR(varid) \
     my_nreqs++; \
     varid++; \
 }
-#define IPUT_VARA_INT64_NOADV(buf) { \
-    err = driver.put_vara(ncid, varid, MPI_LONG_LONG, start, count, buf, nb); \
-    CHECK_VAR_ERR(varid) \
-    my_nreqs++; \
-    varid++; \
-}
-#define IPUT_VARA_DBL(varid, buf, adv) { \
-    err = driver.put_vara(ncid, varid, MPI_DOUBLE, start, count, buf, nb); \
+#define IPUT_VARA(varid, itype, adv, buf) { \
+    err = driver.put_vara(ncid, varid, itype, start, count, buf, nb); \
     CHECK_VAR_ERR(varid) \
     buf += (adv); \
     my_nreqs++; \
 }
-#define IPUT_VARA_TXT(varid, buf, adv) { \
-    err = driver.put_vara(ncid, varid, MPI_CHAR, start, count, buf, nb); \
+#define IPUT_VAR(varid, itype, adv, buf) { \
+    err = driver.put_vara(ncid, varid, itype, NULL, NULL, buf, nb); \
     CHECK_VAR_ERR(varid) \
     buf += (adv); \
     my_nreqs++; \
@@ -121,144 +85,58 @@
     nflushes++; \
 }
 
-#define FIX_VAR_IPUT(varid, itype, buf) {                               \
-    int vid = varid + num_decomp_vars;                                  \
-    int dp = v_decomp_ids[vid];                                         \
-    if (cfg.strategy == canonical) {                                    \
-        err = driver.put_varn(ncid, vid, itype, decom.contig_nreqs[dp], \
-                              decom.w_startx[dp], decom.w_countx[dp],   \
-                              buf, nb);                                 \
-        my_nreqs += decom.contig_nreqs[dp];                             \
-    }                                                                   \
-    else {                                                              \
-        err = driver.put_vara(ncid, vid, itype, &decom.start[dp],       \
-                              &decom.count[dp], buf, nb);               \
-        my_nreqs++;                                                     \
-    }                                                                   \
-    CHECK_VAR_ERR(vid)                                                  \
-    buf += decom.count[dp] + gap;                                       \
-    nvars_D[dp]++;                                                      \
+#define FIX_VAR_IPUT(varid, dp, itype, buf) {                             \
+    if (cfg.strategy == canonical) {                                      \
+        err = driver.put_varn(ncid, varid, itype, decom.contig_nreqs[dp], \
+                              decom.w_startx[dp], decom.w_countx[dp],     \
+                              buf, nb);                                   \
+        my_nreqs += decom.contig_nreqs[dp];                               \
+    }                                                                     \
+    else {                                                                \
+        err = driver.put_vara(ncid, varid, itype, &decom.start[dp],       \
+                              &decom.count[dp], buf, nb);                 \
+        my_nreqs++;                                                       \
+    }                                                                     \
+    CHECK_VAR_ERR(varid)                                                  \
+    buf += decom.count[dp] + gap;                                         \
+    nvars_D[dp]++;                                                        \
 }
 
-#define REC_VAR_IPUT(varid, itype, buf) {                               \
-    int vid = varid + num_decomp_vars;                                  \
-    int dp = v_decomp_ids[vid];                                         \
-    assert(dp >= 0 && dp < decom.num_decomp);                           \
-    if (cfg.strategy == canonical) {                                    \
-        err = driver.put_varn(ncid, vid, itype, decom.contig_nreqs[dp], \
-                              decom.w_starts[dp], decom.w_counts[dp],   \
-                              buf, nb);                                 \
-        my_nreqs += decom.contig_nreqs[dp];                             \
-    }                                                                   \
-    else {                                                              \
-        err = driver.put_vara(ncid, vid, itype, starts[dp],             \
-                              counts[dp], buf, nb);                     \
-        my_nreqs++;                                                     \
-    }                                                                   \
-    CHECK_VAR_ERR(vid)                                                  \
-    buf += decom.count[dp] + gap;                                       \
-    if (rec_no == 0) nvars_D[dp]++;                                     \
+#define REC_VAR_IPUT(varid, dp, itype, buf) {                             \
+    if (cfg.strategy == canonical) {                                      \
+        err = driver.put_varn(ncid, varid, itype, decom.contig_nreqs[dp], \
+                              decom.w_starts[dp], decom.w_counts[dp],     \
+                              buf, nb);                                   \
+        my_nreqs += decom.contig_nreqs[dp];                               \
+    }                                                                     \
+    else {                                                                \
+        err = driver.put_vara(ncid, varid, itype, starts[dp],             \
+                              counts[dp], buf, nb);                       \
+        my_nreqs++;                                                       \
+    }                                                                     \
+    CHECK_VAR_ERR(varid)                                                  \
+    buf += decom.count[dp] + gap;                                         \
+    if (rec_no == 0) nvars_D[dp]++;                                       \
 }
 
-/*----< write_small_fix_vars_F_case() >--------------------------------------*/
-static
-int write_small_fix_vars_I_case(e3sm_io_driver  &driver,
-                                int              ncid,
-                                int              start_varid,
-                                int              gap,
-                                vtype         **fix_buf,
-                                int             *nreqs)
+/*----< wr_buf_init() >------------------------------------------------------*/
+void wr_buf_init(io_buffers &buf,
+                 int         gap)
 {
-    /* small fixed-size variable IDs (relative) */
-    int varids[5] = {0, 1, 2, 12, 13};
+    buf.gap             = gap;
 
-    int i, err, my_nreqs=0;
-    MPI_Offset lat, lon, levgrnd, levdcmp, levlak;
-
-    for (i=0; i<18; i++) varids[i] += start_varid;
-
-    INQ_DIM_LEN("lat",     lat)
-    INQ_DIM_LEN("lon",     lon)
-    INQ_DIM_LEN("levgrnd", levgrnd)
-    INQ_DIM_LEN("levdcmp", levdcmp)
-    INQ_DIM_LEN("levlak",  levlak)
-
-    /* 5 of type vtype */
-    IPUT_VAR_VTYPE(varids[0], *fix_buf,  levgrnd + gap) /* levgrnd */
-    IPUT_VAR_VTYPE(varids[1], *fix_buf,  levlak  + gap) /* levlak */
-    IPUT_VAR_VTYPE(varids[2], *fix_buf,  levdcmp + gap) /* levdcmp */
-    IPUT_VAR_VTYPE(varids[3], *fix_buf,  lon     + gap) /* lon */
-    IPUT_VAR_VTYPE(varids[4], *fix_buf,  lat     + gap) /* lat */
-
-    if (nreqs != NULL) *nreqs += my_nreqs;
-
-err_out:
-    return err;
-}
-
-/*----< write_small_rec_vars_I_case() >--------------------------------------*/
-static
-int write_small_rec_vars_I_case(e3sm_io_driver  &driver,
-                                int              ncid,
-                                int              start_varid,
-                                int              rec_no,
-                                int              gap,
-                                char           **txt_buf,
-                                int            **int_buf,
-                                double         **dbl_buf,
-                                vtype          **buf,
-                                int             *nreqs)
-{
-    /* small record variable IDs (relative) */
-    int varids[9] = {3, 4, 5, 6, 7, 8, 9, 10, 11};
-
-    int i, err, my_nreqs=0;
-    MPI_Offset hist_interval, string_length, start[2], count[2];
-
-    for (i=0; i<9; i++) varids[i] += start_varid;
-
-    INQ_DIM_LEN("hist_interval", hist_interval)
-    INQ_DIM_LEN("string_length", string_length)
-
-    start[0] = rec_no;
-    start[1] = 0;
-    count[0] = 1;
-
-    /* 1 of type vtype */
-    IPUT_VAR1_VTYPE(varids[0], *buf,  1 + gap) /* time */
-
-    /* 5 of type int */
-    IPUT_VAR1_INT(varids[1], *int_buf, 1 + gap) /* mcdate */
-    IPUT_VAR1_INT(varids[2], *int_buf, 1 + gap) /* mcsec */
-    IPUT_VAR1_INT(varids[3], *int_buf, 1 + gap) /* mdcur */
-    IPUT_VAR1_INT(varids[4], *int_buf, 1 + gap) /* mscur */
-    IPUT_VAR1_INT(varids[5], *int_buf, 1 + gap) /* nstep */
-
-    /* 1 of type double */
-    count[1] = hist_interval;
-    IPUT_VARA_DBL(varids[6], *dbl_buf, hist_interval + gap) /* time_bounds */
-
-    /* 2 of type char */
-    count[1] = string_length;
-    IPUT_VARA_TXT(varids[7], *txt_buf, string_length + gap) /* date_written */
-    IPUT_VARA_TXT(varids[8], *txt_buf, string_length + gap) /* time_written */
-
-    if (nreqs != NULL) *nreqs += my_nreqs;
-
-err_out:
-    return err;
-}
-
-void wr_buf_init(io_buffers &buf)
-{
+    buf.fix_txt_buflen  = 0;
     buf.fix_int_buflen  = 0;
+    buf.fix_dbl_buflen  = 0;
     buf.fix_buflen      = 0;
     buf.rec_txt_buflen  = 0;
     buf.rec_int_buflen  = 0;
     buf.rec_dbl_buflen  = 0;
     buf.rec_buflen      = 0;
 
+    buf.fix_txt_buf  = NULL;
     buf.fix_int_buf  = NULL;
+    buf.fix_dbl_buf  = NULL;
     buf.fix_buf      = NULL;
     buf.rec_txt_buf  = NULL;
     buf.rec_int_buf  = NULL;
@@ -266,6 +144,7 @@ void wr_buf_init(io_buffers &buf)
     buf.rec_buf      = NULL;
 }
 
+/*----< wr_buf_malloc() >----------------------------------------------------*/
 int wr_buf_malloc(e3sm_io_config &cfg,
                   int             one_flush,
                   io_buffers     &buf)
@@ -289,39 +168,50 @@ int wr_buf_malloc(e3sm_io_config &cfg,
 
     /* allocate and initialize write buffers */
     buf.fix_buf     = (vtype*)  malloc(buf.fix_buflen     * sizeof(vtype));
+    buf.fix_txt_buf = (char*)   malloc(buf.fix_txt_buflen * sizeof(char));
     buf.fix_int_buf = (int*)    malloc(buf.fix_int_buflen * sizeof(int));
-    buf.rec_dbl_buf = (double*) malloc(buf.rec_dbl_buflen * sizeof(double));
-    buf.rec_int_buf = (int*)    malloc(buf.rec_int_buflen * sizeof(int));
+    buf.fix_dbl_buf = (double*) malloc(buf.fix_dbl_buflen * sizeof(double));
     buf.rec_txt_buf = (char*)   malloc(buf.rec_txt_buflen * sizeof(char));
+    buf.rec_int_buf = (int*)    malloc(buf.rec_int_buflen * sizeof(int));
+    buf.rec_dbl_buf = (double*) malloc(buf.rec_dbl_buflen * sizeof(double));
     buf.rec_buf     = (vtype*)  malloc(buf.rec_buflen     * sizeof(vtype));
 
-    for (j=0; j<buf.fix_buflen;     j++) buf.fix_buf[j]     = rank;
+    for (j=0; j<buf.fix_txt_buflen; j++) buf.fix_txt_buf[j] = 'a' + rank;
     for (j=0; j<buf.fix_int_buflen; j++) buf.fix_int_buf[j] = rank;
-    for (j=0; j<buf.rec_dbl_buflen; j++) buf.rec_dbl_buf[j] = rank;
-    for (j=0; j<buf.rec_int_buflen; j++) buf.rec_int_buf[j] = rank;
+    for (j=0; j<buf.fix_dbl_buflen; j++) buf.fix_dbl_buf[j] = rank;
+    for (j=0; j<buf.fix_buflen;     j++) buf.fix_buf[j]     = rank;
     for (j=0; j<buf.rec_txt_buflen; j++) buf.rec_txt_buf[j] = 'a' + rank;
+    for (j=0; j<buf.rec_int_buflen; j++) buf.rec_int_buf[j] = rank;
+    for (j=0; j<buf.rec_dbl_buflen; j++) buf.rec_dbl_buf[j] = rank;
     for (j=0; j<buf.rec_buflen;     j++) buf.rec_buf[j]     = rank;
 
     return 0;
 }
 
+/*----< wr_buf_free() >------------------------------------------------------*/
 void wr_buf_free(io_buffers &buf)
 {
+    if (buf.fix_txt_buf  != NULL) free(buf.fix_txt_buf);
     if (buf.fix_int_buf  != NULL) free(buf.fix_int_buf);
+    if (buf.fix_dbl_buf  != NULL) free(buf.fix_dbl_buf);
     if (buf.fix_buf      != NULL) free(buf.fix_buf);
     if (buf.rec_txt_buf  != NULL) free(buf.rec_txt_buf);
     if (buf.rec_int_buf  != NULL) free(buf.rec_int_buf);
     if (buf.rec_dbl_buf  != NULL) free(buf.rec_dbl_buf);
     if (buf.rec_buf      != NULL) free(buf.rec_buf);
 
+    buf.fix_txt_buf  = NULL;
     buf.fix_int_buf  = NULL;
+    buf.fix_dbl_buf  = NULL;
     buf.fix_buf      = NULL;
     buf.rec_txt_buf  = NULL;
     buf.rec_int_buf  = NULL;
     buf.rec_dbl_buf  = NULL;
     buf.rec_buf      = NULL;
 
+    buf.fix_txt_buflen  = 0;
     buf.fix_int_buflen  = 0;
+    buf.fix_dbl_buflen  = 0;
     buf.fix_buflen      = 0;
     buf.rec_txt_buflen  = 0;
     buf.rec_int_buflen  = 0;
@@ -334,22 +224,25 @@ int var_wr_I_case(e3sm_io_config &cfg,
                   e3sm_io_decom  &decom,
                   e3sm_io_driver &driver)
 {
-    char outfile[1040], base_name[1024], *ext, *rec_txt_buf_ptr;
+    char outfile[1040], base_name[1024], *ext;
+    char *fix_txt_buf_ptr, *rec_txt_buf_ptr;
     const char *hist;
     int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, one_flush;
-    int rec_no, gap=0, my_nreqs, num_decomp_vars, *v_decomp_ids=NULL;
-    int varid, contig_nreqs[MAX_NUM_DECOMP], *nvars_D=cfg.nvars_D;
+    int rec_no, gap=0, my_nreqs, num_decomp_vars;
+    int contig_nreqs[MAX_NUM_DECOMP], *nvars_D=cfg.nvars_D;
     int *fix_int_buf_ptr, *rec_int_buf_ptr;
-    double *rec_dbl_buf_ptr, timing;
+    double *fix_dbl_buf_ptr, *rec_dbl_buf_ptr, timing;
     MPI_Offset previous_size, metadata_size, total_size;
     MPI_Offset blob_start[MAX_NUM_DECOMP], blob_count[MAX_NUM_DECOMP];
     MPI_Offset starts[MAX_NUM_DECOMP][2], counts[MAX_NUM_DECOMP][2];
+    MPI_Offset start[2], count[2];
     MPI_Info info_used = MPI_INFO_NULL;
     MPI_Comm comm;
     vtype  *fix_buf_ptr, *rec_buf_ptr;
+    var_meta *vars;
     io_buffers wr_buf;
 
-    MPI_Barrier(cfg.io_comm); /*-----------------------------------------*/
+    MPI_Barrier(cfg.io_comm); /*---------------------------------------------*/
     cfg.end2end_time = timing = MPI_Wtime();
 
     cfg.post_time  = 0.0;
@@ -409,7 +302,7 @@ int var_wr_I_case(e3sm_io_config &cfg,
 
     cfg.open_time = MPI_Wtime() - timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
     /* there are num_decomp_vars number of decomposition variables */
@@ -418,11 +311,12 @@ int var_wr_I_case(e3sm_io_config &cfg,
     else
         num_decomp_vars = 0;
 
-    /* allocate space for all variable IDs */
-    v_decomp_ids = (int*) malloc((cfg.nvars + num_decomp_vars) * sizeof(int));
-    for (i=0; i<cfg.nvars+num_decomp_vars; i++) v_decomp_ids[i] = -1;
+    /* allocate space to store variable metadata */
+    vars = (var_meta*) malloc((cfg.nvars + num_decomp_vars) * sizeof(var_meta));
 
-    wr_buf_init(wr_buf);
+    if (cfg.non_contig_buf) gap = 10;
+
+    wr_buf_init(wr_buf, gap);
  
     /* define dimensions, variables, and attributes.
      * 560 climate variables
@@ -432,8 +326,8 @@ int var_wr_I_case(e3sm_io_config &cfg,
      *     5 fixed-size, 9 record variables
      */
 
-    /* h0 file contains 560 variablesi, while h1 has 8 less */
-    err = def_I_case(cfg, decom, driver, ncid, v_decomp_ids, &wr_buf);
+    /* h0 file contains 560 variables, while h1 has 8 less */
+    err = def_I_case(cfg, decom, driver, ncid, vars, &wr_buf);
     CHECK_ERR
 
     /* exit define mode and enter data mode */
@@ -447,10 +341,8 @@ int var_wr_I_case(e3sm_io_config &cfg,
 
     cfg.def_time = MPI_Wtime() - timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
-
-    if (cfg.non_contig_buf) gap = 10;
 
     /* allocate write buffers */
     wr_buf_malloc(cfg, one_flush, wr_buf);
@@ -460,17 +352,16 @@ int var_wr_I_case(e3sm_io_config &cfg,
 
     cfg.pre_time = MPI_Wtime() - timing;
 
-    MPI_Barrier(comm); /*-----------------------------------------*/
+    MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
-    my_nreqs = 0; /* number of noncontiguous requests written by this proc */
+    my_nreqs = 0; /* number of noncontiguous requests written by this rank */
 
     if (cfg.strategy == blob) {
-        varid=0;
+        int varid=0;
+
         /* write decomposition variables, they are defined first in file */
         for (j=0; j<decom.num_decomp; j++) {
-            MPI_Offset start[2], count[2];
-
             start[0] = sub_rank;
             count[0] = 1;
             start[1] = 0;
@@ -478,22 +369,23 @@ int var_wr_I_case(e3sm_io_config &cfg,
 
             /* write to D*.nreqs, 1D array */
             contig_nreqs[j] = decom.contig_nreqs[j];
-            IPUT_VARA_INT_NOADV(contig_nreqs+j)
+            IPUT_VARA_NOADV(MPI_INT, contig_nreqs+j)
 
             /* write to D*.blob_start, 1D array */
             blob_start[j] = decom.start[j];
-            IPUT_VARA_INT64_NOADV(blob_start+j)
+            IPUT_VARA_NOADV(MPI_LONG_LONG, blob_start+j)
 
             /* write to D*.blob_count, 1D array */
             blob_count[j] = decom.count[j];
-            IPUT_VARA_INT64_NOADV(blob_count+j);
+            IPUT_VARA_NOADV(MPI_LONG_LONG, blob_count+j);
 
             /* write to D*.offsets, 2D array */
-            IPUT_VARA_INT_NOADV(decom.disps[j])
+            IPUT_VARA_NOADV(MPI_INT, decom.disps[j])
 
             /* write to D*.lengths, 2D array */
-            IPUT_VARA_INT_NOADV(decom.blocklens[j])
+            IPUT_VARA_NOADV(MPI_INT, decom.blocklens[j])
 
+            /* these 4 are used for record variables in blob I/O */
             starts[j][0] = 0;
             starts[j][1] = decom.start[j];
             counts[j][0] = 1;
@@ -501,56 +393,20 @@ int var_wr_I_case(e3sm_io_config &cfg,
         }
     }
 
-    /* Now, write climate variables, fixed-size first */
-    fix_buf_ptr     = wr_buf.fix_buf;
+    fix_txt_buf_ptr = wr_buf.fix_txt_buf;
     fix_int_buf_ptr = wr_buf.fix_int_buf;
-
-    if (sub_rank == 0) {
-        /* write 5 small fixed-size variables */
-        err = write_small_fix_vars_I_case(driver, ncid, num_decomp_vars, gap,
-                                          &fix_buf_ptr, &my_nreqs);
-        CHECK_ERR
-    }
-
-    /* area, topo, landfrac */
-    for (varid=14; varid<17; varid++)
-        FIX_VAR_IPUT(varid, REC_ITYPE, fix_buf_ptr)
-
-    /* landmask, pftmask */
-    for (varid=17; varid<19; varid++)
-        FIX_VAR_IPUT(varid, MPI_INT, fix_int_buf_ptr)
-
-    if (cfg.nvars == 560) {
-        /* ZSOI, DZSOI, WATSAT, SUCSAT, BSW, HKSAT, ZLAKE, DZLAKE */
-        for (varid=19; varid<27; varid++)
-            FIX_VAR_IPUT(varid, REC_ITYPE, fix_buf_ptr)
-    }
-
-    /* now write record variables */
-    rec_txt_buf_ptr = wr_buf.rec_txt_buf;
-    rec_int_buf_ptr = wr_buf.rec_int_buf;
-    rec_dbl_buf_ptr = wr_buf.rec_dbl_buf;
-    rec_buf_ptr     = wr_buf.rec_buf;
+    fix_dbl_buf_ptr = wr_buf.fix_dbl_buf;
+    fix_buf_ptr     = wr_buf.fix_buf;
 
     for (rec_no=0; rec_no<cfg.nrecs; rec_no++) {
-        if (!one_flush || (cfg.strategy == blob && cfg.api == hdf5)) {
+
+        if (rec_no == 0 || !one_flush ||
+            (cfg.strategy == blob && cfg.api == hdf5)) {
             /* reset the pointers to the beginning of the buffers */
             rec_txt_buf_ptr = wr_buf.rec_txt_buf;
             rec_int_buf_ptr = wr_buf.rec_int_buf;
             rec_dbl_buf_ptr = wr_buf.rec_dbl_buf;
             rec_buf_ptr     = wr_buf.rec_buf;
-        }
-
-        if (sub_rank == 0) {
-            /* write 15 small record variables by rank 0 only */
-            err = write_small_rec_vars_I_case(driver, ncid, num_decomp_vars,
-                                              rec_no, gap,
-                                              &rec_txt_buf_ptr,
-                                              &rec_int_buf_ptr,
-                                              &rec_dbl_buf_ptr,
-                                              &rec_buf_ptr,
-                                              &my_nreqs);
-            CHECK_ERR
         }
 
         /* set the start index for the next record */
@@ -563,21 +419,59 @@ int var_wr_I_case(e3sm_io_config &cfg,
             }
         }
 
-        if (cfg.nvars == 560) { /* h0 file */
-            /* first partitioned record variable is ACTUAL_IMMOB, id = 27 */
-            for (varid=27; varid<cfg.nvars; varid++)
-                REC_VAR_IPUT(varid, REC_ITYPE, rec_buf_ptr)
+        /* write all climate variables */
+        for (j=num_decomp_vars; j<cfg.nvars+num_decomp_vars; j++) {
+            int          varid = vars[j].vid;
+            int          dp    = vars[j].decomp_id;
+            MPI_Datatype itype = vars[j].itype;
+            size_t       adv   = vars[j].vlen + gap;
 
-        } else { /* h1 file */
-            /* first partitioned record variable is ACTUAL_IMMOB, id = 19 */
-            for (varid=19; varid<cfg.nvars; varid++)
-                REC_VAR_IPUT(varid, REC_ITYPE, rec_buf_ptr)
+            if (vars[j].decomp_id >= 0) { /* this variable is partitioned */
+                if (vars[j].isRecVar) { /* this is a record variable */
+                    REC_VAR_IPUT(varid, dp, VAR_ITYPE, rec_buf_ptr)
+                }
+                else if (rec_no == 0) { /* this is a fixed-size variable */
+                    if (itype == VAR_ITYPE)
+                        FIX_VAR_IPUT(varid, dp, VAR_ITYPE, fix_buf_ptr)
+                    else if (itype == MPI_INT)
+                        FIX_VAR_IPUT(varid, dp, MPI_INT, fix_int_buf_ptr)
+                }
+            }
+            else { /* this variable is not-partitioned */
+                if (sub_rank > 0) continue;
+
+                /* This variable is written only by rank 0 */
+                if (vars[j].isRecVar) { /* this is a record variable */
+                    start[0] = rec_no;
+                    start[1] = 0;
+                    count[0] = 1;
+                    count[1] = vars[j].vlen;
+                    if (itype == VAR_ITYPE)
+                        IPUT_VARA(varid, itype, adv,     rec_buf_ptr)
+                    else if (itype == MPI_INT)
+                        IPUT_VARA(varid, itype, adv, rec_int_buf_ptr)
+                    else if (itype == MPI_CHAR)
+                        IPUT_VARA(varid, itype, adv, rec_txt_buf_ptr)
+                    else if (itype == MPI_DOUBLE)
+                        IPUT_VARA(varid, itype, adv, rec_dbl_buf_ptr)
+                }
+                else if (rec_no == 0) { /* this is a fixed-size variable */
+                    if (itype == VAR_ITYPE)
+                        IPUT_VAR(varid, itype, adv,     fix_buf_ptr)
+                    else if (itype == MPI_INT)
+                        IPUT_VAR(varid, itype, adv, fix_int_buf_ptr)
+                    else if (itype == MPI_CHAR)
+                        IPUT_VAR(varid, itype, adv, fix_txt_buf_ptr)
+                    else if (itype == MPI_DOUBLE)
+                        IPUT_VAR(varid, itype, adv, fix_dbl_buf_ptr)
+                }
+            }
         }
 
-        if (!one_flush) {
+        if (!one_flush) { /* flush out for each record */
             cfg.post_time += MPI_Wtime() - timing;
 
-            MPI_Barrier(comm); /*-----------------------------------*/
+            MPI_Barrier(comm); /*--------------------------------------------*/
             timing = MPI_Wtime();
 
             /* flush once per time record */
@@ -589,10 +483,10 @@ int var_wr_I_case(e3sm_io_config &cfg,
         }
     }
 
-    if (one_flush) {
+    if (one_flush) { /* flush out for all records */
         cfg.post_time += MPI_Wtime() - timing;
 
-        MPI_Barrier(comm); /*---------------------------------------*/
+        MPI_Barrier(comm); /*------------------------------------------------*/
         timing = MPI_Wtime();
 
         /* flush once for all time records */
@@ -600,11 +494,12 @@ int var_wr_I_case(e3sm_io_config &cfg,
 
         cfg.flush_time += MPI_Wtime() - timing;
     }
-    MPI_Barrier(comm); /*---------------------------------------*/
+    MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
+    /* free up previously allocated heap memory space */
     wr_buf_free(wr_buf);
-    if (v_decomp_ids != NULL) free(v_decomp_ids);
+    if (vars != NULL) free(vars);
 
     /* obtain the write amount made by far */
     if (cfg.api == pnetcdf) INQ_PUT_SIZE(total_size)
@@ -637,7 +532,6 @@ err_out:
     if (err < 0 && ncid >= 0) driver.close(ncid);
     if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!cfg.keep_outfile && sub_rank == 0) unlink(outfile);
-    fflush(stdout);
 
     return err;
 }
