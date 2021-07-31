@@ -9,10 +9,12 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-//
-#include <assert.h>
+
+#include <stdio.h>
 #include <stdlib.h>
-//
+#include <string.h> /* strcpy() */
+#include <assert.h>
+
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 #include <e3sm_io_case.hpp>
