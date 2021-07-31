@@ -15,9 +15,9 @@
 #include <mpi.h>
 
 #include <e3sm_io.h>
+#include <e3sm_io_err.h>
 #include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
-#include <e3sm_io_err.h>
 
 #define CHECK_VAR_ERR(varid) {                                               \
     if (err != 0) {                                                          \
@@ -262,6 +262,7 @@ int def_I_case(e3sm_io_config   &cfg,
             rec_dimids[i][0] = dim_time;
             rec_dimids[i][1] = nelems_D[i];
         }
+        /* decompositions 2 and 5 have the same contents */
         fix_dimids[5][0] = nelems_D[1];
         rec_dimids[5][0] = dim_time;
         rec_dimids[5][1] = nelems_D[1];
@@ -6413,9 +6414,9 @@ int def_I_case(e3sm_io_config   &cfg,
     SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5))
-        assert (varid + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
+        assert(varid + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
     else
-        assert (varid + 1 == cfg.nvars);
+        assert(varid + 1 == cfg.nvars);
 
 err_out:
     return err;
