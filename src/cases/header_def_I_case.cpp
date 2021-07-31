@@ -83,7 +83,14 @@
         err = driver.put_att(ncid,varid,"global_dimids",NC_INT,ndims,dimids); \
         CHECK_VAR_ERR(varid)                                                  \
     }                                                                         \
-    v_decomp_ids[varid] = D-1;                                                \
+}
+#define SET_VAR_META(dtype, id, rec, buflen, len) { \
+    vars[varid].vid       = varid;                  \
+    vars[varid].itype     = dtype;                  \
+    vars[varid].decomp_id = id;                     \
+    vars[varid].isRecVar  = rec;                    \
+    vars[varid].vlen      = len;                    \
+    wr_buf->buflen       += len + wr_buf->gap;      \
 }
 
 /*----< add_gattrs() >-------------------------------------------------------*/
@@ -146,8 +153,8 @@ err_out:
 int def_I_case(e3sm_io_config   &cfg,
                e3sm_io_decom    &decom,
                e3sm_io_driver   &driver,
-               int               ncid,         /* file ID */
-               int              *v_decomp_ids, /* variable decomp map IDs */
+               int               ncid,    /* file ID */
+               var_meta         *vars,    /* variable metadata */
                io_buffers       *wr_buf)
 {
     /* Total 52 variables */
@@ -296,18 +303,23 @@ int def_I_case(e3sm_io_config   &cfg,
             DEF_VAR(name, NC_INT, 1, dimids)
             PUT_ATTR_TXT("description", "Number of noncontiguous requests per blob")
             PUT_ATTR_INT("global_dimids", decom.ndims[i], orig_dimids[i]+1)
+            vars[varid].decomp_id = -1;
             sprintf(name, "D%d.blob_start", i+1);
             DEF_VAR(name, NC_INT64, 1, dimids)
             PUT_ATTR_TXT("description", "Starting variable array index per blob")
+            vars[varid].decomp_id = -1;
             sprintf(name, "D%d.blob_count", i+1);
             DEF_VAR(name, NC_INT64, 1, dimids)
             PUT_ATTR_TXT("description", "Number of variable array elements per blob")
+            vars[varid].decomp_id = -1;
             sprintf(name, "D%d.offsets", i+1);
             DEF_VAR(name, NC_INT, 2, dimids)
             PUT_ATTR_TXT("description", "Flattened starting indices of noncontiguous requests")
+            vars[varid].decomp_id = -1;
             sprintf(name, "D%d.lengths", i+1);
             DEF_VAR(name, NC_INT, 2, dimids)
             PUT_ATTR_TXT("description", "Lengths of noncontiguous requests")
+            vars[varid].decomp_id = -1;
         }
     }
 
@@ -322,19 +334,19 @@ int def_I_case(e3sm_io_config   &cfg,
     DEF_VAR("levgrnd", NC_FLOAT, 1, &dim_levgrnd)
     PUT_ATTR_TXT("long_name", "coordinate soil levels")
     PUT_ATTR_TXT("units", "m")
-    wr_buf->fix_buflen += levgrnd;
+    SET_VAR_META(REC_ITYPE, -1, 0, fix_buflen, levgrnd)
 
     /* float levlak(levlak) */
     DEF_VAR("levlak", NC_FLOAT, 1, &dim_levlak)
     PUT_ATTR_TXT("long_name", "coordinate lake levels")
     PUT_ATTR_TXT("units", "m")
-    wr_buf->fix_buflen += levlak;
+    SET_VAR_META(REC_ITYPE, -1, 0, fix_buflen, levlak)
 
     /* float levdcmp(levdcmp) */
     DEF_VAR("levdcmp", NC_FLOAT, 1, &dim_levdcmp)
     PUT_ATTR_TXT("long_name", "coordinate soil levels")
     PUT_ATTR_TXT("units", "m")
-    wr_buf->fix_buflen += levdcmp;
+    SET_VAR_META(REC_ITYPE, -1, 0, fix_buflen, levdcmp)
 
     /* float time(time) */
     DEF_VAR("time", NC_FLOAT, 1, &dim_time)
@@ -342,49 +354,53 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_TXT("units", "days since 0001-01-01 00:00:00")
     PUT_ATTR_TXT("calendar", "noleap")
     PUT_ATTR_TXT("bounds", "time_bounds")
-    wr_buf->rec_buflen++;
+    SET_VAR_META(REC_ITYPE, -1, 1, rec_buflen, 1)
 
     /* int mcdate(time) */
     DEF_VAR("mcdate", NC_INT, 1, &dim_time)
     PUT_ATTR_TXT("long_name", "current date (YYYYMMDD)")
-    wr_buf->rec_int_buflen++;
+    SET_VAR_META(MPI_INT, -1, 1, rec_int_buflen, 1)
 
     /* int mcsec(time) */
     DEF_VAR("mcsec", NC_INT, 1, &dim_time)
     PUT_ATTR_TXT("long_name", "current seconds of current date")
     PUT_ATTR_TXT("units", "s")
-    wr_buf->rec_int_buflen++;
+    SET_VAR_META(MPI_INT, -1, 1, rec_int_buflen, 1)
 
     /* int mdcur(time) */
     DEF_VAR("mdcur", NC_INT, 1, &dim_time)
     PUT_ATTR_TXT("long_name", "current day (from base day)")
-    wr_buf->rec_int_buflen++;
+    SET_VAR_META(MPI_INT, -1, 1, rec_int_buflen, 1)
 
     /* int mscur(time) */
     DEF_VAR("mscur", NC_INT, 1, &dim_time)
     PUT_ATTR_TXT("long_name", "current seconds of current day")
-    wr_buf->rec_int_buflen++;
+    SET_VAR_META(MPI_INT, -1, 1, rec_int_buflen, 1)
 
     /* int nstep(time) */
     DEF_VAR("nstep", NC_INT, 1, &dim_time)
     PUT_ATTR_TXT("long_name", "time step")
-    wr_buf->rec_int_buflen++;
+    SET_VAR_META(MPI_INT, -1, 1, rec_int_buflen, 1)
 
     /* double time_bounds(time, hist_interval) */
     dimids[0] = dim_time; dimids[1] = dim_hist_interval;
     DEF_VAR("time_bounds", NC_DOUBLE, 2, dimids)
     PUT_ATTR_TXT("long_name", "history time interval endpoints")
-    wr_buf->rec_dbl_buflen += hist_interval;
+#ifdef _DOUBLE_TYPE_
+    SET_VAR_META(MPI_DOUBLE, -1, 1, rec_buflen, hist_interval)
+#else
+    SET_VAR_META(MPI_DOUBLE, -1, 1, rec_dbl_buflen, hist_interval)
+#endif
 
     /* char date_written(time, string_length) */
     dimids[0] = dim_time; dimids[1] = dim_string_length;
     DEF_VAR("date_written", NC_CHAR, 2, dimids)
-    wr_buf->rec_txt_buflen += string_length;
+    SET_VAR_META(MPI_CHAR, -1, 1, rec_txt_buflen, string_length)
 
     /* char time_written(time, string_length) */
     dimids[0] = dim_time; dimids[1] = dim_string_length;
     DEF_VAR("time_written", NC_CHAR, 2, dimids)
-    wr_buf->rec_txt_buflen += string_length;
+    SET_VAR_META(MPI_CHAR, -1, 1, rec_txt_buflen, string_length)
 
     /* float lon(lon) */
     DEF_VAR("lon", NC_FLOAT, 1, &dim_lon)
@@ -392,7 +408,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_TXT("units", "degrees_east")
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
-    wr_buf->fix_buflen += lon;
+    SET_VAR_META(REC_ITYPE, -1, 0, fix_buflen, lon)
 
     /* float lat(lat) */
     DEF_VAR("lat", NC_FLOAT, 1, &dim_lat)
@@ -400,7 +416,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_TXT("units", "degrees_north")
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
-    wr_buf->fix_buflen += lat;
+    SET_VAR_META(REC_ITYPE, -1, 0, fix_buflen, lat)
 
     /* float area(lat, lon) */
     ndims = (cfg.strategy == blob) ? 1 : 2;
@@ -410,7 +426,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 2, orig_dimids[0]+1)
-    wr_buf->fix_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 0, fix_buflen, decom.count[0])
 
     /* float topo(lat, lon) */
     ndims = (cfg.strategy == blob) ? 1 : 2;
@@ -420,7 +436,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 2, orig_dimids[0]+1)
-    wr_buf->fix_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 0, fix_buflen, decom.count[0])
 
     /* float landfrac(lat, lon) */
     ndims = (cfg.strategy == blob) ? 1 : 2;
@@ -429,7 +445,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 2, orig_dimids[0]+1)
-    wr_buf->fix_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 0, fix_buflen, decom.count[0])
 
     /* int landmask(lat, lon) */
     ndims = (cfg.strategy == blob) ? 1 : 2;
@@ -438,7 +454,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_INT1(_FillValue, -9999)
     PUT_ATTR_INT1("missing_value", -9999)
     PUT_ATTR_DECOMP(one, 2, orig_dimids[0]+1)
-    wr_buf->fix_int_buflen += decom.count[0];
+    SET_VAR_META(MPI_INT, 0, 0, fix_int_buflen, decom.count[0])
 
     /* int pftmask(lat, lon) */
     ndims = (cfg.strategy == blob) ? 1 : 2;
@@ -447,7 +463,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_INT1(_FillValue, -9999)
     PUT_ATTR_INT1("missing_value", -9999)
     PUT_ATTR_DECOMP(one, 2, orig_dimids[0]+1)
-    wr_buf->fix_int_buflen += decom.count[0];
+    SET_VAR_META(MPI_INT, 0, 0, fix_int_buflen, decom.count[0])
 
     if (cfg.nvars == 560) {  /* h0 only */
         /* float ZSOI(levgrnd, lat, lon) */
@@ -458,7 +474,7 @@ int def_I_case(e3sm_io_config   &cfg,
         PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
         PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
         PUT_ATTR_DECOMP(two, 3, orig_dimids[1]+1)
-        wr_buf->fix_buflen += decom.count[1];
+        SET_VAR_META(REC_ITYPE, 1, 0, fix_buflen, decom.count[1])
 
         /* float DZSOI(levgrnd, lat, lon) */
         ndims = (cfg.strategy == blob) ? 1 : 3;
@@ -468,7 +484,7 @@ int def_I_case(e3sm_io_config   &cfg,
         PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
         PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
         PUT_ATTR_DECOMP(two, 3, orig_dimids[1]+1)
-        wr_buf->fix_buflen += decom.count[1];
+        SET_VAR_META(REC_ITYPE, 1, 0, fix_buflen, decom.count[1])
 
         /* float WATSAT(levgrnd, lat, lon) */
         ndims = (cfg.strategy == blob) ? 1 : 3;
@@ -478,7 +494,7 @@ int def_I_case(e3sm_io_config   &cfg,
         PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
         PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
         PUT_ATTR_DECOMP(two, 3, orig_dimids[1]+1)
-        wr_buf->fix_buflen += decom.count[1];
+        SET_VAR_META(REC_ITYPE, 1, 0, fix_buflen, decom.count[1])
 
         /* float SUCSAT(levgrnd, lat, lon) */
         ndims = (cfg.strategy == blob) ? 1 : 3;
@@ -488,7 +504,7 @@ int def_I_case(e3sm_io_config   &cfg,
         PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
         PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
         PUT_ATTR_DECOMP(two, 3, orig_dimids[1]+1)
-        wr_buf->fix_buflen += decom.count[1];
+        SET_VAR_META(REC_ITYPE, 1, 0, fix_buflen, decom.count[1])
 
         /* float BSW(levgrnd, lat, lon) */
         ndims = (cfg.strategy == blob) ? 1 : 3;
@@ -498,7 +514,7 @@ int def_I_case(e3sm_io_config   &cfg,
         PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
         PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
         PUT_ATTR_DECOMP(two, 3, orig_dimids[1]+1)
-        wr_buf->fix_buflen += decom.count[1];
+        SET_VAR_META(REC_ITYPE, 1, 0, fix_buflen, decom.count[1])
 
         /* float HKSAT(levgrnd, lat, lon) */
         ndims = (cfg.strategy == blob) ? 1 : 3;
@@ -508,7 +524,7 @@ int def_I_case(e3sm_io_config   &cfg,
         PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
         PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
         PUT_ATTR_DECOMP(two, 3, orig_dimids[1]+1)
-        wr_buf->fix_buflen += decom.count[1];
+        SET_VAR_META(REC_ITYPE, 1, 0, fix_buflen, decom.count[1])
 
         /* float ZLAKE(levlak, lat, lon) */
         ndims = (cfg.strategy == blob) ? 1 : 3;
@@ -518,7 +534,7 @@ int def_I_case(e3sm_io_config   &cfg,
         PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
         PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
         PUT_ATTR_DECOMP(three, 3, orig_dimids[2]+1)
-        wr_buf->fix_buflen += decom.count[2];
+        SET_VAR_META(REC_ITYPE, 2, 0, fix_buflen, decom.count[2])
 
         /* float DZLAKE(levlak, lat, lon) */
         ndims = (cfg.strategy == blob) ? 1 : 3;
@@ -528,7 +544,7 @@ int def_I_case(e3sm_io_config   &cfg,
         PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
         PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
         PUT_ATTR_DECOMP(three, 3, orig_dimids[2]+1)
-        wr_buf->fix_buflen += decom.count[2];
+        SET_VAR_META(REC_ITYPE, 2, 0, fix_buflen, decom.count[2])
     }
 
     /* float ACTUAL_IMMOB(time, lat, lon) */
@@ -540,7 +556,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ACTUAL_IMMOB_P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -551,7 +567,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ADSORBTION_P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -562,7 +578,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float AGNPP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -573,7 +589,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float AGWDNPP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -584,7 +600,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ALT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -595,7 +611,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ALTMAX(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -606,7 +622,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ALTMAX_LASTYEAR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -617,7 +633,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float AR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -628,7 +644,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float AVAILC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -639,7 +655,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float AVAIL_RETRANSP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -650,7 +666,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float BAF_CROP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -661,7 +677,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float BAF_PEATF(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -672,7 +688,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float BCDEP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -683,7 +699,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float BGNPP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -694,7 +710,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float BIOCHEM_PMIN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -705,7 +721,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float BIOCHEM_PMIN_TO_PLANT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -716,7 +732,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float BTRAN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -727,7 +743,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float BUILDHEAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -738,7 +754,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CH4PROD(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -749,7 +765,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CH4_SURF_AERE_SAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -760,7 +776,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CH4_SURF_AERE_UNSAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -771,7 +787,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CH4_SURF_DIFF_SAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -782,7 +798,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CH4_SURF_DIFF_UNSAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -793,7 +809,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CH4_SURF_EBUL_SAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -804,7 +820,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CH4_SURF_EBUL_UNSAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -815,7 +831,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float COL_PTRUNC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -826,7 +842,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CONC_CH4_SAT(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -837,7 +853,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float CONC_CH4_UNSAT(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -848,7 +864,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float CONC_O2_SAT(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -859,7 +875,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float CONC_O2_UNSAT(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -870,7 +886,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float CPOOL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -881,7 +897,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -892,7 +908,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDC_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -903,7 +919,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDC_LOSS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -914,7 +930,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDC_TO_LITR2C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -925,7 +941,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDC_TO_LITR3C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -936,7 +952,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDC_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -947,7 +963,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float CWDN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -958,7 +974,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDN_TO_LITR2N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -969,7 +985,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDN_TO_LITR3N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -980,7 +996,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDN_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -991,7 +1007,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float CWDP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1002,7 +1018,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDP_TO_LITR2P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1013,7 +1029,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDP_TO_LITR3P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1024,7 +1040,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float CWDP_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -1035,7 +1051,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float DEADCROOTC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1046,7 +1062,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DEADCROOTN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1057,7 +1073,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DEADCROOTP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1068,7 +1084,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DEADSTEMC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1079,7 +1095,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DEADSTEMN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1090,7 +1106,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DEADSTEMP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1101,7 +1117,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DEFICIT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1112,7 +1128,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DENIT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1123,7 +1139,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DESORPTION_P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1134,7 +1150,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DISPVEGC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1145,7 +1161,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DISPVEGN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1156,7 +1172,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DISPVEGP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1167,7 +1183,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DSTDEP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1178,7 +1194,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DSTFLXT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1189,7 +1205,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DWB(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1200,7 +1216,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DWT_CONV_CFLUX_DRIBBLED(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1211,7 +1227,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DWT_CONV_CFLUX_GRC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1222,7 +1238,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DWT_CONV_NFLUX_GRC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1233,7 +1249,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DWT_CONV_PFLUX_GRC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1244,7 +1260,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DWT_SLASH_CFLUX(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1255,7 +1271,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DWT_SLASH_NFLUX(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1266,7 +1282,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float DWT_SLASH_PFLUX(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1277,7 +1293,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float EFLX_DYNBAL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1288,7 +1304,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float EFLX_GRND_LAKE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1299,7 +1315,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float EFLX_LH_TOT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1310,7 +1326,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float EFLX_LH_TOT_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1321,7 +1337,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float EFLX_LH_TOT_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1332,7 +1348,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ELAI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1343,7 +1359,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ER(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1354,7 +1370,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ERRH2O(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1365,7 +1381,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ERRH2OSNO(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1376,7 +1392,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ERRSEB(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1387,7 +1403,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ERRSOI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1398,7 +1414,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ERRSOL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1409,7 +1425,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ESAI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1420,7 +1436,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FAREA_BURNED(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1431,7 +1447,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FCEV(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1442,7 +1458,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FCH4(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1453,7 +1469,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FCH4TOCO2(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1464,7 +1480,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FCH4_DFSAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1475,7 +1491,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FCOV(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1486,7 +1502,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FCTR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1497,7 +1513,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FGEV(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1508,7 +1524,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FGR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1519,7 +1535,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FGR12(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1530,7 +1546,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FGR_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1541,7 +1557,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FGR_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1552,7 +1568,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FH2OSFC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1563,7 +1579,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FINUNDATED(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1574,7 +1590,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FINUNDATED_LAG(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1585,7 +1601,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FIRA(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1596,7 +1612,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FIRA_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1607,7 +1623,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FIRA_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1618,7 +1634,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FIRE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1629,7 +1645,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FIRE_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1640,7 +1656,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FIRE_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1651,7 +1667,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FLDS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1662,7 +1678,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FPG(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1673,7 +1689,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FPG_P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1684,7 +1700,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FPI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1695,7 +1711,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FPI_P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1706,7 +1722,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FPI_P_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -1717,7 +1733,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float FPI_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -1728,7 +1744,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float FPSN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1739,7 +1755,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FPSN_WC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1750,7 +1766,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FPSN_WJ(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1761,7 +1777,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FPSN_WP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1772,7 +1788,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FROOTC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1783,7 +1799,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FROOTC_ALLOC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1794,7 +1810,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FROOTC_LOSS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1805,7 +1821,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FROOTN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1816,7 +1832,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FROOTP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1827,7 +1843,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FROST_TABLE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1838,7 +1854,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSA(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1849,7 +1865,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1860,7 +1876,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSA_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1871,7 +1887,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSA_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1882,7 +1898,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSDS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1893,7 +1909,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSDSND(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1904,7 +1920,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSDSNDLN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1915,7 +1931,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSDSNI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1926,7 +1942,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSDSVD(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1937,7 +1953,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSDSVDLN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1948,7 +1964,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSDSVI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1959,7 +1975,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSDSVILN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1970,7 +1986,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSH(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1981,7 +1997,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSH_G(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -1992,7 +2008,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSH_NODYNLNDUSE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2003,7 +2019,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSH_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2014,7 +2030,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSH_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2025,7 +2041,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSH_V(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2036,7 +2052,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSM(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2047,7 +2063,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSM_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2058,7 +2074,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSM_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2069,7 +2085,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSNO(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2080,7 +2096,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSNO_EFF(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2091,7 +2107,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2102,7 +2118,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSRND(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2113,7 +2129,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSRNDLN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2124,7 +2140,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSRNI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2135,7 +2151,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSRVD(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2146,7 +2162,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSRVDLN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2157,7 +2173,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float FSRVI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2168,7 +2184,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float F_CO2_SOIL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2179,7 +2195,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float F_CO2_SOIL_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2190,7 +2206,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float F_DENIT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2201,7 +2217,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float F_DENIT_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2212,7 +2228,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float F_N2O_DENIT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2223,7 +2239,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float F_N2O_NIT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2234,7 +2250,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float F_NIT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2245,7 +2261,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float F_NIT_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2256,7 +2272,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float GC_HEAT1(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2267,7 +2283,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float GC_ICE1(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2278,7 +2294,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float GC_LIQ1(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2289,7 +2305,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float GPP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2300,7 +2316,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float GR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2311,7 +2327,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float GROSS_NMIN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2322,7 +2338,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float GROSS_PMIN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2333,7 +2349,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float H2OCAN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2344,7 +2360,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float H2OSFC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2355,7 +2371,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float H2OSNO(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2366,7 +2382,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float H2OSNO_TOP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2377,7 +2393,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float H2OSOI(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2388,7 +2404,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float HC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2399,7 +2415,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float HCSOI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2410,7 +2426,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float HEAT_FROM_AC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2421,7 +2437,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2432,7 +2448,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float HR_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2443,7 +2459,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float HTOP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2454,7 +2470,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float INT_SNOW(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2465,7 +2481,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LABILEP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2476,7 +2492,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LABILEP_TO_SECONDP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2487,7 +2503,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LABILEP_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2498,7 +2514,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LAISHA(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2509,7 +2525,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LAISUN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2520,7 +2536,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LAKEICEFRAC(time, levlak, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2531,7 +2547,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(three, 4, orig_dimids[2])
-    wr_buf->rec_buflen += decom.count[2];
+    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
 
     /* float LAKEICETHICK(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2542,7 +2558,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LAND_UPTAKE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2553,7 +2569,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LAND_USE_FLUX(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2564,7 +2580,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LEAFC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2575,7 +2591,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LEAFC_ALLOC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2586,7 +2602,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LEAFC_LOSS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2597,7 +2613,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LEAFC_TO_LITTER(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2608,7 +2624,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LEAFN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2619,7 +2635,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LEAFP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2630,7 +2646,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LEAF_MR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2641,7 +2657,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LFC2(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2652,7 +2668,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITFALL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2663,7 +2679,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITHR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2674,7 +2690,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR1C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2685,7 +2701,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR1C_TO_SOIL1C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2696,7 +2712,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR1C_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2707,7 +2723,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR1N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2718,7 +2734,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR1N_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2729,7 +2745,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR1N_TO_SOIL1N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2740,7 +2756,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR1N_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2751,7 +2767,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR1P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2762,7 +2778,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR1P_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2773,7 +2789,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR1P_TO_SOIL1P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2784,7 +2800,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR1P_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2795,7 +2811,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR1_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2806,7 +2822,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR2C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2817,7 +2833,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR2C_TO_SOIL2C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2828,7 +2844,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR2C_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2839,7 +2855,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR2N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2850,7 +2866,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR2N_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2861,7 +2877,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR2N_TO_SOIL2N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2872,7 +2888,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR2N_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2883,7 +2899,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR2P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2894,7 +2910,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR2P_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2905,7 +2921,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR2P_TO_SOIL2P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2916,7 +2932,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR2P_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2927,7 +2943,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR2_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2938,7 +2954,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR3C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2949,7 +2965,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR3C_TO_SOIL3C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2960,7 +2976,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR3C_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2971,7 +2987,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR3N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -2982,7 +2998,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR3N_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -2993,7 +3009,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR3N_TO_SOIL3N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3004,7 +3020,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR3N_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -3015,7 +3031,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR3P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3026,7 +3042,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR3P_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -3037,7 +3053,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR3P_TO_SOIL3P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3048,7 +3064,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITR3P_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -3059,7 +3075,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float LITR3_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3070,7 +3086,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITTERC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3081,7 +3097,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITTERC_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3092,7 +3108,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LITTERC_LOSS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3103,7 +3119,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LIVECROOTC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3114,7 +3130,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LIVECROOTN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3125,7 +3141,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LIVECROOTP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3136,7 +3152,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LIVESTEMC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3147,7 +3163,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LIVESTEMN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3158,7 +3174,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float LIVESTEMP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3169,7 +3185,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float MR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3180,7 +3196,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float M_LITR1C_TO_LEACHING(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3191,7 +3207,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float M_LITR2C_TO_LEACHING(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3202,7 +3218,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float M_LITR3C_TO_LEACHING(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3213,7 +3229,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float M_SOIL1C_TO_LEACHING(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3224,7 +3240,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float M_SOIL2C_TO_LEACHING(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3235,7 +3251,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float M_SOIL3C_TO_LEACHING(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3246,7 +3262,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float M_SOIL4C_TO_LEACHING(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3257,7 +3273,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NBP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3268,7 +3284,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NDEPLOY(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3279,7 +3295,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NDEP_TO_SMINN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3290,7 +3306,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NEE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3301,7 +3317,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NEM(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3312,7 +3328,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NEP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3323,7 +3339,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NET_NMIN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3334,7 +3350,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NET_PMIN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3345,7 +3361,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NFIRE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3356,7 +3372,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NFIX_TO_SMINN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3367,7 +3383,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float NPP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3378,7 +3394,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float OCCLP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3389,7 +3405,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float OCCLP_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -3400,7 +3416,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float OCDEP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3411,7 +3427,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float O_SCALAR(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -3422,7 +3438,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float PARVEGLN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3433,7 +3449,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PBOT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3444,7 +3460,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PCH4(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3455,7 +3471,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PCO2(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3466,7 +3482,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PCT_LANDUNIT(time, ltype, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -3477,7 +3493,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(four, 4, orig_dimids[3])
-    wr_buf->rec_buflen += decom.count[3];
+    SET_VAR_META(REC_ITYPE, 3, 1, rec_buflen, decom.count[3])
 
     /* float PCT_NAT_PFT(time, natpft, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -3488,7 +3504,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(five, 4, orig_dimids[4])
-    wr_buf->rec_buflen += decom.count[4];
+    SET_VAR_META(REC_ITYPE, 4, 1, rec_buflen, decom.count[4])
 
     /* float PDEPLOY(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3499,7 +3515,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PDEP_TO_SMINP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3510,7 +3526,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PFT_FIRE_CLOSS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3521,7 +3537,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PFT_FIRE_NLOSS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3532,7 +3548,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PLANT_CALLOC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3543,7 +3559,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PLANT_NDEMAND(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3554,7 +3570,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PLANT_NDEMAND_COL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3565,7 +3581,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PLANT_PALLOC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3576,7 +3592,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PLANT_PDEMAND(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3587,7 +3603,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PLANT_PDEMAND_COL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3598,7 +3614,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float POTENTIAL_IMMOB(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3609,7 +3625,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float POTENTIAL_IMMOB_P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3620,7 +3636,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float POT_F_DENIT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3631,7 +3647,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float POT_F_NIT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3642,7 +3658,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PRIMP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3653,7 +3669,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PRIMP_TO_LABILEP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3664,7 +3680,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PRIMP_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -3675,7 +3691,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float PROD1P_LOSS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3686,7 +3702,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PSNSHA(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3697,7 +3713,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PSNSHADE_TO_CPOOL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3708,7 +3724,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PSNSUN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3719,7 +3735,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float PSNSUN_TO_CPOOL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3730,7 +3746,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float Q2M(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3741,7 +3757,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QBOT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3752,7 +3768,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QCHARGE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3763,7 +3779,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QDRAI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3774,7 +3790,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QDRAI_PERCH(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3785,7 +3801,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QDRAI_XS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3796,7 +3812,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QDRIP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3807,7 +3823,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QFLOOD(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3818,7 +3834,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QFLX_ICE_DYNBAL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3829,7 +3845,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QFLX_LIQ_DYNBAL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3840,7 +3856,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QH2OSFC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3851,7 +3867,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QINFL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3862,7 +3878,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QINTR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3873,7 +3889,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QIRRIG_GRND(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3884,7 +3900,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QIRRIG_ORIG(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3895,7 +3911,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QIRRIG_REAL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3906,7 +3922,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QIRRIG_SURF(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3917,7 +3933,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QIRRIG_WM(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3928,7 +3944,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QOVER(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3939,7 +3955,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QOVER_LAG(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3950,7 +3966,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QRGWL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3961,7 +3977,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QRUNOFF(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3972,7 +3988,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QRUNOFF_NODYNLNDUSE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3983,7 +3999,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QRUNOFF_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -3994,7 +4010,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QRUNOFF_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4005,7 +4021,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QSNOMELT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4016,7 +4032,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QSNWCPICE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4027,7 +4043,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QSNWCPICE_NODYNLNDUSE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4038,7 +4054,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QSOIL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4049,7 +4065,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QVEGE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4060,7 +4076,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float QVEGT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4071,7 +4087,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float RAIN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4082,7 +4098,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float RETRANSN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4093,7 +4109,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float RETRANSN_TO_NPOOL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4104,7 +4120,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float RETRANSP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4115,7 +4131,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float RETRANSP_TO_PPOOL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4126,7 +4142,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float RH2M(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4137,7 +4153,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float RH2M_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4148,7 +4164,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float RH2M_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4159,7 +4175,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float RR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4170,7 +4186,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SABG(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4181,7 +4197,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SABG_PEN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4192,7 +4208,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SABV(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4203,7 +4219,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SCALARAVG_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4214,7 +4230,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SECONDP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4225,7 +4241,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SECONDP_TO_LABILEP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4236,7 +4252,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SECONDP_TO_OCCLP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4247,7 +4263,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SECONDP_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4258,7 +4274,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SEEDC_GRC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4269,7 +4285,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4280,7 +4296,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINN_TO_NPOOL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4291,7 +4307,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINN_TO_PLANT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4302,7 +4318,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINN_TO_SOIL1N_L1(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4313,7 +4329,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINN_TO_SOIL2N_L2(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4324,7 +4340,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINN_TO_SOIL2N_S1(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4335,7 +4351,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINN_TO_SOIL3N_L3(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4346,7 +4362,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINN_TO_SOIL3N_S2(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4357,7 +4373,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINN_TO_SOIL4N_S3(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4368,7 +4384,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4379,7 +4395,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_LEACHED(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4390,7 +4406,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_TO_PLANT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4401,7 +4417,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_TO_PPOOL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4412,7 +4428,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_TO_SOIL1P_L1(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4423,7 +4439,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_TO_SOIL2P_L2(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4434,7 +4450,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_TO_SOIL2P_S1(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4445,7 +4461,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_TO_SOIL3P_L3(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4456,7 +4472,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_TO_SOIL3P_S2(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4467,7 +4483,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_TO_SOIL4P_S3(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4478,7 +4494,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMINP_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4489,7 +4505,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SMIN_NH4(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4500,7 +4516,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMIN_NH4_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4511,7 +4527,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SMIN_NO3(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4522,7 +4538,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMIN_NO3_LEACHED(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4533,7 +4549,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMIN_NO3_RUNOFF(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4544,7 +4560,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SMIN_NO3_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4555,7 +4571,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SNOBCMCL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4566,7 +4582,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOBCMSL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4577,7 +4593,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNODSTMCL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4588,7 +4604,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNODSTMSL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4599,7 +4615,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOINTABS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4610,7 +4626,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOOCMCL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4621,7 +4637,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOOCMSL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4632,7 +4648,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOW(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4643,7 +4659,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOWDP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4654,7 +4670,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOWICE(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4665,7 +4681,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOWLIQ(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4676,7 +4692,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOW_DEPTH(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4687,7 +4703,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOW_SINKS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4698,7 +4714,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SNOW_SOURCES(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4709,7 +4725,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL1C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4720,7 +4736,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL1C_TO_SOIL2C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4731,7 +4747,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL1C_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4742,7 +4758,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL1N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4753,7 +4769,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL1N_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4764,7 +4780,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL1N_TO_SOIL2N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4775,7 +4791,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL1N_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4786,7 +4802,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL1P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4797,7 +4813,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL1P_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4808,7 +4824,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL1P_TO_SOIL2P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4819,7 +4835,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL1P_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4830,7 +4846,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL1_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4841,7 +4857,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL2C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4852,7 +4868,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL2C_TO_SOIL3C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4863,7 +4879,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL2C_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4874,7 +4890,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL2N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4885,7 +4901,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL2N_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4896,7 +4912,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL2N_TO_SOIL3N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4907,7 +4923,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL2N_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4918,7 +4934,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL2P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4929,7 +4945,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL2P_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4940,7 +4956,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL2P_TO_SOIL3P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4951,7 +4967,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL2P_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -4962,7 +4978,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL2_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4973,7 +4989,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL3C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4984,7 +5000,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL3C_TO_SOIL4C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -4995,7 +5011,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL3C_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5006,7 +5022,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL3N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5017,7 +5033,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL3N_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5028,7 +5044,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL3N_TO_SOIL4N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5039,7 +5055,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL3N_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5050,7 +5066,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL3P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5061,7 +5077,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL3P_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5072,7 +5088,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL3P_TO_SOIL4P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5083,7 +5099,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL3P_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5094,7 +5110,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL3_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5105,7 +5121,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL4C(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5116,7 +5132,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL4C_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5127,7 +5143,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL4N(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5138,7 +5154,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL4N_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5149,7 +5165,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL4N_TO_SMINN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5160,7 +5176,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL4N_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5171,7 +5187,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL4P(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5182,7 +5198,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL4P_TNDNCY_VERT_TRANS(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5193,7 +5209,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL4P_TO_SMINP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5204,7 +5220,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOIL4P_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5215,7 +5231,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOIL4_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5226,7 +5242,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOILC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5237,7 +5253,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOILC_HR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5248,7 +5264,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOILC_LOSS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5259,7 +5275,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOILICE(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5270,7 +5286,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOILICE_ICE(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5281,7 +5297,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOILLIQ(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5292,7 +5308,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOILLIQ_ICE(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5303,7 +5319,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOILPSI(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5314,7 +5330,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOILWATER_10CM(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5326,7 +5342,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOLUTIONP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5337,7 +5353,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOLUTIONP_vr(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5348,7 +5364,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float SOMHR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5359,7 +5375,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SOM_C_LEACHED(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5370,7 +5386,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5381,7 +5397,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float STORVEGC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5392,7 +5408,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float STORVEGN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5403,7 +5419,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float STORVEGP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5414,7 +5430,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SUPPLEMENT_TO_SMINN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5425,7 +5441,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SUPPLEMENT_TO_SMINP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5436,7 +5452,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SUPPLY(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5447,7 +5463,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SoilAlpha(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5458,7 +5474,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float SoilAlpha_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5469,7 +5485,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TAUX(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5480,7 +5496,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TAUY(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5491,7 +5507,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TBOT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5502,7 +5518,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TBUILD(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5513,7 +5529,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TCS_MONTH_BEGIN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5524,7 +5540,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TCS_MONTH_END(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5535,7 +5551,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TG(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5546,7 +5562,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TG_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5557,7 +5573,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TG_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5568,7 +5584,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TH2OSFC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5579,7 +5595,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float THBOT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5590,7 +5606,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TKE1(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5601,7 +5617,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TLAI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5612,7 +5628,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TLAKE(time, levlak, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -5623,7 +5639,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(three, 4, orig_dimids[2])
-    wr_buf->rec_buflen += decom.count[2];
+    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
 
     /* float TOTCOLC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5634,7 +5650,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTCOLCH4(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5645,7 +5661,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTCOLN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5656,7 +5672,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTCOLP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5667,7 +5683,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTECOSYSC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5678,7 +5694,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTECOSYSN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5689,7 +5705,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTECOSYSP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5700,7 +5716,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTLITC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5711,7 +5727,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTLITC_1m(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5722,7 +5738,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTLITN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5733,7 +5749,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTLITP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5744,7 +5760,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTLITP_1m(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5755,7 +5771,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTPFTC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5766,7 +5782,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTPFTN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5777,7 +5793,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTPFTP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5788,7 +5804,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTSOMC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5799,7 +5815,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTSOMC_1m(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5810,7 +5826,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTSOMN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5821,7 +5837,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTSOMP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5832,7 +5848,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTSOMP_1m(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5843,7 +5859,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTVEGC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5854,7 +5870,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTVEGC_ABG(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5865,7 +5881,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTVEGN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5876,7 +5892,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TOTVEGP(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5887,7 +5903,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TREFMNAV(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5898,7 +5914,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TREFMNAV_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5909,7 +5925,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TREFMNAV_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5920,7 +5936,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TREFMXAV(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5931,7 +5947,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TREFMXAV_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5942,7 +5958,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TREFMXAV_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5953,7 +5969,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TSA(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5964,7 +5980,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TSAI(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5975,7 +5991,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TSA_R(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5986,7 +6002,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TSA_U(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -5997,7 +6013,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TSOI(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -6009,7 +6025,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float TSOI_10CM(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6020,7 +6036,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TSOI_ICE(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -6031,7 +6047,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float TV(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6042,7 +6058,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TWS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6053,7 +6069,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TWS_MONTH_BEGIN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6064,7 +6080,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float TWS_MONTH_END(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6075,7 +6091,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float T_SCALAR(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -6086,7 +6102,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float U10(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6097,7 +6113,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float URBAN_AC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6108,7 +6124,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float URBAN_HEAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6119,7 +6135,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float VOLR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6130,7 +6146,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float VOLRMCH(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6141,7 +6157,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WA(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6152,7 +6168,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WASTEHEAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6163,7 +6179,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WF(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6174,7 +6190,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WIND(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6185,7 +6201,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WOODC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6196,7 +6212,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WOODC_ALLOC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6207,7 +6223,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WOODC_LOSS(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6218,7 +6234,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WOOD_HARVESTC(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6229,7 +6245,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WOOD_HARVESTN(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6240,7 +6256,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float WTGQ(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6251,7 +6267,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float W_SCALAR(time, levdcmp, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -6262,7 +6278,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[5])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float XR(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6273,7 +6289,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float XSMRPOOL(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6284,7 +6300,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ZBOT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6295,7 +6311,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ZWT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6306,7 +6322,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ZWT_CH4_UNSAT(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6317,7 +6333,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float ZWT_PERCH(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6328,7 +6344,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float cn_scalar(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6339,7 +6355,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float cp_scalar(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6350,7 +6366,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float leaf_npimbalance(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6361,7 +6377,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float nlim_m(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6372,7 +6388,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     /* float o2_decomp_depth_unsat(time, levgrnd, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 4;
@@ -6383,7 +6399,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(two, 4, orig_dimids[1])
-    wr_buf->rec_buflen += decom.count[1];
+    SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 
     /* float plim_m(time, lat, lon) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
@@ -6394,7 +6410,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_FLOAT(_FillValue, 1, 1.e+36f)
     PUT_ATTR_FLOAT("missing_value", 1, 1.e+36f)
     PUT_ATTR_DECOMP(one, 3, orig_dimids[0])
-    wr_buf->rec_buflen += decom.count[0];
+    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5))
         assert (varid + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
