@@ -24,7 +24,8 @@ CXX_SRCS =  e3sm_io_case_F.cpp \
             var_wr_G_case.cpp \
             var_rd_G_case.cpp \
             var_wr_I_case.cpp \
-            report_timing.cpp
+            report_timing.cpp \
+            utils.cpp
 
 H_SRCS =    e3sm_io_case.hpp
 
