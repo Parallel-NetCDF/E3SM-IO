@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> /* strcopy() */
 #include <assert.h>
 
 #include <e3sm_io.h>
