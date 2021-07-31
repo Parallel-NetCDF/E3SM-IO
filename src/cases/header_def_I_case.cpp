@@ -84,13 +84,13 @@
         CHECK_VAR_ERR(varid)                                                  \
     }                                                                         \
 }
-#define SET_VAR_META(dtype, id, rec, buflen, len) { \
-    vars[varid].vid       = varid;                  \
-    vars[varid].itype     = dtype;                  \
-    vars[varid].decomp_id = id;                     \
-    vars[varid].isRecVar  = rec;                    \
-    vars[varid].vlen      = len;                    \
-    wr_buf->buflen       += len + wr_buf->gap;      \
+#define SET_VAR_META(dtype, id, rec, buflen, varlen) { \
+    vars[varid].vid       = varid;                     \
+    vars[varid].itype     = dtype;                     \
+    vars[varid].decomp_id = id;                        \
+    vars[varid].isRecVar  = rec;                       \
+    vars[varid].vlen      = varlen;                    \
+    wr_buf->buflen       += varlen + wr_buf->gap;      \
 }
 
 /*----< add_gattrs() >-------------------------------------------------------*/
