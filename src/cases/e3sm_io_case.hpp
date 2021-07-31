@@ -156,19 +156,19 @@ run_varn_F_case_rd(e3sm_io_config &cfg,
                    char *txt_buf,       /* buffer for char var */
                    int *int_buf);       /* buffer for int var */
 
-extern int
-def_F_case(e3sm_io_config &cfg,
-           e3sm_io_decom  &decom,
-           e3sm_io_driver &driver,
-           int             ncid,
-           var_meta       *vars,
-           io_buffers     *wr_buf);
+extern
+int def_F_case(e3sm_io_config &cfg,
+               e3sm_io_decom  &decom,
+               e3sm_io_driver &driver,
+               int             ncid,
+               var_meta       *vars,
+               io_buffers     *wr_buf);
 
-extern int
-var_wr_F_case(e3sm_io_config &cfg,
-              e3sm_io_decom  &decom,
-              e3sm_io_driver &driver,
-              char           *outfile);
+extern
+int var_wr_F_case(e3sm_io_config &cfg,
+                  e3sm_io_decom  &decom,
+                  e3sm_io_driver &driver,
+                  char           *outfile);
 
 
 /*---- functions for G case -------------------------------------------------*/
@@ -228,17 +228,19 @@ run_varn_G_case_rd(e3sm_io_config &cfg,
                    double **D6_rec_dbl_bufp,  /* D6 rec double buffer */
                    double **D1_fix_dbl_bufp); /* D1 fix double buffer */
 
-extern int
-var_wr_G_case(e3sm_io_config &cfg,
-              e3sm_io_decom &decom,
-              e3sm_io_driver &driver);
+extern
+int var_wr_G_case(e3sm_io_config &cfg,
+                  e3sm_io_decom  &decom,
+                  e3sm_io_driver &driver,
+                  char           *outfile);
 
-extern int
-def_G_case(e3sm_io_config &cfg,
-           e3sm_io_decom  &decom,
-           e3sm_io_driver &driver,
-           int ncid,
-           int *varids);
+extern
+int def_G_case(e3sm_io_config &cfg,
+               e3sm_io_decom  &decom,
+               e3sm_io_driver &driver,
+               int             ncid,
+               var_meta       *vars,
+               io_buffers     *wr_buf);
 
 extern
 int def_I_case(e3sm_io_config &cfg,
@@ -247,21 +249,21 @@ int def_I_case(e3sm_io_config &cfg,
                int             ncid,
                var_meta       *vars,
                io_buffers     *wr_buf);
-extern int
-var_wr_I_case(e3sm_io_config &cfg,
-              e3sm_io_decom  &decom,
-              e3sm_io_driver &driver,
-              char           *outfile);
+extern
+int var_wr_I_case(e3sm_io_config &cfg,
+                  e3sm_io_decom  &decom,
+                  e3sm_io_driver &driver,
+                  char           *outfile);
 
-extern int
-check_malloc(e3sm_io_config *cfg,
-             e3sm_io_driver *driver);
+extern
+int check_malloc(e3sm_io_config *cfg,
+                 e3sm_io_driver *driver);
 
-extern int
-report_timing_WR(e3sm_io_config *cfg,
-                 e3sm_io_driver *driver,
-                 e3sm_io_decom *decom,
-                 const char *outfile);
+extern
+int report_timing_WR(e3sm_io_config *cfg,
+                     e3sm_io_driver *driver,
+                     e3sm_io_decom *decom,
+                     const char *outfile);
 
 extern
 void wr_buf_init(io_buffers &buf, int gap);
