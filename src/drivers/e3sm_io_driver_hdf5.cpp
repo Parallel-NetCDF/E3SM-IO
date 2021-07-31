@@ -372,7 +372,7 @@ err_out:;
     return err;
 }
 int e3sm_io_driver_hdf5::def_local_var (
-    int fid E3SM_IO_UNUSED, std::string name E3SM_IO_UNUSED, nc_type xtype E3SM_IO_UNUSED, int ndim E3SM_IO_UNUSED, MPI_Offset *dsize E3SM_IO_UNUSED, int *did E3SM_IO_UNUSED) {
+    int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did) {
     int err = 0;
 
     ERR_OUT ("HDF5 does not support local variables")
@@ -399,13 +399,13 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_hdf5::inq_var_name (int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, char *name E3SM_IO_UNUSED) {
+int e3sm_io_driver_hdf5::inq_var_name (int fid, int vid, char *name) {
     name[0] = '\0';
     printf("inq_var_name is not yet implementaed\n");
     return -1;
 }
 
-int e3sm_io_driver_hdf5::inq_var_off (int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, MPI_Offset *off E3SM_IO_UNUSED) {
+int e3sm_io_driver_hdf5::inq_var_off (int fid, int vid, MPI_Offset *off) {
     throw "Function not supported";
     return -1;
 }
@@ -480,8 +480,8 @@ int e3sm_io_driver_hdf5::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
     return 0;
 }
 
-int e3sm_io_driver_hdf5::enddef (int fid E3SM_IO_UNUSED) { return 0; }
-int e3sm_io_driver_hdf5::redef (int fid E3SM_IO_UNUSED) { return 0; }
+int e3sm_io_driver_hdf5::enddef (int fid) { return 0; }
+int e3sm_io_driver_hdf5::redef (int fid) { return 0; }
 int e3sm_io_driver_hdf5::wait (int fid) {
     int err = 0;
     herr_t herr;
@@ -591,7 +591,7 @@ err_out:;
 }
 
 int e3sm_io_driver_hdf5::put_varl (
-    int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, MPI_Datatype itype E3SM_IO_UNUSED, void *buf E3SM_IO_UNUSED, e3sm_io_op_mode mode E3SM_IO_UNUSED) {
+    int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
     int err = 0;
 
     ERR_OUT ("HDF5 does not support local variables")

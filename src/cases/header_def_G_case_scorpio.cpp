@@ -92,8 +92,8 @@
     {}
 
 /*----< add_gattrs() >-------------------------------------------------------*/
-static int add_gattrs (e3sm_io_config &cfg E3SM_IO_UNUSED,
-                       e3sm_io_decom &decom E3SM_IO_UNUSED,
+static int add_gattrs (e3sm_io_config &cfg,
+                       e3sm_io_decom &decom,
                        e3sm_io_driver &driver,
                        int ncid) {
     int err = 0;

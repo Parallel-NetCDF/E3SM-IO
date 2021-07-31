@@ -16,8 +16,6 @@
 
 #define E3SM_IO_MAX_PATH    1024
 #define MAX_NUM_DECOMP      6
-#define E3SM_IO_UNUSED __attribute__((unused))
-
 #define PRINT_MSG(V, ...)                                                    \
     {                                                                        \
         if ((cfg.rank == 0) && (cfg.verbose >= V)) { printf (__VA_ARGS__); } \

@@ -212,7 +212,7 @@ err_out:
 }
 
 int e3sm_io_driver_pnc::def_local_var (
-    int fid E3SM_IO_UNUSED, std::string name E3SM_IO_UNUSED, nc_type xtype E3SM_IO_UNUSED, int ndim E3SM_IO_UNUSED, MPI_Offset *dsize E3SM_IO_UNUSED, int *varid E3SM_IO_UNUSED) {
+    int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *varid) {
     int err = 0;
 
     ERR_OUT ("PNC does not support local variables")
@@ -358,7 +358,7 @@ err_out:
 }
 
 int e3sm_io_driver_pnc::put_varl (
-    int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, MPI_Datatype itype E3SM_IO_UNUSED, void *buf E3SM_IO_UNUSED, e3sm_io_op_mode mode E3SM_IO_UNUSED) {
+    int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
     int err = 0;
 
     ERR_OUT ("PNC does not support local variables")

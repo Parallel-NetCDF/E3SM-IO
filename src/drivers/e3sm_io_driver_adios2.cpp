@@ -107,7 +107,7 @@ e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_dri
 
 e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {}
 
-int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info info  E3SM_IO_UNUSED, int *fid) {
+int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info info , int *fid) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp;
@@ -156,7 +156,7 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info E3SM_IO_UNUSED, int *fid) {
+int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp;
@@ -235,7 +235,7 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::inq_file_info (int fid  E3SM_IO_UNUSED, MPI_Info *info) {
+int e3sm_io_driver_adios2::inq_file_info (int fid , MPI_Info *info) {
     *info = MPI_INFO_NULL;
     return 0;
 }
@@ -431,13 +431,13 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::inq_var_name (int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, char *name E3SM_IO_UNUSED) {
+int e3sm_io_driver_adios2::inq_var_name (int fid, int vid, char *name) {
     name[0] = '\0';
     printf ("inq_var_name is not yet implementaed\n");
     return -1;
 }
 
-int e3sm_io_driver_adios2::inq_var_off (int fid E3SM_IO_UNUSED, int vid E3SM_IO_UNUSED, MPI_Offset *off E3SM_IO_UNUSED) {
+int e3sm_io_driver_adios2::inq_var_off (int fid, int vid, MPI_Offset *off) {
     throw "Function not supported";
     return -1;
 }
@@ -573,7 +573,7 @@ err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
 }
-int e3sm_io_driver_adios2::wait (int fid E3SM_IO_UNUSED) {
+int e3sm_io_driver_adios2::wait (int fid) {
     int err = 0;
 //    adios2_error aerr;
 //   adios2_file *fp = this->files[fid];

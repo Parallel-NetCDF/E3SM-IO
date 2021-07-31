@@ -61,9 +61,9 @@ err_out:
 }
 
 
-int e3sm_io_case_I::rd_test(e3sm_io_config &cfg E3SM_IO_UNUSED,
-                            e3sm_io_decom &decom E3SM_IO_UNUSED,
-                            e3sm_io_driver &driver E3SM_IO_UNUSED)
+int e3sm_io_case_I::rd_test(e3sm_io_config &cfg,
+                            e3sm_io_decom &decom,
+                            e3sm_io_driver &driver)
 {
     return 0;
 }
