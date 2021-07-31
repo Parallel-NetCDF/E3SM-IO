@@ -214,9 +214,23 @@ def_G_case(e3sm_io_config &cfg,
            int *varids);
 
 typedef struct {
+    int vid;        /* variable ID */
+    int decomp_id;  /* decomposition map ID */
+    int isRecVar;   /* whether is a record variable */
+    size_t vlen;    /* length to be written by this rank */
+    MPI_Datatype itype;
+} var_meta;
+
+typedef struct {
+    size_t  gap;
+
     /* buffers for fixed-size variables */
+    size_t  fix_txt_buflen;
+    char   *fix_txt_buf;
     size_t  fix_int_buflen;
     int    *fix_int_buf;
+    size_t  fix_dbl_buflen;
+    double *fix_dbl_buf;
     size_t  fix_buflen;
     vtype  *fix_buf;
 
@@ -236,7 +250,7 @@ int def_I_case(e3sm_io_config &cfg,
                e3sm_io_decom  &decom,
                e3sm_io_driver &driver,
                int             ncid,
-               int            *varids,
+               var_meta       *vars,
                io_buffers     *wr_buf);
 extern int
 var_wr_I_case(e3sm_io_config &cfg,
