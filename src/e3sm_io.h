@@ -83,6 +83,14 @@ typedef enum e3sm_io_filter { none, deflate, bzip2 } e3sm_io_filter;
 
 typedef enum { h0, h1 } history;
 
+#define NVARS_F_CASE_H0 414
+#define NVARS_F_CASE_H1  51
+#define NVARS_G_CASE     52
+#define NVARS_I_CASE_H0 560
+#define NVARS_I_CASE_H1 552
+
+typedef enum { F, G, I, unknown } climate_case;
+
 typedef struct e3sm_io_config {
     int rank;
     int np;
@@ -105,6 +113,7 @@ typedef struct e3sm_io_config {
     e3sm_io_filter filter;
     size_t chunksize;
 
+    climate_case run_case;
     history hist;
     int verbose;      /* verbose mode to print additional messages on screen */
     int keep_outfile; /* whether to keep the output files when exits */
