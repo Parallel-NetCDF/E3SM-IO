@@ -296,11 +296,16 @@ int read_decomp(e3sm_io_config *cfg,
             CHECK_ERR
             has_raw_decom = 1;
         }
+
+        decom->total_raw_nreqs[id] = 0;
         if(has_raw_decom) {
             /* read all numbers of requests */
             all_raw_nreqs = (int *)malloc(decomp_nprocs * sizeof(int));
-            err       = ncmpi_get_var_int_all(ncid, varid, all_raw_nreqs);
+            err = ncmpi_get_var_int_all(ncid, varid, all_raw_nreqs);
             CHECK_ERR
+
+            for (i=0; i<decomp_nprocs; i++)
+                decom->total_raw_nreqs[id] += all_raw_nreqs[i];
 
             /* calculate start index in Dx.offsets for this process */
             start = 0;
