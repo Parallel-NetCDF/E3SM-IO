@@ -330,6 +330,16 @@ int main (int argc, char **argv) {
     err = read_decomp(&cfg, &decom);
     CHECK_ERR
 
+    /* determine run case */
+    if (decom.num_decomp == 3)
+        cfg.run_case = F;
+    else if (decom.num_decomp == 6)
+        cfg.run_case = G;
+    else if (decom.num_decomp == 5)
+        cfg.run_case = I;
+    else
+        cfg.run_case = unknown;
+
     timing[1] = MPI_Wtime() - timing[1];
     MPI_Barrier(MPI_COMM_WORLD);
     timing[2] = MPI_Wtime();
@@ -364,6 +374,58 @@ err_out:
     t = MPI_Wtime();
     timing[2] = t - timing[2];
     timing[0] = t - timing[0];
+
+    if (cfg.verbose && cfg.rank == 0) {
+        printf ("Total number of MPI processes      = %d\n", cfg.np);
+        printf ("Number of IO processes             = %d\n", cfg.num_iotasks);
+        printf ("Input decomposition file           = %s\n", cfg.cfg_path);
+        printf ("Number of decompositions           = %d\n", decom.num_decomp);
+        if (cfg.run_case == F)
+            printf("==== Benchmarking F case =============================\n");
+        else if (cfg.run_case == G)
+            printf("==== Benchmarking G case =============================\n");
+        else if (cfg.run_case == I)
+            printf("==== Benchmarking I case =============================\n");
+
+        if (cfg.rd) {
+            printf ("Input file/directory               = %s\n", cfg.in_path);
+            printf ("Using noncontiguous read buffer    = %s\n", cfg.non_contig_buf ? "yes" : "no");
+            printf("Variable read order: same as variables are defined\n");
+        }
+        if (cfg.wr) {
+            printf ("Output file/directory              = %s\n",cfg.out_path);
+            printf ("Using noncontiguous write buffer   = %s\n",
+                    cfg.non_contig_buf ? "yes" : "no");
+            printf("Variable write order: same as variables are defined\n");
+
+            if (cfg.strategy == canonical) {
+                if (cfg.api == pnetcdf)
+                    printf("==== PnetCDF canonical I/O using varn API ============\n");
+                else if (cfg.api == hdf5_md)
+                    printf("==== HDF5 canonical I/O using multi-dataset API ======\n");
+                else
+                    ERR_OUT ("I/O strategy and API used is not supported yet")
+            }
+            else if (cfg.strategy == log) {
+                if (cfg.api == hdf5_log)
+                    printf("==== HDF5 using log-based VOL ========================\n");
+                else
+                    ERR_OUT ("I/O strategy and API used is not supported yet")
+            }
+            else if (cfg.strategy == blob) {
+                if (cfg.api == pnetcdf)
+                    printf("==== PnetCDF blob I/O ================================\n");
+                else if (cfg.api == hdf5)
+                    printf("==== HDF5 blob I/O ===================================\n");
+                else if (cfg.api == adios)
+                    printf("==== ADIOS blob I/O ==================================\n");
+                else
+                    ERR_OUT ("I/O strategy and API used is not supported yet")
+            }
+        }
+    }
+
+    if (cfg.verbose) e3sm_io_print_profile(&cfg);
 
     MPI_Reduce(timing, max_t, 3, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (cfg.rank == 0) {
