@@ -32,10 +32,8 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
                             e3sm_io_decom  &decom,
                             e3sm_io_driver &driver)
 {
-    int err=0, nrecs;
-    char base_name[1040], outfile[1056], *ext;
-
-    nrecs = cfg.nrecs;
+    int err=0;
+    char *base_name, outfile[1056], *ext;
 
     /* construct I/O metadata */
     err = calc_metadata(&cfg, &decom);
@@ -44,6 +42,8 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
     ext = strrchr(cfg.out_path, '.');
 
     if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
+        base_name = cfg.F_case_h0.outfile;
+
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5"))) {
             sprintf(base_name, "%s_h0", cfg.out_path);
@@ -59,15 +59,13 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
 
         cfg.hist  = h0;
         cfg.nvars = NVARS_F_CASE_H0;
-        cfg.nrecs = 1;
         err = var_wr_F_case(cfg, decom, driver, outfile);
         CHECK_ERR
-
-        /* report timing breakdowns */
-        report_timing_WR(&cfg, &driver, &decom, base_name);
     }
 
     if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
+        base_name = cfg.F_case_h1.outfile;
+
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5"))) {
             sprintf(base_name, "%s_h1", cfg.out_path);
@@ -83,15 +81,9 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
 
         cfg.hist  = h1;
         cfg.nvars = NVARS_F_CASE_H1;
-        cfg.nrecs = nrecs;
         err = var_wr_F_case(cfg, decom, driver, outfile);
         CHECK_ERR
-
-        /* report timing breakdowns */
-        report_timing_WR(&cfg, &driver, &decom, base_name);
     }
-
-    cfg.nrecs = nrecs;
 
 err_out:
     if (cfg.sub_comm != MPI_COMM_NULL) {
@@ -103,15 +95,12 @@ err_out:
 }
 
 int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
-    int err=0, nrecs;
-
-    nrecs = cfg.nrecs;
+    int err=0;
 
     if (cfg.hx == 0 || cfg.hx == -1) {
         MPI_Barrier (cfg.io_comm);
         cfg.hist  = h0;
         cfg.nvars = NVARS_F_CASE_H0;
-        cfg.nrecs = 1;
         err = run_varn_F_case_rd(cfg, decom, driver,
                                  &(this->dbl_buf_h0),
                                  &(this->rec_buf_h0),
@@ -123,7 +112,6 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         MPI_Barrier (cfg.io_comm);
         cfg.hist  = h1;
         cfg.nvars = NVARS_F_CASE_H1;
-        cfg.nrecs = nrecs;
         err = run_varn_F_case_rd(cfg, decom, driver,
                                  &(this->dbl_buf_h0),
                                  &(this->rec_buf_h0),
@@ -131,8 +119,6 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
                                  this->int_buf);
         CHECK_ERR
     }
-
-    cfg.nrecs = nrecs;
 
 err_out:
     return err;

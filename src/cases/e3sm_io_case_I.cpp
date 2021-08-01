@@ -27,10 +27,8 @@ int e3sm_io_case_I::wr_test(e3sm_io_config &cfg,
                             e3sm_io_decom  &decom,
                             e3sm_io_driver &driver)
 {
-    int err=0, nrecs;
-    char base_name[1040], outfile[1056], *ext;
-
-    nrecs = cfg.nrecs;
+    int err=0;
+    char *base_name, outfile[1056], *ext;
 
     /* construct I/O metadata */
     err = calc_metadata(&cfg, &decom);
@@ -39,6 +37,8 @@ int e3sm_io_case_I::wr_test(e3sm_io_config &cfg,
     ext = strrchr(cfg.out_path, '.');
 
     if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
+        base_name = cfg.I_case_h0.outfile;
+
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5"))) {
             sprintf(base_name, "%s_h0", cfg.out_path);
@@ -54,15 +54,13 @@ int e3sm_io_case_I::wr_test(e3sm_io_config &cfg,
 
         cfg.hist  = h0;
         cfg.nvars = NVARS_I_CASE_H0;
-        cfg.nrecs = nrecs;
         err = var_wr_I_case(cfg, decom, driver, outfile);
         CHECK_ERR
-
-        /* report timing breakdowns */
-        report_timing_WR(&cfg, &driver, &decom, base_name);
     }
 
     if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
+        base_name = cfg.I_case_h1.outfile;
+
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5"))) {
             sprintf(base_name, "%s_h1", cfg.out_path);
@@ -78,15 +76,9 @@ int e3sm_io_case_I::wr_test(e3sm_io_config &cfg,
 
         cfg.hist  = h1;
         cfg.nvars = NVARS_I_CASE_H1;
-        cfg.nrecs = 1;
         err = var_wr_I_case(cfg, decom, driver, outfile);
         CHECK_ERR
-
-        /* report timing breakdowns */
-        report_timing_WR(&cfg, &driver, &decom, base_name);
     }
-
-    cfg.nrecs = nrecs;
 
 err_out:
     if (cfg.sub_comm != MPI_COMM_NULL) {

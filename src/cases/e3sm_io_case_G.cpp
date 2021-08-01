@@ -40,7 +40,7 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
                             e3sm_io_driver &driver)
 {
     int err;
-    char outfile[1040];
+    char *outfile = cfg.G_case.outfile;
 
     /* construct I/O metadata */
     err = calc_metadata(&cfg, &decom);
@@ -55,9 +55,6 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
 
     err = var_wr_G_case(cfg, decom, driver, outfile);
     CHECK_ERR
-
-    /* report timing breakdowns */
-    report_timing_WR(&cfg, &driver, &decom, outfile);
 
 err_out:
     if (cfg.sub_comm != MPI_COMM_NULL) {
