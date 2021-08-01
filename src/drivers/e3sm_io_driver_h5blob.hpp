@@ -52,8 +52,8 @@ class e3sm_io_driver_h5blob : public e3sm_io_driver {
     int close (int fid);
     int inq_file_info (int fid, MPI_Info *info);
     int inq_file_size (std::string path, MPI_Offset *size);
-    int inq_put_size (int fid, MPI_Offset *size);
-    int inq_get_size (int fid, MPI_Offset *size);
+    int inq_put_size (MPI_Offset *size);
+    int inq_get_size (MPI_Offset *size);
     int inq_malloc_size (MPI_Offset *size);
     int inq_malloc_max_size (MPI_Offset *size);
     int inq_rec_size (int fid, MPI_Offset *size);

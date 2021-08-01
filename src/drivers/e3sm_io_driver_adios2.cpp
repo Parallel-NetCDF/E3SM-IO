@@ -225,9 +225,6 @@ int e3sm_io_driver_adios2::close (int fid) {
     fp->iop = NULL;
     adios2_finalize (fp->adp);
 
-    this->cfg->amount_WR += fp->putsize;
-    this->cfg->amount_RD += fp->getsize;
-
     delete fp;
 
 err_out:;
@@ -240,24 +237,22 @@ int e3sm_io_driver_adios2::inq_file_info (int fid, MPI_Info *info) {
     return 0;
 }
 
-int e3sm_io_driver_adios2::inq_put_size (int fid, MPI_Offset *size) {
+int e3sm_io_driver_adios2::inq_put_size (MPI_Offset *size) {
     int err = 0;
-    adios2_file *fp = this->files[fid];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
-    *size = fp->putsize;
+    *size = this->amount_WR;
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
 }
-int e3sm_io_driver_adios2::inq_get_size (int fid, MPI_Offset *size) {
+int e3sm_io_driver_adios2::inq_get_size (MPI_Offset *size) {
     int err = 0;
-    adios2_file *fp = this->files[fid];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
-    *size = fp->getsize;
+    *size = this->amount_RD;
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
@@ -650,7 +645,7 @@ int e3sm_io_driver_adios2::put_att (
 
     if (fp->rank == 0) {
         esize = adios2_type_size (atype);
-        fp->putsize += size * esize;
+        this->amount_WR += size * esize;
     }
 
 err_out:;
@@ -697,7 +692,7 @@ int e3sm_io_driver_adios2::get_att (int fid, int vid, std::string name, void *bu
     CHECK_AERR
     esize = adios2_type_size (atype);
 
-    fp->getsize += asize * esize;
+    this->amount_RD += asize * esize;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
@@ -765,7 +760,7 @@ int e3sm_io_driver_adios2::put_varl (
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_PUT_VAR)
     CHECK_AERR
 
-    fp->putsize += putsize * esize;
+    this->amount_WR += putsize * esize;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
@@ -805,7 +800,7 @@ int e3sm_io_driver_adios2::put_vara (int fid,
                 ablock[i] = (size_t)count[i];
                 putsize *= count[i];
             }
-            fp->putsize += putsize;
+            this->amount_WR += putsize;
         } else {
             for (i = 0; i < ndim; i++) {
                 astart[i] = (size_t)start[i];
@@ -868,7 +863,7 @@ int e3sm_io_driver_adios2::put_vara (int fid,
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_PUT_VAR)
     CHECK_AERR
 
-    fp->putsize += putsize * esize;
+    this->amount_WR += putsize * esize;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
@@ -986,7 +981,7 @@ int e3sm_io_driver_adios2::put_vars (int fid,
         bufp += esize;
     }
 
-    fp->putsize += putsize * esize;
+    this->amount_WR += putsize * esize;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
@@ -1098,7 +1093,7 @@ int e3sm_io_driver_adios2::put_varn (int fid,
         }
     }
 
-    fp->putsize += putsize * esize;
+    this->amount_WR += putsize * esize;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
@@ -1199,7 +1194,7 @@ int e3sm_io_driver_adios2::get_vara (int fid,
     }
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_CONVERT)
 
-    fp->getsize += getsize * esize;
+    this->amount_RD += getsize * esize;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
@@ -1313,7 +1308,7 @@ int e3sm_io_driver_adios2::get_vars (int fid,
     }
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_CONVERT)
 
-    fp->getsize += getsize * esize;
+    this->amount_RD += getsize * esize;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
@@ -1425,7 +1420,7 @@ int e3sm_io_driver_adios2::get_varn (int fid,
     }
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_CONVERT)
 
-    fp->getsize += getsize * esize;
+    this->amount_RD += getsize * esize;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)

@@ -39,7 +39,7 @@ e3sm_io_driver_pnc::~e3sm_io_driver_pnc () {}
 
 int e3sm_io_driver_pnc::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err;
-    MPI_Offset put_buffer_size_limit;
+    MPI_Offset put_buffer_size_limit, size;
 
     // Use the zip driver for chunked I/O
     if (cfg->chunksize > 0) {
@@ -54,15 +54,26 @@ int e3sm_io_driver_pnc::create (std::string path, MPI_Comm comm, MPI_Info info, 
     err = ncmpi_buffer_attach (*fid, put_buffer_size_limit);
     CHECK_NCERR
 
+    err = ncmpi_inq_get_size(*fid, &size); CHECK_NCERR
+    this->amount_RD += size;
+    err = ncmpi_inq_put_size(*fid, &size); CHECK_NCERR
+    this->amount_WR += size;
+
 err_out:
     return err;
 }
 
 int e3sm_io_driver_pnc::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err;
+    MPI_Offset size;
 
     err = ncmpi_open (comm, path.c_str (), NC_64BIT_DATA, info, fid);
     CHECK_NCERR
+
+    err = ncmpi_inq_get_size(*fid, &size); CHECK_NCERR
+    this->amount_RD += size;
+    err = ncmpi_inq_put_size(*fid, &size); CHECK_NCERR
+    this->amount_WR += size;
 
 err_out:
     return err;
@@ -104,23 +115,14 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_pnc::inq_put_size (int fid, MPI_Offset *size) {
-    int err;
-
-    err = ncmpi_inq_put_size (fid, size);
-    CHECK_NCERR
-
-err_out:
-    return err;
+int e3sm_io_driver_pnc::inq_put_size (MPI_Offset *size) {
+    *size = this->amount_WR;
+    return 0;
 }
 
-int e3sm_io_driver_pnc::inq_get_size (int fid, MPI_Offset *size) {
-    int err;
-    err = ncmpi_inq_get_size (fid, size);
-    CHECK_NCERR
-
-err_out:
-    return err;
+int e3sm_io_driver_pnc::inq_get_size (MPI_Offset *size) {
+    *size = this->amount_RD;
+    return 0;
 }
 
 int e3sm_io_driver_pnc::inq_malloc_size (MPI_Offset *size) {
@@ -308,9 +310,17 @@ err_out:
 
 int e3sm_io_driver_pnc::enddef (int fid) {
     int err;
+    MPI_Offset size, prev_WR, prev_RD;
 
-    err = ncmpi_enddef (fid);
-    CHECK_NCERR
+    err = ncmpi_inq_get_size(fid, &prev_RD); CHECK_NCERR
+    err = ncmpi_inq_put_size(fid, &prev_WR); CHECK_NCERR
+
+    err = ncmpi_enddef (fid); CHECK_NCERR
+
+    err = ncmpi_inq_get_size(fid, &size); CHECK_NCERR
+    this->amount_RD += size - prev_RD;
+    err = ncmpi_inq_put_size(fid, &size); CHECK_NCERR
+    this->amount_WR += size - prev_WR;
 
 err_out:
     return err;
@@ -318,9 +328,17 @@ err_out:
 
 int e3sm_io_driver_pnc::redef (int fid) {
     int err;
+    MPI_Offset size, prev_WR, prev_RD;
 
-    err = ncmpi_redef (fid);
-    CHECK_NCERR
+    err = ncmpi_inq_get_size(fid, &prev_RD); CHECK_NCERR
+    err = ncmpi_inq_put_size(fid, &prev_WR); CHECK_NCERR
+
+    err = ncmpi_redef (fid); CHECK_NCERR
+
+    err = ncmpi_inq_get_size(fid, &size); CHECK_NCERR
+    this->amount_RD += size - prev_RD;
+    err = ncmpi_inq_put_size(fid, &size); CHECK_NCERR
+    this->amount_WR += size - prev_WR;
 
 err_out:
     return err;
@@ -328,9 +346,17 @@ err_out:
 
 int e3sm_io_driver_pnc::wait (int fid) {
     int err;
+    MPI_Offset size, prev_WR, prev_RD;
 
-    err = ncmpi_wait_all (fid, NC_REQ_ALL, NULL, NULL);
-    CHECK_NCERR
+    err = ncmpi_inq_get_size(fid, &prev_RD); CHECK_NCERR
+    err = ncmpi_inq_put_size(fid, &prev_WR); CHECK_NCERR
+
+    err = ncmpi_wait_all(fid, NC_REQ_ALL, NULL, NULL); CHECK_NCERR
+
+    err = ncmpi_inq_get_size(fid, &size); CHECK_NCERR
+    this->amount_RD += size - prev_RD;
+    err = ncmpi_inq_put_size(fid, &size); CHECK_NCERR
+    this->amount_WR += size - prev_WR;
 
 err_out:
     return err;
@@ -375,6 +401,11 @@ int e3sm_io_driver_pnc::put_vara (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err=NC_NOERR;
+    MPI_Offset size, prev_WR;
+
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_put_size(fid, &prev_WR); CHECK_NCERR
+    }
 
     if (start) {
         if (count) {
@@ -432,6 +463,11 @@ int e3sm_io_driver_pnc::put_vara (int fid,
     }
     CHECK_NCERR
 
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_put_size (fid, &size); CHECK_NCERR
+        this->amount_WR += size - prev_WR;
+    }
+
 err_out:
     return err;
 }
@@ -444,6 +480,11 @@ int e3sm_io_driver_pnc::put_vars (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err=NC_NOERR;
+    MPI_Offset size, prev_WR;
+
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_put_size(fid, &prev_WR); CHECK_NCERR
+    }
 
     switch (mode) {
         case nb:
@@ -463,6 +504,11 @@ int e3sm_io_driver_pnc::put_vars (int fid,
     }
     CHECK_NCERR
 
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_put_size (fid, &size); CHECK_NCERR
+        this->amount_WR += size - prev_WR;
+    }
+
 err_out:
     return err;
 }
@@ -476,6 +522,11 @@ int e3sm_io_driver_pnc::put_varn (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err = NC_NOERR;
+    MPI_Offset size, prev_WR;
+
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_put_size(fid, &prev_WR); CHECK_NCERR
+    }
 
     switch (mode) {
         case nb:
@@ -495,6 +546,11 @@ int e3sm_io_driver_pnc::put_varn (int fid,
     }
     CHECK_NCERR
 
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_put_size (fid, &size); CHECK_NCERR
+        this->amount_WR += size - prev_WR;
+    }
+
 err_out:
     return err;
 }
@@ -507,6 +563,11 @@ int e3sm_io_driver_pnc::get_vara (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err=NC_NOERR;
+    MPI_Offset size, prev_RD;
+
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_get_size(fid, &prev_RD); CHECK_NCERR
+    }
 
     if (start) {
         if (count) {
@@ -555,6 +616,11 @@ int e3sm_io_driver_pnc::get_vara (int fid,
     }
     CHECK_NCERR
 
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_get_size (fid, &size); CHECK_NCERR
+        this->amount_RD += size - prev_RD;
+    }
+
 err_out:
     return err;
 }
@@ -568,6 +634,11 @@ int e3sm_io_driver_pnc::get_vars (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err=NC_NOERR;
+    MPI_Offset size, prev_RD;
+
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_get_size(fid, &prev_RD); CHECK_NCERR
+    }
 
     switch (mode) {
         case nb:
@@ -584,6 +655,11 @@ int e3sm_io_driver_pnc::get_vars (int fid,
     }
     CHECK_NCERR
 
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_get_size (fid, &size); CHECK_NCERR
+        this->amount_RD += size - prev_RD;
+    }
+
 err_out:
     return err;
 }
@@ -597,6 +673,11 @@ int e3sm_io_driver_pnc::get_varn (int fid,
                                   void *buf,
                                   e3sm_io_op_mode mode) {
     int err=NC_NOERR;
+    MPI_Offset size, prev_RD;
+
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_get_size(fid, &prev_RD); CHECK_NCERR
+    }
 
     switch (mode) {
         case nb:
@@ -612,6 +693,11 @@ int e3sm_io_driver_pnc::get_varn (int fid,
             throw "Unrecognized mode";
     }
     CHECK_NCERR
+
+    if (mode == coll || mode == indep) {
+        err = ncmpi_inq_get_size (fid, &size); CHECK_NCERR
+        this->amount_RD += size - prev_RD;
+    }
 
 err_out:
     return err;

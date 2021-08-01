@@ -213,8 +213,18 @@ int e3sm_io_driver_hdf5::close (int fid) {
     int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
+    ssize_t namelen;
+    struct stat file_stat;
+    char fname[1024];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
+
+    namelen = H5Fget_name (fp->id, fname, 1024);
+    CHECK_HID (namelen)
+    stat (fname, &file_stat);
+
+    /* FIXME: using file size as write amount is incorrect! */
+    this->amount_WR += (MPI_Offset) (file_stat.st_size);
 
     for (auto did : fp->dids) {
         herr = H5Dclose (did);
@@ -261,27 +271,13 @@ int e3sm_io_driver_hdf5::inq_file_size (std::string path, MPI_Offset *size) {
 err_out:;
     return err;
 }
-int e3sm_io_driver_hdf5::inq_put_size (int fid, MPI_Offset *size) {
-    int err = 0;
-    hdf5_file *fp = this->files[fid];
-    ssize_t namelen;
-    struct stat file_stat;
-    char fname[1024];
-
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
-
-    namelen = H5Fget_name (fp->id, fname, 1024);
-    CHECK_HID (namelen)
-
-    stat (fname, &file_stat);
-    *size = (MPI_Offset) (file_stat.st_size);
-
-err_out:;
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return err;
+int e3sm_io_driver_hdf5::inq_put_size (MPI_Offset *size) {
+    *size = this->amount_WR;
+    return 0;
 }
-int e3sm_io_driver_hdf5::inq_get_size (int fid, MPI_Offset *size) {
-    return this->inq_put_size (fid, size);
+int e3sm_io_driver_hdf5::inq_get_size (MPI_Offset *size) {
+    *size = this->amount_RD;
+    return 0;
 }
 int e3sm_io_driver_hdf5::inq_malloc_size (MPI_Offset *size) {
     *size = 0;

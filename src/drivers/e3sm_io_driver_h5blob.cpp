@@ -268,7 +268,7 @@ int e3sm_io_driver_h5blob::close (int fid)
     MPI_Comm_free(&fp->comm);
 
     /* update/accumulate the write amount */
-    cfg->amount_WR += put_amount;
+    this->amount_WR += put_amount;
 
     delete fp;
 
@@ -308,13 +308,13 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_h5blob::inq_put_size (int fid, MPI_Offset *size) {
-    *size = 0;
+int e3sm_io_driver_h5blob::inq_put_size (MPI_Offset *size) {
+    *size = this->amount_WR;
     return 0;
 }
 
-int e3sm_io_driver_h5blob::inq_get_size (int fid, MPI_Offset *size) {
-    *size = 0;
+int e3sm_io_driver_h5blob::inq_get_size (MPI_Offset *size) {
+    *size = this->amount_RD;
     return 0;
 }
 
