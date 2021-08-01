@@ -10,9 +10,9 @@
 #ifndef _H_E3SM_IO_
 #define _H_E3SM_IO_
 
+#include <stdio.h>
 #include <mpi.h>
 #include <pnetcdf.h>
-#include <stdio.h>
 
 #define E3SM_IO_MAX_PATH    1024
 #define MAX_NUM_DECOMP      6
@@ -92,6 +92,31 @@ typedef enum { h0, h1 } history;
 
 typedef enum { F, G, I, unknown } climate_case;
 
+typedef struct {
+    /* statistics */
+    char outfile[1040];
+    int nvars;  /* number of climate variables */
+    int nrecs;
+    int num_flushes;
+    int num_decomp;
+    int num_decomp_vars;
+    int nvars_D[MAX_NUM_DECOMP];
+    MPI_Offset metadata_WR;
+    MPI_Offset amount_WR;
+    MPI_Offset amount_RD;
+    MPI_Offset my_nreqs;
+    MPI_Offset file_size;
+
+    /* timings */
+    double pre_time;
+    double open_time;
+    double def_time;
+    double post_time;
+    double flush_time;
+    double close_time;
+    double end2end_time;
+} perf_report;
+
 typedef struct e3sm_io_config {
     int rank;
     int np;
@@ -104,7 +129,6 @@ typedef struct e3sm_io_config {
     char out_path[E3SM_IO_MAX_PATH];
     char cfg_path[E3SM_IO_MAX_PATH];
     int hx;
-    int nrecs;  /* number of record (time steps) */
     int wr;
     int rd;
     int nvars;  /* number of climate variables */
@@ -128,25 +152,14 @@ typedef struct e3sm_io_config {
     int      subfile_ID;   /* unqiue file identifier for subfiles */
     MPI_Comm sub_comm;     /* communicator for a subfile */
 
-    /* statistics */
-    char *outfile;
-    int num_flushes;
-    int num_decomp;
-    int num_decomp_vars;
-    int nvars_D[MAX_NUM_DECOMP];
-    MPI_Offset metadata_WR;
-    MPI_Offset amount_WR;
-    MPI_Offset amount_RD;
-    MPI_Offset my_nreqs;
-
-    /* timings */
-    double pre_time;
-    double open_time;
-    double def_time;
-    double post_time;
-    double flush_time;
-    double close_time;
-    double end2end_time;
+    char node_info[2048]; /* info about the number of compute nodes and the
+                           * number of MPI processes running per node
+                           */
+    perf_report F_case_h0;
+    perf_report F_case_h1;
+    perf_report G_case;
+    perf_report I_case_h0;
+    perf_report I_case_h1;
 
 } e3sm_io_config;
 
@@ -197,8 +210,10 @@ typedef struct e3sm_io_decom {
 
     /* below 3 are used for Scorpio blob I/O, which saves only offsets, but
      * no blocklens[], i.e. all blocklens are of length 1 */
-    MPI_Offset raw_nreqs[MAX_NUM_DECOMP];
+    MPI_Offset  total_raw_nreqs[MAX_NUM_DECOMP];
+    MPI_Offset  raw_nreqs[MAX_NUM_DECOMP];
     MPI_Offset *raw_offsets[MAX_NUM_DECOMP];
+
 } e3sm_io_decom;
 
 #ifdef __cplusplus
@@ -208,7 +223,8 @@ extern int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern int calc_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern void print_info (MPI_Info *info_used);
 extern int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);
-int e3sm_io_xlen_nc_type(nc_type xtype, int *size);
+extern int e3sm_io_xlen_nc_type(nc_type xtype, int *size);
+extern int report_timing_WR(e3sm_io_config *cfg, e3sm_io_decom *decom);
 #ifdef __cplusplus
 }
 #endif
