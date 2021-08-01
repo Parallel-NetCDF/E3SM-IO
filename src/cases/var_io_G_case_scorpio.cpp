@@ -376,7 +376,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
 
     /* allocate and initialize write buffer for 7 fixed-size variables */
     /* int (nCells): maxLevelCell */
-    if (nelems[0] > 0) {
+    if (nelems[0] + 64 > 0) {
         if (D1_fix_int_bufp != NULL) {
             D1_fix_int_buf = D1_fix_int_bufp;
         } else {
@@ -387,7 +387,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         D1_fix_int_buf = NULL;
 
     /* int (nEdges): maxLevelEdgeTop and maxLevelEdgeBot */
-    if (nelems[1] > 0) {
+    if (nelems[1] + 64 > 0) {
         if (D2_fix_int_bufp != NULL) {
             D2_fix_int_buf = D2_fix_int_bufp;
         } else {
@@ -398,7 +398,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         D2_fix_int_buf = NULL;
 
     /* int (nCells, nVertLevels): cellMask */
-    if (nelems[2] > 0) {
+    if (nelems[2] + 64 > 0) {
         if (D3_fix_int_bufp != NULL) {
             D3_fix_int_buf = D3_fix_int_bufp;
         } else {
@@ -409,7 +409,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         D3_fix_int_buf = NULL;
 
     /* int (nEdges, nVertLevels): edgeMask */
-    if (nelems[3] > 0) {
+    if (nelems[3] + 64 > 0) {
         if (D4_fix_int_bufp != NULL) {
             D4_fix_int_buf = D4_fix_int_bufp;
         } else {
@@ -420,7 +420,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         D4_fix_int_buf = NULL;
 
     /* int (nVertices, nVertLevels): vertexMask */
-    if (nelems[4] > 0) {
+    if (nelems[4] + 64 > 0) {
         if (D5_fix_int_bufp != NULL) {
             D5_fix_int_buf = D5_fix_int_bufp;
         } else {
