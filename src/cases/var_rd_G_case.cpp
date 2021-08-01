@@ -181,7 +181,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
                         double **D1_fix_dbl_bufp) /* D1 fix double buffer */
 {
     int i, j, k, err, rank, ncid, *varids;
-    int rec_no, my_nreqs;
+    int nrecs, rec_no, my_nreqs;
     size_t ii, rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf,
         *rec_buf_ptr;
@@ -419,7 +419,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
 
 
     /* I/O amount so far */
-    err = driver.inq_get_size (ncid, &metadata_size);
+    err = driver.inq_get_size (&metadata_size);
     CHECK_ERR
     err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
@@ -495,7 +495,17 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
         my_nreqs += 4; /* 4 non-record variables */
     }
 
-    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) nrecs = cfg.F_case_h0.nrecs;
+        else                nrecs = cfg.F_case_h1.nrecs;
+    }
+    else if (cfg.run_case == G) nrecs = cfg.G_case.nrecs;
+    else if (cfg.run_case == I) {
+        if (cfg.hist == h0) nrecs = cfg.I_case_h0.nrecs;
+        else                nrecs = cfg.I_case_h1.nrecs;
+    }
+
+    for (rec_no = 0; rec_no < nrecs; rec_no++) {
 
         /* next small non-partitioned variables are written by rank 0 only */
         if (rank == 0) {
@@ -608,7 +618,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     MPI_Barrier (comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    err = driver.inq_get_size (ncid, &total_size);
+    err = driver.inq_get_size (&total_size);
     CHECK_ERR
     get_size = total_size - metadata_size;
 

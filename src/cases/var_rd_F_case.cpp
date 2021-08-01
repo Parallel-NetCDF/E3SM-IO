@@ -374,7 +374,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
 {
     char *txt_buf_ptr;
     int i, j, k, err, rank, ncid, *varids, nflushes=0;
-    int rec_no, gap = 0, my_nreqs, *int_buf_ptr;
+    int nrecs, rec_no, gap = 0, my_nreqs, *int_buf_ptr;
     size_t dbl_buflen, rec_buflen, nelems[3];
     vtype *rec_buf, *rec_buf_ptr;
     double *dbl_buf, *dbl_buf_ptr;
@@ -450,7 +450,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     }
 
     /* I/O amount so far */
-    err = driver.inq_get_size (ncid, &metadata_size);
+    err = driver.inq_get_size (&metadata_size);
     CHECK_ERR
     err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
@@ -518,7 +518,17 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
 
     post_timing += MPI_Wtime () - timing;
 
-    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) nrecs = cfg.F_case_h0.nrecs;
+        else                nrecs = cfg.F_case_h1.nrecs;
+    }
+    else if (cfg.run_case == G) nrecs = cfg.G_case.nrecs;
+    else if (cfg.run_case == I) {
+        if (cfg.hist == h0) nrecs = cfg.I_case_h0.nrecs;
+        else                nrecs = cfg.I_case_h1.nrecs;
+    }
+
+    for (rec_no = 0; rec_no < nrecs; rec_no++) {
         MPI_Barrier (comm); /*-----------------------------------------*/
         timing = MPI_Wtime ();
 
@@ -688,7 +698,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     MPI_Barrier (comm); /*-----------------------------------------*/
     timing = MPI_Wtime ();
 
-    err = driver.inq_get_size (ncid, &total_size);
+    err = driver.inq_get_size (&total_size);
     CHECK_ERR
     put_size = total_size - metadata_size;
     err      = driver.close (ncid);
