@@ -146,6 +146,7 @@ int main (int argc, char **argv) {
     cfg.filter         = none;
     cfg.verbose        = 0;
     cfg.keep_outfile   = 0;
+    cfg.profiling      = 0;
     cfg.two_buf        = 0;
     cfg.non_contig_buf = 0;
     cfg.io_stride      = 1;
@@ -165,7 +166,7 @@ int main (int argc, char **argv) {
     }
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dmtf:ha:x:g:")) != EOF)
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dmtf:ha:x:g:p")) != EOF)
         switch (i) {
             case 'v':
                 cfg.verbose = 1;
@@ -241,6 +242,9 @@ int main (int argc, char **argv) {
                 break;
             case 'c':
                 cfg.chunksize = atoll (optarg);
+                break;
+            case 'p':
+                cfg.profiling = 1;
                 break;
             case 'z':
                 if (strcmp (optarg, "deflate") == 0)
@@ -384,7 +388,7 @@ int main (int argc, char **argv) {
     /* report timing breakdowns */
     report_timing_WR(&cfg, &decom);
 
-    if (cfg.verbose) e3sm_io_print_profile(&cfg);
+    if (cfg.profiling) e3sm_io_print_profile(&cfg);
 
 err_out:
     if (cfg.info != MPI_INFO_NULL)
