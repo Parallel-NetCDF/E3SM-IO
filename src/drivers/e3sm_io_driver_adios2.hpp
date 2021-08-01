@@ -53,7 +53,7 @@ inline adios2_type
 e3sm_io_type_nc2adios(nc_type xtype)
 {
     switch(xtype) {
-        case NC_BYTE:
+        case NC_BYTE:   return adios2_type_int8_t;
         case NC_UBYTE:
         case NC_CHAR:   return adios2_type_uint8_t;
         case NC_INT:    return adios2_type_int32_t;
