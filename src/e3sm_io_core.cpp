@@ -45,6 +45,10 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
     int fd;
     ssize_t rlen;
     e3sm_io_driver *driver = NULL;
+#ifdef ENABLE_HDF5
+    const char *hdf5_signature = "\211HDF\r\n\032\n";
+    off_t offset;
+#endif
 
     /* root checks the file format and broadcasts the finding */
     if (filename && cfg->rank == 0) {
@@ -78,9 +82,7 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
 
         // HDF5 ?
 #ifdef ENABLE_HDF5
-        const char *hdf5_signature = "\211HDF\r\n\032\n";
-        off_t offset = 512;
-
+        offset = 512;
         while (rlen == 8 && memcmp (signature, hdf5_signature, 8)) {
             lseek (fd, offset, SEEK_SET);
             offset <<= 1;
