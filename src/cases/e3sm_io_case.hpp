@@ -260,12 +260,6 @@ int check_malloc(e3sm_io_config *cfg,
                  e3sm_io_driver *driver);
 
 extern
-int report_timing_WR(e3sm_io_config *cfg,
-                     e3sm_io_driver *driver,
-                     e3sm_io_decom *decom,
-                     const char *outfile);
-
-extern
 void wr_buf_init(io_buffers &buf, int gap);
 
 extern
