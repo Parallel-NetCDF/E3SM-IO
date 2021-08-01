@@ -54,7 +54,7 @@
     CHECK_ERR                                     \
 }
 #define INQ_PUT_SIZE(size) {                 \
-    err = driver.inq_put_size(ncid, &size);  \
+    err = driver.inq_put_size(&size);        \
     CHECK_ERR                                \
 }
 #define INQ_FILE_INFO(info) {                \
@@ -127,8 +127,8 @@ int var_wr_F_case(e3sm_io_config &cfg,
 {
     char *fix_txt_buf_ptr, *rec_txt_buf_ptr;
     int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, one_flush;
-    int rec_no, gap=0, my_nreqs, num_decomp_vars;
-    int contig_nreqs[MAX_NUM_DECOMP], *nvars_D=cfg.nvars_D;
+    int nrecs, rec_no, gap=0, my_nreqs, num_decomp_vars;
+    int contig_nreqs[MAX_NUM_DECOMP], *nvars_D;
     int *fix_int_buf_ptr, *rec_int_buf_ptr;
     double *fix_dbl_buf_ptr, *rec_dbl_buf_ptr, timing;
     MPI_Offset previous_size, metadata_size, total_size;
@@ -140,20 +140,35 @@ int var_wr_F_case(e3sm_io_config &cfg,
     vtype  *fix_buf_ptr, *rec_buf_ptr;
     var_meta *vars;
     io_buffers wr_buf;
+    perf_report *pr;
+
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) pr = &cfg.F_case_h0;
+        else                pr = &cfg.F_case_h1;
+    }
+    else if (cfg.run_case == G)
+        pr = &cfg.G_case;
+    else if (cfg.run_case == I) {
+        if (cfg.hist == h0) pr = &cfg.I_case_h0;
+        else                pr = &cfg.I_case_h1;
+    }
+    else return -1;
 
     MPI_Barrier(cfg.io_comm); /*---------------------------------------------*/
-    cfg.end2end_time = timing = MPI_Wtime();
+    pr->end2end_time = timing = MPI_Wtime();
 
-    cfg.post_time  = 0.0;
-    cfg.flush_time = 0.0;
+    pr->post_time  = 0.0;
+    pr->flush_time = 0.0;
 
     comm = (cfg.strategy == blob) ? cfg.sub_comm : cfg.io_comm;
 
     MPI_Comm_rank(cfg.io_comm,  &global_rank);
     MPI_Comm_rank(comm,         &sub_rank);
 
+    nvars_D = pr->nvars_D;
+
     /* I/O amount from previous I/O */
-    previous_size = cfg.amount_WR;
+    INQ_PUT_SIZE(previous_size)
 
 #define FLUSH_ALL_RECORDS_AT_ONCE
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
@@ -178,7 +193,7 @@ int var_wr_F_case(e3sm_io_config &cfg,
     /* create the output file */
     FILE_CREATE(outfile)
 
-    cfg.open_time = MPI_Wtime() - timing;
+    pr->open_time = MPI_Wtime() - timing;
 
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
@@ -195,7 +210,7 @@ int var_wr_F_case(e3sm_io_config &cfg,
     if (cfg.non_contig_buf) gap = 10;
 
     wr_buf_init(wr_buf, gap);
- 
+
     /* define dimensions, variables, and attributes.
      * 560 climate variables
      *     18 are fixed-size,      542 are record variables
@@ -213,11 +228,11 @@ int var_wr_F_case(e3sm_io_config &cfg,
 
     /* I/O amount so far */
     INQ_PUT_SIZE(metadata_size)
-    if (cfg.api != pnetcdf) metadata_size -= previous_size;
+    metadata_size -= previous_size;
 
     INQ_FILE_INFO(info_used)
 
-    cfg.def_time = MPI_Wtime() - timing;
+    pr->def_time = MPI_Wtime() - timing;
 
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
@@ -228,7 +243,7 @@ int var_wr_F_case(e3sm_io_config &cfg,
     for (j=0; j<decom.num_decomp; j++)
         nvars_D[j] = 0; /* number of variables using decomposition j */
 
-    cfg.pre_time = MPI_Wtime() - timing;
+    pr->pre_time = MPI_Wtime() - timing;
 
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
@@ -271,12 +286,22 @@ int var_wr_F_case(e3sm_io_config &cfg,
         }
     }
 
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) nrecs = cfg.F_case_h0.nrecs;
+        else                nrecs = cfg.F_case_h1.nrecs;
+    }
+    else if (cfg.run_case == G) nrecs = cfg.G_case.nrecs;
+    else if (cfg.run_case == I) {
+        if (cfg.hist == h0) nrecs = cfg.I_case_h0.nrecs;
+        else                nrecs = cfg.I_case_h1.nrecs;
+    }
+
     fix_txt_buf_ptr = wr_buf.fix_txt_buf;
     fix_int_buf_ptr = wr_buf.fix_int_buf;
     fix_dbl_buf_ptr = wr_buf.fix_dbl_buf;
     fix_buf_ptr     = wr_buf.fix_buf;
 
-    for (rec_no=0; rec_no<cfg.nrecs; rec_no++) {
+    for (rec_no=0; rec_no<nrecs; rec_no++) {
 
         if (rec_no == 0 || !one_flush ||
             (cfg.strategy == blob && cfg.api == hdf5)) {
@@ -347,7 +372,7 @@ int var_wr_F_case(e3sm_io_config &cfg,
         }
 
         if (!one_flush) { /* flush out for each record */
-            cfg.post_time += MPI_Wtime() - timing;
+            pr->post_time += MPI_Wtime() - timing;
 
             MPI_Barrier(comm); /*--------------------------------------------*/
             timing = MPI_Wtime();
@@ -355,14 +380,14 @@ int var_wr_F_case(e3sm_io_config &cfg,
             /* flush once per time record */
             WAIT_ALL_REQS
 
-            cfg.flush_time += MPI_Wtime() - timing;
+            pr->flush_time += MPI_Wtime() - timing;
 
             timing = MPI_Wtime();
         }
     }
 
     if (one_flush) { /* flush out for all records */
-        cfg.post_time += MPI_Wtime() - timing;
+        pr->post_time += MPI_Wtime() - timing;
 
         MPI_Barrier(comm); /*------------------------------------------------*/
         timing = MPI_Wtime();
@@ -370,7 +395,7 @@ int var_wr_F_case(e3sm_io_config &cfg,
         /* flush once for all time records */
         WAIT_ALL_REQS
 
-        cfg.flush_time += MPI_Wtime() - timing;
+        pr->flush_time += MPI_Wtime() - timing;
     }
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
@@ -379,23 +404,22 @@ int var_wr_F_case(e3sm_io_config &cfg,
     wr_buf_free(wr_buf);
     if (vars != NULL) free(vars);
 
-    /* obtain the write amount made by far */
-    if (cfg.api == pnetcdf) INQ_PUT_SIZE(total_size)
-
     FILE_CLOSE
 
-    cfg.close_time = MPI_Wtime() - timing;
+    pr->close_time = MPI_Wtime() - timing;
 
-    /* for hdf5 blob I/O, write amount is calculated after file is closed */
-    if (cfg.api != pnetcdf) total_size = cfg.amount_WR - previous_size;
+    /* obtain the write amount tracked by the driver */
+    INQ_PUT_SIZE(total_size)
+    total_size -= previous_size;
 
-    cfg.num_flushes     = nflushes;
-    cfg.num_decomp      = decom.num_decomp;
-    cfg.num_decomp_vars = num_decomp_vars;
-    cfg.my_nreqs        = my_nreqs;
-    cfg.metadata_WR     = metadata_size;
-    cfg.amount_WR       = total_size;
-    cfg.end2end_time    = MPI_Wtime() - cfg.end2end_time;
+    pr->nvars           = cfg.nvars;
+    pr->num_flushes     = nflushes;
+    pr->num_decomp      = decom.num_decomp;
+    pr->num_decomp_vars = num_decomp_vars;
+    pr->my_nreqs        = my_nreqs;
+    pr->metadata_WR     = metadata_size;
+    pr->amount_WR       = total_size;
+    pr->end2end_time    = MPI_Wtime() - pr->end2end_time;
 
     /* check if there is any PnetCDF internal malloc residue */
     check_malloc(&cfg, &driver);
