@@ -141,8 +141,8 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             err = driver.inq_dimlen (fid, dimids[i], &(dsize[j]));
             CHECK_ERR
 
-            // Skip time dim
-            if (dsize[j] > 0) { j++; }
+            // Time dim is always 0, but block size should be 1
+            if (dsize[j] == 0) { dsize[j] = 1; }
         }
 
         // flatten into 1 dim only apply to non-scalar variables
@@ -151,13 +151,9 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             var->ndim = ndim;
             for (i = 0; i < ndim; i++) { 
                 var->bsize[i] = dsize[ndim - i - 1]; 
-                // Time dim is always 0, but block size should be 1
-                if (var->bsize[i] == 0){
-                    var->bsize[i] = 1;
-                }
             }
             // Convert into byte array
-            for (i = 0; i < j; i++) { vsize *= dsize[i]; }
+            for (i = 0; i < ndim; i++) { vsize *= dsize[i]; }
             err = e3sm_io_xlen_nc_type(xtype, &esize);
             CHECK_MPIERR
             vsize *= esize;
