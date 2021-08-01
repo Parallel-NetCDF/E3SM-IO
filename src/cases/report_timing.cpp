@@ -17,72 +17,39 @@
 
 #include <mpi.h>
 #include <e3sm_io.h>
-#include <e3sm_io_driver.hpp>
 
-/*----< check_malloc() >-----------------------------------------------------*/
-int check_malloc(e3sm_io_config *cfg,
-                 e3sm_io_driver *driver)
+/*---< print_timing_WR() >---------------------------------------------------*/
+static
+int print_timing_WR(e3sm_io_config *cfg,
+                    e3sm_io_decom  *decom,
+                    perf_report    *pr)
 {
-    int err=0, global_rank;
-    MPI_Offset m_alloc, s_alloc, x_alloc;
-
-    if (!cfg->verbose || cfg->api != pnetcdf) return 0;
-
-    MPI_Comm_rank(cfg->io_comm, &global_rank);
-
-    /* check if there is any PnetCDF internal malloc residue */
-    err = driver->inq_malloc_size(&m_alloc);
-    if (err == NC_NOERR) {
-        MPI_Reduce(&m_alloc, &s_alloc, 1, MPI_OFFSET, MPI_SUM, 0, cfg->io_comm);
-        if (global_rank == 0 && s_alloc > 0) {
-            printf("-------------------------------------------------------\n");
-            printf("Residue heap memory allocated by PnetCDF internally has %lld bytes yet to be freed\n",
-                   s_alloc);
-        }
-    }
-
-    /* find the high water mark among all processes */
-    driver->inq_malloc_max_size(&m_alloc);
-    MPI_Reduce(&m_alloc, &x_alloc, 1, MPI_OFFSET, MPI_MAX, 0, cfg->io_comm);
-    if (global_rank == 0)
-        printf("High water mark of heap memory allocated by PnetCDF internally is %.2f MiB\n",
-               (float)x_alloc / 1048576);
-
-    return err;
-}
-
-/*---< report_timing_WR() >--------------------------------------------------*/
-int report_timing_WR(e3sm_io_config *cfg,
-                     e3sm_io_driver *driver,
-                     e3sm_io_decom  *decom,
-                     const char     *outfile)
-{
-    int i, err=0, global_rank;
+    int i, global_rank;
     MPI_Offset off_msg[2], sum_off[2], max_off[2];
-    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs, file_size=0;
+    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs;
     double pre_time, open_time, def_time, post_time, flush_time, close_time;
     double end2end_time, wTime;
 
     MPI_Comm_rank(cfg->io_comm, &global_rank);
 
-    off_msg[0] = cfg->my_nreqs;
-    off_msg[1] = cfg->amount_WR;
+    off_msg[0] = pr->my_nreqs;
+    off_msg[1] = pr->amount_WR;
     MPI_Reduce(off_msg, sum_off, 2, MPI_OFFSET, MPI_SUM, 0, cfg->io_comm);
     sum_nreqs     = sum_off[0];
     sum_amount_WR = sum_off[1];
 
-    off_msg[0] = cfg->my_nreqs;
+    off_msg[0] = pr->my_nreqs;
     MPI_Reduce(off_msg, max_off, 1, MPI_OFFSET, MPI_MAX, 0, cfg->io_comm);
     max_nreqs = max_off[0];
 
     double dbl_tmp[7], max_dbl[7];
-    dbl_tmp[0] = cfg->pre_time;
-    dbl_tmp[1] = cfg->open_time;
-    dbl_tmp[2] = cfg->def_time;
-    dbl_tmp[3] = cfg->post_time;
-    dbl_tmp[4] = cfg->flush_time;
-    dbl_tmp[5] = cfg->close_time;
-    dbl_tmp[6] = cfg->end2end_time;
+    dbl_tmp[0] = pr->pre_time;
+    dbl_tmp[1] = pr->open_time;
+    dbl_tmp[2] = pr->def_time;
+    dbl_tmp[3] = pr->post_time;
+    dbl_tmp[4] = pr->flush_time;
+    dbl_tmp[5] = pr->close_time;
+    dbl_tmp[6] = pr->end2end_time;
     MPI_Reduce(dbl_tmp, max_dbl, 7, MPI_DOUBLE, MPI_MAX, 0, cfg->io_comm);
         pre_time = max_dbl[0];
        open_time = max_dbl[1];
@@ -93,11 +60,53 @@ int report_timing_WR(e3sm_io_config *cfg,
     end2end_time = max_dbl[6];
 
     if (global_rank == 0) {
+        MPI_Offset decomp_amount, total_raw_nreqs;
         int nblobs = cfg->num_subfiles;
-        MPI_Offset decomp_amount;
-        int nvars_noD = cfg->nvars;
-        for (i=0; i<cfg->num_decomp; i++) nvars_noD -= cfg->nvars_D[i];
-        int nvars = cfg->nvars + nvars_noD;
+        int nvars_noD = pr->nvars;
+        for (i=0; i<pr->num_decomp; i++) nvars_noD -= pr->nvars_D[i];
+
+        if (cfg->run_case == F)
+            printf("==== Benchmarking F case =============================\n");
+        else if (cfg->run_case == G)
+            printf("==== Benchmarking G case =============================\n");
+        else if (cfg->run_case == I)
+            printf("==== Benchmarking I case =============================\n");
+        if (cfg->strategy == blob && cfg->api != adios)
+            printf("%s\n", cfg->node_info);
+        printf("Total number of MPI processes      = %d\n", cfg->np);
+        printf("Number of IO processes             = %d\n", cfg->num_iotasks);
+        printf("Input decomposition file           = %s\n", cfg->cfg_path);
+        printf("Number of decompositions           = %d\n", decom->num_decomp);
+        if (cfg->rd) {
+            printf ("Input file/directory               = %s\n", cfg->in_path);
+            printf ("Using noncontiguous read buffer    = %s\n", cfg->non_contig_buf ? "yes" : "no");
+            printf("Variable read order: same as variables are defined\n");
+        }
+        if (cfg->wr) {
+            printf ("Output file/directory              = %s\n",cfg->out_path);
+            printf ("Using noncontiguous write buffer   = %s\n",
+                    cfg->non_contig_buf ? "yes" : "no");
+            printf("Variable write order: same as variables are defined\n");
+
+            if (cfg->strategy == canonical) {
+                if (cfg->api == pnetcdf)
+                    printf("==== PnetCDF canonical I/O using varn API ============\n");
+                else if (cfg->api == hdf5_md)
+                    printf("==== HDF5 canonical I/O using multi-dataset API ======\n");
+            }
+            else if (cfg->strategy == log) {
+                if (cfg->api == hdf5_log)
+                    printf("==== HDF5 using log-based VOL ========================\n");
+            }
+            else if (cfg->strategy == blob) {
+                if (cfg->api == pnetcdf)
+                    printf("==== PnetCDF blob I/O ================================\n");
+                else if (cfg->api == hdf5)
+                    printf("==== HDF5 blob I/O ===================================\n");
+                else if (cfg->api == adios)
+                    printf("==== ADIOS blob I/O ==================================\n");
+            }
+        }
 
         if (cfg->api == pnetcdf || cfg->api == hdf5_log || cfg->api == hdf5_md)
             wTime = flush_time;
@@ -107,42 +116,46 @@ int report_timing_WR(e3sm_io_config *cfg,
         if (cfg->strategy == blob) {
             printf("History output name base           = %s\n", cfg->out_path);
             if (cfg->api == adios) {
-                err = driver->inq_file_size(outfile, &file_size);
-                if (err != 0) /* ignore non-critical error */
-                    printf("Error: failed inq_file_size %s\n",outfile);
-                printf("History output folder name         = %s.bp.dir\n", outfile);
+                printf("History output folder name         = %s.bp.dir\n", pr->outfile);
                 printf("History output subfile names       = %s.bp.dir/%s.bp.xxxx\n",
-                       outfile, outfile);
+                       pr->outfile, pr->outfile);
                 printf("Number of subfiles                 = %d\n", cfg->num_group);
                 printf("Output file size                   = %.2f MiB = %.2f GiB\n",
-                    (double)file_size / 1048576, (double)file_size / 1073741824);
+                    (double)pr->file_size / 1048576, (double)pr->file_size / 1073741824);
             }
             else {
-                printf("History output subfile names       = %s.xxxx\n", outfile);
+                printf("History output subfile names       = %s.xxxx\n", pr->outfile);
                 printf("Number of subfiles                 = %3d\n", nblobs);
             }
             decomp_amount = 0;
-            for (i=0; i<cfg->num_decomp; i++) {
+            for (i=0; i<pr->num_decomp; i++) {
                 decomp_amount += nblobs * sizeof(int); /* D*.nreqs */
                 decomp_amount += nblobs * sizeof(MPI_Offset); /* D*.blob_start */
                 decomp_amount += nblobs * sizeof(MPI_Offset); /* D*.blob_count */
                 decomp_amount += nblobs * decom->nelems[i] * sizeof(int); /* D*.offsets */
                 decomp_amount += nblobs * decom->nelems[i] * sizeof(int); /* D*.lengths */
             }
-            printf("No. decomposition variables        = %3d\n", cfg->num_decomp_vars);
-            printf("Size of decomposition variables    = %.2f MiB\n", (float)decomp_amount/1048576.0);
+            total_raw_nreqs = 0;
+            for (i=0; i<pr->num_decomp; i++)
+                total_raw_nreqs += decom->total_raw_nreqs[i];
+
+            printf("No. decomposition variables        = %3d\n", pr->num_decomp_vars);
+            if (cfg->api == adios)
+                printf("Size of raw decomposition maps     = %.2f MiB\n", (float)total_raw_nreqs/1048576.0);
+            else
+                printf("Size of decomposition variables    = %.2f MiB\n", (float)decomp_amount/1048576.0);
         }
         else
-            printf("History output file                = %s\n", outfile);
-        printf("No. variables use no decomposition = %3d\n", nvars_noD);
-        for (i=0; i<cfg->num_decomp; i++)
-            printf("No. variables use decomposition D%d = %3d\n",
-                   i, cfg->nvars_D[i]);
-        printf("Total number of variables          = %3d\n", nvars);
-        printf("Write number of records (time dim) = %3d\n", cfg->nrecs);
-        printf("Total no. noncontiguous requests   = %3lld\n", sum_nreqs);
-        printf("Max   no. noncontiguous requests   = %3lld\n", max_nreqs);
-        printf("No. I/O flush calls                = %3d\n", cfg->num_flushes);
+            printf("History output file                = %s\n", pr->outfile);
+        printf("No. variables use no decomposition = %6d\n", nvars_noD);
+        for (i=0; i<pr->num_decomp; i++)
+            printf("No. variables use decomposition D%d = %6d\n",
+                   i, pr->nvars_D[i]);
+        printf("Total no. climate variables        = %6d\n", pr->nvars);
+        printf("Write no. records (time dim)       = %6d\n", pr->nrecs);
+        printf("Total no. noncontiguous requests   = %6lld\n", sum_nreqs);
+        printf("Max   no. noncontiguous requests   = %6lld\n", max_nreqs);
+        printf("No. I/O flush calls                = %6d\n", pr->num_flushes);
         printf("-----------------------------------------------------------\n");
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)sum_amount_WR / 1048576, (double)sum_amount_WR / 1073741824);
@@ -153,10 +166,10 @@ int report_timing_WR(e3sm_io_config *cfg,
         printf("Max Time of write flushing         = %.4f sec\n",  flush_time);
         printf("Max Time of close                  = %.4f sec\n", close_time);
         printf("Max end-to-end time                = %.4f sec\n", end2end_time);
+        printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
+               (double)sum_amount_WR / 1048576.0 / wTime);
         printf("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
                (double)sum_amount_WR / 1048576.0 / end2end_time);
-        printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
-                   (double)sum_amount_WR / 1048576.0 / wTime);
         printf("-----------------------------------------------------------\n");
     }
     fflush(stdout);
@@ -164,3 +177,19 @@ int report_timing_WR(e3sm_io_config *cfg,
     return 0;
 }
 
+/*---< report_timing_WR() >--------------------------------------------------*/
+int report_timing_WR(e3sm_io_config *cfg,
+                     e3sm_io_decom  *decom)
+{
+    if (cfg->run_case == F) {
+        print_timing_WR(cfg, decom, &cfg->F_case_h0);
+        print_timing_WR(cfg, decom, &cfg->F_case_h1);
+    }
+    else if (cfg->run_case == G)
+        print_timing_WR(cfg, decom, &cfg->G_case);
+    else if (cfg->run_case == I) {
+        print_timing_WR(cfg, decom, &cfg->I_case_h0);
+        print_timing_WR(cfg, decom, &cfg->I_case_h1);
+    }
+    return 0;
+}
