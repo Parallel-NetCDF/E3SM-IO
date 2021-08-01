@@ -298,6 +298,7 @@ extern int
 run_varn_F_case_scorpio(e3sm_io_config &cfg,
                         e3sm_io_decom &decom,
                         e3sm_io_driver &driver,
+                        char           *outfile,
                         double *dbl_bufp,    /* buffer for fixed size double var */
                         vtype *rec_bufp,     /* buffer for rec floating point var */
                         char *txt_buf,       /* buffer for char var */
@@ -316,6 +317,7 @@ extern int
 run_varn_G_case_scorpio(e3sm_io_config &cfg,
                         e3sm_io_decom &decom,
                         e3sm_io_driver &driver,
+                        char           *outfile,
                         int *D1_fix_int_bufp,     /* D1 fix int buffer */
                         int *D2_fix_int_bufp,     /* D2 fix int buffer */
                         int *D3_fix_int_bufp,     /* D3 fix int buffer */

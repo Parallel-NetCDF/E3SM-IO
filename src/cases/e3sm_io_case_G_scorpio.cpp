@@ -9,7 +9,8 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-//
+
+#include <string.h>
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 
@@ -23,10 +24,13 @@ int e3sm_io_case_G_scorpio::wr_test(e3sm_io_config &cfg,
                                     e3sm_io_driver &driver)
 {
     int err=0;
+    char *outfile = cfg.G_case.outfile;
+
+    strcpy(outfile, cfg.out_path);
 
     cfg.nvars = NVARS_G_CASE;
 
-    err = run_varn_G_case_scorpio(cfg, decom, driver,
+    err = run_varn_G_case_scorpio(cfg, decom, driver, outfile,
                                   this->D1_fix_int_buf,
                                   this->D2_fix_int_buf,
                                   this->D3_fix_int_buf,

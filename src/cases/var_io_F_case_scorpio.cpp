@@ -439,21 +439,22 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
 #define ASSIGN_DECOMID(k, num, vid) \
     for (j = 0; j < num; j++) { decomids[vid + j] = k - 1; }
 
-// ----< run_varn_F_case_scorpio() >--------------------------------------------------
+/*----< run_varn_F_case_scorpio() >------------------------------------------*/
 int run_varn_F_case_scorpio (e3sm_io_config &cfg,
-                         e3sm_io_decom &decom,
-                         e3sm_io_driver &driver,
-                         double *dbl_bufp,    /* buffer for fixed size double var */
-                         vtype *rec_bufp,     /* buffer for rec floating point var */
-                         char *txt_bufp,      /* buffer for char var */
-                         int *int_bufp)       /* buffer for int var */
+                             e3sm_io_decom  &decom,
+                             e3sm_io_driver &driver,
+                             char           *outfile,
+                             double *dbl_bufp,    /* buffer for fixed size double var */
+                             vtype *rec_bufp,     /* buffer for rec floating point var */
+                             char *txt_bufp,      /* buffer for char var */
+                             int *int_bufp)       /* buffer for int var */
 {
-    const char *hist;
-    char *txt_buf=NULL, *txt_buf_ptr, outfile[1040], *ext;
-    int i, j, err=0, rank, ncid, *nvars_D=cfg.nvars_D;
+    char *txt_buf=NULL, *txt_buf_ptr;
+    int i, j, err=0, rank, ncid, *nvars_D;
     e3sm_io_scorpio_var *varids;
     int scorpiovars[6];
-    int rec_no = -1, gap = 0, my_nreqs, *int_buf=NULL, *int_buf_ptr, xnreqs[3];
+    int nrecs, rec_no=-1, gap=0, my_nreqs, xnreqs[3];
+    int *int_buf=NULL, *int_buf_ptr;
     size_t ii, txt_buflen, int_buflen, dbl_buflen, rec_buflen, nelems[3];
     vtype *rec_buf  = NULL, *rec_buf_ptr;
     double *dbl_buf = NULL, *dbl_buf_ptr;
@@ -463,14 +464,29 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     MPI_Info info_used = MPI_INFO_NULL;
     MPI_Offset previous_size;
     std::vector<int> decomids;
+    perf_report *pr;
+
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) pr = &cfg.F_case_h0;
+        else                pr = &cfg.F_case_h1;
+    }
+    else if (cfg.run_case == G)
+        pr = &cfg.G_case;
+    else if (cfg.run_case == I) {
+        if (cfg.hist == h0) pr = &cfg.I_case_h0;
+        else                pr = &cfg.I_case_h1;
+    }
+    else return -1;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.end2end_time = cfg.pre_time = MPI_Wtime();
+    pr->end2end_time = pr->pre_time = MPI_Wtime();
 
     /* write amount from previous I/O */
-    previous_size = cfg.amount_WR;
+    driver.inq_put_size(&previous_size);
 
     MPI_Comm_rank (cfg.io_comm, &rank);
+
+    nvars_D = pr->nvars_D;
 
     if (cfg.non_contig_buf) gap = 10;
 
@@ -541,12 +557,22 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                    + nelems[2]
                    + (22 + 1) * gap;
 
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) nrecs = cfg.F_case_h0.nrecs;
+        else                nrecs = cfg.F_case_h1.nrecs;
+    }
+    else if (cfg.run_case == G) nrecs = cfg.G_case.nrecs;
+    else if (cfg.run_case == I) {
+        if (cfg.hist == h0) nrecs = cfg.I_case_h0.nrecs;
+        else                nrecs = cfg.I_case_h1.nrecs;
+    }
+
 #define FLUSH_ALL_RECORDS_AT_ONCE
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    dbl_buflen *= cfg.nrecs;
-    txt_buflen *= cfg.nrecs;
-    int_buflen *= cfg.nrecs;
-    rec_buflen *= cfg.nrecs;
+    dbl_buflen *= nrecs;
+    txt_buflen *= nrecs;
+    int_buflen *= nrecs;
+    rec_buflen *= nrecs;
 #endif
 
     if (rec_bufp != NULL)
@@ -631,31 +657,20 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         ASSIGN_DECOMID (3, 1, 43)  /* U */
         ASSIGN_DECOMID (2, 7, 44)  /* U250 ... Z500 */
     }
-    
-    cfg.pre_time = MPI_Wtime() - cfg.pre_time;
+
+    pr->pre_time = MPI_Wtime() - pr->pre_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.open_time = MPI_Wtime ();
-
-    /* construct h0/h1 file name */
-    hist = (cfg.hist == h0) ? "_h0" :  "_h1";
-    ext = strrchr(cfg.out_path, '.');
-    if (ext == NULL || strcmp(ext, ".nc"))
-        sprintf(outfile, "%s%s", cfg.out_path, hist);
-    else {
-        sprintf(outfile, "%s", cfg.out_path);
-        sprintf(outfile + (ext - cfg.out_path), "%s", hist);
-        strcat(outfile, ext);
-    }
+    pr->open_time = MPI_Wtime ();
 
     /* create a new file for writing */
     err = driver.create (outfile, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
-    cfg.open_time = MPI_Wtime() - cfg.open_time;
+    pr->open_time = MPI_Wtime() - pr->open_time;
 
     MPI_Barrier(cfg.io_comm); /*-----------------------------------------*/
-    cfg.def_time = MPI_Wtime();
+    pr->def_time = MPI_Wtime();
 
     /* define dimensions, variables, and attributes */
     if (cfg.hist == h0) {
@@ -675,16 +690,16 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     CHECK_ERR
 
     /* I/O amount so far */
-    err = driver.inq_put_size (ncid, &metadata_size);
+    err = driver.inq_put_size (&metadata_size);
     CHECK_ERR
 
     err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
 
-    cfg.def_time = MPI_Wtime() - cfg.def_time;
+    pr->def_time = MPI_Wtime() - pr->def_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.post_time = MPI_Wtime ();
+    pr->post_time = MPI_Wtime ();
 
     // Write pio scalar vars (one time)
 
@@ -763,7 +778,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         CHECK_ERR
     }
 
-    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
+    for (rec_no = 0; rec_no < nrecs; rec_no++) {
         i           = 3;
         dbl_buf_ptr = dbl_buf + nelems[1] * 2 + nelems[0] + gap * 3;
         int_buf_ptr = int_buf;
@@ -905,27 +920,22 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         }
     }
 
-    cfg.post_time = MPI_Wtime() - cfg.post_time;
+    pr->post_time = MPI_Wtime() - pr->post_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.flush_time = MPI_Wtime ();
+    pr->flush_time = MPI_Wtime ();
 
     /* in ADIOS,  data is actually flushed at file close */
     err = WAIT_ALL_REQS (ncid, NC_REQ_ALL, NULL, NULL);
     CHECK_ERR
 
-    cfg.flush_time = MPI_Wtime() - cfg.flush_time;
+    pr->flush_time = MPI_Wtime() - pr->flush_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.close_time = MPI_Wtime ();
+    pr->close_time = MPI_Wtime ();
 
     err = driver.close (ncid);
     CHECK_ERR
-
-    cfg.close_time = MPI_Wtime() - cfg.close_time;
-
-    /* for ADIOS blob I/O, writes only happen when closing the file */
-    total_size = cfg.amount_WR - previous_size;
 
     if (starts_D3 != NULL) {
         free (starts_D3[0]);
@@ -941,19 +951,25 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (txt_bufp == NULL && txt_buf != NULL) free (txt_buf);
     free (varids);
 
-    cfg.num_flushes     = 1;
-    cfg.num_decomp      = decom.num_decomp;
-    cfg.num_decomp_vars = decom.num_decomp;
-    cfg.my_nreqs        = my_nreqs;
-    cfg.metadata_WR     = metadata_size;
-    cfg.amount_WR       = total_size;
-    cfg.end2end_time    = MPI_Wtime() - cfg.end2end_time;
+    pr->close_time = MPI_Wtime() - pr->close_time;
+
+    /* obtain the write amount tracked by the driver */
+    driver.inq_put_size(&total_size);
+    total_size -= previous_size;
+
+    driver.inq_file_size(outfile, &pr->file_size);
+
+    pr->nvars           = cfg.nvars;
+    pr->num_flushes     = 1;
+    pr->num_decomp      = decom.num_decomp;
+    pr->num_decomp_vars = decom.num_decomp;
+    pr->my_nreqs        = my_nreqs;
+    pr->metadata_WR     = metadata_size;
+    pr->amount_WR       = total_size;
+    pr->end2end_time    = MPI_Wtime() - pr->end2end_time;
 
     /* check if there is any PnetCDF internal malloc residue */
     check_malloc(&cfg, &driver);
-
-    /* report timing breakdowns */
-    report_timing_WR(&cfg, &driver, &decom, outfile);
 
     /* print MPI-IO hints actually used */
     if (cfg.verbose && rank == 0) print_info(&info_used);
