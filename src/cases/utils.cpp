@@ -18,6 +18,39 @@
 
 #include <e3sm_io.h>
 #include <e3sm_io_case.hpp>
+#include <e3sm_io_driver.hpp>
+
+/*----< check_malloc() >-----------------------------------------------------*/
+int check_malloc(e3sm_io_config *cfg,
+                 e3sm_io_driver *driver)
+{
+    int err=0, global_rank;
+    MPI_Offset m_alloc, s_alloc, x_alloc;
+
+    if (!cfg->verbose || cfg->api != pnetcdf) return 0;
+
+    MPI_Comm_rank(cfg->io_comm, &global_rank);
+
+    /* check if there is any PnetCDF internal malloc residue */
+    err = driver->inq_malloc_size(&m_alloc);
+    if (err == NC_NOERR) {
+        MPI_Reduce(&m_alloc, &s_alloc, 1, MPI_OFFSET, MPI_SUM, 0, cfg->io_comm);
+        if (global_rank == 0 && s_alloc > 0) {
+            printf("-------------------------------------------------------\n");
+            printf("Residue heap memory allocated by PnetCDF internally has %lld bytes yet to be freed\n",
+                   s_alloc);
+        }
+    }
+
+    /* find the high water mark among all processes */
+    driver->inq_malloc_max_size(&m_alloc);
+    MPI_Reduce(&m_alloc, &x_alloc, 1, MPI_OFFSET, MPI_MAX, 0, cfg->io_comm);
+    if (global_rank == 0)
+        printf("High water mark of heap memory allocated by PnetCDF internally is %.2f MiB\n",
+               (float)x_alloc / 1048576);
+
+    return err;
+}
 
 /*----< wr_buf_init() >------------------------------------------------------*/
 void wr_buf_init(io_buffers &buf,
@@ -49,10 +82,20 @@ int wr_buf_malloc(e3sm_io_config &cfg,
                   int             one_flush,
                   io_buffers     &buf)
 {
-    int rank;
+    int rank, nrecs;
     size_t j;
 
     MPI_Comm_rank(cfg.io_comm, &rank);
+
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) nrecs = cfg.F_case_h0.nrecs;
+        else                nrecs = cfg.F_case_h1.nrecs;
+    }
+    else if (cfg.run_case == G) nrecs = cfg.G_case.nrecs;
+    else if (cfg.run_case == I) {
+        if (cfg.hist == h0) nrecs = cfg.I_case_h0.nrecs;
+        else                nrecs = cfg.I_case_h1.nrecs;
+    }
 
     if (one_flush && cfg.api == pnetcdf) {
         /* write buffers should not be touched when using PnetCDF iput before
@@ -60,10 +103,10 @@ int wr_buf_malloc(e3sm_io_config &cfg,
          * will be copied and cached into internally allocated buffers and user
          * buffers can be reused after put call returned.
          */
-        buf.rec_dbl_buflen *= cfg.nrecs;
-        buf.rec_int_buflen *= cfg.nrecs;
-        buf.rec_txt_buflen *= cfg.nrecs;
-        buf.rec_buflen     *= cfg.nrecs;
+        buf.rec_dbl_buflen *= nrecs;
+        buf.rec_int_buflen *= nrecs;
+        buf.rec_txt_buflen *= nrecs;
+        buf.rec_buflen     *= nrecs;
     }
 
     /* allocate and initialize write buffers */
