@@ -28,6 +28,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
     class hdf5_file {
        public:
+        e3sm_io_config *cfg;
         hid_t id;
         std::vector<hid_t> dids;
         std::vector<hsize_t> dsizes;
@@ -57,7 +58,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
         e3sm_io_driver_hdf5 &driver;
 
-        hdf5_file (e3sm_io_driver_hdf5 &x) : driver (x) {};
+        hdf5_file (e3sm_io_driver_hdf5 &x) : driver (x), cfg{x.cfg} {};
 
 // #ifdef HDF5_HAVE_DWRITE_MULTI
         herr_t register_multidataset (

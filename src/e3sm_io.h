@@ -146,6 +146,7 @@ typedef struct e3sm_io_config {
     int two_buf;
     int non_contig_buf;
     int io_stride;
+    int profiling;
 
     /* below 3 are used for PnetCDF blob I/O subfiling */
     int      num_subfiles; /* number of subfiles */
