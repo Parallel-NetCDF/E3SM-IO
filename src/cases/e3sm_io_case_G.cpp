@@ -51,6 +51,8 @@ int e3sm_io_case_G::wr_test(e3sm_io_config &cfg,
     else
         strcpy(outfile, cfg.out_path);
 
+    cfg.nvars = NVARS_G_CASE;
+
     err = var_wr_G_case(cfg, decom, driver, outfile);
     CHECK_ERR
 

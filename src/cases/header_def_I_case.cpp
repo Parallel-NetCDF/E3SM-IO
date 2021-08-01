@@ -140,7 +140,7 @@ int add_gattrs(e3sm_io_config &cfg,
     PUT_GATTR_INT1("ltype_urban_hd", 8)
     PUT_GATTR_INT1("ltype_urban_md", 9)
 
-    if (cfg.nvars == 552) { /* h1 only */
+    if (cfg.hist == h1) { /* h1 only */
         PUT_GATTR_TXT("Time_constant_3Dvars_filenamae", "./I1850GSWCNPRDCTCBC_hcru_hcru.elm.h0.0001-01-01-00000.nc")
         PUT_GATTR_TXT("Time_constant_3Dvars", "ZSOI:DZSOI:WATSAT:SUCSAT:BSW:HKSAT:ZLAKE:DZLAKE")
     }
@@ -466,7 +466,7 @@ int def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_DECOMP(one, 2, orig_dimids[0]+1)
     SET_VAR_META(MPI_INT, 0, 0, fix_int_buflen, decom.count[0])
 
-    if (cfg.nvars == 560) {  /* h0 only */
+    if (cfg.hist == h0) {  /* h0 only */
         /* float ZSOI(levgrnd, lat, lon) */
         ndims = (cfg.strategy == blob) ? 1 : 3;
         DEF_VAR("ZSOI", NC_FLOAT, ndims, fix_dimids[1])

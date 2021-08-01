@@ -532,7 +532,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     }
 
     /* allocate and initialize write buffer for large variables */
-    if (cfg.nvars == 414)
+    if (cfg.hist == h0)
         rec_buflen = nelems[1] * 323
                    + nelems[2] * 63
                    + (323 + 63) * gap;
@@ -576,7 +576,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     /* 27 small variables has no decomposition map */
     for (; i < 30; i++) { decomids[i] = -1; }
 
-    if (cfg.nvars == 414) {
+    if (cfg.hist == h0) {
         ASSIGN_DECOMID (2, 1, 30)    /* AEROD_v */
         ASSIGN_DECOMID (3, 2, 31)    /* ANRAIN and ANSNOW */
         ASSIGN_DECOMID (2, 19, 33)   /* AODABS ... AODVIS */
@@ -638,7 +638,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     cfg.open_time = MPI_Wtime ();
 
     /* construct h0/h1 file name */
-    hist = (cfg.nvars == 414) ? "_h0" :  "_h1";
+    hist = (cfg.hist == h0) ? "_h0" :  "_h1";
     ext = strrchr(cfg.out_path, '.');
     if (ext == NULL || strcmp(ext, ".nc"))
         sprintf(outfile, "%s%s", cfg.out_path, hist);
@@ -658,7 +658,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     cfg.def_time = MPI_Wtime();
 
     /* define dimensions, variables, and attributes */
-    if (cfg.nvars == 414) {
+    if (cfg.hist == h0) {
         /* for h0 file */
         err = def_F_case_h0_scorpio (driver, cfg, decom, ncid, decom.dims[2], cfg.nvars, decomids, varids,
                                  scorpiovars);
@@ -785,7 +785,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         for (j = 0; j < xnreqs[1]; j++) starts_D2[j][0] = rec_no;
         for (j = 0; j < xnreqs[2]; j++) starts_D3[j][0] = rec_no;
 
-        if (cfg.nvars == 414) {
+        if (cfg.hist == h0) {
             if (cfg.two_buf) {
                 /* write 2D variables */
                 POST_VARN (2, 1, 30)    /* AEROD_v */

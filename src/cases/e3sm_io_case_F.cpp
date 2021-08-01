@@ -32,10 +32,9 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
                             e3sm_io_decom  &decom,
                             e3sm_io_driver &driver)
 {
-    int err=0, nvars, nrecs;
+    int err=0, nrecs;
     char base_name[1040], outfile[1056], *ext;
 
-    nvars = cfg.nvars;
     nrecs = cfg.nrecs;
 
     /* construct I/O metadata */
@@ -59,7 +58,7 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
             strcpy(outfile, base_name);
 
         cfg.hist  = h0;
-        cfg.nvars = 414;
+        cfg.nvars = NVARS_F_CASE_H0;
         cfg.nrecs = 1;
         err = var_wr_F_case(cfg, decom, driver, outfile);
         CHECK_ERR
@@ -83,7 +82,7 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
             strcpy(outfile, base_name);
 
         cfg.hist  = h1;
-        cfg.nvars = 51;
+        cfg.nvars = NVARS_F_CASE_H1;
         cfg.nrecs = nrecs;
         err = var_wr_F_case(cfg, decom, driver, outfile);
         CHECK_ERR
@@ -92,7 +91,6 @@ int e3sm_io_case_F::wr_test(e3sm_io_config &cfg,
         report_timing_WR(&cfg, &driver, &decom, base_name);
     }
 
-    cfg.nvars = nvars;
     cfg.nrecs = nrecs;
 
 err_out:
@@ -105,14 +103,14 @@ err_out:
 }
 
 int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver) {
-    int err, nvars, nrecs;
+    int err=0, nrecs;
 
-    nvars = cfg.nvars;
     nrecs = cfg.nrecs;
 
     if (cfg.hx == 0 || cfg.hx == -1) {
         MPI_Barrier (cfg.io_comm);
-        cfg.nvars = 414;
+        cfg.hist  = h0;
+        cfg.nvars = NVARS_F_CASE_H0;
         cfg.nrecs = 1;
         err = run_varn_F_case_rd(cfg, decom, driver,
                                  &(this->dbl_buf_h0),
@@ -123,7 +121,8 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
     }
     if (cfg.hx == 0 || cfg.hx == -1) {
         MPI_Barrier (cfg.io_comm);
-        cfg.nvars = 51;
+        cfg.hist  = h1;
+        cfg.nvars = NVARS_F_CASE_H1;
         cfg.nrecs = nrecs;
         err = run_varn_F_case_rd(cfg, decom, driver,
                                  &(this->dbl_buf_h0),
@@ -133,7 +132,6 @@ int e3sm_io_case_F::rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_
         CHECK_ERR
     }
 
-    cfg.nvars = nvars;
     cfg.nrecs = nrecs;
 
 err_out:

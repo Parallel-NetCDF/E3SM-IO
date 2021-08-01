@@ -22,13 +22,13 @@ int e3sm_io_case_F_scorpio::wr_test(e3sm_io_config &cfg,
                                     e3sm_io_decom &decom,
                                     e3sm_io_driver &driver)
 {
-    int err=0, nvars, nrecs;
+    int err=0, nrecs;
 
-    nvars = cfg.nvars;
     nrecs = cfg.nrecs;
 
     if (cfg.hx == 0 || cfg.hx == -1) {
-        cfg.nvars = 414;
+        cfg.hist  = h0;;
+        cfg.nvars = NVARS_F_CASE_H0;
         cfg.nrecs = 1;
         err = run_varn_F_case_scorpio(cfg, decom, driver,
                                       this->dbl_buf_h0,
@@ -39,7 +39,8 @@ int e3sm_io_case_F_scorpio::wr_test(e3sm_io_config &cfg,
     }
 
     if (cfg.hx == 1 || cfg.hx == -1) {
-        cfg.nvars = 51;
+        cfg.hist  = h1;;
+        cfg.nvars = NVARS_F_CASE_H1;
         cfg.nrecs = nrecs;
         err = run_varn_F_case_scorpio(cfg, decom, driver,
                                       this->dbl_buf_h0,
@@ -49,7 +50,6 @@ int e3sm_io_case_F_scorpio::wr_test(e3sm_io_config &cfg,
         CHECK_ERR
     }
 
-    cfg.nvars = nvars;
     cfg.nrecs = nrecs;
 
 err_out:

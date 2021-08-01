@@ -419,7 +419,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     if (dbl_bufp != NULL) { *dbl_bufp = dbl_buf; }
 
     /* allocate read buffer for large variables */
-    if (cfg.nvars == 414)
+    if (cfg.hist == h0)
         rec_buflen = nelems[1] * 321 + nelems[2] * 63 + (321 + 63) * gap;
     else
         rec_buflen = nelems[1] * 20 + nelems[2] + (20 + 1) * gap;
@@ -439,7 +439,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
     CHECK_ERR
 
     /* inquire dimensions, variables, and attributes */
-    if (cfg.nvars == 414) {
+    if (cfg.hist == h0) {
         /* for h0 file */
         err = inq_F_case_h0 (driver, ncid, decom.dims[2], cfg.nvars, varids);
         CHECK_ERR
@@ -556,7 +556,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
         for (j = 0; j < decom.contig_nreqs[1]; j++) starts_D2[j][0] = rec_no;
         for (j = 0; j < decom.contig_nreqs[2]; j++) starts_D3[j][0] = rec_no;
 
-        if (cfg.nvars == 414) {
+        if (cfg.hist == h0) {
             if (cfg.two_buf) {
                 /* read 2D variables */
                 POST_VARN_RD (2, 1, 30)    /* AEROD_v */

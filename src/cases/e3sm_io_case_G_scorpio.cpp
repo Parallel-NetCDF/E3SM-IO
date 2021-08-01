@@ -24,6 +24,8 @@ int e3sm_io_case_G_scorpio::wr_test(e3sm_io_config &cfg,
 {
     int err=0;
 
+    cfg.nvars = NVARS_G_CASE;
+
     err = run_varn_G_case_scorpio(cfg, decom, driver,
                                   this->D1_fix_int_buf,
                                   this->D2_fix_int_buf,

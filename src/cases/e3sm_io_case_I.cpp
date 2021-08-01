@@ -27,10 +27,9 @@ int e3sm_io_case_I::wr_test(e3sm_io_config &cfg,
                             e3sm_io_decom  &decom,
                             e3sm_io_driver &driver)
 {
-    int err=0, nvars, nrecs;
+    int err=0, nrecs;
     char base_name[1040], outfile[1056], *ext;
 
-    nvars = cfg.nvars;
     nrecs = cfg.nrecs;
 
     /* construct I/O metadata */
@@ -54,7 +53,7 @@ int e3sm_io_case_I::wr_test(e3sm_io_config &cfg,
             strcpy(outfile, base_name);
 
         cfg.hist  = h0;
-        cfg.nvars = 560;
+        cfg.nvars = NVARS_I_CASE_H0;
         cfg.nrecs = nrecs;
         err = var_wr_I_case(cfg, decom, driver, outfile);
         CHECK_ERR
@@ -78,7 +77,7 @@ int e3sm_io_case_I::wr_test(e3sm_io_config &cfg,
             strcpy(outfile, base_name);
 
         cfg.hist  = h1;
-        cfg.nvars = 552;
+        cfg.nvars = NVARS_I_CASE_H1;
         cfg.nrecs = 1;
         err = var_wr_I_case(cfg, decom, driver, outfile);
         CHECK_ERR
@@ -87,7 +86,6 @@ int e3sm_io_case_I::wr_test(e3sm_io_config &cfg,
         report_timing_WR(&cfg, &driver, &decom, base_name);
     }
 
-    cfg.nvars = nvars;
     cfg.nrecs = nrecs;
 
 err_out:
