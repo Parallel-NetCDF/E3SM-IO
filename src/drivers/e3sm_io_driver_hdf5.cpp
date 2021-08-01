@@ -31,6 +31,9 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
     int err = 0;
     herr_t herr = 0;
     int i;
+#ifdef ENABLE_LOGVOL
+        char *env;
+#endif
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -921,6 +924,9 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
     hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
     hid_t tid = -1;
+#ifdef ENABLE_LOGVOL
+    hsize_t **hstarts = NULL, **hcounts;
+#endif
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -1370,6 +1376,9 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
     hid_t tid = -1;
     MPI_Offset getsize;
     MPI_Offset **count;
+#ifdef ENABLE_LOGVOL
+    hsize_t **hstarts = NULL, **hcounts;
+#endif
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
