@@ -243,6 +243,7 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
         CHECK_HERR
 
         if (!rank) {
+            uint32_t local_no_collective_cause, global_no_collective_cause;
             H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
                                              &global_no_collective_cause);
             print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
@@ -305,6 +306,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
                  driver.dxplid_coll, multi_datasets[i].u.rbuf);
 
         if (!rank) {
+            uint32_t local_no_collective_cause, global_no_collective_cause;
             H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
                                              &global_no_collective_cause);
             print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);

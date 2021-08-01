@@ -59,12 +59,12 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
         hdf5_file (e3sm_io_driver_hdf5 &x) : driver (x) {};
 
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
         herr_t register_multidataset (
             void *buf, hid_t did, hid_t dsid, hid_t msid, hid_t mtype, int write);
         herr_t pull_multidatasets ();
         int flush_multidatasets ();
-#endif
+// #endif
     };
 
     std::vector<hdf5_file *> files;

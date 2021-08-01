@@ -492,10 +492,10 @@ int e3sm_io_driver_hdf5::wait (int fid) {
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
     err = fp->flush_multidatasets ();
     CHECK_ERR
-#endif
+// #endif
 
     herr = H5Fflush (fp->id, H5F_SCOPE_GLOBAL);
     CHECK_HERR
@@ -722,14 +722,14 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
         herr = H5Dwrite (did, h5_itype, msid, dsid, dxplid, buf);
         CHECK_HERR
     }
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
     else {  // Otherwier, queue request in driver
         herr = fp->register_multidataset (buf, did, dsid, msid, h5_itype, 1);
         CHECK_HERR
         // Prevent freeing of dsid and msid, they will be freed after flush
         dsid = msid = -1;
     }
-#endif
+// #endif
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
@@ -857,14 +857,14 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
         herr = H5Dwrite (did, h5_itype, msid, dsid, dxplid, buf);
         CHECK_HERR
     }
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
     else {  // Otherwier, queue request in driver
         herr = fp->register_multidataset (buf, did, dsid, msid, h5_itype, 1);
         CHECK_HERR
         // Prevent freeing of dsid and msid, they will be freed after flush
         dsid = msid = -1;
     }
-#endif
+// #endif
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
@@ -894,11 +894,11 @@ int e3sm_io_driver_hdf5::put_varn (int fid,
                                    MPI_Offset **counts,
                                    void *buf,
                                    e3sm_io_op_mode mode) {
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
     if (this->merge_varn)
         return this->put_varn_merge (fid, vid, itype, nreq, starts, counts, buf, mode);
     else
-#endif
+// #endif
         return this->put_varn_expand (fid, vid, itype, nreq, starts, counts, buf, mode);
 }
 int e3sm_io_driver_hdf5::put_varn_expand (int fid,
@@ -1055,14 +1055,14 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
                     herr = H5Dwrite (did, mtype, msid, dsid, dxplid, bufp);
                     CHECK_HERR
                 }
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
                 else {  // Otherwier, queue request in driver
                     herr = fp->register_multidataset (bufp, did, dsid, msid, mtype, 1);
                     CHECK_HERR
                     // Prevent freeing of dsid and msid, they will be freed after flush
                     dsid = msid = -1;
                 }
-#endif
+// #endif
                 E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
                 bufp += rsize;
@@ -1194,14 +1194,14 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
         herr = H5Dread (did, h5_itype, msid, dsid, dxplid, buf);
         CHECK_HERR
     }
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
     else {  // Otherwier, queue request in driver
         herr = fp->register_multidataset (buf, did, dsid, msid, h5_itype, 0);
         CHECK_HERR
         // Prevent freeing of dsid and msid, they will be freed after flush
         dsid = msid = -1;
     }
-#endif
+// #endif
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
 
     tid     = H5Dget_type (did);
@@ -1308,14 +1308,14 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
         herr = H5Dread (did, h5_itype, msid, dsid, dxplid, buf);
         CHECK_HERR
     }
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
     else {  // Otherwier, queue request in driver
         herr = fp->register_multidataset (buf, did, dsid, msid, h5_itype, 0);
         CHECK_HERR
         // Prevent freeing of dsid and msid, they will be freed after flush
         dsid = msid = -1;
     }
-#endif
+// #endif
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
 
     tid     = H5Dget_type (did);
@@ -1345,11 +1345,11 @@ int e3sm_io_driver_hdf5::get_varn (int fid,
                                    MPI_Offset **counts,
                                    void *buf,
                                    e3sm_io_op_mode mode) {
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
     if (this->merge_varn)
         return this->get_varn_merge (fid, vid, itype, nreq, starts, counts, buf, mode);
     else
-#endif
+// #endif
         return this->get_varn_expand (fid, vid, itype, nreq, starts, counts, buf, mode);
 }
 int e3sm_io_driver_hdf5::get_varn_expand (int fid,
@@ -1484,14 +1484,14 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
                     herr = H5Dread (did, mtype, msid, dsid, dxplid, bufp);
                     CHECK_HERR
                 }
-#ifdef HDF5_HAVE_DWRITE_MULTI
+// #ifdef HDF5_HAVE_DWRITE_MULTI
                 else {  // Otherwier, queue request in driver
                     herr = fp->register_multidataset (bufp, did, dsid, msid, mtype, 0);
                     CHECK_HERR
                     // Prevent freeing of dsid and msid, they will be freed after flush
                     dsid = msid = -1;
                 }
-#endif
+// #endif
                 E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
 
                 bufp += rsize;
