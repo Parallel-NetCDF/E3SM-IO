@@ -8,54 +8,54 @@
  *********************************************************************/
 
 /* Mimic the I/O kernel of E3SM's scorpio module on G case
- * Compared to the canonical method used by PnetCDF, the blob strategy used by 
- * 
- * The file written by scorpio blob strategy differs in the canonical layout 
+ * Compared to the canonical method used by PnetCDF, the blob strategy used by
+ *
+ * The file written by scorpio blob strategy differs in the canonical layout
  * in the following points:
- * 
+ *
  * Scorpio saves the decomposition maps as global variables.
- * Each decomposition map contains 3 attributes - "dimlen" (size of the dimensions), 
+ * Each decomposition map contains 3 attributes - "dimlen" (size of the dimensions),
  * "ndims" (dimensionality), and "piotype" (datatype in PIO type enum).
  * The decomposition variables and their attributes are written by all processes.
- * 
+ *
  * E3SM dimensions are stored as scalar variables of type uint64_t.
  * The dimensions are "chars", "ilev", "lev", "nbnd", "ncol", and "time".
  * The time dimension is not used and is always 0.
- * 
+ *
  * All E3SM variables are stored as 1-dimensional ADIOS2 local variables.
- * 
+ *
  * For each E3SM variable that is associated with a decomposition map, Scorpio
  * adds additional scalar variables and attributes.
  * The variables are "decomp_id" (ID of the associated decomposition map),
- * and frame_id (time steps). If the variable is of double type, there is an 
+ * and frame_id (time steps). If the variable is of double type, there is an
  * additional variable "fillval_id" attached.
  * When a process writes a block of data to the E3SM variable it will also write
  * a block (cell) to the associated scalar variables.
  * The attributes are "decomp" (decomposition map ID in string representation), "dims"
- * (name of the dimensions as string array), "ncop" (string representation of the 
- * type of NetCDF operation performed to write the variable), "nctype" (datatype 
- * in NetCDF type enum), "ndims" (dimensionality). The attributes are only written 
+ * (name of the dimensions as string array), "ncop" (string representation of the
+ * type of NetCDF operation performed to write the variable), "nctype" (datatype
+ * in NetCDF type enum), "ndims" (dimensionality). The attributes are only written
  * by rank 0.
  *
- * For each small E3SM variable that is not associated with a decomposition map, 
+ * For each small E3SM variable that is not associated with a decomposition map,
  * Scorpio does not introduce additional variables but attaches attributes to them.
- * The attributes are "adiostype" (datatype in ADIOS2 type enum), "ncop" (string 
- * representation of the type of NetCDF operation performed to write the variable), 
+ * The attributes are "adiostype" (datatype in ADIOS2 type enum), "ncop" (string
+ * representation of the type of NetCDF operation performed to write the variable),
  * "nctype" (datatype in NetCDF type enum), "ndims" (dimensionality), and, if the
- * variable is not a scalar, "dims" (name of the dimensions as string array). 
+ * variable is not a scalar, "dims" (name of the dimensions as string array).
  * The attributes are only written by rank 0.
  * Unlike variables associated with a decomposition map, small variables are stored
- * as byte stream (uint_8) together with their metadata (start and count). The actual 
- * type of the data is stored as an attribute. An exception is scalar variables which 
+ * as byte stream (uint_8) together with their metadata (start and count). The actual
+ * type of the data is stored as an attribute. An exception is scalar variables which
  * retains its original type.
- * 
- * There is one scalar global variable "Nproc" (number of processes writing the file) 
+ *
+ * There is one scalar global variable "Nproc" (number of processes writing the file)
  * written by rank 0.
- * 
+ *
  * There is one scalar global attribute "fillmode" written by all processes.
- * 
+ *
  * When sub-filling is enabled, ADIOS2 records data objects in a subfile only when one of
- * the process writing to the subfile writes those data objects. As a result, the data 
+ * the process writing to the subfile writes those data objects. As a result, the data
  * objects written only by rank 0 will only appear in the first subfile.
  */
 
@@ -236,6 +236,7 @@
 int run_varn_G_case_scorpio (e3sm_io_config &cfg,
                      e3sm_io_decom &decom,
                      e3sm_io_driver &driver,
+                     char           *outfile,
                      int *D1_fix_int_bufp,    /* D1 fix int buffer */
                      int *D2_fix_int_bufp,    /* D2 fix int buffer */
                      int *D3_fix_int_bufp,    /* D3 fix int buffer */
@@ -251,7 +252,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     int i, j, err, rank, ncid;
     e3sm_io_scorpio_var *varids;
     int scorpiovars[7];
-    int rec_no = -1, my_nreqs, *nvars_D=cfg.nvars_D;
+    int nrecs, rec_no = -1, my_nreqs, *nvars_D;
     size_t ii, rec_buflen, nelems[6];
     double *D1_fix_dbl_buf, *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf;
     double *D5_rec_dbl_buf, *D6_rec_dbl_buf, *rec_buf_ptr;
@@ -285,19 +286,34 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     int xnreqs[6]; /* number of requests after combination */
     MPI_Offset previous_size;
     std::vector<int> decomids;
+    perf_report *pr;
+
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) pr = &cfg.F_case_h0;
+        else                pr = &cfg.F_case_h1;
+    }
+    else if (cfg.run_case == G)
+        pr = &cfg.G_case;
+    else if (cfg.run_case == I) {
+        if (cfg.hist == h0) pr = &cfg.I_case_h0;
+        else                pr = &cfg.I_case_h1;
+    }
+    else return -1;
+
+    MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
+    pr->end2end_time = pr->pre_time = MPI_Wtime();
+
+    /* write amount from previous I/O */
+    driver.inq_put_size(&previous_size);
+
+    MPI_Comm_rank (cfg.io_comm, &rank);
+
+    nvars_D = pr->nvars_D;
 
     for (i = 0; i < 6; i++) {
         xnreqs[i]  = decom.contig_nreqs[i];
         nvars_D[i] = 0; /* number of variables using decomposition i */
     }
-
-    MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.end2end_time = cfg.pre_time = MPI_Wtime();
-
-    /* write amount from previous I/O */
-    previous_size = cfg.amount_WR;
-
-    MPI_Comm_rank (cfg.io_comm, &rank);
 
     /* number of variable elements from 6 decompositions */
     my_nreqs = 0;
@@ -506,7 +522,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     decomids.resize (cfg.nvars);
 
     // Record decomids
-    // For each varialbe associated with a decomposition map, 
+    // For each varialbe associated with a decomposition map,
     // scorpio record its decomposition map ID in an associated scalar variable
     /* int maxLevelEdgeTop(nEdges) */
     decomids[8] = 1;
@@ -559,19 +575,19 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     /* 1 D5 record variable: double (Time, nVertices, nVertLevels) */
     for (j = 0; j < nD5_rec_3d_vars; j++) { decomids[D5_rec_3d_varids[j]] = 4; }
 
-    cfg.pre_time = MPI_Wtime() - cfg.pre_time;
+    pr->pre_time = MPI_Wtime() - pr->pre_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.open_time = MPI_Wtime ();
+    pr->open_time = MPI_Wtime ();
 
     /* create a new CDF-5 file for writing */
-    err = driver.create (cfg.out_path, cfg.io_comm, cfg.info, &ncid);
+    err = driver.create (outfile, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
-    cfg.open_time = MPI_Wtime() - cfg.open_time;
+    pr->open_time = MPI_Wtime() - pr->open_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.def_time = MPI_Wtime ();
+    pr->def_time = MPI_Wtime ();
 
     /* define dimensions, variables, and attributes */
     err = def_G_case_scorpio (cfg, decom, driver, ncid,decomids, varids, scorpiovars);
@@ -582,18 +598,18 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     CHECK_ERR
 
     /* I/O amount so far */
-    err = driver.inq_put_size (ncid, &metadata_size);
+    err = driver.inq_put_size (&metadata_size);
     CHECK_ERR
     err = driver.inq_file_info (ncid, &info_used);
     CHECK_ERR
 
-    cfg.def_time = MPI_Wtime() - cfg.def_time;
+    pr->def_time = MPI_Wtime() - pr->def_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.post_time = MPI_Wtime ();
+    pr->post_time = MPI_Wtime ();
 
     // Write pio scalar vars (one time)
-    
+
     // Nproc only written by rank 0
     if (rank == 0) {
         err = driver.put_varl (ncid, scorpiovars[6], MPI_INT, &(cfg.np), nb);
@@ -683,7 +699,17 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
         CHECK_ERR
     }
 
-    for (rec_no = 0; rec_no < cfg.nrecs; rec_no++) {
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) nrecs = cfg.F_case_h0.nrecs;
+        else                nrecs = cfg.F_case_h1.nrecs;
+    }
+    else if (cfg.run_case == G) nrecs = cfg.G_case.nrecs;
+    else if (cfg.run_case == I) {
+        if (cfg.hist == h0) nrecs = cfg.I_case_h0.nrecs;
+        else                nrecs = cfg.I_case_h1.nrecs;
+    }
+
+    for (rec_no = 0; rec_no < nrecs; rec_no++) {
         // start[0] = rec_no;
         // count[0] = 1;
         // count[1] = 64; /* dimension StrLen */
@@ -782,28 +808,23 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
             if (rec_no == 0) nvars_D[4]++;
         }
 
-        cfg.post_time = MPI_Wtime() - cfg.post_time;
+        pr->post_time = MPI_Wtime() - pr->post_time;
 
         MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-        cfg.flush_time = MPI_Wtime ();
+        pr->flush_time = MPI_Wtime ();
 
         /* in ADIOS,  data is actually flushed at file close */
         err = driver.wait (ncid);
         CHECK_ERR
 
-        cfg.flush_time = MPI_Wtime() - cfg.flush_time;
+        pr->flush_time = MPI_Wtime() - pr->flush_time;
     }
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-    cfg.close_time = MPI_Wtime ();
+    pr->close_time = MPI_Wtime ();
 
     err = driver.close (ncid);
     CHECK_ERR
-
-    cfg.close_time = MPI_Wtime() - cfg.close_time;
-
-    /* for ADIOS blob I/O, writes only happen when closing the file */
-    total_size = cfg.amount_WR - previous_size;
 
     if (dummy_double_buf != NULL) free (dummy_double_buf);
 
@@ -858,25 +879,31 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
 
     free (varids);
 
-    cfg.num_flushes     = 1;
-    cfg.num_decomp      = decom.num_decomp;
-    cfg.num_decomp_vars = decom.num_decomp;
-    cfg.my_nreqs        = my_nreqs;
-    cfg.metadata_WR     = metadata_size;
-    cfg.amount_WR       = total_size;
-    cfg.end2end_time    = MPI_Wtime() - cfg.end2end_time;
+    pr->close_time = MPI_Wtime() - pr->close_time;
+
+    /* obtain the write amount tracked by the driver */
+    driver.inq_put_size(&total_size);
+    total_size -= previous_size;
+
+    driver.inq_file_size(outfile, &pr->file_size);
+
+    pr->nvars           = cfg.nvars;
+    pr->num_flushes     = 1;
+    pr->num_decomp      = decom.num_decomp;
+    pr->num_decomp_vars = decom.num_decomp;
+    pr->my_nreqs        = my_nreqs;
+    pr->metadata_WR     = metadata_size;
+    pr->amount_WR       = total_size;
+    pr->end2end_time    = MPI_Wtime() - pr->end2end_time;
 
     /* check if there is any PnetCDF internal malloc residue */
     check_malloc(&cfg, &driver);
-
-    /* report timing breakdowns */
-    report_timing_WR(&cfg, &driver, &decom, cfg.out_path);
 
     /* print MPI-IO hints actually used */
     if (cfg.verbose && rank == 0) print_info(&info_used);
 
 err_out:
     if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (cfg.out_path);
+    if (!cfg.keep_outfile) unlink (outfile);
     return err;
 }
