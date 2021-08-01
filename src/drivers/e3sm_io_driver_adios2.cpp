@@ -378,7 +378,9 @@ int e3sm_io_driver_adios2::def_local_var (
     for (i = 0; i < ndim; i++) {
         dims[i] = (size_t)dsize[i];
         // Unlimited dimension is simulated by timesteps
-        if (dims[i] == NC_UNLIMITED) { dims[i] = 1; }
+        if (dims[i] == -1) { 
+            dims[i] = 1; 
+        }
     }
 
     if (dtype == adios2_type_string) {
