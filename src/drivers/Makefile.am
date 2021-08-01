@@ -19,14 +19,17 @@ H_SRCS = e3sm_io_driver.hpp \
 
 if ENABLE_HDF5
 C_SRCS +=   e3sm_io_driver_hdf5.cpp \
-            e3sm_io_driver_hdf5_agg.cpp \
             e3sm_io_driver_h5blob.cpp \
             blob_ncmpio.c
 
 H_SRCS +=   e3sm_io_driver_hdf5.hpp \
-            e3sm_io_driver_hdf5_int.hpp \
             e3sm_io_driver_h5blob.hpp \
             blob_ncmpio.h
+
+if HDF5_HAVE_DWRITE_MULTI
+C_SRCS +=   e3sm_io_driver_hdf5_agg.cpp
+H_SRCS +=   e3sm_io_driver_hdf5_int.hpp
+endif
 endif
 
 if ENABLE_ADIOS2
