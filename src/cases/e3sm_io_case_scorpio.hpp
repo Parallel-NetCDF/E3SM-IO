@@ -64,7 +64,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                                    int *dimids,
                                    e3sm_io_scorpio_var *var) {
     int err, nerrs = 0;
-    int i, j;
+    int i;
     char cbuf[64];
     int ibuf;
     std::vector<const char*> dnames_array (ndim);
@@ -137,12 +137,12 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
         MPI_Offset vsize = 1;
         int esize;
 
-        for (i = j = 0; i < ndim; i++) {
-            err = driver.inq_dimlen (fid, dimids[i], &(dsize[j]));
+        for (i = 0; i < ndim; i++) {
+            err = driver.inq_dimlen (fid, dimids[i], &(dsize[i]));
             CHECK_ERR
 
             // Time dim is always 0, but block size should be 1
-            if (dsize[j] == 0) { dsize[j] = 1; }
+            if (dsize[i] == 0) { dsize[i] = 1; }
         }
 
         // flatten into 1 dim only apply to non-scalar variables
