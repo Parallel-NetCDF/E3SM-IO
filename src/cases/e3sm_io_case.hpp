@@ -14,13 +14,32 @@
 #include <e3sm_io_driver.hpp>
 
 class e3sm_io_case {
-   public:
-    virtual ~e3sm_io_case () {};
-    virtual int wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver)   = 0;
-    virtual int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver)   = 0;
+    public:
+        virtual ~e3sm_io_case () {};
+        virtual int wr_test(e3sm_io_config &cfg,
+                            e3sm_io_decom &decom,
+                            e3sm_io_driver &driver) = 0;
+        virtual int rd_test(e3sm_io_config &cfg,
+                            e3sm_io_decom &decom,
+                            e3sm_io_driver &driver) = 0;
 };
 
-class e3sm_io_case_F : public e3sm_io_case {
+class e3sm_io_all_cases : public e3sm_io_case {
+   protected:
+
+   public:
+        e3sm_io_all_cases ();
+        ~e3sm_io_all_cases ();
+        int wr_test(e3sm_io_config &cfg,
+                    e3sm_io_decom &decom,
+                    e3sm_io_driver &driver);
+        int rd_test(e3sm_io_config &cfg,
+                    e3sm_io_decom &decom,
+                    e3sm_io_driver &driver);
+};
+
+#ifdef ENABLE_ADIOS2
+class e3sm_io_case_F_scorpio : public e3sm_io_case {
    protected:
     double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
     vtype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
@@ -28,13 +47,17 @@ class e3sm_io_case_F : public e3sm_io_case {
     int *int_buf = NULL;
 
    public:
-    e3sm_io_case_F ();
-    ~e3sm_io_case_F ();
-    int wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
-    int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
+        e3sm_io_case_F_scorpio ();
+        ~e3sm_io_case_F_scorpio ();
+        int wr_test(e3sm_io_config &cfg,
+                    e3sm_io_decom &decom,
+                    e3sm_io_driver &driver);
+        int rd_test(e3sm_io_config &cfg,
+                    e3sm_io_decom &decom,
+                    e3sm_io_driver &driver);
 };
 
-class e3sm_io_case_G : public e3sm_io_case {
+class e3sm_io_case_G_scorpio : public e3sm_io_case {
    protected:
     double *D1_rec_dbl_buf = NULL, *D3_rec_dbl_buf = NULL, *D4_rec_dbl_buf = NULL,
            *D5_rec_dbl_buf = NULL, *D6_rec_dbl_buf = NULL, *D1_fix_dbl_buf = NULL;
@@ -42,42 +65,14 @@ class e3sm_io_case_G : public e3sm_io_case {
         *D4_fix_int_buf = NULL, *D5_fix_int_buf = NULL;
 
    public:
-    e3sm_io_case_G ();
-    ~e3sm_io_case_G ();
-    int wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
-    int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
-};
-
-class e3sm_io_case_I : public e3sm_io_case {
-    protected:
-
-    public:
-         e3sm_io_case_I ();
-        ~e3sm_io_case_I ();
-
+        e3sm_io_case_G_scorpio ();
+        ~e3sm_io_case_G_scorpio ();
         int wr_test(e3sm_io_config &cfg,
-                    e3sm_io_decom  &decom,
+                    e3sm_io_decom &decom,
                     e3sm_io_driver &driver);
         int rd_test(e3sm_io_config &cfg,
-                    e3sm_io_decom  &decom,
+                    e3sm_io_decom &decom,
                     e3sm_io_driver &driver);
-};
-
-#ifdef ENABLE_ADIOS2
-class e3sm_io_case_F_scorpio : public e3sm_io_case_F {
-   public:
-    e3sm_io_case_F_scorpio ();
-    ~e3sm_io_case_F_scorpio ();
-    int wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
-    int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
-};
-
-class e3sm_io_case_G_scorpio : public e3sm_io_case_G {
-   public:
-    e3sm_io_case_G_scorpio ();
-    ~e3sm_io_case_G_scorpio ();
-    int wr_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
-    int rd_test (e3sm_io_config &cfg, e3sm_io_decom &decom, e3sm_io_driver &driver);
 };
 #endif
 
@@ -113,39 +108,34 @@ typedef struct {
     vtype  *rec_buf;
 } io_buffers;
 
+extern
+int var_wr_all_cases(e3sm_io_config &cfg,
+                     e3sm_io_decom  &decom,
+                     e3sm_io_driver &driver,
+                     case_meta      *cmeta);
+
 /*---- functions for F case -------------------------------------------------*/
-extern int
-def_F_case_h0(e3sm_io_driver &driver,
-              int ncid,
-              const MPI_Offset dims[2],
-              int nvars,
-              int *varids);
+extern
+int def_F_case(e3sm_io_config &cfg,
+               e3sm_io_decom  &decom,
+               e3sm_io_driver &driver,
+               int             ncid,
+               var_meta       *vars,
+               io_buffers     *wr_buf);
 
-extern int
-inq_F_case_h0(e3sm_io_driver &driver,
-              int ncid,           /* file ID */
-              MPI_Offset dims[2], /* dimension sizes */
-              int nvars,          /* number of variables */
-              int *varids);       /* variable IDs */
+extern
+int inq_F_case_h0(e3sm_io_driver &driver,
+                  int ncid,           /* file ID */
+                  MPI_Offset dims[2], /* dimension sizes */
+                  int nvars,          /* number of variables */
+                  int *varids);       /* variable IDs */
 
-extern int
-def_F_case_h1(e3sm_io_driver &driver,
-              int ncid,
-              const MPI_Offset dims[2],
-              int nvars,
-              int *varids);
-
-extern int
-inq_F_case_h1(e3sm_io_driver &driver,
-              int ncid,           /* file ID */
-              MPI_Offset dims[2], /* dimension sizes */
-              int nvars,          /* number of variables */
-              int *varids);       /* variable IDs */
-
-extern int
-run_varn_F_case(e3sm_io_config &cfg,
-                e3sm_io_decom &decom,
-                e3sm_io_driver &driver);
+extern
+int inq_F_case_h1(e3sm_io_driver &driver,
+                  int ncid,           /* file ID */
+                  MPI_Offset dims[2], /* dimension sizes */
+                  int nvars,          /* number of variables */
+                  int *varids);       /* variable IDs */
 
 extern int
 run_varn_F_case_rd(e3sm_io_config &cfg,
@@ -156,36 +146,10 @@ run_varn_F_case_rd(e3sm_io_config &cfg,
                    char *txt_buf,       /* buffer for char var */
                    int *int_buf);       /* buffer for int var */
 
-extern
-int def_F_case(e3sm_io_config &cfg,
-               e3sm_io_decom  &decom,
-               e3sm_io_driver &driver,
-               int             ncid,
-               var_meta       *vars,
-               io_buffers     *wr_buf);
-
-extern
-int var_wr_F_case(e3sm_io_config &cfg,
-                  e3sm_io_decom  &decom,
-                  e3sm_io_driver &driver,
-                  char           *outfile);
-
 
 /*---- functions for G case -------------------------------------------------*/
 extern int
-def_G_case_h0(e3sm_io_driver &driver,
-              int ncid,                    /* file ID */
-              const MPI_Offset dims_D1[1], /* dimension sizes of decomposition 1 */
-              const MPI_Offset dims_D2[1], /* dimension sizes of decomposition 2 */
-              const MPI_Offset dims_D3[2], /* dimension sizes of decomposition 3 */
-              const MPI_Offset dims_D4[2], /* dimension sizes of decomposition 4 */
-              const MPI_Offset dims_D5[2], /* dimension sizes of decomposition 5 */
-              const MPI_Offset dims_D6[2], /* dimension sizes of decomposition 6 */
-              int nvars,                   /* number of variables */
-              int *varids);                /* variable IDs */
-
-extern int
-inq_G_case_h0(e3sm_io_driver &driver,
+inq_G_case(e3sm_io_driver &driver,
               int ncid,              /* file ID */
               MPI_Offset dims_D1[1], /* dimension sizes of decomposition 1 */
               MPI_Offset dims_D2[1], /* dimension sizes of decomposition 2 */
@@ -195,22 +159,6 @@ inq_G_case_h0(e3sm_io_driver &driver,
               MPI_Offset dims_D6[2], /* dimension sizes of decomposition 6 */
               int nvars,             /* number of variables */
               int *varids);          /* variable IDs */
-
-extern int
-run_varn_G_case(e3sm_io_config &cfg,
-                e3sm_io_decom &decom,
-                e3sm_io_driver &driver,
-                int *D1_fix_int_bufp,     /* D1 fix int buffer */
-                int *D2_fix_int_bufp,     /* D2 fix int buffer */
-                int *D3_fix_int_bufp,     /* D3 fix int buffer */
-                int *D4_fix_int_bufp,     /* D4 fix int buffer */
-                int *D5_fix_int_bufp,     /* D5 fix int buffer */
-                double *D1_rec_dbl_bufp,  /* D1 rec double buffer */
-                double *D3_rec_dbl_bufp,  /* D3 rec double buffer */
-                double *D4_rec_dbl_bufp,  /* D4 rec double buffer */
-                double *D5_rec_dbl_bufp,  /* D5 rec double buffer */
-                double *D6_rec_dbl_bufp,  /* D6 rec double buffer */
-                double *D1_fix_dbl_bufp); /* D1 fix double buffer */
 
 extern int
 run_varn_G_case_rd(e3sm_io_config &cfg,
@@ -229,12 +177,6 @@ run_varn_G_case_rd(e3sm_io_config &cfg,
                    double **D1_fix_dbl_bufp); /* D1 fix double buffer */
 
 extern
-int var_wr_G_case(e3sm_io_config &cfg,
-                  e3sm_io_decom  &decom,
-                  e3sm_io_driver &driver,
-                  char           *outfile);
-
-extern
 int def_G_case(e3sm_io_config &cfg,
                e3sm_io_decom  &decom,
                e3sm_io_driver &driver,
@@ -249,11 +191,6 @@ int def_I_case(e3sm_io_config &cfg,
                int             ncid,
                var_meta       *vars,
                io_buffers     *wr_buf);
-extern
-int var_wr_I_case(e3sm_io_config &cfg,
-                  e3sm_io_decom  &decom,
-                  e3sm_io_driver &driver,
-                  char           *outfile);
 
 extern
 int check_malloc(e3sm_io_config *cfg,

@@ -205,14 +205,14 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             tcase = new e3sm_io_case_F_scorpio();
         else
 #endif
-            tcase = new e3sm_io_case_F();
+            tcase = new e3sm_io_all_cases();
     } else if (cfg->run_case == G) {
 #ifdef ENABLE_ADIOS2
         if (cfg->api == adios)
             tcase = new e3sm_io_case_G_scorpio();
         else
 #endif
-            tcase = new e3sm_io_case_G();
+            tcase = new e3sm_io_all_cases();
     } else if (cfg->run_case == I) {
 #if 0 && defined(ENABLE_ADIOS2)
         /* TODO */
@@ -220,7 +220,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             tcase = new e3sm_io_case_G_scorpio();
         else
 #endif
-            tcase = new e3sm_io_case_I();
+            tcase = new e3sm_io_all_cases();
     }
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_CASE)
 

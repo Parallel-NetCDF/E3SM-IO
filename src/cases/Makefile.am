@@ -11,19 +11,15 @@ AM_CPPFLAGS += -I${top_srcdir}/src/cases
 
 noinst_LIBRARIES = libe3sm_io_cases.a
 
-CXX_SRCS =  e3sm_io_case_F.cpp \
-            e3sm_io_case_G.cpp \
-            e3sm_io_case_I.cpp \
+CXX_SRCS =  e3sm_io_all_cases.cpp \
             header_def_F_case.cpp \
             header_def_G_case.cpp \
             header_def_I_case.cpp \
             header_inq_F_case.cpp \
             header_inq_G_case.cpp \
-            var_wr_F_case.cpp \
             var_rd_F_case.cpp \
-            var_wr_G_case.cpp \
             var_rd_G_case.cpp \
-            var_wr_I_case.cpp \
+            var_wr_all_cases.cpp \
             report_timing.cpp \
             utils.cpp
 
