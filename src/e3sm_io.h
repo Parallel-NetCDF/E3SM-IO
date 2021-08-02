@@ -151,6 +151,7 @@ typedef struct e3sm_io_config {
     int      num_subfiles; /* number of subfiles */
     int      subfile_ID;   /* unqiue file identifier for subfiles */
     MPI_Comm sub_comm;     /* communicator for a subfile */
+    int      sub_rank;
 
     char node_info[2048]; /* info about the number of compute nodes and the
                            * number of MPI processes running per node
@@ -179,6 +180,15 @@ typedef struct e3sm_io_config {
 
 typedef struct e3sm_io_decom {
     int  num_decomp;                   /* number of decompositions: 3 or 6 */
+    int  ndims[MAX_NUM_DECOMP];        /* number of dimensions in each
+                                          decomposition */
+    MPI_Offset dims[MAX_NUM_DECOMP][MAX_NDIMS];
+                                       /* global dimension sizes of each
+                                          decomposition */
+
+    /* below are for within a subfile, if subfile option is enabled. If not
+     * then, they are for the single shared file.
+     */
     int  contig_nreqs[MAX_NUM_DECOMP]; /* number of noncontiguous requests in
                                           each decomposition */
     int  max_nreqs[MAX_NUM_DECOMP];    /* max contig_nreqs[] among processes */
@@ -187,11 +197,6 @@ typedef struct e3sm_io_decom {
                                           process */
     int *blocklens[MAX_NUM_DECOMP];    /* length (number of array elements) of
                                           individual requests */
-    int  ndims[MAX_NUM_DECOMP];        /* number of dimensions in each
-                                          decomposition */
-    MPI_Offset dims[MAX_NUM_DECOMP][MAX_NDIMS];
-                                       /* global dimension sizes of each
-                                          decomposition */
 
     /* the following 4 are the starts[] and counts[] used in varn APIs */
     MPI_Offset **w_starts[MAX_NUM_DECOMP]; /* [nreqs][] record variables */
@@ -200,8 +205,8 @@ typedef struct e3sm_io_decom {
     MPI_Offset **w_countx[MAX_NUM_DECOMP]; /* [nreqs][] fixed-size variables */
 
     /* below 3 are used for PnetCDF blob I/O subfiling */
-    MPI_Offset nelems[MAX_NUM_DECOMP]; /* total no. array elements in each
-                                          decomposition */
+    MPI_Offset nelems[MAX_NUM_DECOMP]; /* total no. array elements of each
+                                          decomposition to store in a subfile */
     MPI_Offset start[MAX_NUM_DECOMP];  /* This proc's starting array index for
                                           variables using each decomposition */
     MPI_Offset count[MAX_NUM_DECOMP];  /* This proc's number of array elements
