@@ -626,7 +626,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     CHECK_ERR
     close_timing += MPI_Wtime () - timing;
 
-    if (cfg.rank == 0){
+    if (cfg.verbose && cfg.rank == 0){
         err = driver.inq_file_size(cfg.in_path, &fsize);
         CHECK_ERR
     }

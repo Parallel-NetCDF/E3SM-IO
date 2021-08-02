@@ -957,7 +957,8 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     driver.inq_put_size(&total_size);
     total_size -= previous_size;
 
-    driver.inq_file_size(outfile, &pr->file_size);
+    if (cfg.verbose && rank == 0)
+        driver.inq_file_size(outfile, &pr->file_size);
 
     pr->nvars           = cfg.nvars;
     pr->num_flushes     = 1;

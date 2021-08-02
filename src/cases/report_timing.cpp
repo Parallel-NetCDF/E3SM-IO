@@ -143,8 +143,9 @@ int print_timing_WR(e3sm_io_config *cfg,
                 printf("History output subfile names       = %s.bp.dir/%s.bp.xxxx\n",
                        cmeta->outfile, cmeta->outfile);
                 printf("Number of subfiles                 = %d\n", cfg->num_group);
-                printf("Output file size                   = %.2f MiB = %.2f GiB\n",
-                    (double)cmeta->file_size / 1048576, (double)cmeta->file_size / 1073741824);
+                if (cfg->verbose)
+                    printf("Output file size                   = %.2f MiB = %.2f GiB\n",
+                        (double)cmeta->file_size / 1048576, (double)cmeta->file_size / 1073741824);
             }
             else {
                 printf("History output subfile names       = %s.xxxx\n", cmeta->outfile);
