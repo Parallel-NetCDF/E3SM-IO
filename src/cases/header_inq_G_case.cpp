@@ -3060,8 +3060,8 @@ err_out:
     return err;
 }
 
-/*----< def_G_case_h0() >----------------------------------------------------*/
-int inq_G_case_h0 (e3sm_io_driver &driver,
+/*----< def_G_case() >----------------------------------------------------*/
+int inq_G_case(e3sm_io_driver &driver,
                    int ncid,              /* file ID */
                    MPI_Offset dims_D1[1], /* dimension sizes of decomposition 1 */
                    MPI_Offset dims_D2[1], /* dimension sizes of decomposition 2 */

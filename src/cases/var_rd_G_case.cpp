@@ -413,7 +413,7 @@ int run_varn_G_case_rd (e3sm_io_config &cfg,
     CHECK_ERR
 
     /* define dimensions, variables, and attributes */
-    err = inq_G_case_h0 (driver, ncid, decom.dims[0], decom.dims[1], decom.dims[2], decom.dims[3],
+    err = inq_G_case(driver, ncid, decom.dims[0], decom.dims[1], decom.dims[2], decom.dims[3],
                          decom.dims[4], decom.dims[5], cfg.nvars, varids);
     CHECK_ERR
 
