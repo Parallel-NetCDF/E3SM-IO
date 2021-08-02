@@ -22,7 +22,7 @@
 static
 int print_timing_WR(e3sm_io_config *cfg,
                     e3sm_io_decom  *decom,
-                    case_meta      *pr)
+                    case_meta      *cmeta)
 {
     int i, global_rank, ndecomp, nblobs;
     MPI_Offset off_msg[2], sum_off[3], max_off[2];
@@ -55,26 +55,26 @@ int print_timing_WR(e3sm_io_config *cfg,
      * total size.
      */
 
-    off_msg[0] = pr->my_nreqs;
-    off_msg[1] = pr->amount_WR;
+    off_msg[0] = cmeta->my_nreqs;
+    off_msg[1] = cmeta->amount_WR;
     off_msg[2] = sum_decomp_varlen;
     MPI_Reduce(off_msg, sum_off, 3, MPI_OFFSET, MPI_SUM, 0, comm);
     sum_nreqs         = sum_off[0];
     sum_amount_WR     = sum_off[1];
     sum_decomp_varlen = sum_off[2];
 
-    off_msg[0] = pr->my_nreqs;
+    off_msg[0] = cmeta->my_nreqs;
     MPI_Reduce(off_msg, max_off, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     max_nreqs = max_off[0];
 
     double dbl_tmp[7], max_dbl[7];
-    dbl_tmp[0] = pr->pre_time;
-    dbl_tmp[1] = pr->open_time;
-    dbl_tmp[2] = pr->def_time;
-    dbl_tmp[3] = pr->post_time;
-    dbl_tmp[4] = pr->flush_time;
-    dbl_tmp[5] = pr->close_time;
-    dbl_tmp[6] = pr->end2end_time;
+    dbl_tmp[0] = cmeta->pre_time;
+    dbl_tmp[1] = cmeta->open_time;
+    dbl_tmp[2] = cmeta->def_time;
+    dbl_tmp[3] = cmeta->post_time;
+    dbl_tmp[4] = cmeta->flush_time;
+    dbl_tmp[5] = cmeta->close_time;
+    dbl_tmp[6] = cmeta->end2end_time;
     MPI_Reduce(dbl_tmp, max_dbl, 7, MPI_DOUBLE, MPI_MAX, 0, comm);
         pre_time = max_dbl[0];
        open_time = max_dbl[1];
@@ -85,8 +85,8 @@ int print_timing_WR(e3sm_io_config *cfg,
     end2end_time = max_dbl[6];
 
     if (global_rank == 0) {
-        int nvars_noD = pr->nvars;
-        for (i=0; i<ndecomp; i++) nvars_noD -= pr->nvars_D[i];
+        int nvars_noD = cmeta->nvars;
+        for (i=0; i<ndecomp; i++) nvars_noD -= cmeta->nvars_D[i];
 
         if (cfg->run_case == F)
             printf("==== Benchmarking F case =============================\n");
@@ -139,18 +139,18 @@ int print_timing_WR(e3sm_io_config *cfg,
         if (cfg->strategy == blob) {
             printf("History output name base           = %s\n", cfg->out_path);
             if (cfg->api == adios) {
-                printf("History output folder name         = %s.bp.dir\n", pr->outfile);
+                printf("History output folder name         = %s.bp.dir\n", cmeta->outfile);
                 printf("History output subfile names       = %s.bp.dir/%s.bp.xxxx\n",
-                       pr->outfile, pr->outfile);
+                       cmeta->outfile, cmeta->outfile);
                 printf("Number of subfiles                 = %d\n", cfg->num_group);
                 printf("Output file size                   = %.2f MiB = %.2f GiB\n",
-                    (double)pr->file_size / 1048576, (double)pr->file_size / 1073741824);
+                    (double)cmeta->file_size / 1048576, (double)cmeta->file_size / 1073741824);
             }
             else {
-                printf("History output subfile names       = %s.xxxx\n", pr->outfile);
+                printf("History output subfile names       = %s.xxxx\n", cmeta->outfile);
                 printf("Number of subfiles                 = %3d\n", nblobs);
             }
-            printf("No. decomposition variables        = %3d\n", pr->num_decomp_vars);
+            printf("No. decomposition variables        = %3d\n", cmeta->num_decomp_vars);
             if (cfg->api == adios) {
                 MPI_Offset amount = 0;
                 for (i=0; i<ndecomp; i++)
@@ -165,16 +165,16 @@ int print_timing_WR(e3sm_io_config *cfg,
             }
         }
         else
-            printf("History output file                = %s\n", pr->outfile);
+            printf("History output file                = %s\n", cmeta->outfile);
         printf("No. variables use no decomposition = %6d\n", nvars_noD);
         for (i=0; i<ndecomp; i++)
             printf("No. variables use decomposition D%d = %6d\n",
-                   i, pr->nvars_D[i]);
-        printf("Total no. climate variables        = %6d\n", pr->nvars);
-        printf("Write no. records (time dim)       = %6d\n", pr->nrecs);
+                   i, cmeta->nvars_D[i]);
+        printf("Total no. climate variables        = %6d\n", cmeta->nvars);
+        printf("Write no. records (time dim)       = %6d\n", cmeta->nrecs);
         printf("Total no. noncontiguous requests   = %6lld\n", sum_nreqs);
         printf("Max   no. noncontiguous requests   = %6lld\n", max_nreqs);
-        printf("No. I/O flush calls                = %6d\n", pr->num_flushes);
+        printf("No. I/O flush calls                = %6d\n", cmeta->num_flushes);
         printf("-----------------------------------------------------------\n");
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)sum_amount_WR / 1048576, (double)sum_amount_WR / 1073741824);
@@ -201,14 +201,18 @@ int report_timing_WR(e3sm_io_config *cfg,
                      e3sm_io_decom  *decom)
 {
     if (cfg->run_case == F) {
-        print_timing_WR(cfg, decom, &cfg->F_case_h0);
-        print_timing_WR(cfg, decom, &cfg->F_case_h1);
+        if (cfg->hx == 0 || cfg->hx == -1) /* h0 file */
+            print_timing_WR(cfg, decom, &cfg->F_case_h0);
+        else /* h1 file */
+            print_timing_WR(cfg, decom, &cfg->F_case_h1);
     }
     else if (cfg->run_case == G)
         print_timing_WR(cfg, decom, &cfg->G_case);
     else if (cfg->run_case == I) {
-        print_timing_WR(cfg, decom, &cfg->I_case_h0);
-        print_timing_WR(cfg, decom, &cfg->I_case_h1);
+        if (cfg->hx == 0 || cfg->hx == -1) /* h0 file */
+            print_timing_WR(cfg, decom, &cfg->I_case_h0);
+        else /* h1 file */
+            print_timing_WR(cfg, decom, &cfg->I_case_h1);
     }
     return 0;
 }
