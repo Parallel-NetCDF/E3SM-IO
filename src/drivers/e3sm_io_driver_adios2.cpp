@@ -544,6 +544,7 @@ int e3sm_io_driver_adios2::enddef (int fid) {
             for (i = 0; i < fp->ddids.size (); i++) {
                 adios2_put (fp->ep, fp->ddids[i], &(fp->dsizes[i]), adios2_mode_sync);
             }
+            this->amount_WR += fp->ddids.size() * 8;
         }
         E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_PUT_VAR)
     }
@@ -643,7 +644,10 @@ int e3sm_io_driver_adios2::put_att (
         CHECK_APTR (aid)
     }
 
-    if (fp->rank == 0) {
+    // ADIOS2 write attributes in each subfile
+    // Instead of finding the exact process writing the attribute 
+    // we count them in the first num_group processes
+    if (fp->rank < cfg->num_group) {
         esize = adios2_type_size (atype);
         this->amount_WR += size * esize;
     }
