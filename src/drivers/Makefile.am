@@ -25,7 +25,7 @@ C_SRCS +=   e3sm_io_driver_hdf5.cpp \
 
 H_SRCS +=   e3sm_io_driver_hdf5.hpp \
             e3sm_io_driver_h5blob.hpp \
-            e3sm_io_driver_hdf5_int.hpp \ 
+            e3sm_io_driver_hdf5_int.hpp \
             blob_ncmpio.h
 endif
 
