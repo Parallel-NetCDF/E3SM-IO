@@ -24,22 +24,47 @@ int print_timing_WR(e3sm_io_config *cfg,
                     e3sm_io_decom  *decom,
                     perf_report    *pr)
 {
-    int i, global_rank;
-    MPI_Offset off_msg[2], sum_off[2], max_off[2];
+    int i, global_rank, ndecomp, nblobs;
+    MPI_Offset off_msg[2], sum_off[3], max_off[2];
     MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs;
+    MPI_Offset vlen, sum_decomp_varlen;
     double pre_time, open_time, def_time, post_time, flush_time, close_time;
     double end2end_time, wTime;
+    MPI_Comm comm=cfg->io_comm;
 
-    MPI_Comm_rank(cfg->io_comm, &global_rank);
+    MPI_Comm_rank(comm, &global_rank);
+    ndecomp = decom->num_decomp;
+    nblobs  = cfg->num_subfiles;
+
+    if (cfg->strategy != blob || cfg->api == adios) nblobs = 0;
+
+    /* calculate the space occupied by the decomposition variables */
+    sum_decomp_varlen = 0;
+    for (i=0; i<ndecomp; i++) {
+        vlen = sizeof(int)                        /* D*.nreqs */
+             + sizeof(MPI_Offset)                 /* D*.blob_start */
+             + sizeof(MPI_Offset)                 /* D*.blob_count */
+             + decom->max_nreqs[i] * sizeof(int)  /* D*.offsets */
+             + decom->max_nreqs[i] * sizeof(int); /* D*.lengths */
+        sum_decomp_varlen += vlen * nblobs;
+    }
+    if (cfg->sub_rank > 0) sum_decomp_varlen = 0;
+    /* sum_decomp_varlen is the size of all decomposition variables defined in
+     * the subfile of this process. To calculate the total sizes across all
+     * subfiles, only root ranks of subfiles do a parallel sum to obtain the
+     * total size.
+     */
 
     off_msg[0] = pr->my_nreqs;
     off_msg[1] = pr->amount_WR;
-    MPI_Reduce(off_msg, sum_off, 2, MPI_OFFSET, MPI_SUM, 0, cfg->io_comm);
-    sum_nreqs     = sum_off[0];
-    sum_amount_WR = sum_off[1];
+    off_msg[2] = sum_decomp_varlen;
+    MPI_Reduce(off_msg, sum_off, 3, MPI_OFFSET, MPI_SUM, 0, comm);
+    sum_nreqs         = sum_off[0];
+    sum_amount_WR     = sum_off[1];
+    sum_decomp_varlen = sum_off[2];
 
     off_msg[0] = pr->my_nreqs;
-    MPI_Reduce(off_msg, max_off, 1, MPI_OFFSET, MPI_MAX, 0, cfg->io_comm);
+    MPI_Reduce(off_msg, max_off, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     max_nreqs = max_off[0];
 
     double dbl_tmp[7], max_dbl[7];
@@ -50,7 +75,7 @@ int print_timing_WR(e3sm_io_config *cfg,
     dbl_tmp[4] = pr->flush_time;
     dbl_tmp[5] = pr->close_time;
     dbl_tmp[6] = pr->end2end_time;
-    MPI_Reduce(dbl_tmp, max_dbl, 7, MPI_DOUBLE, MPI_MAX, 0, cfg->io_comm);
+    MPI_Reduce(dbl_tmp, max_dbl, 7, MPI_DOUBLE, MPI_MAX, 0, comm);
         pre_time = max_dbl[0];
        open_time = max_dbl[1];
         def_time = max_dbl[2];
@@ -60,10 +85,8 @@ int print_timing_WR(e3sm_io_config *cfg,
     end2end_time = max_dbl[6];
 
     if (global_rank == 0) {
-        MPI_Offset decomp_amount, total_raw_nreqs;
-        int nblobs = cfg->num_subfiles;
         int nvars_noD = pr->nvars;
-        for (i=0; i<pr->num_decomp; i++) nvars_noD -= pr->nvars_D[i];
+        for (i=0; i<ndecomp; i++) nvars_noD -= pr->nvars_D[i];
 
         if (cfg->run_case == F)
             printf("==== Benchmarking F case =============================\n");
@@ -76,7 +99,7 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("Total number of MPI processes      = %d\n", cfg->np);
         printf("Number of IO processes             = %d\n", cfg->num_iotasks);
         printf("Input decomposition file           = %s\n", cfg->cfg_path);
-        printf("Number of decompositions           = %d\n", decom->num_decomp);
+        printf("Number of decompositions           = %d\n", ndecomp);
         if (cfg->rd) {
             printf ("Input file/directory               = %s\n", cfg->in_path);
             printf ("Using noncontiguous read buffer    = %s\n", cfg->non_contig_buf ? "yes" : "no");
@@ -127,28 +150,24 @@ int print_timing_WR(e3sm_io_config *cfg,
                 printf("History output subfile names       = %s.xxxx\n", pr->outfile);
                 printf("Number of subfiles                 = %3d\n", nblobs);
             }
-            decomp_amount = 0;
-            for (i=0; i<pr->num_decomp; i++) {
-                decomp_amount += nblobs * sizeof(int); /* D*.nreqs */
-                decomp_amount += nblobs * sizeof(MPI_Offset); /* D*.blob_start */
-                decomp_amount += nblobs * sizeof(MPI_Offset); /* D*.blob_count */
-                decomp_amount += nblobs * decom->nelems[i] * sizeof(int); /* D*.offsets */
-                decomp_amount += nblobs * decom->nelems[i] * sizeof(int); /* D*.lengths */
-            }
-            total_raw_nreqs = 0;
-            for (i=0; i<pr->num_decomp; i++)
-                total_raw_nreqs += decom->total_raw_nreqs[i];
-
             printf("No. decomposition variables        = %3d\n", pr->num_decomp_vars);
-            if (cfg->api == adios)
-                printf("Size of raw decomposition maps     = %.2f MiB\n", (float)total_raw_nreqs/1048576.0);
-            else
-                printf("Size of decomposition variables    = %.2f MiB\n", (float)decomp_amount/1048576.0);
+            if (cfg->api == adios) {
+                MPI_Offset amount = 0;
+                for (i=0; i<ndecomp; i++)
+                    amount += decom->total_raw_nreqs[i];
+                amount *= sizeof(int64_t);
+                printf("Size of raw decomposition maps     = %.2f MiB\n",
+                       (float)amount/1048576.0);
+            }
+            else {
+                printf("Size of decomposition variables    = %.2f MiB\n",
+                       (float)sum_decomp_varlen/1048576.0);
+            }
         }
         else
             printf("History output file                = %s\n", pr->outfile);
         printf("No. variables use no decomposition = %6d\n", nvars_noD);
-        for (i=0; i<pr->num_decomp; i++)
+        for (i=0; i<ndecomp; i++)
             printf("No. variables use decomposition D%d = %6d\n",
                    i, pr->nvars_D[i]);
         printf("Total no. climate variables        = %6d\n", pr->nvars);
