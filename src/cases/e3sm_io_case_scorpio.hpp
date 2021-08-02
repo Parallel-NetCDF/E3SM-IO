@@ -158,7 +158,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             CHECK_MPIERR
             vsize *= esize;
             vsize += 8 * 2 * ndim; // Include start and count array
-            err = driver.def_local_var (fid, name, NC_BYTE, 1, &vsize, &(var->data));
+            err = driver.def_local_var (fid, name, NC_UBYTE, 1, &vsize, &(var->data));
             CHECK_ERR
         }
         else{
