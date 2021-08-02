@@ -22,7 +22,7 @@
 static
 int print_timing_WR(e3sm_io_config *cfg,
                     e3sm_io_decom  *decom,
-                    perf_report    *pr)
+                    case_meta      *pr)
 {
     int i, global_rank, ndecomp, nblobs;
     MPI_Offset off_msg[2], sum_off[3], max_off[2];

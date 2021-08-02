@@ -140,8 +140,7 @@ int var_wr_G_case(e3sm_io_config &cfg,
     vtype  *fix_buf_ptr, *rec_buf_ptr;
     var_meta *vars;
     io_buffers wr_buf;
-
-    perf_report *pr;
+    case_meta *pr;
 
     if (cfg.run_case == F) {
         if (cfg.hist == h0) pr = &cfg.F_case_h0;
@@ -341,10 +340,9 @@ int var_wr_G_case(e3sm_io_config &cfg,
                         FIX_VAR_IPUT(varid, dp, MPI_INT, fix_int_buf_ptr)
                 }
             }
-            else { /* this variable is not-partitioned */
-                if (sub_rank > 0) continue;
+            else if (sub_rank == 0) {
+                /* not-partitioned variables are written by root only */
 
-                /* This variable is written only by rank 0 */
                 if (vars[j].isRecVar) { /* this is a record variable */
                     start[0] = rec_no;
                     start[1] = 0;
@@ -415,7 +413,6 @@ int var_wr_G_case(e3sm_io_config &cfg,
 
     pr->nvars           = cfg.nvars;
     pr->num_flushes     = nflushes;
-    pr->num_decomp      = decom.num_decomp;
     pr->num_decomp_vars = num_decomp_vars;
     pr->my_nreqs        = my_nreqs;
     pr->metadata_WR     = metadata_size;

@@ -98,7 +98,6 @@ typedef struct {
     int nvars;  /* number of climate variables */
     int nrecs;
     int num_flushes;
-    int num_decomp;
     int num_decomp_vars;
     int nvars_D[MAX_NUM_DECOMP];
     MPI_Offset metadata_WR;
@@ -115,7 +114,7 @@ typedef struct {
     double flush_time;
     double close_time;
     double end2end_time;
-} perf_report;
+} case_meta;
 
 typedef struct e3sm_io_config {
     int rank;
@@ -157,11 +156,11 @@ typedef struct e3sm_io_config {
     char node_info[2048]; /* info about the number of compute nodes and the
                            * number of MPI processes running per node
                            */
-    perf_report F_case_h0;
-    perf_report F_case_h1;
-    perf_report G_case;
-    perf_report I_case_h0;
-    perf_report I_case_h1;
+    case_meta F_case_h0;
+    case_meta F_case_h1;
+    case_meta G_case;
+    case_meta I_case_h0;
+    case_meta I_case_h1;
 
 } e3sm_io_config;
 

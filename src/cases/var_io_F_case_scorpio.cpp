@@ -464,7 +464,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     MPI_Info info_used = MPI_INFO_NULL;
     MPI_Offset previous_size;
     std::vector<int> decomids;
-    perf_report *pr;
+    case_meta *pr;
 
     if (cfg.run_case == F) {
         if (cfg.hist == h0) pr = &cfg.F_case_h0;
@@ -961,7 +961,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
 
     pr->nvars           = cfg.nvars;
     pr->num_flushes     = 1;
-    pr->num_decomp      = decom.num_decomp;
     pr->num_decomp_vars = decom.num_decomp;
     pr->my_nreqs        = my_nreqs;
     pr->metadata_WR     = metadata_size;
