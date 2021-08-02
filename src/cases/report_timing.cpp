@@ -24,7 +24,7 @@ int print_timing_WR(e3sm_io_config *cfg,
                     e3sm_io_decom  *decom,
                     case_meta      *cmeta)
 {
-    int i, global_rank, ndecomp, nblobs;
+    int i, ndecomp, nblobs;
     MPI_Offset off_msg[2], sum_off[3], max_off[2];
     MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs;
     MPI_Offset vlen, sum_decomp_varlen;
@@ -32,7 +32,6 @@ int print_timing_WR(e3sm_io_config *cfg,
     double end2end_time, wTime;
     MPI_Comm comm=cfg->io_comm;
 
-    MPI_Comm_rank(comm, &global_rank);
     ndecomp = decom->num_decomp;
     nblobs  = cfg->num_subfiles;
 
@@ -48,7 +47,8 @@ int print_timing_WR(e3sm_io_config *cfg,
              + decom->max_nreqs[i] * sizeof(int); /* D*.lengths */
         sum_decomp_varlen += vlen * nblobs;
     }
-    if (cfg->sub_rank > 0) sum_decomp_varlen = 0;
+    if (cfg->strategy == blob && cfg->api != adios && cfg->sub_rank > 0)
+        sum_decomp_varlen = 0;
     /* sum_decomp_varlen is the size of all decomposition variables defined in
      * the subfile of this process. To calculate the total sizes across all
      * subfiles, only root ranks of subfiles do a parallel sum to obtain the
@@ -84,7 +84,7 @@ int print_timing_WR(e3sm_io_config *cfg,
       close_time = max_dbl[5];
     end2end_time = max_dbl[6];
 
-    if (global_rank == 0) {
+    if (cfg->rank == 0) {
         int nvars_noD = cmeta->nvars;
         for (i=0; i<ndecomp; i++) nvars_noD -= cmeta->nvars_D[i];
 
