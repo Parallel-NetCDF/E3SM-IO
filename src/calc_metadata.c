@@ -59,7 +59,7 @@ static
 int blob_metadata(e3sm_io_config *cfg,
                   e3sm_io_decom  *decom)
 {
-    int i, j, err, rank, sub_rank, color, int_msg[2], sub_nprocs, *nnprocs;
+    int i, j, err, rank, color, int_msg[2], sub_nprocs, *nnprocs;
     MPI_Comm comm_roots;
 
     /* split communicator to create one sub-communicator per compute node */
@@ -71,8 +71,8 @@ int blob_metadata(e3sm_io_config *cfg,
      * round-robin (MPICH_RANK_REORDER_METHOD=0)
      */
     rank = cfg->rank;
-    MPI_Comm_rank(cfg->sub_comm, &sub_rank);
-    color = (sub_rank == 0) ? 1 : 0;
+    MPI_Comm_rank(cfg->sub_comm, &cfg->sub_rank);
+    color = (cfg->sub_rank == 0) ? 1 : 0;
     err = MPI_Comm_split(cfg->io_comm, color, cfg->rank, &comm_roots);
     CHECK_MPI_ERROR(err, "MPI_Comm_split")
 
@@ -112,9 +112,9 @@ int blob_metadata(e3sm_io_config *cfg,
     CHECK_MPI_ERROR(err, "MPI_Bcast")
     cfg->num_subfiles = int_msg[0];
     cfg->subfile_ID   = int_msg[1];
-    if (cfg->verbose && sub_rank == 0)
+    if (cfg->verbose && cfg->sub_rank == 0)
         printf("cfg->rank=%5d sub_rank=%5d color=%d subfile_ID=%5d\n",
-           cfg->rank, sub_rank, color, cfg->subfile_ID);
+           cfg->rank, cfg->sub_rank, color, cfg->subfile_ID);
 
     for (i=0; i<decom->num_decomp; i++) {
         decom->start[i] = 0;
@@ -140,7 +140,7 @@ int blob_metadata(e3sm_io_config *cfg,
                         MPI_OFFSET, MPI_SUM, cfg->sub_comm);
     CHECK_MPI_ERROR(err, "MPI_Allreduce")
 
-    /* decom->nelems is the max number of requests in this subfile */
+    /* decom->max_nreqs is the max number of requests in this subfile */
     err = MPI_Allreduce(MPI_IN_PLACE, decom->max_nreqs, decom->num_decomp,
                         MPI_INT, MPI_MAX, cfg->sub_comm);
     CHECK_MPI_ERROR(err, "MPI_Allreduce")
