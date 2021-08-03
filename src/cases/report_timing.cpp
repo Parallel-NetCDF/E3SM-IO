@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h> /* basename() */
 #include <assert.h>
 
 #include <mpi.h>
@@ -141,7 +142,7 @@ int print_timing_WR(e3sm_io_config *cfg,
             if (cfg->api == adios) {
                 printf("History output folder name         = %s.bp.dir\n", cmeta->outfile);
                 printf("History output subfile names       = %s.bp.dir/%s.bp.xxxx\n",
-                       cmeta->outfile, cmeta->outfile);
+                       cmeta->outfile, basename(cmeta->outfile));
                 printf("Number of subfiles                 = %d\n", cfg->num_group);
                 if (cfg->verbose)
                     printf("Output file size                   = %.2f MiB = %.2f GiB\n",
