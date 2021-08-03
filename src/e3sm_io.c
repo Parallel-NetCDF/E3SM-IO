@@ -268,7 +268,7 @@ int main (int argc, char **argv) {
 
     cfg.F_case_h0.nrecs = 1;  /* force only one record for F h0 case */
     cfg.F_case_h1.nrecs = nrecs;
-    cfg.G_case.nrecs    = 1;  /* force only one record for G case */
+    cfg.G_case.nrecs    = nrecs;
     cfg.I_case_h0.nrecs = nrecs;
     cfg.I_case_h1.nrecs = 1;  /* force only one record for I h1 case */
 
