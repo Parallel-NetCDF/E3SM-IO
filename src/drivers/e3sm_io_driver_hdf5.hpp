@@ -28,6 +28,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
     class hdf5_file {
        public:
+        e3sm_io_driver_hdf5 &driver;
         e3sm_io_config *cfg;
         hid_t id;
         std::vector<hid_t> dids;
@@ -55,8 +56,6 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
         std::vector<hid_t> memspace_recycle;
         std::vector<hid_t> dataspace_recycle;
-
-        e3sm_io_driver_hdf5 &driver;
 
         hdf5_file (e3sm_io_driver_hdf5 &x) : driver (x), cfg{x.cfg} {};
 
