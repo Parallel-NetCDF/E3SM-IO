@@ -34,6 +34,15 @@ typedef struct e3sm_io_scorpio_var {
     int ndim;
 } e3sm_io_scorpio_var;
 
+typedef struct {
+    e3sm_io_scorpio_var vid;        /* variable ID */
+    int decomp_id;  /* decomposition map ID */
+    int isRecVar;   /* whether is a record variable */
+    size_t vlen;    /* length to be written by this rank */
+    MPI_Datatype itype;
+} var_meta_scorpio;
+
+
 inline int e3sm_io_scorpio_define_dim (e3sm_io_driver &driver,
                                    int fid,
                                    std::string name,
@@ -330,3 +339,19 @@ run_varn_G_case_scorpio(e3sm_io_config &cfg,
                         double *D6_rec_dbl_bufp,  /* D6 rec double buffer */
                         double *D1_fix_dbl_bufp); /* D1 fix double buffer */
 
+extern int 
+def_I_case_scorpio(e3sm_io_config   &cfg,
+               e3sm_io_decom    &decom,
+               e3sm_io_driver   &driver,
+               int               ncid,    /* file ID */
+               var_meta_scorpio         *vars,    /* variable metadata */
+               io_buffers       *wr_buf,
+               int *scorpiovars,
+               bool op
+               );
+
+extern int 
+var_wr_all_cases_scorpio(e3sm_io_config &cfg,
+                     e3sm_io_decom  &decom,
+                     e3sm_io_driver &driver,
+                     case_meta      *cmeta);

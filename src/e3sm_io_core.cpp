@@ -216,7 +216,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     } else if (cfg->run_case == I) {
 #ifdef ENABLE_ADIOS2
         if (cfg->api == adios)
-            ERR_OUT ("Case I has not been implemented for ADIOS driver yet")
+            tcase = new e3sm_io_all_cases_scorpio();
         else
 #endif
             tcase = new e3sm_io_all_cases();
