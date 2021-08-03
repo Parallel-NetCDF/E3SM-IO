@@ -466,17 +466,8 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     std::vector<int> decomids;
     case_meta *pr;
 
-    if (cfg.run_case == F) {
-        if (cfg.hist == h0) pr = &cfg.F_case_h0;
-        else                pr = &cfg.F_case_h1;
-    }
-    else if (cfg.run_case == G)
-        pr = &cfg.G_case;
-    else if (cfg.run_case == I) {
-        if (cfg.hist == h0) pr = &cfg.I_case_h0;
-        else                pr = &cfg.I_case_h1;
-    }
-    else return -1;
+    if (cfg.hist == h0) pr = &cfg.F_case_h0;
+    else                pr = &cfg.F_case_h1;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     pr->end2end_time = pr->pre_time = MPI_Wtime();
