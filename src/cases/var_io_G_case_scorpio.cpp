@@ -286,19 +286,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     int xnreqs[6]; /* number of requests after combination */
     MPI_Offset previous_size;
     std::vector<int> decomids;
-    case_meta *pr;
-
-    if (cfg.run_case == F) {
-        if (cfg.hist == h0) pr = &cfg.F_case_h0;
-        else                pr = &cfg.F_case_h1;
-    }
-    else if (cfg.run_case == G)
-        pr = &cfg.G_case;
-    else if (cfg.run_case == I) {
-        if (cfg.hist == h0) pr = &cfg.I_case_h0;
-        else                pr = &cfg.I_case_h1;
-    }
-    else return -1;
+    case_meta *pr = &cfg.G_case;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     pr->end2end_time = pr->pre_time = MPI_Wtime();
@@ -808,17 +796,17 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
             if (rec_no == 0) nvars_D[4]++;
         }
 
-        pr->post_time = MPI_Wtime() - pr->post_time;
-
-        MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
-        pr->flush_time = MPI_Wtime ();
-
-        /* in ADIOS,  data is actually flushed at file close */
-        err = driver.wait (ncid);
-        CHECK_ERR
-
-        pr->flush_time = MPI_Wtime() - pr->flush_time;
     }
+    pr->post_time = MPI_Wtime() - pr->post_time;
+
+    MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
+    pr->flush_time = MPI_Wtime ();
+
+    /* in ADIOS,  data is actually flushed at file close */
+    err = driver.wait (ncid);
+    CHECK_ERR
+
+    pr->flush_time = MPI_Wtime() - pr->flush_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
     pr->close_time = MPI_Wtime ();
