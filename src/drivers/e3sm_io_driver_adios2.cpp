@@ -371,11 +371,11 @@ int e3sm_io_driver_adios2::def_local_var (
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
     for (i = 0; i < ndim; i++) {
-        dims[i] = (size_t)dsize[i];
         // Unlimited dimension is simulated by timesteps
-        if (dims[i] == -1) { 
+        if (dsize[i] == -1)
             dims[i] = 1; 
-        }
+        else
+            dims[i] = (size_t)dsize[i];
     }
 
     if (dtype == adios2_type_string) {
