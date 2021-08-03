@@ -205,7 +205,7 @@ int report_timing_WR(e3sm_io_config *cfg,
     if (cfg->run_case == F) {
         if (cfg->hx == 0 || cfg->hx == -1) /* h0 file */
             print_timing_WR(cfg, decom, &cfg->F_case_h0);
-        else /* h1 file */
+        if (cfg->hx == 1 || cfg->hx == -1) /* h1 file */
             print_timing_WR(cfg, decom, &cfg->F_case_h1);
     }
     else if (cfg->run_case == G)
@@ -213,7 +213,7 @@ int report_timing_WR(e3sm_io_config *cfg,
     else if (cfg->run_case == I) {
         if (cfg->hx == 0 || cfg->hx == -1) /* h0 file */
             print_timing_WR(cfg, decom, &cfg->I_case_h0);
-        else /* h1 file */
+        if (cfg->hx == 1 || cfg->hx == -1) /* h1 file */
             print_timing_WR(cfg, decom, &cfg->I_case_h1);
     }
     return 0;
