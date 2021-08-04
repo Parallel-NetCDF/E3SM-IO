@@ -151,7 +151,8 @@ typedef struct e3sm_io_config {
     int      num_subfiles; /* number of subfiles */
     int      subfile_ID;   /* unqiue file identifier for subfiles */
     MPI_Comm sub_comm;     /* communicator for a subfile */
-    int      sub_rank;
+    int      sub_rank;     /* rank in sub_comm */
+    int      sub_nprocs;   /* nprocs in sub_comm, also nblobs in a subfile */
 
     char node_info[2048]; /* info about the number of compute nodes and the
                            * number of MPI processes running per node

@@ -59,7 +59,7 @@ static
 int blob_metadata(e3sm_io_config *cfg,
                   e3sm_io_decom  *decom)
 {
-    int i, j, err, rank, color, int_msg[2], sub_nprocs, *nnprocs;
+    int i, j, err, rank, color, int_msg[2], *nnprocs;
     MPI_Comm comm_roots;
 
     /* split communicator to create one sub-communicator per compute node */
@@ -80,9 +80,10 @@ int blob_metadata(e3sm_io_config *cfg,
     MPI_Comm_rank(comm_roots, &cfg->subfile_ID);
 
     /* print the number of MPI processes per node (subfile) */
-    MPI_Comm_size(cfg->sub_comm, &sub_nprocs);
+    MPI_Comm_size(cfg->sub_comm, &cfg->sub_nprocs);
     nnprocs = (int*) malloc(cfg->num_subfiles * sizeof(int));
-    MPI_Gather(&sub_nprocs, 1, MPI_INT, nnprocs, 1, MPI_INT, 0, comm_roots);
+    MPI_Gather(&cfg->sub_nprocs, 1, MPI_INT, nnprocs, 1, MPI_INT, 0,
+               comm_roots);
     if (rank == 0) {
         char str[64], *msg=cfg->node_info;
         sprintf(msg,"Total number of compute nodes: %d\n", cfg->num_subfiles);
