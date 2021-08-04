@@ -346,6 +346,9 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
     INQ_PUT_SIZE(total_size)
     total_size -= previous_size;
 
+    if (cfg.verbose && global_rank == 0)
+        driver.inq_file_size(cmeta->outfile, &cmeta->file_size);
+
     cmeta->num_flushes     = nflushes;
     cmeta->num_decomp_vars = num_decomp_vars;
     cmeta->my_nreqs        = my_nreqs;
