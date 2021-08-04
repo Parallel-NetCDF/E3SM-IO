@@ -25,7 +25,7 @@ int print_timing_WR(e3sm_io_config *cfg,
                     e3sm_io_decom  *decom,
                     case_meta      *cmeta)
 {
-    int i, ndecomp, nblobs;
+    int i, ndecomp;
     MPI_Offset off_msg[2], sum_off[3], max_off[2];
     MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs;
     MPI_Offset vlen, sum_decomp_varlen;
@@ -34,9 +34,6 @@ int print_timing_WR(e3sm_io_config *cfg,
     MPI_Comm comm=cfg->io_comm;
 
     ndecomp = decom->num_decomp;
-    nblobs  = cfg->num_subfiles;
-
-    if (cfg->strategy != blob || cfg->api == adios) nblobs = 0;
 
     /* calculate the space occupied by the decomposition variables */
     sum_decomp_varlen = 0;
@@ -46,8 +43,9 @@ int print_timing_WR(e3sm_io_config *cfg,
              + sizeof(MPI_Offset)                 /* D*.blob_count */
              + decom->max_nreqs[i] * sizeof(int)  /* D*.offsets */
              + decom->max_nreqs[i] * sizeof(int); /* D*.lengths */
-        sum_decomp_varlen += vlen * nblobs;
+        sum_decomp_varlen += vlen;
     }
+    sum_decomp_varlen *= cfg->sub_nprocs;
     if (cfg->strategy == blob && cfg->api != adios && cfg->sub_rank > 0)
         sum_decomp_varlen = 0;
     /* sum_decomp_varlen is the size of all decomposition variables defined in
@@ -150,7 +148,7 @@ int print_timing_WR(e3sm_io_config *cfg,
             }
             else {
                 printf("History output subfile names       = %s.xxxx\n", cmeta->outfile);
-                printf("Number of subfiles                 = %3d\n", nblobs);
+                printf("Number of subfiles                 = %3d\n", cfg->num_subfiles);
             }
             printf("No. decomposition variables        = %3d\n", cmeta->num_decomp_vars);
             if (cfg->api == adios) {
