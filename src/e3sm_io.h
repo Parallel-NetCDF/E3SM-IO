@@ -214,9 +214,8 @@ typedef struct e3sm_io_decom {
                                           for variables using each
                                           decomposition */
 
-    /* below 3 are used for Scorpio blob I/O, which saves only offsets, but
+    /* below 2 are used for Scorpio blob I/O, which saves only offsets, but
      * no blocklens[], i.e. all blocklens are of length 1 */
-    MPI_Offset  total_raw_nreqs[MAX_NUM_DECOMP];
     MPI_Offset  raw_nreqs[MAX_NUM_DECOMP];
     MPI_Offset *raw_offsets[MAX_NUM_DECOMP];
 

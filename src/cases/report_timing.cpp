@@ -154,7 +154,7 @@ int print_timing_WR(e3sm_io_config *cfg,
             if (cfg->api == adios) {
                 MPI_Offset amount = 0;
                 for (i=0; i<ndecomp; i++)
-                    amount += decom->total_raw_nreqs[i];
+                    amount += decom->raw_nreqs[i];
                 amount *= sizeof(int64_t);
                 printf("Size of raw decomposition maps     = %.2f MiB\n",
                        (float)amount/1048576.0);
