@@ -330,7 +330,7 @@ int read_decomp(e3sm_io_config *cfg,
         else {    /* Generate (simulated) raw decomposition map */
             /* Count number of offsets before merge */
             decom->raw_nreqs[id] = 0;
-            for (i = 0; i < nreqs; i++) {
+            for (i = 0; i < decom->contig_nreqs[id]; i++) {
                 decom->raw_nreqs[id] += decom->blocklens[id][i];
             }
 
