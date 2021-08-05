@@ -49,6 +49,7 @@ if test "x${ENABLE_ADIOS2}" = x1 ; then
 fi
 
 # I case
+<<<<<<< HEAD
 ${TESTMPIRUN} -n 16 ${EXEC} ${I_DECOMP} -o blob_I_out.nc -x blob -a pnetcdf -r 2
 ${TESTMPIRUN} -n 16 ${EXEC} ${I_DECOMP} -o can_I_out.nc -r 2
 
@@ -65,3 +66,20 @@ if test "x${ENABLE_ADIOS2}" = x1 ; then
    ${TESTMPIRUN} -n 16 ${EXEC} ${I_DECOMP} -o blob_I_out    -x blob      -a adios -g 2 -r 2
 fi
 
+=======
+${TESTMPIRUN} -n 16 ${EXEC} ${I_DECOMP} -o blob_G_out.nc -x blob -a pnetcdf
+${TESTMPIRUN} -n 16 ${EXEC} ${I_DECOMP} -o can_G_out.nc
+
+if test "x${ENABLE_HDF5}" = x1 ; then
+   ${TESTMPIRUN} -n 16 ${EXEC} ${I_DECOMP} -o blob_G_out.h5 -x blob      -a hdf5
+fi
+if test "x${HDF5_HAVE_DWRITE_MULTI}" = x1 ; then
+   ${TESTMPIRUN} -n 16 ${EXEC} ${I_DECOMP} -o can_G_out.h5  -x canonical -a hdf5_md
+fi
+if test "x${ENABLE_LOGVOL}" = x1 ; then
+   ${TESTMPIRUN} -n 16 ${EXEC} ${I_DECOMP} -o log_G_out.h5  -x log       -a hdf5_log
+fi
+if test "x${ENABLE_ADIOS2}" = x1 ; then
+   ${TESTMPIRUN} -n 16 ${EXEC} ${I_DECOMP} -o blob_G_out    -x blob      -a adios -g 2
+fi
+>>>>>>> Add I case test to make check and make ptest:
