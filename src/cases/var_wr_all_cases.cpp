@@ -152,8 +152,6 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     MPI_Comm_rank(cfg.io_comm,  &global_rank);
     MPI_Comm_rank(comm,         &sub_rank);
 
-    nvars_D = cmeta->nvars_D;
-
     /* I/O amount from previous I/O */
     INQ_PUT_SIZE(previous_size)
 
@@ -225,6 +223,7 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     /* allocate write buffers */
     wr_buf_malloc(cfg, one_flush, wr_buf);
 
+    nvars_D = cmeta->nvars_D;
     for (j=0; j<decom.num_decomp; j++)
         nvars_D[j] = 0; /* number of variables using decomposition j */
 
@@ -345,7 +344,8 @@ int var_wr_all_cases(e3sm_io_config &cfg,
             }
         }
 
-        if (!one_flush) { /* flush out for each record */
+        /* flush out the pending iput requests */
+        if (!one_flush || rec_no == cmeta->nrecs-1) {
             cmeta->post_time += MPI_Wtime() - timing;
 
             MPI_Barrier(comm); /*--------------------------------------------*/
@@ -353,24 +353,12 @@ int var_wr_all_cases(e3sm_io_config &cfg,
 
             /* flush once per time record */
             WAIT_ALL_REQS
-
             cmeta->flush_time += MPI_Wtime() - timing;
 
-            timing = MPI_Wtime();
+            if (rec_no < cmeta->nrecs-1) timing = MPI_Wtime();
         }
     }
 
-    if (one_flush) { /* flush out for all records */
-        cmeta->post_time += MPI_Wtime() - timing;
-
-        MPI_Barrier(comm); /*------------------------------------------------*/
-        timing = MPI_Wtime();
-
-        /* flush once for all time records */
-        WAIT_ALL_REQS
-
-        cmeta->flush_time += MPI_Wtime() - timing;
-    }
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 

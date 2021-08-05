@@ -305,7 +305,8 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
             }
         }
 
-        if (!one_flush) { /* flush out for each record */
+        /* flush out the pending iput requests */
+        if (!one_flush || rec_no == cmeta->nrecs-1) {
             cmeta->post_time += MPI_Wtime() - timing;
 
             MPI_Barrier(comm); /*--------------------------------------------*/
@@ -313,24 +314,12 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
 
             /* flush once per time record */
             WAIT_ALL_REQS
-
             cmeta->flush_time += MPI_Wtime() - timing;
 
-            timing = MPI_Wtime();
+            if (rec_no < cmeta->nrecs-1) timing = MPI_Wtime();
         }
     }
 
-    if (one_flush) { /* flush out for all records */
-        cmeta->post_time += MPI_Wtime() - timing;
-
-        MPI_Barrier(comm); /*------------------------------------------------*/
-        timing = MPI_Wtime();
-
-        /* flush once for all time records */
-        WAIT_ALL_REQS
-
-        cmeta->flush_time += MPI_Wtime() - timing;
-    }
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
