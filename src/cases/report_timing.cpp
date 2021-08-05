@@ -26,7 +26,7 @@ int print_timing_WR(e3sm_io_config *cfg,
                     case_meta      *cmeta)
 {
     int i, ndecomp;
-    MPI_Offset off_msg[2], sum_off[3], max_off[2];
+    MPI_Offset off_msg[3], sum_off[3], max_off[2];
     MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs;
     MPI_Offset vlen, sum_decomp_varlen;
     double pre_time, open_time, def_time, post_time, flush_time, close_time;
