@@ -224,9 +224,8 @@ static inline void print_no_collective_cause (uint32_t local_no_collective_cause
 
 int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     herr_t herr=0;
-    int i, err = 0;
-    int rank;
-    size_t esize;
+    int err = 0, rank;
+    size_t i, esize;
     hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
 
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
@@ -255,7 +254,7 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     }
 
     // Count data size
-    for (i = 0; i < (int)(multi_datasets.size ()); ++i) {
+    for (i = 0; i < multi_datasets.size (); ++i) {
         H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
         esize = H5Tget_size (multi_datasets[i].mem_type_id);
         E3SM_IO_TIMER_ADD (E3SM_IO_TIMER_HDF5_DSIZE, (dims[0] * esize))
@@ -273,11 +272,10 @@ err_out:;
 }
 
 herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
-    int i;
     unsigned j;
     int rank;
     char *temp_buf   = NULL, *temp_buf_ptr;
-    size_t temp_size = 0, esize;
+    size_t i, temp_size = 0, esize;
     hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
 
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
@@ -318,7 +316,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
 #endif
 
     // Count data size
-    for (i = 0; i < (int)(multi_datasets.size ()); ++i) {
+    for (i = 0; i < multi_datasets.size (); ++i) {
         H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
         esize = H5Tget_size (multi_datasets[i].mem_type_id);
         // data using the recorded dataset_segments.
@@ -330,7 +328,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     // Read is completed here, but data is out-of-order in user buffer. We need to rearrange all
     // data using the recorded dataset_segments.
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_CPY)
-    for (i = 0; i < (int)(multi_datasets.size ()); ++i) {
+    for (i = 0; i < multi_datasets.size (); ++i) {
         // First, we make a copy of data in the current dataset.
         H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
 
@@ -412,7 +410,7 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     int rank;
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
 
-#if DEBUG == 1
+#if defined(DEBUG) && DEBUG == 1
     char filename[128];
     FILE *stream;
     if (rank == 0) {
@@ -437,11 +435,11 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
             for (j = 0; j < ndim; j++) {
                 start[j] = (hsize_t)starts[i][j];
                 block[j] = (hsize_t)counts[i][j];
-#if DEBUG == 1
+#if defined(DEBUG) && DEBUG == 1
                 if (rank == 0) { fprintf (stream, "%llu+%llu;", start[j], block[j]); }
 #endif
             }
-#if DEBUG == 1
+#if defined(DEBUG) && DEBUG == 1
             if (rank == 0) { fprintf (stream, ","); }
 #endif
             // Recreate only when size mismatch
@@ -464,7 +462,7 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
             bufp += rsize;
         }
     }
-#if DEBUG == 1
+#if defined(DEBUG) && DEBUG == 1
     if (rank == 0) {
         fprintf (stream, "\n");
         fclose (stream);
