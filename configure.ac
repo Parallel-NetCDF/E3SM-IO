@@ -467,8 +467,8 @@ AC_ARG_WITH([adios2],
       AC_PATH_PROG([adios2_config],[adios2-config])
    fi
    if test "x$adios2_config" != x ; then
-      adios2_cflags=`$adios2_config --c-flags -m`
-      adios2_lflags=`$adios2_config --c-libs -m`
+      adios2_cflags=`$adios2_config --c-flags --cxx-flags -m`
+      adios2_lflags=`$adios2_config --c-libs --cxx-libs -m`
    else
       adios2_cflags="-I$adios2_inc"
       adios2_lflags="-L$adios2_lib"
@@ -500,6 +500,9 @@ AC_ARG_WITH([adios2],
    fi
 ])
 AM_CONDITIONAL(ENABLE_ADIOS2, [test "x$have_adios2" = xyes])
+
+# C++ 17 required
+CXXFLAGS="$CXXFLAGS -std=c++17"
 
 if test "x$LIBS" = x ; then
 LIBS="-lpnetcdf"
