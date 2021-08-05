@@ -24,6 +24,7 @@
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     int err;
     MPI_Offset estimated_nc_ibuf_size;
+    char *env_str;
 
     /* set MPI-IO hints */
 
@@ -33,6 +34,61 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     /* no independent MPI-IO */
     err = MPI_Info_set (cfg->info, "romio_no_indep_rw", "true");
     CHECK_MPIERR
+
+    /* get environment variable E3SM_IO_HINTS */
+    if ((env_str = getenv("E3SM_IO_HINTS")) != NULL) {
+        char *env_str_cpy, *hint, *next_hint, *key, *val, *deli;
+        char *hint_saved=NULL;
+
+        env_str_cpy = strdup(env_str);
+        next_hint = env_str_cpy;
+
+        do {
+            hint = next_hint;
+            deli = strchr(hint, ';');
+            if (deli != NULL) {
+                *deli = '\0'; /* add terminate char */
+                next_hint = deli + 1;
+            }
+            else next_hint = "\0";
+            if (hint_saved != NULL) free(hint_saved);
+
+            /* skip all-blank hint */
+            hint_saved = strdup(hint);
+            if (strtok(hint, " \t") == NULL) continue;
+
+            free(hint_saved);
+            hint_saved = strdup(hint); /* save hint for error message */
+
+            deli = strchr(hint, '=');
+            if (deli == NULL) { /* ill-formed hint */
+                printf("Wrong hint format, skipped: '%s'\n", hint_saved);
+                continue;
+            }
+            *deli = '\0';
+
+            /* hint key */
+            key = strtok(hint, "= \t");
+            if (key == NULL || NULL != strtok(NULL, "= \t")) {
+                /* expect one token before = */
+                printf("Wrong hint format, skipped: '%s'\n", hint_saved);
+                continue;
+            }
+
+            /* hint value */
+            val = strtok(deli+1, "= \t");
+            if (NULL != strtok(NULL, "= \t")) { /* expect one token before = */
+                printf("Wrong hint format, skipped: '%s'\n", hint_saved);
+                continue;
+            }
+
+            MPI_Info_set(cfg->info, key, val); /* override or add */
+
+        } while (*next_hint != '\0');
+
+        if (hint_saved != NULL) free(hint_saved);
+        free(env_str_cpy);
+    }
 
     /* set PnetCDF I/O hints */
 
