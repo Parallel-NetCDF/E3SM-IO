@@ -508,6 +508,7 @@ err_out:
 }
 
 /*----< print_info() >------------------------------------------------------*/
+static
 void print_info (MPI_Info *info_used) {
     int i, nkeys;
 
@@ -640,6 +641,11 @@ int main (int argc, char **argv)
     err = ncmpi_inq_file_info(in_ncid, &r_info);
     CHECK_NC_ERR
 
+    if (verbose && sub_rank == 0) {
+        printf("MPI-IO hints used in reading file %s\n", in_file);
+        print_info(&r_info);
+    }
+
     /* collective write and no independent MPI-IO */
     MPI_Info_create(&w_info);
     MPI_Info_set(w_info, "romio_cb_write", "enable");
@@ -654,6 +660,11 @@ int main (int argc, char **argv)
     /* inquire the MPI-IO hints actually used */
     err = ncmpi_inq_file_info(in_ncid, &w_info);
     CHECK_NC_ERR
+
+    if (verbose && sub_rank == 0) {
+        printf("MPI-IO hints used in writing file %s\n", out_file);
+        print_info(&w_info);
+    }
 
     open_t = MPI_Wtime() - open_t;
 
