@@ -9,6 +9,7 @@ set -e
 
 F_DECOMP=${srcdir}/datasets/f_case_866x72_16p.nc
 G_DECOMP=${srcdir}/datasets/g_case_cmpaso_16p.nc
+I_DECOMP=${srcdir}/datasets/i_case_f19_g16_16p.nc
 EXEC=src/e3sm_io
 
 export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${LD_LIBRARY_PATH}
@@ -45,5 +46,22 @@ if test "x${ENABLE_LOGVOL}" = x1 ; then
 fi
 if test "x${ENABLE_ADIOS2}" = x1 ; then
    ${EXEC} ${G_DECOMP} -o blob_G_out    -x blob      -a adios -g 2
+fi
+
+# I case
+${EXEC} ${I_DECOMP} -o blob_I_out.nc -x blob -a pnetcdf -r 2
+${EXEC} ${I_DECOMP} -o can_I_out.nc -r 2
+
+if test "x${ENABLE_HDF5}" = x1 ; then
+   ${EXEC} ${I_DECOMP} -o blob_I_out.h5 -x blob      -a hdf5 -r 2
+fi
+if test "x${HDF5_HAVE_DWRITE_MULTI}" = x1 ; then
+   ${EXEC} ${I_DECOMP} -o can_I_out.h5  -x canonical -a hdf5_md -r 2
+fi
+if test "x${ENABLE_LOGVOL}" = x1 ; then
+   ${EXEC} ${I_DECOMP} -o log_I_out.h5  -x log       -a hdf5_log -r 2
+fi
+if test "x${ENABLE_ADIOS2}" = x1 ; then
+   ${EXEC} ${I_DECOMP} -o blob_I_out    -x blob      -a adios -g 2 -r 2
 fi
 
