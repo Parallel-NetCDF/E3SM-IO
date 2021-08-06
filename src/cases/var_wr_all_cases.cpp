@@ -155,16 +155,13 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     /* I/O amount from previous I/O */
     INQ_PUT_SIZE(previous_size)
 
-#define FLUSH_ALL_RECORDS_AT_ONCE
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
     one_flush = 1;
 #else
     one_flush = 0;
-    if (cfg.strategy == blob && cfg.api != pnetcdf) {
-        printf("Error in %s:%d: %s() FLUSH_ALL_RECORDS_AT_ONCE must be enabled for all blob I/O except PnetCDF",
-               __FILE__, __LINE__, __func__);
-        return -1;
-    }
+    /* Note for HDF5 and ADIOS blob I/O, write data is only flushed at file
+     * close and calling driver.wait() takes no effect.
+     */
 #endif
 
     if (cfg.verbose) {

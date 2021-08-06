@@ -558,7 +558,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         else                nrecs = cfg.I_case_h1.nrecs;
     }
 
-#define FLUSH_ALL_RECORDS_AT_ONCE
 #ifdef FLUSH_ALL_RECORDS_AT_ONCE
     dbl_buflen *= nrecs;
     txt_buflen *= nrecs;
