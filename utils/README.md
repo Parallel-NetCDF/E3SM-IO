@@ -152,7 +152,31 @@ statistics of the decomposition.
     max_zero_cells: 56 @ rank 12
     zero ratio: 0.436198
   ```
+---
+## bpstat
+**bpstat** counts the size of attributes and variables in an ADIOS2 BP3 file.
+If the target file is a sub-filed, user should specify the directory name without the .dir extension.
 
+* Command-line options of `datstat`:
+  ```
+    % ./datstat -h
+    Usage: ./datstat [OPTION]...
+           -v               Verbose mode
+           -h               Print help
+           FILE             Name of BP file to analysis
+  ```
+
+* Example run:
+  ```
+    % ./datstat -d ./f_case_h0.bp
+    Num subfiles: 1
+    Num variables: 1203
+    Total variable size: 17115880
+    Num attributes: 3501
+    Total attribute size: 302738
+    Total object size (MiB): 16.6117
+    Total object size (GiB): 0.0162224
+  ```
 ---
 ## pnetcdf_blob_replay
 **pnetcdf_blob_replay** reads the subfiles produced by the `e3sm_io` benchmark
