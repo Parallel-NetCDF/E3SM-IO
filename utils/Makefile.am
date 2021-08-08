@@ -20,3 +20,4 @@ pnetcdf_blob_replay_LDADD = -lpnetcdf
 datstat_SOURCES = datstat.cpp
 
 bpstat_SOURCES = bpstat.cpp
+bpstat_LDADD = -lstdc++fs
