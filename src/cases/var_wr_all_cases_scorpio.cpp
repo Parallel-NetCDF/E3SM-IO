@@ -174,7 +174,7 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
     /* allocate space to store variable metadata */
     vars = (var_meta_scorpio*) malloc(nvars * sizeof(var_meta_scorpio));
 
-    if (cfg.non_contig_buf) gap = 10;
+    if (cfg.non_contig_buf) gap = BUF_GAP;
 
     wr_buf_init(wr_buf, gap);
 

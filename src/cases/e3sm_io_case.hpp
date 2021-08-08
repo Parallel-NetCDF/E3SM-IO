@@ -89,6 +89,8 @@ class e3sm_io_all_cases_scorpio : public e3sm_io_all_cases {
 };
 #endif
 
+#define BUF_GAP 10
+
 typedef struct {
     int vid;        /* variable ID */
     int decomp_id;  /* decomposition map ID */

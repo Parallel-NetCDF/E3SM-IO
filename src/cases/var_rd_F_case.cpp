@@ -398,7 +398,7 @@ int run_varn_F_case_rd (e3sm_io_config &cfg,
 
     MPI_Comm_rank (comm, &rank);
 
-    if (cfg.non_contig_buf) gap = 10;
+    if (cfg.non_contig_buf) gap = BUF_GAP;
 
     /* calculate number of variable elements from 3 decompositions */
     my_nreqs = 0;

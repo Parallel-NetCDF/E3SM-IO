@@ -479,7 +479,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
 
     nvars_D = pr->nvars_D;
 
-    if (cfg.non_contig_buf) gap = 10;
+    if (cfg.non_contig_buf) gap = BUF_GAP;
 
     varids = (e3sm_io_scorpio_var *)malloc (cfg.nvars * sizeof (e3sm_io_scorpio_var));
     decomids.resize (cfg.nvars);
