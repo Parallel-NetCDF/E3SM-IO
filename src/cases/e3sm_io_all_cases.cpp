@@ -17,6 +17,9 @@
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 #include <e3sm_io_case.hpp>
+#ifdef ENABLE_ADIOS2
+#include <e3sm_io_case_scorpio.hpp>
+#endif
 
 e3sm_io_all_cases::e3sm_io_all_cases () {}
 e3sm_io_all_cases::~e3sm_io_all_cases () {}
@@ -87,7 +90,12 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
 
         cfg.hist = h0;
         cfg.nvars = cmeta->nvars;
-        err = var_wr_all_cases(cfg, decom, driver, cmeta);
+        if (cfg.api != adios)
+            err = var_wr_all_cases(cfg, decom, driver, cmeta);
+#ifdef ENABLE_ADIOS2
+        else
+            err = var_wr_case_I_scorpio(cfg, decom, driver, cmeta);
+#endif
         CHECK_ERR
     }
 
@@ -120,7 +128,12 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
 
         cfg.hist = h1;
         cfg.nvars = cmeta->nvars;
-        err = var_wr_all_cases(cfg, decom, driver, cmeta);
+        if (cfg.api != adios)
+            err = var_wr_all_cases(cfg, decom, driver, cmeta);
+#ifdef ENABLE_ADIOS2
+        else
+            err = var_wr_case_I_scorpio(cfg, decom, driver, cmeta);
+#endif
         CHECK_ERR
     }
 
