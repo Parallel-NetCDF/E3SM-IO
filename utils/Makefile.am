@@ -8,8 +8,11 @@ AM_CPPFLAGS += -I${top_srcdir}/src/cases
 
 bin_PROGRAMS = dat2nc \
                datstat \
-               pnetcdf_blob_replay \
-               bpstat
+               pnetcdf_blob_replay
+
+if ENABLE_ADIOS2
+   bin_PROGRAMS += bpstat
+endif
 
 dat2nc_SOURCES = dat2nc.c
 dat2nc_LDADD = -lpnetcdf
