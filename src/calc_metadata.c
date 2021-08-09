@@ -232,7 +232,8 @@ int calc_metadata(e3sm_io_config *cfg,
 {
     int i, j;
 
-    if (cfg->strategy == blob)
+    /* Note adios blob I/O also uses canonical metadata */
+    if (cfg->strategy == blob && cfg->api != adios)
         return blob_metadata(cfg, decom);
 
     /* for canonical order I/O */
@@ -243,7 +244,7 @@ int calc_metadata(e3sm_io_config *cfg,
             decom->count[i] += decom->blocklens[i][j];
     }
 
-    set_starts_counts(decom);
+    if (cfg->api != adios) set_starts_counts(decom);
 
     return 0;
 }
