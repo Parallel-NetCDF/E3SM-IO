@@ -33,7 +33,6 @@ int e3sm_io_case_I_scorpio::wr_test(e3sm_io_config &cfg,
     /* construct I/O metadata */
     err = calc_metadata(&cfg, &decom);
     CHECK_ERR
-    cfg.strategy = blob;
 
     ext = strrchr(cfg.out_path, '.');
 
