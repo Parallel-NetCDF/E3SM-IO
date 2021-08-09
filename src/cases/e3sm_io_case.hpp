@@ -14,6 +14,16 @@
 #include <e3sm_io_driver.hpp>
 
 class e3sm_io_case {
+   protected:
+       double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
+       vtype  *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
+       char   *txt_buf = NULL;
+       int    *int_buf = NULL;
+       double *D1_rec_dbl_buf = NULL, *D3_rec_dbl_buf = NULL, *D4_rec_dbl_buf = NULL,
+              *D5_rec_dbl_buf = NULL, *D6_rec_dbl_buf = NULL, *D1_fix_dbl_buf = NULL;
+       int    *D1_fix_int_buf = NULL, *D2_fix_int_buf = NULL, *D3_fix_int_buf = NULL,
+              *D4_fix_int_buf = NULL, *D5_fix_int_buf = NULL;
+
     public:
         virtual ~e3sm_io_case () {};
         virtual int wr_test(e3sm_io_config &cfg,
@@ -26,7 +36,6 @@ class e3sm_io_case {
 
 class e3sm_io_all_cases : public e3sm_io_case {
    protected:
-
    public:
         e3sm_io_all_cases ();
         ~e3sm_io_all_cases ();
@@ -41,11 +50,6 @@ class e3sm_io_all_cases : public e3sm_io_case {
 #ifdef ENABLE_ADIOS2
 class e3sm_io_case_F_scorpio : public e3sm_io_case {
    protected:
-    double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
-    vtype *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
-    char *txt_buf = NULL;
-    int *int_buf = NULL;
-
    public:
         e3sm_io_case_F_scorpio ();
         ~e3sm_io_case_F_scorpio ();
@@ -59,11 +63,6 @@ class e3sm_io_case_F_scorpio : public e3sm_io_case {
 
 class e3sm_io_case_G_scorpio : public e3sm_io_case {
    protected:
-    double *D1_rec_dbl_buf = NULL, *D3_rec_dbl_buf = NULL, *D4_rec_dbl_buf = NULL,
-           *D5_rec_dbl_buf = NULL, *D6_rec_dbl_buf = NULL, *D1_fix_dbl_buf = NULL;
-    int *D1_fix_int_buf = NULL, *D2_fix_int_buf = NULL, *D3_fix_int_buf = NULL,
-        *D4_fix_int_buf = NULL, *D5_fix_int_buf = NULL;
-
    public:
         e3sm_io_case_G_scorpio ();
         ~e3sm_io_case_G_scorpio ();

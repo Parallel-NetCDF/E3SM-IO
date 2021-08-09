@@ -199,16 +199,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
     /* Select test case */
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_INIT_CASE)
-    if (cfg->api != adios)
-        tcase = new e3sm_io_all_cases();
-#ifdef ENABLE_ADIOS2
-    else if (cfg->run_case == F)
-        tcase = new e3sm_io_case_F_scorpio();
-    else if (cfg->run_case == G)
-        tcase = new e3sm_io_case_G_scorpio();
-    else if (cfg->run_case == I)
-        tcase = new e3sm_io_all_cases();
-#endif
+    tcase = new e3sm_io_all_cases();
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_CASE)
 
     /* perform read */
