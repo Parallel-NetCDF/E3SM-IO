@@ -236,7 +236,7 @@
 int run_varn_G_case_scorpio (e3sm_io_config &cfg,
                      e3sm_io_decom &decom,
                      e3sm_io_driver &driver,
-                     char           *outfile,
+                     case_meta      *cmeta,
                      int *D1_fix_int_bufp,    /* D1 fix int buffer */
                      int *D2_fix_int_bufp,    /* D2 fix int buffer */
                      int *D3_fix_int_bufp,    /* D3 fix int buffer */
@@ -269,7 +269,6 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     MPI_Offset **starts_D4, **counts_D4;
     MPI_Offset **starts_D5, **counts_D5;
     MPI_Offset **starts_D6, **counts_D6;
-    MPI_Info info_used       = MPI_INFO_NULL;
     int nD1_rec_2d_vars      = 4;
     int D1_rec_2d_varids[4]  = {0, 4, 7, 38};
     int nD3_rec_3d_vars      = 24;
@@ -569,7 +568,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     pr->open_time = MPI_Wtime ();
 
     /* create a new CDF-5 file for writing */
-    err = driver.create (outfile, cfg.io_comm, cfg.info, &ncid);
+    err = driver.create (cmeta->outfile, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
     pr->open_time = MPI_Wtime() - pr->open_time;
@@ -588,7 +587,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     /* I/O amount so far */
     err = driver.inq_put_size (&metadata_size);
     CHECK_ERR
-    err = driver.inq_file_info (ncid, &info_used);
+    err = driver.inq_file_info (ncid, &cmeta->info_used);
     CHECK_ERR
 
     pr->def_time = MPI_Wtime() - pr->def_time;
@@ -874,7 +873,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     total_size -= previous_size;
 
     if (cfg.verbose && rank == 0)
-        driver.inq_file_size(outfile, &pr->file_size);
+        driver.inq_file_size(cmeta->outfile, &pr->file_size);
 
     pr->nvars           = cfg.nvars;
     pr->num_flushes     = 1;
@@ -887,11 +886,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     /* check if there is any PnetCDF internal malloc residue */
     check_malloc(&cfg, &driver);
 
-    /* print MPI-IO hints actually used */
-    if (cfg.verbose && rank == 0) print_info(&info_used);
-
 err_out:
-    if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (outfile);
+    if (!cfg.keep_outfile) unlink (cmeta->outfile);
     return err;
 }

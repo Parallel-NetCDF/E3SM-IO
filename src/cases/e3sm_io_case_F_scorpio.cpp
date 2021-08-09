@@ -23,25 +23,20 @@ int e3sm_io_case_F_scorpio::wr_test(e3sm_io_config &cfg,
                                     e3sm_io_driver &driver)
 {
     int err=0;
-    char *outfile, *ext;
-
-    ext = strrchr(cfg.out_path, '.');
+    case_meta *cmeta;
 
     if (cfg.hx == 0 || cfg.hx == -1) {
-        outfile = cfg.F_case_h0.outfile;
+        cmeta        = &cfg.F_case_h0;
+        cmeta->nrecs =  cfg.F_case_h0.nrecs;
+        cmeta->nvars = NVARS_F_CASE_H0;
+        cmeta->info_used = MPI_INFO_NULL;
 
-        /* construct file name */
-        if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5"))) {
-            sprintf(outfile, "%s_h0", cfg.out_path);
-        }
-        else {
-            sprintf(outfile, "%s", cfg.out_path);
-            sprintf(outfile + (ext - cfg.out_path), "_h0%s", ext);
-        }
+        /* append "_h0" to the output file name */
+        sprintf(cmeta->outfile, "%s_h0", cfg.out_path);
 
-        cfg.hist  = h0;;
-        cfg.nvars = NVARS_F_CASE_H0;
-        err = run_varn_F_case_scorpio(cfg, decom, driver, outfile,
+        cfg.hist  = h0;
+        cfg.nvars = cmeta->nvars;
+        err = run_varn_F_case_scorpio(cfg, decom, driver, cmeta,
                                       this->dbl_buf_h0,
                                       this->rec_buf_h0,
                                       this->txt_buf,
@@ -50,22 +45,19 @@ int e3sm_io_case_F_scorpio::wr_test(e3sm_io_config &cfg,
     }
 
     if (cfg.hx == 1 || cfg.hx == -1) {
-        outfile = cfg.F_case_h1.outfile;
+        cmeta        = &cfg.F_case_h1;
+        cmeta->nrecs =  cfg.F_case_h1.nrecs;
+        cmeta->nvars = NVARS_F_CASE_H1;
+        cmeta->info_used = MPI_INFO_NULL;
 
-        /* construct file name */
-        if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5"))) {
-            sprintf(outfile, "%s_h1", cfg.out_path);
-        }
-        else {
-            sprintf(outfile, "%s", cfg.out_path);
-            sprintf(outfile + (ext - cfg.out_path), "_h1%s", ext);
-        }
+        /* append "_h1" to the output file name */
+        sprintf(cmeta->outfile, "%s_h1", cfg.out_path);
 
-        cfg.hist  = h1;;
-        cfg.nvars = NVARS_F_CASE_H1;
-        err = run_varn_F_case_scorpio(cfg, decom, driver, outfile,
-                                      this->dbl_buf_h0,
-                                      this->rec_buf_h0,
+        cfg.hist  = h1;
+        cfg.nvars = cmeta->nvars;
+        err = run_varn_F_case_scorpio(cfg, decom, driver, cmeta,
+                                      this->dbl_buf_h1,
+                                      this->rec_buf_h1,
                                       this->txt_buf,
                                       this->int_buf);
         CHECK_ERR

@@ -31,8 +31,6 @@ int e3sm_io_all_cases_scorpio::wr_test(e3sm_io_config &cfg,
     case_meta *cmeta;
 
     /* construct I/O metadata */
-    // Scorpio blob uses canonical metadata
-    cfg.strategy = canonical;
     err = calc_metadata(&cfg, &decom);
     CHECK_ERR
     cfg.strategy = blob;
@@ -42,9 +40,10 @@ int e3sm_io_all_cases_scorpio::wr_test(e3sm_io_config &cfg,
     if (cfg.run_case == G) {
         ERR_OUT("Wrong class for G case")
 
-        cmeta        = &cfg.G_case;
-        cmeta->nrecs =  cfg.G_case.nrecs;
-        cmeta->nvars = NVARS_G_CASE;
+        cmeta            = &cfg.G_case;
+        cmeta->nrecs     =  cfg.G_case.nrecs;
+        cmeta->nvars     = NVARS_G_CASE;
+        cmeta->info_used = MPI_INFO_NULL;
 
         /* construct file name */
         strcpy(cmeta->outfile, cfg.out_path);
@@ -69,6 +68,7 @@ int e3sm_io_all_cases_scorpio::wr_test(e3sm_io_config &cfg,
             cmeta->nrecs =  cfg.I_case_h0.nrecs;
             cmeta->nvars = NVARS_I_CASE_H0;
         }
+        cmeta->info_used = MPI_INFO_NULL;
 
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))
@@ -96,6 +96,7 @@ int e3sm_io_all_cases_scorpio::wr_test(e3sm_io_config &cfg,
             cmeta->nrecs =  cfg.I_case_h1.nrecs;
             cmeta->nvars = NVARS_I_CASE_H1;
         }
+        cmeta->info_used = MPI_INFO_NULL;
 
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))

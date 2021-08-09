@@ -20,17 +20,21 @@ e3sm_io_case_G_scorpio::e3sm_io_case_G_scorpio () {}
 e3sm_io_case_G_scorpio::~e3sm_io_case_G_scorpio () {}
 
 int e3sm_io_case_G_scorpio::wr_test(e3sm_io_config &cfg,
-                                    e3sm_io_decom &decom,
+                                    e3sm_io_decom  &decom,
                                     e3sm_io_driver &driver)
 {
     int err=0;
-    char *outfile = cfg.G_case.outfile;
+    case_meta *cmeta;
 
-    strcpy(outfile, cfg.out_path);
+    cmeta            = &cfg.G_case;
+    cmeta->nrecs     =  cfg.G_case.nrecs;
+    cmeta->nvars     = NVARS_G_CASE;
+    cmeta->info_used = MPI_INFO_NULL;
 
-    cfg.nvars = NVARS_G_CASE;
+    strcpy(cmeta->outfile, cfg.out_path);
 
-    err = run_varn_G_case_scorpio(cfg, decom, driver, outfile,
+    cfg.nvars = cmeta->nvars;
+    err = run_varn_G_case_scorpio(cfg, decom, driver, cmeta,
                                   this->D1_fix_int_buf,
                                   this->D2_fix_int_buf,
                                   this->D3_fix_int_buf,

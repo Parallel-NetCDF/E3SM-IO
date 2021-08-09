@@ -443,7 +443,7 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
 int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                              e3sm_io_decom  &decom,
                              e3sm_io_driver &driver,
-                             char           *outfile,
+                             case_meta      *cmeta,
                              double *dbl_bufp,    /* buffer for fixed size double var */
                              vtype *rec_bufp,     /* buffer for rec floating point var */
                              char *txt_bufp,      /* buffer for char var */
@@ -461,7 +461,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     MPI_Offset metadata_size=0, total_size;
     MPI_Offset **starts_D2 = NULL, **counts_D2 = NULL;
     MPI_Offset **starts_D3 = NULL, **counts_D3 = NULL;
-    MPI_Info info_used = MPI_INFO_NULL;
     MPI_Offset previous_size;
     std::vector<int> decomids;
     case_meta *pr;
@@ -654,7 +653,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     pr->open_time = MPI_Wtime ();
 
     /* create a new file for writing */
-    err = driver.create (outfile, cfg.io_comm, cfg.info, &ncid);
+    err = driver.create (cmeta->outfile, cfg.io_comm, cfg.info, &ncid);
     CHECK_ERR
 
     pr->open_time = MPI_Wtime() - pr->open_time;
@@ -683,7 +682,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     err = driver.inq_put_size (&metadata_size);
     CHECK_ERR
 
-    err = driver.inq_file_info (ncid, &info_used);
+    err = driver.inq_file_info (ncid, &cmeta->info_used);
     CHECK_ERR
 
     pr->def_time = MPI_Wtime() - pr->def_time;
@@ -948,7 +947,7 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     total_size -= previous_size;
 
     if (cfg.verbose && rank == 0)
-        driver.inq_file_size(outfile, &pr->file_size);
+        driver.inq_file_size(cmeta->outfile, &pr->file_size);
 
     pr->nvars           = cfg.nvars;
     pr->num_flushes     = 1;
@@ -961,12 +960,8 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     /* check if there is any PnetCDF internal malloc residue */
     check_malloc(&cfg, &driver);
 
-    /* print MPI-IO hints actually used */
-    if (cfg.verbose && rank == 0) print_info(&info_used);
-
 err_out:
-    if (info_used != MPI_INFO_NULL) MPI_Info_free (&info_used);
-    if (!cfg.keep_outfile) unlink (outfile);
+    if (!cfg.keep_outfile) unlink (cmeta->outfile);
 
     return err;
 }
