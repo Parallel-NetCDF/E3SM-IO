@@ -36,13 +36,15 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
     ext = strrchr(cfg.out_path, '.');
 
     if (cfg.run_case == G) {
-        cmeta        = &cfg.G_case;
-        cmeta->nrecs =  cfg.G_case.nrecs;
-        cmeta->nvars = NVARS_G_CASE;
+        cmeta            = &cfg.G_case;
+        cmeta->nrecs     =  cfg.G_case.nrecs;
+        cmeta->nvars     = NVARS_G_CASE;
+        cmeta->info_used = MPI_INFO_NULL;
 
         /* construct file name */
         strcpy(cmeta->outfile, cfg.out_path);
-        if (cfg.strategy == blob) { /* append subfile ID to subfile name */
+        if (cfg.strategy == blob && cfg.api != adios) {
+            /* append subfile ID to subfile name */
             char sub_str[8];
             sprintf(sub_str, ".%04d", cfg.subfile_ID);
             strcat(cmeta->outfile, sub_str);
@@ -67,6 +69,7 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
             cmeta->nrecs =  cfg.I_case_h0.nrecs;
             cmeta->nvars = NVARS_I_CASE_H0;
         }
+        cmeta->info_used = MPI_INFO_NULL;
 
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))
@@ -75,7 +78,8 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
             strcpy(cmeta->outfile, cfg.out_path);
             sprintf(cmeta->outfile + (ext - cfg.out_path), "_h0%s", ext);
         }
-        if (cfg.strategy == blob) { /* append subfile ID to subfile name */
+        if (cfg.strategy == blob && cfg.api != adios) {
+            /* append subfile ID to subfile name */
             char sub_str[8];
             sprintf(sub_str, ".%04d", cfg.subfile_ID);
             strcat(cmeta->outfile, sub_str);
@@ -98,6 +102,7 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
             cmeta->nrecs =  cfg.I_case_h1.nrecs;
             cmeta->nvars = NVARS_I_CASE_H1;
         }
+        cmeta->info_used = MPI_INFO_NULL;
 
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))
@@ -106,7 +111,8 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
             strcpy(cmeta->outfile, cfg.out_path);
             sprintf(cmeta->outfile + (ext - cfg.out_path), "_h1%s", ext);
         }
-        if (cfg.strategy == blob) { /* append subfile ID to subfile name */
+        if (cfg.strategy == blob && cfg.api != adios) {
+            /* append subfile ID to subfile name */
             char sub_str[8];
             sprintf(sub_str, ".%04d", cfg.subfile_ID);
             strcat(cmeta->outfile, sub_str);

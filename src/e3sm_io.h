@@ -105,6 +105,7 @@ typedef struct {
     MPI_Offset amount_RD;
     MPI_Offset my_nreqs;
     MPI_Offset file_size;
+    MPI_Info   info_used;
 
     /* timings */
     double pre_time;

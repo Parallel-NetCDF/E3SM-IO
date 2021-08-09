@@ -190,8 +190,13 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
                (double)sum_amount_WR / 1048576.0 / end2end_time);
         printf("-----------------------------------------------------------\n");
+
+        /* print MPI-IO hints actually used */
+        if (cfg->verbose) print_info(&cmeta->info_used);
     }
     fflush(stdout);
+
+    if (cmeta->info_used != MPI_INFO_NULL) MPI_Info_free(&cmeta->info_used);
 
     return 0;
 }

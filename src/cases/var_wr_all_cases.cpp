@@ -135,7 +135,6 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     MPI_Offset blob_start[MAX_NUM_DECOMP], blob_count[MAX_NUM_DECOMP];
     MPI_Offset starts[MAX_NUM_DECOMP][2], counts[MAX_NUM_DECOMP][2];
     MPI_Offset start[2], count[2];
-    MPI_Info info_used = MPI_INFO_NULL;
     MPI_Comm comm;
     vtype *fix_buf_ptr, *rec_buf_ptr;
     var_meta *vars;
@@ -210,7 +209,7 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     INQ_PUT_SIZE(metadata_size)
     metadata_size -= previous_size;
 
-    INQ_FILE_INFO(info_used)
+    INQ_FILE_INFO(cmeta->info_used)
 
     cmeta->def_time = MPI_Wtime() - timing;
 
@@ -381,12 +380,8 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     /* check if there is any PnetCDF internal malloc residue */
     check_malloc(&cfg, &driver);
 
-    /* print MPI-IO hints actually used */
-    if (cfg.verbose && global_rank == 0) print_info(&info_used);
-
 err_out:
     if (err < 0 && ncid >= 0) driver.close(ncid);
-    if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!cfg.keep_outfile && sub_rank == 0) unlink(cmeta->outfile);
 
     return err;

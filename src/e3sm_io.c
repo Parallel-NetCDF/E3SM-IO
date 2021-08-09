@@ -62,7 +62,10 @@ err_out:
 void print_info (MPI_Info *info_used) {
     int i, nkeys;
 
-    if (*info_used == MPI_INFO_NULL) return;
+    if (*info_used == MPI_INFO_NULL) {
+        printf ("MPI File Info is NULL\n");
+        return;
+    }
     MPI_Info_get_nkeys (*info_used, &nkeys);
     printf ("MPI File Info: nkeys = %d\n", nkeys);
     for (i = 0; i < nkeys; i++) {
