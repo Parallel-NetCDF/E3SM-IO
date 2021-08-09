@@ -120,7 +120,6 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
     int *fix_int_buf_ptr, *rec_int_buf_ptr;
     double *fix_dbl_buf_ptr, *rec_dbl_buf_ptr, timing;
     MPI_Offset previous_size, metadata_size, total_size;
-    MPI_Info info_used = MPI_INFO_NULL;
     MPI_Comm comm;
     vtype *fix_buf_ptr, *rec_buf_ptr;
     var_meta_scorpio *vars;
@@ -198,7 +197,7 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
     INQ_PUT_SIZE(metadata_size)
     metadata_size -= previous_size;
 
-    INQ_FILE_INFO(info_used)
+    INQ_FILE_INFO(cmeta->info_used)
 
     cmeta->def_time = MPI_Wtime() - timing;
 
@@ -251,10 +250,12 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
         rec_dbl_buf_ptr = wr_buf.rec_dbl_buf;
         rec_buf_ptr     = wr_buf.rec_buf;
 
-        /* set the start index for the next record */
-        for (i=0; i<decom.num_decomp; i++) {
-            for (j=0; j<decom.contig_nreqs[i]; j++)
-                decom.w_starts[i][j][0] = rec_no;
+        if (cfg.strategy == canonical) {
+            /* set the start index for the next record */
+            for (i=0; i<decom.num_decomp; i++) {
+                for (j=0; j<decom.contig_nreqs[i]; j++)
+                    decom.w_starts[i][j][0] = rec_no;
+            }
         }
 
         /* write all climate variables */
@@ -345,12 +346,8 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
     /* check if there is any PnetCDF internal malloc residue */
     check_malloc(&cfg, &driver);
 
-    /* print MPI-IO hints actually used */
-    if (cfg.verbose && global_rank == 0) print_info(&info_used);
-
 err_out:
     if (err < 0 && ncid >= 0) driver.close(ncid);
-    if (info_used != MPI_INFO_NULL) MPI_Info_free(&info_used);
     if (!cfg.keep_outfile && sub_rank == 0) unlink(cmeta->outfile);
 
     return err;
