@@ -19,10 +19,10 @@
 #include <e3sm_io_case.hpp>
 #include <e3sm_io_case_scorpio.hpp>
 
-e3sm_io_all_cases_scorpio::e3sm_io_all_cases_scorpio () {}
-e3sm_io_all_cases_scorpio::~e3sm_io_all_cases_scorpio () {}
+e3sm_io_case_I_scorpio::e3sm_io_case_I_scorpio () {}
+e3sm_io_case_I_scorpio::~e3sm_io_case_I_scorpio () {}
 
-int e3sm_io_all_cases_scorpio::wr_test(e3sm_io_config &cfg,
+int e3sm_io_case_I_scorpio::wr_test(e3sm_io_config &cfg,
                                e3sm_io_decom  &decom,
                                e3sm_io_driver &driver)
 {
@@ -49,7 +49,7 @@ int e3sm_io_all_cases_scorpio::wr_test(e3sm_io_config &cfg,
         strcpy(cmeta->outfile, cfg.out_path);
 
         cfg.nvars = cmeta->nvars;
-        err = var_wr_all_cases_scorpio(cfg, decom, driver, cmeta);
+        err = var_wr_case_I_scorpio(cfg, decom, driver, cmeta);
         CHECK_ERR
 
         goto err_out;
@@ -80,7 +80,7 @@ int e3sm_io_all_cases_scorpio::wr_test(e3sm_io_config &cfg,
 
         cfg.hist = h0;
         cfg.nvars = cmeta->nvars;
-        err = var_wr_all_cases_scorpio(cfg, decom, driver, cmeta);
+        err = var_wr_case_I_scorpio(cfg, decom, driver, cmeta);
         CHECK_ERR
     }
 
@@ -108,7 +108,7 @@ int e3sm_io_all_cases_scorpio::wr_test(e3sm_io_config &cfg,
 
         cfg.hist = h1;
         cfg.nvars = cmeta->nvars;
-        err = var_wr_all_cases_scorpio(cfg, decom, driver, cmeta);
+        err = var_wr_case_I_scorpio(cfg, decom, driver, cmeta);
         CHECK_ERR
     }
 
@@ -121,7 +121,7 @@ err_out:
     return err;
 }
 
-int e3sm_io_all_cases_scorpio::rd_test(e3sm_io_config &cfg,
+int e3sm_io_case_I_scorpio::rd_test(e3sm_io_config &cfg,
                                e3sm_io_decom &decom,
                                e3sm_io_driver &driver)
 {

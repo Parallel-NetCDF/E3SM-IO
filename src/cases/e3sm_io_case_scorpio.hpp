@@ -351,7 +351,7 @@ def_I_case_scorpio(e3sm_io_config   &cfg,
                );
 
 extern int 
-var_wr_all_cases_scorpio(e3sm_io_config &cfg,
-                     e3sm_io_decom  &decom,
-                     e3sm_io_driver &driver,
-                     case_meta      *cmeta);
+var_wr_case_I_scorpio(e3sm_io_config &cfg,
+                      e3sm_io_decom  &decom,
+                      e3sm_io_driver &driver,
+                      case_meta      *cmeta);

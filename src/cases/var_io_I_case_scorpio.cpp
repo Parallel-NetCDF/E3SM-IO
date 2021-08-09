@@ -107,11 +107,11 @@
         if (rec_no == 0) nvars_D[dp]++;                                                \
     }
 
-/*----< var_wr_all_cases_scorpio() >-------------------------------------------------*/
-int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
-                     e3sm_io_decom  &decom,
-                     e3sm_io_driver &driver,
-                     case_meta      *cmeta)
+/*----< var_io_I_case_scorpio.cpp() >----------------------------------------*/
+int var_wr_case_I_scorpio(e3sm_io_config &cfg,
+                          e3sm_io_decom  &decom,
+                          e3sm_io_driver &driver,
+                          case_meta      *cmeta)
 {
     char *fix_txt_buf_ptr, *rec_txt_buf_ptr;
     int i, j, err = 0, sub_rank, global_rank, ncid=-1, nflushes=0, one_flush;
