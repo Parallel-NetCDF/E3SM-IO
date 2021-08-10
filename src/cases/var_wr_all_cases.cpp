@@ -126,7 +126,7 @@ int var_wr_all_cases(e3sm_io_config &cfg,
                      case_meta      *cmeta)
 {
     char *fix_txt_buf_ptr, *rec_txt_buf_ptr;
-    int i, j, err, sub_rank, global_rank, ncid=-1, nflushes=0, one_flush;
+    int i, j, err=0, sub_rank, global_rank, ncid=-1, nflushes=0, one_flush;
     int rec_no, gap=0, my_nreqs, nvars, num_decomp_vars;
     int contig_nreqs[MAX_NUM_DECOMP], *nvars_D;
     int *fix_int_buf_ptr, *rec_int_buf_ptr;
@@ -146,7 +146,10 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     cmeta->post_time  = 0.0;
     cmeta->flush_time = 0.0;
 
-    comm = (cfg.strategy == blob) ? cfg.sub_comm : cfg.io_comm;
+    if (cfg.strategy == blob && cfg.api != adios)
+        comm = cfg.sub_comm;
+    else
+        comm = cfg.io_comm;
 
     MPI_Comm_rank(cfg.io_comm,  &global_rank);
     MPI_Comm_rank(comm,         &sub_rank);
@@ -180,7 +183,7 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     timing = MPI_Wtime();
 
     /* there are num_decomp_vars number of decomposition variables */
-    if (cfg.strategy == blob)
+    if (cfg.strategy == blob && cfg.api != adios)
         num_decomp_vars = decom.num_decomp * NVARS_DECOMP;
     else
         num_decomp_vars = 0;
@@ -230,7 +233,7 @@ int var_wr_all_cases(e3sm_io_config &cfg,
 
     my_nreqs = 0; /* number of noncontiguous requests written by this rank */
 
-    if (cfg.strategy == blob) {
+    if (cfg.strategy == blob && cfg.api != adios) {
         int varid=0;
 
         /* write decomposition variables, they are defined first in file */
@@ -369,6 +372,9 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     /* obtain the write amount tracked by the driver */
     INQ_PUT_SIZE(total_size)
     total_size -= previous_size;
+
+    if (cfg.verbose && global_rank == 0)
+        driver.inq_file_size(cmeta->outfile, &cmeta->file_size);
 
     cmeta->num_flushes     = nflushes;
     cmeta->num_decomp_vars = num_decomp_vars;
