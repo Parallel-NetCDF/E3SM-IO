@@ -436,9 +436,6 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
         if (rec_no == 0) nvars_D[k - 1]++;                                               \
     }
 
-#define ASSIGN_DECOMID(k, num, vid) \
-    for (j = 0; j < num; j++) { decomids[vid + j] = k - 1; }
-
 /*----< run_varn_F_case_scorpio() >------------------------------------------*/
 int run_varn_F_case_scorpio (e3sm_io_config &cfg,
                              e3sm_io_decom  &decom,
@@ -462,7 +459,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     MPI_Offset **starts_D2 = NULL, **counts_D2 = NULL;
     MPI_Offset **starts_D3 = NULL, **counts_D3 = NULL;
     MPI_Offset previous_size;
-    std::vector<int> decomids;
     case_meta *pr;
 
     if (cfg.hist == h0) pr = &cfg.F_case_h0;
@@ -481,7 +477,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     if (cfg.non_contig_buf) gap = BUF_GAP;
 
     varids = (e3sm_io_scorpio_var *)malloc (cfg.nvars * sizeof (e3sm_io_scorpio_var));
-    decomids.resize (cfg.nvars);
 
     for (i = 0; i < 3; i++) {
         xnreqs[i]  = decom.contig_nreqs[i];
@@ -571,82 +566,6 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
         for (ii=0; ii<rec_buflen; ii++) rec_buf[ii] = rank;
     }
 
-
-    // Assign decom ID
-    i = 0;
-    if (xnreqs[1] > 0) {
-        /* lat */
-        decomids[i++] = 1;
-        /* lon */
-        decomids[i++] = 1;
-    } else
-        i += 2;
-
-    /* area */
-    if (xnreqs[0] > 0) {
-        decomids[i++] = 0;
-    } else
-        i++;
-
-    /* 27 small variables has no decomposition map */
-    for (; i < 30; i++) { decomids[i] = -1; }
-
-    if (cfg.hist == h0) {
-        ASSIGN_DECOMID (2, 1, 30)    /* AEROD_v */
-        ASSIGN_DECOMID (3, 2, 31)    /* ANRAIN and ANSNOW */
-        ASSIGN_DECOMID (2, 19, 33)   /* AODABS ... AODVIS */
-        ASSIGN_DECOMID (3, 2, 52)    /* AQRAIN and AQSNOW */
-        ASSIGN_DECOMID (2, 6, 54)    /* AQ_DMS ... AQ_SOAG */
-        ASSIGN_DECOMID (3, 4, 60)    /* AREI ... AWNI */
-        ASSIGN_DECOMID (2, 4, 64)    /* BURDEN1 ... BURDEN4 */
-        ASSIGN_DECOMID (3, 1, 68)    /* CCN3 */
-        ASSIGN_DECOMID (2, 2, 69)    /* CDNUMC and CLDHGH */
-        ASSIGN_DECOMID (3, 2, 71)    /* CLDICE and CLDLIQ */
-        ASSIGN_DECOMID (2, 3, 73)    /* CLDLOW ... CLDTOT */
-        ASSIGN_DECOMID (3, 4, 76)    /* CLOUD ... DCQ */
-        ASSIGN_DECOMID (2, 11, 80)   /* DF_DMS ... DSTSFMBL */
-        ASSIGN_DECOMID (3, 1, 91)    /* DTCOND */
-        ASSIGN_DECOMID (2, 2, 92)    /* DTENDTH and DTENDTQ */
-        ASSIGN_DECOMID (3, 2, 94)    /* EXTINCT and FICE */
-        ASSIGN_DECOMID (2, 7, 96)    /* FLDS ... FLUTC */
-        ASSIGN_DECOMID (3, 4, 103)   /* FREQI ... FREQS */
-        ASSIGN_DECOMID (2, 15, 107)  /* FSDS ... ICEFRAC */
-        ASSIGN_DECOMID (3, 3, 122)   /* ICIMR ... IWC */
-        ASSIGN_DECOMID (2, 2, 125)   /* LANDFRAC and LHFLX */
-        ASSIGN_DECOMID (3, 4, 127)   /* LINOZ_DO3 ... LINOZ_O3COL */
-        ASSIGN_DECOMID (2, 1, 131)   /* LINOZ_SFCSINK */
-        ASSIGN_DECOMID (3, 1, 132)   /* LINOZ_SSO3 */
-        ASSIGN_DECOMID (2, 3, 133)   /* LINOZ_SZA ... LWCF */
-        ASSIGN_DECOMID (3, 12, 136)  /* Mass_bc ... O3 */
-        ASSIGN_DECOMID (2, 2, 148)   /* O3_SRF and OCNFRAC */
-        ASSIGN_DECOMID (3, 1, 150)   /* OMEGA */
-        ASSIGN_DECOMID (2, 1, 151)   /* OMEGA500 */
-        ASSIGN_DECOMID (3, 1, 152)   /* OMEGAT */
-        ASSIGN_DECOMID (2, 8, 153)   /* PBLH ... PSL */
-        ASSIGN_DECOMID (3, 1, 161)   /* Q */
-        ASSIGN_DECOMID (2, 2, 162)   /* QFLX and QREFHT */
-        ASSIGN_DECOMID (3, 3, 164)   /* QRL ... RAINQM */
-        ASSIGN_DECOMID (2, 1, 167)   /* RAM1 */
-        ASSIGN_DECOMID (3, 1, 168)   /* RELHUM */
-        ASSIGN_DECOMID (2, 37, 169)  /* SFDMS ... SNOWHLND */
-        ASSIGN_DECOMID (3, 2, 206)   /* SNOWQM and SO2 */
-        ASSIGN_DECOMID (2, 10, 208)  /* SO2_CLXF ... SWCF */
-        ASSIGN_DECOMID (3, 1, 218)   /* T */
-        ASSIGN_DECOMID (2, 19, 219)  /* TAUGWX ... TVQ */
-        ASSIGN_DECOMID (3, 1, 238)   /* U */
-        ASSIGN_DECOMID (2, 1, 239)   /* U10 */
-        ASSIGN_DECOMID (3, 6, 240)   /* UU ... VV */
-        ASSIGN_DECOMID (2, 3, 246)   /* WD_H2O2 ... WD_SO2 */
-        ASSIGN_DECOMID (3, 3, 249)   /* WSUB ... aero_water */
-        ASSIGN_DECOMID (2, 32, 252)  /* airFV ... dst_c3SFWET */
-        ASSIGN_DECOMID (3, 1, 284)   /* hstobie_linoz */
-        ASSIGN_DECOMID (2, 129, 285) /* mlip ... soa_c3SFWET */
-    } else {
-        ASSIGN_DECOMID (2, 13, 30) /* CLDHGH ... T5 */
-        ASSIGN_DECOMID (3, 1, 43)  /* U */
-        ASSIGN_DECOMID (2, 7, 44)  /* U250 ... Z500 */
-    }
-
     pr->pre_time = MPI_Wtime() - pr->pre_time;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
@@ -664,12 +583,12 @@ int run_varn_F_case_scorpio (e3sm_io_config &cfg,
     /* define dimensions, variables, and attributes */
     if (cfg.hist == h0) {
         /* for h0 file */
-        err = def_F_case_h0_scorpio (driver, cfg, decom, ncid, decomids, varids,
+        err = def_F_case_h0_scorpio (driver, cfg, decom, ncid, varids,
                                  scorpiovars);
         CHECK_ERR
     } else {
         /* for h1 file */
-        err = def_F_case_h1_scorpio (driver, cfg, decom, ncid, decomids, varids,
+        err = def_F_case_h1_scorpio (driver, cfg, decom, ncid, varids,
                                  scorpiovars);
         CHECK_ERR
     }
