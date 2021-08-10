@@ -315,6 +315,8 @@ if test x$pnc_ge_1_10_0 = xno; then
 fi
 
 # Check for HDF5
+have_hdf5=no
+have_multi_dset=no
 AC_ARG_WITH([hdf5],
    [AS_HELP_STRING([--with-hdf5@<:@=INC,LIB | =DIR@:>@], 
                    [Enable HDF5 feature and provide the HDF5 installation path(s):
