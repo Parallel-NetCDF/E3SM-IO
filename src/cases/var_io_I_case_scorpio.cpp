@@ -114,8 +114,8 @@ int var_wr_case_I_scorpio(e3sm_io_config &cfg,
                           case_meta      *cmeta)
 {
     char *fix_txt_buf_ptr, *rec_txt_buf_ptr;
-    int i, j, err = 0, sub_rank, global_rank, ncid=-1, nflushes=0, one_flush;
-    int rec_no, gap=0, my_nreqs, nvars, num_decomp_vars = 0;
+    int i, j, err=0, sub_rank, global_rank, ncid=-1, nflushes=0, one_flush;
+    int rec_no, gap=0, my_nreqs, nvars, num_decomp_vars;
     int *nvars_D;
     int *fix_int_buf_ptr, *rec_int_buf_ptr;
     double *fix_dbl_buf_ptr, *rec_dbl_buf_ptr, timing;
@@ -132,12 +132,13 @@ int var_wr_case_I_scorpio(e3sm_io_config &cfg,
     cmeta->post_time  = 0.0;
     cmeta->flush_time = 0.0;
 
-    comm = cfg.io_comm;
+    if (cfg.strategy == blob && cfg.api != adios)
+        comm = cfg.sub_comm;
+    else
+        comm = cfg.io_comm;
 
     MPI_Comm_rank(cfg.io_comm,  &global_rank);
     MPI_Comm_rank(comm,         &sub_rank);
-
-    nvars_D = cmeta->nvars_D;
 
     /* I/O amount from previous I/O */
     INQ_PUT_SIZE(previous_size)
@@ -168,6 +169,11 @@ int var_wr_case_I_scorpio(e3sm_io_config &cfg,
     timing = MPI_Wtime();
 
     /* there are num_decomp_vars number of decomposition variables */
+    if (cfg.strategy == blob && cfg.api != adios)
+        num_decomp_vars = decom.num_decomp * NVARS_DECOMP;
+    else
+        num_decomp_vars = 0;
+
     nvars = cmeta->nvars + num_decomp_vars;
 
     /* allocate space to store variable metadata */
@@ -183,10 +189,12 @@ int var_wr_case_I_scorpio(e3sm_io_config &cfg,
         ERR_OUT("Wrong function for G case scorpio")
     else if (cfg.run_case == I) {
         // First time only set decomp_id requried to define var in scorpio wrapper
-        err = def_I_case_scorpio(cfg, decom, driver, ncid, vars, &wr_buf, scorpiovars, false);
+        err = def_I_case_scorpio(cfg, decom, driver, ncid, vars, &wr_buf,
+                                 scorpiovars, false);
         CHECK_ERR
         // Actual define
-        err = def_I_case_scorpio(cfg, decom, driver, ncid, vars, &wr_buf, scorpiovars, true);
+        err = def_I_case_scorpio(cfg, decom, driver, ncid, vars, &wr_buf,
+                                 scorpiovars, true);
         CHECK_ERR
     }
 
@@ -205,16 +213,9 @@ int var_wr_case_I_scorpio(e3sm_io_config &cfg,
     timing = MPI_Wtime();
 
     /* allocate write buffers */
-    wr_buf.fix_int_buflen += 64;
-    wr_buf.fix_dbl_buflen += 64;
-    wr_buf.fix_txt_buflen += 64;
-    wr_buf.fix_buflen += 64;
-    wr_buf.rec_dbl_buflen += 64;
-    wr_buf.rec_int_buflen += 64;
-    wr_buf.rec_txt_buflen += 64;
-    wr_buf.rec_buflen += 64;
     wr_buf_malloc(cfg, one_flush, wr_buf);
 
+    nvars_D = cmeta->nvars_D;
     for (j=0; j<decom.num_decomp; j++)
         nvars_D[j] = 0; /* number of variables using decomposition j */
 
@@ -222,6 +223,8 @@ int var_wr_case_I_scorpio(e3sm_io_config &cfg,
 
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
+
+    my_nreqs = 0; /* number of noncontiguous requests written by this rank */
 
     // Write PIO decom vars
     for (j = 0; j < decom.num_decomp; j++) {
@@ -235,8 +238,6 @@ int var_wr_case_I_scorpio(e3sm_io_config &cfg,
         err = driver.put_varl (ncid, scorpiovars[j], MPI_INT, &(cfg.np), nb);
         CHECK_ERR
     }
-
-    my_nreqs = 0; /* number of noncontiguous requests written by this rank */
 
     fix_txt_buf_ptr = wr_buf.fix_txt_buf;
     fix_int_buf_ptr = wr_buf.fix_int_buf;
@@ -268,7 +269,6 @@ int var_wr_case_I_scorpio(e3sm_io_config &cfg,
             if (vars[j].decomp_id >= 0) { /* this variable is partitioned */
                 if (vars[j].isRecVar) { /* this is a record variable */
                     REC_VAR_IPUT(varid, dp, VAR_ITYPE, rec_buf_ptr)
-                    assert(rec_buf_ptr - wr_buf.rec_buf <= wr_buf.rec_buflen);
                 }
                 else if (rec_no == 0) { /* this is a fixed-size variable */
                     if (itype == VAR_ITYPE)

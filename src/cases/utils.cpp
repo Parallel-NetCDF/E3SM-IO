@@ -97,6 +97,17 @@ int wr_buf_malloc(e3sm_io_config &cfg,
         else                nrecs = cfg.I_case_h1.nrecs;
     }
 
+    if (cfg.api == adios) {
+        buf.fix_int_buflen += 64;
+        buf.fix_dbl_buflen += 64;
+        buf.fix_txt_buflen += 64;
+        buf.fix_buflen += 64;
+        buf.rec_dbl_buflen += 64;
+        buf.rec_int_buflen += 64;
+        buf.rec_txt_buflen += 64;
+        buf.rec_buflen += 64;
+    }
+
     if (one_flush && cfg.api == pnetcdf) {
         /* write buffers should not be touched when using PnetCDF iput before
          * ncmpi_wait_all is called. For HDF5 and ADIOS blob I/O, write data
