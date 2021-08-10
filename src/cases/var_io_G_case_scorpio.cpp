@@ -284,7 +284,6 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     char dummy_char_buf[64 + 64];
     int xnreqs[6]; /* number of requests after combination */
     MPI_Offset previous_size;
-    std::vector<int> decomids;
     case_meta *pr = &cfg.G_case;
 
     MPI_Barrier (cfg.io_comm); /*-----------------------------------------*/
@@ -506,61 +505,6 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     for (i = 0; i < 64 + 64; i++) dummy_char_buf[i] = 'a' + rank + i;
 
     varids = (e3sm_io_scorpio_var *)malloc (cfg.nvars * sizeof (e3sm_io_scorpio_var));
-    decomids.resize (cfg.nvars);
-
-    // Record decomids
-    // For each varialbe associated with a decomposition map,
-    // scorpio record its decomposition map ID in an associated scalar variable
-    /* int maxLevelEdgeTop(nEdges) */
-    decomids[8] = 1;
-    /* int maxLevelEdgeBot(nEdges) */
-    decomids[37] = 1;
-    /* int edgeMask(nEdges, nVertLevels) */
-    decomids[10] = 3;
-    /* int cellMask(nCells, nVertLevels) */
-    decomids[11] = 2;
-    /* int vertexMask(nVertices, nVertLevels) */
-    decomids[12] = 4;
-    /* double bottomDepth(nCells)  */
-    decomids[35] = 0;
-    /* int maxLevelCell(nCells) */
-    decomids[36] = 0;
-
-    /* 11 small variables has no decom id*/
-    /* double vertCoordMovementWeights(nVertLevels) */
-    decomids[9] = -1;
-    /* double refZMid(nVertLevels) */
-    decomids[13] = -1;
-    /* double refLayerThickness(nVertLevels) */
-    decomids[14] = -1;
-    /* double refBottomDepth(nVertLevels) */
-    decomids[33] = -1;
-    /* char xtime(Time, StrLen) */
-    decomids[15] = -1;
-    /* double areaCellGlobal(Time) */
-    decomids[20] = -1;
-    /* double areaEdgeGlobal(Time) */
-    decomids[21] = -1;
-    /* double areaTriangleGlobal(Time) */
-    decomids[22] = -1;
-    /* double volumeCellGlobal(Time) */
-    decomids[23] = -1;
-    /* double volumeEdgeGlobal(Time) */
-    decomids[24] = -1;
-    /* double CFLNumberGlobal(Time) */
-    decomids[25] = -1;
-
-    /* 34 record variables */
-    /* 4 D1 record variables: double (Time, nCells) */
-    for (j = 0; j < nD1_rec_2d_vars; j++) { decomids[D1_rec_2d_varids[j]] = 0; }
-    /* 4 D6 record variables: double (Time, nCells, nVertLevelsP1) */
-    for (j = 0; j < nD6_rec_3d_vars; j++) { decomids[D6_rec_3d_varids[j]] = 5; }
-    /* 24 D3 record variables: double (Time, nCells, nVertLevels) */
-    for (j = 0; j < nD3_rec_3d_vars; j++) { decomids[D3_rec_3d_varids[j]] = 2; }
-    /* 1 D4 record variable: double (Time, nEdges, nVertLevels) */
-    for (j = 0; j < nD4_rec_3d_vars; j++) { decomids[D4_rec_3d_varids[j]] = 3; }
-    /* 1 D5 record variable: double (Time, nVertices, nVertLevels) */
-    for (j = 0; j < nD5_rec_3d_vars; j++) { decomids[D5_rec_3d_varids[j]] = 4; }
 
     pr->pre_time = MPI_Wtime() - pr->pre_time;
 
@@ -577,7 +521,7 @@ int run_varn_G_case_scorpio (e3sm_io_config &cfg,
     pr->def_time = MPI_Wtime ();
 
     /* define dimensions, variables, and attributes */
-    err = def_G_case_scorpio (cfg, decom, driver, ncid,decomids, varids, scorpiovars);
+    err = def_G_case_scorpio (cfg, decom, driver, ncid, varids, scorpiovars);
     CHECK_ERR
 
     /* exit define mode and enter data mode */

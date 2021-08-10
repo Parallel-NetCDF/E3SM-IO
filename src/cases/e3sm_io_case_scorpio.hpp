@@ -312,7 +312,6 @@ def_G_case_scorpio(e3sm_io_config &cfg,
                    e3sm_io_decom &decom,
                    e3sm_io_driver &driver,
                    int ncid, /* file ID */
-                   std::vector<int> &decomids,
                    e3sm_io_scorpio_var *varids, /* variable IDs */
                    int *scorpiovars);
 
