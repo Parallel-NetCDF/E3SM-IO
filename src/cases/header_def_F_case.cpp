@@ -91,7 +91,6 @@ int add_gattrs(e3sm_io_config &cfg,
 {
     int err, nprocs;
 
-    /* save number of processes as global attributes */
     if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
         MPI_Comm_size(cfg.io_comm, &nprocs);
         PUT_GATTR_INT("global_nprocs", nprocs)
@@ -99,6 +98,7 @@ int add_gattrs(e3sm_io_config &cfg,
         PUT_GATTR_INT("num_subfiles", cfg.num_subfiles)
     }
 
+    /* save number of processes as global attributes */
     PUT_GATTR_INT("ne", 120)
     PUT_GATTR_INT("np", 21600)
     PUT_GATTR_TXT("title", "EAM History file information")
@@ -117,6 +117,11 @@ int add_gattrs(e3sm_io_config &cfg,
     PUT_GATTR_TXT("contact", "e3sm-data-support@listserv.llnl.gov")
     PUT_GATTR_TXT("initial_file", "/global/cfs/cdirs/e3sm/inputdata/atm/cam/inic/homme/cami_mam3_Linoz_0000-01-ne120np4_L72_c160318.nc")
     PUT_GATTR_TXT("topography_file", "/global/cfs/cdirs/e3sm/inputdata/atm/cam/topo/USGS-gtopo30_ne120np4_16xdel2-PFC-consistentSGH.nc")
+
+    if (cfg.hist == h0)
+        PUT_GATTR_TXT("time_period_freq", "day_5")
+    else
+        PUT_GATTR_TXT("time_period_freq", "hour_1")
 
 err_out:
     return err;
@@ -272,11 +277,6 @@ int def_F_case(e3sm_io_config &cfg,
     /* add global attributes: */
     err = add_gattrs(cfg, decom, driver, ncid);
     CHECK_ERR
-
-    if (cfg.hist == h0)
-        PUT_GATTR_TXT("time_period_freq", "day_5")
-    else
-        PUT_GATTR_TXT("time_period_freq", "hour_1")
 
     /* define dimensions */
     err = def_dims(cfg, decom, driver, ncid, &dim_ncol, &dim_time, &dim_nbnd,

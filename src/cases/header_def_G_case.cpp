@@ -71,7 +71,7 @@
     CHECK_VAR_ERR(varid)                                                     \
 }
 #define PUT_ATTR_DECOMP(D, ndims, dimids) {                                   \
-    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {    \
+    if (cfg.strategy == blob && cfg.api != adios) {                           \
         err = driver.put_att(ncid,varid,"decomposition_ID",NC_INT,1,&D);      \
         CHECK_VAR_ERR(varid)                                                  \
         err = driver.put_att(ncid,varid,"global_dimids",NC_INT,ndims,dimids); \
@@ -97,18 +97,22 @@ int add_gattrs(e3sm_io_config &cfg,
     int err=0, nprocs;
 
     /* save number of processes as global attributes */
-    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
-        MPI_Comm_size(cfg.io_comm, &nprocs);
-        PUT_GATTR_INT("global_nprocs", nprocs)
-        PUT_GATTR_INT("num_decompositions", decom.num_decomp)
-        PUT_GATTR_INT("num_subfiles", cfg.num_subfiles)
+    if (cfg.strategy == blob) {
+        if (cfg.api == adios)
+            PUT_GATTR_INT ("/__pio__/fillmode", 256)
+        else {
+            MPI_Comm_size(cfg.io_comm, &nprocs);
+            PUT_GATTR_INT("global_nprocs", nprocs)
+            PUT_GATTR_INT("num_decompositions", decom.num_decomp)
+            PUT_GATTR_INT("num_subfiles", cfg.num_subfiles)
+        }
     }
 
     /* 747 global attributes: */
-    PUT_GATTR_TXT ("initial_file", "/global/cfs/cdirs/e3sm/inputdata/atm/cam/inic/homme/cami_mam3_Linoz_0000-01-ne120np4_L72_c160318.nc")
-    PUT_GATTR_INT ("ne", 120)
-    PUT_GATTR_INT ("np", 9600)
-    PUT_GATTR_TXT ("time_period_freq", "day_5")
+    PUT_GATTR_TXT("initial_file", "/global/cfs/cdirs/e3sm/inputdata/atm/cam/inic/homme/cami_mam3_Linoz_0000-01-ne120np4_L72_c160318.nc")
+    PUT_GATTR_INT("ne", 120)
+    PUT_GATTR_INT("np", 9600)
+    PUT_GATTR_TXT("time_period_freq", "day_5")
     PUT_GATTR_TXT("title", "MPAS-Ocean output file information")
     PUT_GATTR_TXT("source", "MPAS Ocean")
     PUT_GATTR_TXT("source_id", "a79fafdb76")
@@ -907,7 +911,7 @@ int def_G_case(e3sm_io_config   &cfg,
     DEF_DIM("nVertLevels",   decom.dims[2][1], &dim_nVertLevels)
     DEF_DIM("StrLen",        64,               &dim_StrLen)
 
-    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
+    if (cfg.strategy == blob && cfg.api != adios) {
         for (i=0; i<decom.num_decomp; i++)
             orig_dimids[i][0] = dim_Time;
 
@@ -961,7 +965,7 @@ int def_G_case(e3sm_io_config   &cfg,
     }
 
     /* define decomposition variables */
-    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
+    if (cfg.strategy == blob && cfg.api != adios) {
         for (i=0; i<decom.num_decomp; i++) {
             dimids[0] = nprocs_ID;
             dimids[1] = max_nreqs_dimid[i];
@@ -1379,7 +1383,7 @@ int def_G_case(e3sm_io_config   &cfg,
     PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
     SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
 
-    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5))
+    if (cfg.strategy == blob && cfg.api != adios)
         assert(varid + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
     else
         assert(varid + 1 == cfg.nvars);
