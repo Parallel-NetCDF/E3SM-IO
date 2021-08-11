@@ -32,8 +32,8 @@
     err = driver.def_dim(ncid, name, num, dimid);                        \
     CHECK_ERR                                                            \
 }
-#define DEF_VAR(name, type, ndims, dimids) {                             \
-    err = driver.def_var(ncid, name, type, ndims, dimids, &varid);       \
+#define DEF_VAR(name, xtype, ndims, dimids) {                            \
+    err = driver.def_var(ncid, name, xtype, ndims, dimids, &varid);      \
     if (err != 0) {                                                      \
         printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__,  \
                name);                                                    \
@@ -81,6 +81,109 @@
     vars[varid].vlen      = varlen;                    \
     wr_buf->buflen       += varlen + wr_buf->gap;      \
 }
+
+#if 0
+/*-----< define_var() >------------------------------------------------------*/
+static
+int define_var(int              ncid,
+               std::string      name,
+               nc_type          xtype,
+               int              can_ndims,  /* canonical num dims */
+               int             *can_dimids, /* canonical dim IDs */
+               int             *varid,      /* variable ID */
+               e3sm_io_config  &cfg,
+               e3sm_io_decom   &decom,
+               e3sm_io_driver  &driver,
+               int              decomid,    /* decomposition map ID */
+               int              dim_time,
+               int              dimids_D[3][3],
+               MPI_Datatype     itype,      /* buffer data type in memory */
+               var_meta        *vars,
+               io_buffers      *wr_buf)
+{
+    int k, err, isRecVar, ndims, *dimids;
+    MPI_Offset varlen, dimlen;
+
+    /* check if this is a record variable */
+    isRecVar = (can_ndims > 0 && can_dimids[0] == dim_time) ? 1 : 0;
+
+    if (decomid >= 0 && cfg.strategy == blob && cfg.api != adios) {
+        /* blob is 1D for fixed-size and 2D for record variables */
+        ndims = (can_dimids[0] == dim_time) ? 2 : 1;
+        dimids = (isRecVar) ? dimids_D[decomid] : dimids_D[decomid]+1;
+    }
+    else { /* use the canonical dimensions */
+        ndims  = can_ndims;
+        dimids = can_dimids;
+    }
+
+    /* define the variable */
+    err = driver.def_var(ncid, name.c_str(), xtype, ndims, dimids, varid);
+    if (err != 0) {
+        printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__, name.c_str());
+        return -1;
+    }
+
+    /* add blob attributes */
+    if (cfg.api == adios) {
+    }
+    else if (cfg.strategy == blob && decomid >= 0) {
+        /* add two blob I/O attributes */
+        int id = decomid+1;
+        err = driver.put_att(ncid, *varid, "decomposition_ID", NC_INT, 1, &id);
+        CHECK_VAR_ERR(*varid)
+        err = driver.put_att(ncid, *varid, "global_dimids", NC_INT, can_ndims,
+                             can_dimids);
+        CHECK_VAR_ERR(*varid)
+    }
+
+    if (decomid == -1) { /* calculate the entire variable size */
+        for (varlen=1, k=0; k<ndims; k++) {
+            err = driver.inq_dimlen(ncid, can_dimids[k], &dimlen);
+            CHECK_ERR
+            varlen *= dimlen;
+        }
+    }
+    else /* write request size has been precalculated */
+        varlen = decom.count[decomid];
+
+    /* add metadata of this variable */
+    vars[*varid].vid       = *varid;
+    vars[*varid].itype     = itype;
+    vars[*varid].decomp_id = decomid;
+    vars[*varid].isRecVar  = isRecVar;
+    vars[*varid].vlen      = varlen;
+
+    /* accumulate the write buffer size */
+    if (itype == MPI_DOUBLE) {
+#ifdef _DOUBLE_TYPE_
+        if (isRecVar)
+            wr_buf->rec_buflen += varlen + wr_buf->gap;
+        else
+            wr_buf->fix_buflen += varlen + wr_buf->gap;
+#else
+        if (isRecVar)
+            wr_buf->rec_dbl_buflen += varlen + wr_buf->gap;
+        else
+            wr_buf->fix_dbl_buflen += varlen + wr_buf->gap;
+#endif
+    }
+    else if (itype == MPI_INT) {
+        if (isRecVar)
+            wr_buf->rec_int_buflen += varlen + wr_buf->gap;
+        else
+            wr_buf->fix_int_buflen += varlen + wr_buf->gap;
+    }
+    else if (itype == MPI_CHAR) {
+        if (isRecVar)
+            wr_buf->rec_txt_buflen += varlen + wr_buf->gap;
+        else
+            wr_buf->fix_txt_buflen += varlen + wr_buf->gap;
+    }
+err_out:
+    return err;
+}
+#endif
 
 /*----< add_gattrs() >-------------------------------------------------------*/
 static
@@ -299,6 +402,12 @@ int def_F_case(e3sm_io_config &cfg,
     nchars = 8;
     lev    = decom.dims[2][0];
     ilev   = decom.dims[2][0] + 1;
+
+    /* combine DEF_VAR(), PUT_ATTR_DECOMP(), and SET_VAR_META() into a function
+     * call.
+    err = define_var(ncid, "lat", NC_DOUBLE, 1, fix_D[1], &varid, cfg, decom,
+                     driver, 1, dim_time, dimids_D, MPI_DOUBLE, vars, wr_buf);
+     */
 
     /* double lat(ncol) */
     DEF_VAR("lat", NC_DOUBLE, 1, fix_D[1])
