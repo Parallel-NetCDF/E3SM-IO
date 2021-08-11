@@ -281,70 +281,35 @@ inline int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
     return driver.put_att (fid, var.data, name, xtype, size, buf);
 }
 
-extern int
-def_F_case_h0_scorpio(e3sm_io_driver &driver,
-                      e3sm_io_config &cfg,
-                      e3sm_io_decom &decom,
-                      int ncid,                 /* file ID */
-                      e3sm_io_scorpio_var *varids,
-                      int *scorpiovars);
+extern
+int def_F_case_scorpio(e3sm_io_driver   &driver,
+                       e3sm_io_config   &cfg,
+                       e3sm_io_decom    &decom,
+                       int               ncid,
+                       var_meta_scorpio *vars,
+                       int              *scorpiovars,
+                       io_buffers       *wr_buf);
 
-extern int
-def_F_case_h1_scorpio(e3sm_io_driver &driver,
-                      e3sm_io_config &cfg,
-                      e3sm_io_decom &decom,
-                      int ncid,                 /* file ID */
-                      e3sm_io_scorpio_var *varids,
-                      int *scorpiovars);
+extern
+int def_G_case_scorpio(e3sm_io_config   &cfg,
+                       e3sm_io_decom    &decom,
+                       e3sm_io_driver   &driver,
+                       int               ncid, /* file ID */
+                       var_meta_scorpio *vars, /* variable IDs */
+                       int              *scorpiovars,
+                       io_buffers       *wr_buf);
 
-extern int
-run_varn_F_case_scorpio(e3sm_io_config &cfg,
-                        e3sm_io_decom &decom,
-                        e3sm_io_driver &driver,
-                        case_meta      *cmeta,
-                        double *dbl_bufp,    /* buffer for fixed size double var */
-                        vtype *rec_bufp,     /* buffer for rec floating point var */
-                        char *txt_buf,       /* buffer for char var */
-                        int *int_buf);       /* buffer for int var */
+extern
+int def_I_case_scorpio(e3sm_io_config   &cfg,
+                       e3sm_io_decom    &decom,
+                       e3sm_io_driver   &driver,
+                       int               ncid,    /* file ID */
+                       var_meta_scorpio *vars,    /* variable metadata */
+                       int              *scorpiovars,
+                       io_buffers       *wr_buf);
 
-extern int
-def_G_case_scorpio(e3sm_io_config &cfg,
-                   e3sm_io_decom &decom,
-                   e3sm_io_driver &driver,
-                   int ncid, /* file ID */
-                   e3sm_io_scorpio_var *varids, /* variable IDs */
-                   int *scorpiovars);
-
-extern int
-run_varn_G_case_scorpio(e3sm_io_config &cfg,
-                        e3sm_io_decom &decom,
-                        e3sm_io_driver &driver,
-                        case_meta      *cmeta,
-                        int *D1_fix_int_bufp,     /* D1 fix int buffer */
-                        int *D2_fix_int_bufp,     /* D2 fix int buffer */
-                        int *D3_fix_int_bufp,     /* D3 fix int buffer */
-                        int *D4_fix_int_bufp,     /* D4 fix int buffer */
-                        int *D5_fix_int_bufp,     /* D5 fix int buffer */
-                        double *D1_rec_dbl_bufp,  /* D1 rec double buffer */
-                        double *D3_rec_dbl_bufp,  /* D3 rec double buffer */
-                        double *D4_rec_dbl_bufp,  /* D4 rec double buffer */
-                        double *D5_rec_dbl_bufp,  /* D5 rec double buffer */
-                        double *D6_rec_dbl_bufp,  /* D6 rec double buffer */
-                        double *D1_fix_dbl_bufp); /* D1 fix double buffer */
-
-extern int 
-def_I_case_scorpio(e3sm_io_config   &cfg,
-               e3sm_io_decom    &decom,
-               e3sm_io_driver   &driver,
-               int               ncid,    /* file ID */
-               var_meta_scorpio         *vars,    /* variable metadata */
-               io_buffers       *wr_buf,
-               int *scorpiovars,
-               bool op
-               );
-
-extern int 
-var_wr_case_I_scorpio(e3sm_io_config &cfg,
-                      e3sm_io_decom  &decom,
-                      e3sm_io_driver &driver,
-                      case_meta      *cmeta);
+extern
+int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
+                             e3sm_io_decom  &decom,
+                             e3sm_io_driver &driver,
+                             case_meta      *cmeta);

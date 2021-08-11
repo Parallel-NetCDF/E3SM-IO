@@ -58,18 +58,7 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
             err = var_wr_all_cases(cfg, decom, driver, cmeta);
 #ifdef ENABLE_ADIOS2
         else
-            err = run_varn_G_case_scorpio(cfg, decom, driver, cmeta,
-                                  this->D1_fix_int_buf,
-                                  this->D2_fix_int_buf,
-                                  this->D3_fix_int_buf,
-                                  this->D4_fix_int_buf,
-                                  this->D5_fix_int_buf,
-                                  this->D1_rec_dbl_buf,
-                                  this->D3_rec_dbl_buf,
-                                  this->D4_rec_dbl_buf,
-                                  this->D5_rec_dbl_buf,
-                                  this->D6_rec_dbl_buf,
-                                  this->D1_fix_dbl_buf);
+            err = var_wr_all_cases_scorpio(cfg, decom, driver, cmeta);
 #endif
         CHECK_ERR
 
@@ -109,14 +98,8 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
         if (cfg.api != adios)
             err = var_wr_all_cases(cfg, decom, driver, cmeta);
 #ifdef ENABLE_ADIOS2
-        else if (cfg.run_case == F)
-            err = run_varn_F_case_scorpio(cfg, decom, driver, cmeta,
-                                          this->dbl_buf_h0,
-                                          this->rec_buf_h0,
-                                          this->txt_buf,
-                                          this->int_buf);
-        else /* case I */
-            err = var_wr_case_I_scorpio(cfg, decom, driver, cmeta);
+        else
+            err = var_wr_all_cases_scorpio(cfg, decom, driver, cmeta);
 #endif
         CHECK_ERR
     }
@@ -153,14 +136,8 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
         if (cfg.api != adios)
             err = var_wr_all_cases(cfg, decom, driver, cmeta);
 #ifdef ENABLE_ADIOS2
-        else if (cfg.run_case == F)
-            err = run_varn_F_case_scorpio(cfg, decom, driver, cmeta,
-                                          this->dbl_buf_h0,
-                                          this->rec_buf_h0,
-                                          this->txt_buf,
-                                          this->int_buf);
-        else /* case I */
-            err = var_wr_case_I_scorpio(cfg, decom, driver, cmeta);
+        else
+            err = var_wr_all_cases_scorpio(cfg, decom, driver, cmeta);
 #endif
         CHECK_ERR
     }
