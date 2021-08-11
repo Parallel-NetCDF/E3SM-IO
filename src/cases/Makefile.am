@@ -29,9 +29,7 @@ if ENABLE_ADIOS2
 CXX_SRCS += header_def_F_case_scorpio.cpp \
             header_def_G_case_scorpio.cpp \
             header_def_I_case_scorpio.cpp \
-            var_io_F_case_scorpio.cpp \
-            var_io_G_case_scorpio.cpp \
-            var_io_I_case_scorpio.cpp
+            var_wr_all_cases_scorpio.cpp
 
 H_SRCS   += e3sm_io_case_scorpio.hpp
 endif
