@@ -373,9 +373,6 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     INQ_PUT_SIZE(total_size)
     total_size -= previous_size;
 
-    if (cfg.verbose && global_rank == 0)
-        driver.inq_file_size(cmeta->outfile, &cmeta->file_size);
-
     cmeta->num_flushes     = nflushes;
     cmeta->num_decomp_vars = num_decomp_vars;
     cmeta->my_nreqs        = my_nreqs;
@@ -385,6 +382,10 @@ int var_wr_all_cases(e3sm_io_config &cfg,
 
     /* check if there is any PnetCDF internal malloc residue */
     check_malloc(&cfg, &driver);
+
+    /* note inquiring file size may be expensive on some machines */
+    if (cfg.verbose && global_rank == 0)
+        driver.inq_file_size(cmeta->outfile, &cmeta->file_size);
 
 err_out:
     if (err < 0 && ncid >= 0) driver.close(ncid);
