@@ -177,6 +177,9 @@ fi
 CXX=${MPICXX}
 AC_PROG_CXX
 
+AX_CXX_COMPILE_STDCXX(17, , optional)
+AM_CONDITIONAL(HAVE_CXX17, [test "x${HAVE_CXX17}" = x1])
+
 dnl Set output variable CPP to a command that runs the C preprocessor.
 dnl Some C compilers require -E to be used as C preprocessor.
 AC_PROG_CPP
