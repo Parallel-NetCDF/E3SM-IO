@@ -11,7 +11,9 @@ bin_PROGRAMS = dat2nc \
                pnetcdf_blob_replay
 
 if ENABLE_ADIOS2
+if HAVE_CXX17
    bin_PROGRAMS += bpstat
+endif
 endif
 
 dat2nc_SOURCES = dat2nc.c
