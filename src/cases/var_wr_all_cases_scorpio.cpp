@@ -26,73 +26,79 @@
 
 #define VAR_ITYPE REC_ITYPE
 
-#define CHECK_VAR_ERR(varid) {                                                           \
-    if (err != 0) {                                                                      \
-        char var_name[64];                                                               \
-        driver.inq_var_name(ncid, varid.data, var_name);                                 \
-        printf("Error in %s:%d: %s() var %s\n", __FILE__, __LINE__, __func__, var_name); \
-        goto err_out;                                                                    \
-    }                                                                                    \
+#define CHECK_VAR_ERR(varid) {                                            \
+    if (err != 0) {                                                       \
+        char var_name[64];                                                \
+        driver.inq_var_name(ncid, varid.data, var_name);                  \
+        printf("Error in %s:%d: %s() var %s\n"     ,                      \
+               __FILE__, __LINE__, __func__, var_name);                   \
+        goto err_out;                                                     \
+    }                                                                     \
 }
-#define FILE_CREATE(filename) {                           \
-    err = driver.create(filename, comm, cfg.info, &ncid); \
-    CHECK_ERR                                             \
+#define FILE_CREATE(filename) {                                           \
+    err = driver.create(filename, comm, cfg.info, &ncid);                 \
+    CHECK_ERR                                                             \
 }
-#define FILE_CLOSE {           \
-    err = driver.close(ncid);  \
-    CHECK_ERR                  \
+#define FILE_CLOSE {                                                      \
+    err = driver.close(ncid);                                             \
+    CHECK_ERR                                                             \
 }
-#define ENDDEF {               \
-    err = driver.enddef(ncid); \
-    CHECK_ERR                  \
+#define ENDDEF {                                                          \
+    err = driver.enddef(ncid);                                            \
+    CHECK_ERR                                                             \
 }
-#define INQ_DIM_LEN(name, size) {                \
-    int dimid;                                   \
-    err = driver.inq_dim(ncid, name, &dimid);    \
-    CHECK_ERR                                    \
-    err = driver.inq_dimlen(ncid, dimid, &size); \
-    CHECK_ERR                                    \
+#define INQ_DIM_LEN(name, size) {                                         \
+    int dimid;                                                            \
+    err = driver.inq_dim(ncid, name, &dimid);                             \
+    CHECK_ERR                                                             \
+    err = driver.inq_dimlen(ncid, dimid, &size);                          \
+    CHECK_ERR                                                             \
 }
-#define INQ_PUT_SIZE(size) {          \
-    err = driver.inq_put_size(&size); \
-    CHECK_ERR                         \
+#define INQ_PUT_SIZE(size) {                                              \
+    err = driver.inq_put_size(&size);                                     \
+    CHECK_ERR                                                             \
 }
-#define INQ_FILE_INFO(info) {                \
-    err = driver.inq_file_info(ncid, &info); \
-    CHECK_ERR                                \
+#define INQ_FILE_INFO(info) {                                             \
+    err = driver.inq_file_info(ncid, &info);                              \
+    CHECK_ERR                                                             \
 }
-#define IPUT_VARA(varid, itype, adv, buf) {                                       \
+#define IPUT_VARA_NOADV(itype, buf) {                                     \
+    err = driver.put_vara(ncid, varid, itype, start, count, buf, nb);     \
+    CHECK_VAR_ERR(varid)                                                  \
+    my_nreqs++;                                                           \
+    varid++;                                                              \
+}
+#define IPUT_VARA(varid, itype, adv, buf) {                               \
     err = e3sm_io_scorpio_write_var(driver, rec_no, ncid, varid, itype, buf, nb); \
-    CHECK_VAR_ERR(varid)                                                          \
-    buf += (adv);                                                                 \
-    my_nreqs++;                                                                   \
+    CHECK_VAR_ERR(varid)                                                  \
+    buf += (adv);                                                         \
+    my_nreqs++;                                                           \
 }
-#define IPUT_VAR(varid, itype, adv, buf) {                                        \
+#define IPUT_VAR(varid, itype, adv, buf) {                                \
     err = e3sm_io_scorpio_write_var(driver, rec_no, ncid, varid, itype, buf, nb); \
-    CHECK_VAR_ERR(varid)                                                          \
-    buf += (adv);                                                                 \
-    my_nreqs++;                                                                   \
+    CHECK_VAR_ERR(varid)                                                  \
+    buf += (adv);                                                         \
+    my_nreqs++;                                                           \
 }
-#define WAIT_ALL_REQS {      \
-    err = driver.wait(ncid); \
-    CHECK_ERR                \
-    nflushes++;              \
+#define WAIT_ALL_REQS {                                                   \
+    err = driver.wait(ncid);                                              \
+    CHECK_ERR                                                             \
+    nflushes++;                                                           \
 }
-
-#define FIX_VAR_IPUT(varid, dp, itype, buf) {                                     \
+#define FIX_VAR_IPUT(varid, dp, itype, buf) {                             \
     err = e3sm_io_scorpio_write_var(driver, -1, ncid, varid, itype, buf, nb);     \
-    my_nreqs += decom.contig_nreqs[dp];                                           \
-    CHECK_VAR_ERR(varid)                                                          \
-    buf += decom.raw_nreqs[dp] + gap;                                             \
-    nvars_D[dp]++;                                                                \
+    my_nreqs += decom.contig_nreqs[dp];                                   \
+    CHECK_VAR_ERR(varid)                                                  \
+    buf += decom.raw_nreqs[dp] + gap;                                     \
+    nvars_D[dp]++;                                                        \
 }
 
-#define REC_VAR_IPUT(varid, dp, itype, buf) {                                     \
+#define REC_VAR_IPUT(varid, dp, itype, buf) {                             \
     err = e3sm_io_scorpio_write_var(driver, rec_no, ncid, varid, itype, buf, nb); \
-    my_nreqs += decom.contig_nreqs[dp];                                           \
-    CHECK_VAR_ERR(varid)                                                          \
-    buf += decom.raw_nreqs[dp] + gap;                                             \
-    if (rec_no == 0) nvars_D[dp]++;                                               \
+    my_nreqs += decom.contig_nreqs[dp];                                   \
+    CHECK_VAR_ERR(varid)                                                  \
+    buf += decom.raw_nreqs[dp] + gap;                                     \
+    if (rec_no == 0) nvars_D[dp]++;                                       \
 }
 
 /*----< var_io_I_case_scorpio.cpp() >----------------------------------------*/
@@ -103,15 +109,15 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
 {
     char *fix_txt_buf_ptr, *rec_txt_buf_ptr;
     int i, j, err=0, sub_rank, global_rank, ncid=-1, nflushes=0, one_flush;
-    int rec_no, gap=0, my_nreqs, nvars, num_decomp_vars;
-    int *nvars_D;
+    int rec_no, gap=0, my_nreqs, nvars, num_decomp_vars, *nvars_D;
     int *fix_int_buf_ptr, *rec_int_buf_ptr;
     double *fix_dbl_buf_ptr, *rec_dbl_buf_ptr, timing;
     MPI_Offset previous_size, metadata_size, total_size;
     MPI_Comm comm;
     vtype *fix_buf_ptr, *rec_buf_ptr;
-    var_meta_scorpio *vars;
     io_buffers wr_buf;
+
+    var_meta_scorpio *vars;
     int scorpiovars[7];
 
     MPI_Barrier(cfg.io_comm); /*---------------------------------------------*/
