@@ -44,6 +44,10 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
         cmeta->nvars     = NVARS_G_CASE;
         cmeta->info_used = MPI_INFO_NULL;
 
+        /* set flush frequency, once per ffreq time steps */
+        if (cmeta->ffreq == -1 || cmeta->ffreq > cmeta->nrecs)
+            cmeta->ffreq = cmeta->nrecs;
+
         /* construct file name */
         strcpy(cmeta->outfile, cfg.out_path);
         if (cfg.strategy == blob && cfg.api != adios) {
@@ -78,6 +82,10 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
             cmeta->nvars = NVARS_I_CASE_H0;
         }
         cmeta->info_used = MPI_INFO_NULL;
+
+        /* set flush frequency, once per ffreq time steps */
+        if (cmeta->ffreq == -1 || cmeta->ffreq > cmeta->nrecs)
+            cmeta->ffreq = cmeta->nrecs;
 
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))
@@ -116,6 +124,10 @@ int e3sm_io_all_cases::wr_test(e3sm_io_config &cfg,
             cmeta->nvars = NVARS_I_CASE_H1;
         }
         cmeta->info_used = MPI_INFO_NULL;
+
+        /* set flush frequency, once per ffreq time steps */
+        if (cmeta->ffreq == -1 || cmeta->ffreq > cmeta->nrecs)
+            cmeta->ffreq = cmeta->nrecs;
 
         /* construct file name */
         if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))

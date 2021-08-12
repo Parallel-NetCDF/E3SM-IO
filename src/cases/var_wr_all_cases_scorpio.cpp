@@ -108,8 +108,8 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
                              case_meta      *cmeta)
 {
     char *fix_txt_buf_ptr, *rec_txt_buf_ptr;
-    int i, j, err=0, sub_rank, global_rank, ncid=-1, nflushes=0, one_flush;
-    int rec_no, gap=0, my_nreqs, nvars, num_decomp_vars, *nvars_D;
+    int i, j, err=0, sub_rank, global_rank, ncid=-1, nflushes=0;
+    int rec_no, ffreq, gap=0, my_nreqs, nvars, num_decomp_vars, *nvars_D;
     int *fix_int_buf_ptr, *rec_int_buf_ptr;
     double *fix_dbl_buf_ptr, *rec_dbl_buf_ptr, timing;
     MPI_Offset previous_size, metadata_size, total_size;
@@ -136,15 +136,6 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
 
     /* I/O amount from previous I/O */
     INQ_PUT_SIZE(previous_size)
-
-#ifdef FLUSH_ALL_RECORDS_AT_ONCE
-    one_flush = 1;
-#else
-    one_flush = 0;
-    /* Note for HDF5 and ADIOS blob I/O, write data is only flushed at file
-     * close and calling driver.wait() takes no effect.
-     */
-#endif
 
     if (cfg.verbose) {
         if (cfg.strategy == blob && sub_rank == 0)
@@ -202,8 +193,14 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
+    /* flush drequency only affects pnetcdf API.  Note for HDF5 and ADIOS blob
+     * I/O, write data is copied into their internal buffers and only flushed
+     * at file close. Calling driver.wait() takes no effect.
+     */
+    ffreq = (cfg.api == pnetcdf) ? cmeta->ffreq : 1;
+
     /* allocate write buffers */
-    wr_buf_malloc(cfg, one_flush, wr_buf);
+    wr_buf_malloc(cfg, ffreq, wr_buf);
 
     nvars_D = cmeta->nvars_D;
     for (j=0; j<decom.num_decomp; j++)
@@ -233,11 +230,14 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
     fix_buf_ptr     = wr_buf.fix_buf;
 
     for (rec_no=0; rec_no<cmeta->nrecs; rec_no++) {
-        /* reset the pointers to the beginning of the buffers */
-        rec_txt_buf_ptr = wr_buf.rec_txt_buf;
-        rec_int_buf_ptr = wr_buf.rec_int_buf;
-        rec_dbl_buf_ptr = wr_buf.rec_dbl_buf;
-        rec_buf_ptr     = wr_buf.rec_buf;
+
+        if (rec_no % ffreq == 0) {
+            /* reset the pointers to the beginning of the buffers */
+            rec_txt_buf_ptr = wr_buf.rec_txt_buf;
+            rec_int_buf_ptr = wr_buf.rec_int_buf;
+            rec_dbl_buf_ptr = wr_buf.rec_dbl_buf;
+            rec_buf_ptr     = wr_buf.rec_buf;
+        }
 
         if (cfg.strategy == canonical) {
             /* set the start index for the next record */
@@ -292,7 +292,7 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
         }
 
         /* flush out the pending iput requests */
-        if (!one_flush || rec_no == cmeta->nrecs-1) {
+        if ((rec_no + 1) % ffreq == 0 || (rec_no + 1) == cmeta->nrecs) {
             cmeta->post_time += MPI_Wtime() - timing;
 
             MPI_Barrier(comm); /*--------------------------------------------*/
@@ -302,7 +302,7 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
             WAIT_ALL_REQS
             cmeta->flush_time += MPI_Wtime() - timing;
 
-            if (rec_no < cmeta->nrecs-1) timing = MPI_Wtime();
+            if ((rec_no + 1) < cmeta->nrecs) timing = MPI_Wtime();
         }
     }
 

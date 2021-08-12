@@ -95,9 +95,10 @@ typedef enum { F, G, I, unknown } climate_case;
 typedef struct {
     /* statistics */
     char outfile[1040];
-    int nvars;  /* number of climate variables */
-    int nrecs;
-    int num_flushes;
+    int nvars;        /* number of climate variables */
+    int nrecs;        /* number of time records */
+    int ffreq;        /* I/O flush frequency */
+    int num_flushes;  /* number of flush called */
     int num_decomp_vars;
     int nvars_D[MAX_NUM_DECOMP];
     MPI_Offset metadata_WR;
@@ -150,7 +151,7 @@ typedef struct e3sm_io_config {
 
     /* below 3 are used for PnetCDF blob I/O subfiling */
     int      num_subfiles; /* number of subfiles */
-    int      subfile_ID;   /* unqiue file identifier for subfiles */
+    int      subfile_ID;   /* unique file identifier for subfiles */
     MPI_Comm sub_comm;     /* communicator for a subfile */
     int      sub_rank;     /* rank in sub_comm */
     int      sub_nprocs;   /* nprocs in sub_comm, also nblobs in a subfile */

@@ -180,7 +180,7 @@ extern
 void wr_buf_init(io_buffers &buf, int gap);
 
 extern
-int wr_buf_malloc(e3sm_io_config &cfg, int one_flush, io_buffers &buf);
+int wr_buf_malloc(e3sm_io_config &cfg, int ffreq, io_buffers &buf);
 
 extern
 void wr_buf_free(io_buffers &buf);

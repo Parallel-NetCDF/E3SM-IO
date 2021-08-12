@@ -89,9 +89,11 @@ static void usage (char *argv0) {
 "       [-k] Keep the output files when program exits\n"
 "       [-m] Run test using noncontiguous write buffer\n"
 "       [-t] Write 2D variables followed by 3D variables\n"
-"       [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for h1\n"
-"                only, -1 for both (default: -1)\n"
+"       [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for\n"
+"                h1 only, -1 for both (default: -1)\n"
 "       [-r num] Number of records/time steps for F case h1 file (default: 1)\n"
+"       [-y num] Frequency of I/O flush (affect PnetCDF API only). 1 for once\n"
+"                per time step (default), -1 for once for all time steps\n"
 "       [-s num] MPI rank stride for selecting processes to perform I/O tasks\n"
 "                (default: 1)\n"
 "       [-g num] Number of subfiles, used in blob I/O only (default: 1)\n"
@@ -120,7 +122,7 @@ static void usage (char *argv0) {
 
 /*----< main() >-------------------------------------------------------------*/
 int main (int argc, char **argv) {
-    int i, err, nrecs=1;
+    int i, err, nrecs=1, ffreq;
     double timing[3], max_t[3];
     e3sm_io_config cfg;
     e3sm_io_decom decom;
@@ -167,9 +169,10 @@ int main (int argc, char **argv) {
         decom.raw_offsets[i] = NULL;
         decom.w_starts[i]    = NULL;
     }
+    ffreq = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dmtf:ha:x:g:p")) != EOF)
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dmtf:ha:x:g:y:p")) != EOF)
         switch (i) {
             case 'v':
                 cfg.verbose = 1;
@@ -179,6 +182,9 @@ int main (int argc, char **argv) {
                 break;
             case 'r':
                 nrecs = atoi (optarg);
+                break;
+            case 'y':
+                ffreq = atoi (optarg);
                 break;
             case 's':
                 cfg.io_stride = atoi (optarg);
@@ -274,6 +280,12 @@ int main (int argc, char **argv) {
     cfg.G_case.nrecs    = nrecs;
     cfg.I_case_h0.nrecs = nrecs;
     cfg.I_case_h1.nrecs = 1;  /* force only one record for I h1 case */
+
+    cfg.F_case_h0.ffreq = ffreq;
+    cfg.F_case_h1.ffreq = ffreq;
+    cfg.G_case.ffreq    = ffreq;
+    cfg.I_case_h0.ffreq = ffreq;
+    cfg.I_case_h1.ffreq = ffreq;
 
     /* neither command-line option -i or -o is used */
     if (!cfg.wr && !cfg.rd)

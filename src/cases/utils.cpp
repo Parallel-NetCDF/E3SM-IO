@@ -79,23 +79,13 @@ void wr_buf_init(io_buffers &buf,
 
 /*----< wr_buf_malloc() >----------------------------------------------------*/
 int wr_buf_malloc(e3sm_io_config &cfg,
-                  int             one_flush,
+                  int             ffreq,
                   io_buffers     &buf)
 {
-    int rank, nrecs;
+    int rank;
     size_t j;
 
     MPI_Comm_rank(cfg.io_comm, &rank);
-
-    if (cfg.run_case == F) {
-        if (cfg.hist == h0) nrecs = cfg.F_case_h0.nrecs;
-        else                nrecs = cfg.F_case_h1.nrecs;
-    }
-    else if (cfg.run_case == G) nrecs = cfg.G_case.nrecs;
-    else if (cfg.run_case == I) {
-        if (cfg.hist == h0) nrecs = cfg.I_case_h0.nrecs;
-        else                nrecs = cfg.I_case_h1.nrecs;
-    }
 
     if (cfg.api == adios) {
         buf.fix_int_buflen += 64;
@@ -108,16 +98,16 @@ int wr_buf_malloc(e3sm_io_config &cfg,
         buf.rec_buflen += 64;
     }
 
-    if (one_flush && cfg.api == pnetcdf) {
+    if (cfg.api == pnetcdf) {
         /* write buffers should not be touched when using PnetCDF iput before
          * ncmpi_wait_all is called. For HDF5 and ADIOS blob I/O, write data
          * will be copied and cached into internally allocated buffers and user
          * buffers can be reused after put call returned.
          */
-        buf.rec_dbl_buflen *= nrecs;
-        buf.rec_int_buflen *= nrecs;
-        buf.rec_txt_buflen *= nrecs;
-        buf.rec_buflen     *= nrecs;
+        buf.rec_dbl_buflen *= ffreq;
+        buf.rec_int_buflen *= ffreq;
+        buf.rec_txt_buflen *= ffreq;
+        buf.rec_buflen     *= ffreq;
     }
 
     /* allocate and initialize write buffers */

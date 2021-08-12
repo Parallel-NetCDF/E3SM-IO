@@ -171,9 +171,10 @@ int print_timing_WR(e3sm_io_config *cfg,
             printf("No. variables use decomposition D%d = %6d\n",
                    i, cmeta->nvars_D[i]);
         printf("Total no. climate variables        = %6d\n", cmeta->nvars);
-        printf("Write no. records (time dim)       = %6d\n", cmeta->nrecs);
         printf("Total no. noncontiguous requests   = %6lld\n", sum_nreqs);
         printf("Max   no. noncontiguous requests   = %6lld\n", max_nreqs);
+        printf("Write no. records (time dim)       = %6d\n", cmeta->nrecs);
+        printf("I/O flush frequency                = %6d\n", cmeta->ffreq);
         printf("No. I/O flush calls                = %6d\n", cmeta->num_flushes);
         printf("-----------------------------------------------------------\n");
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
