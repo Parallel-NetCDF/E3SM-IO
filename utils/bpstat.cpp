@@ -65,6 +65,7 @@ typedef struct bpstat {
     int natt     = 0;
     size_t vsize = 0;
     size_t asize = 0;
+    size_t msize = 0;
 } bpstat;
 
 inline size_t adios2_type_size (adios2_type type) {
@@ -148,6 +149,8 @@ int bpstat_core (std::string inpath, config &cfg, bpstat &stat) {
         aerr = adios2_variable_name (name, &nelem, *vp);
         CHECK_AERR
         name[nelem] = '\0';
+        stat.msize += nelem + 8 // Name
+                    + 4;        // Type
 
         aerr = adios2_variable_type (&type, *vp);
         CHECK_AERR
@@ -157,6 +160,8 @@ int bpstat_core (std::string inpath, config &cfg, bpstat &stat) {
         // Try until we got error
         nelem = 0;
         for (i = 0;; i++) {
+            stat.msize += 8 + 8; // Block offset and size
+
             aerr = adios2_set_block_selection (*vp, i);
             if (aerr != adios2_error_none) { break; }
 
@@ -179,6 +184,9 @@ int bpstat_core (std::string inpath, config &cfg, bpstat &stat) {
         aerr = adios2_attribute_name (name, &nelem, *ap);
         CHECK_AERR
         name[nelem] = '\0';
+        stat.msize += nelem + 8 // Name
+                    + 8         // Size
+                    + 4;        // Type
 
         aerr = adios2_attribute_type (&type, *ap);
         CHECK_AERR
@@ -354,10 +362,13 @@ int main (int argc, char *argv[]) {
         std::cout << "Total variable size: " << stat_all.vsize << std::endl;
         std::cout << "Num attributes: " << stat_all.natt << std::endl;
         std::cout << "Total attribute size: " << stat_all.asize << std::endl;
+        std::cout << "Total estimate metadata size: " << stat_all.msize << std::endl;
         std::cout << "Total object size (MiB): "
                   << ((double)(stat_all.vsize + stat_all.asize) / 1048576) << std::endl;
         std::cout << "Total object size (GiB): "
                   << ((double)(stat_all.vsize + stat_all.asize) / 1048576 / 1024) << std::endl;
+        std::cout << "Total estimate metadata size (GiB): "
+                  << ((double)(stat_all.vsize + stat_all.msize) / 1048576 / 1024) << std::endl;
     }
 
 err_out:;
