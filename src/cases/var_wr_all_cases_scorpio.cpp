@@ -75,7 +75,7 @@
     my_nreqs++;                                                           \
 }
 #define IPUT_VAR(varid, itype, adv, buf) {                                \
-    err = e3sm_io_scorpio_write_var(driver, rec_no, ncid, varid, itype, buf, nb); \
+    err = e3sm_io_scorpio_write_var(driver, -1, ncid, varid, itype, buf, nb); \
     CHECK_VAR_ERR(varid)                                                  \
     buf += (adv);                                                         \
     my_nreqs++;                                                           \
