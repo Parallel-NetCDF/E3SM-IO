@@ -899,7 +899,7 @@ int def_G_case(e3sm_io_config   &cfg,
       D5.total_nreqs = 7441216 ;     7441216 x 80    nVertices x nVertLevels
       D6.total_nreqs = 3693225 ;     3693225 x 81    nCells    x nVertLevelsP1
     */
-    nVertLevels = 80 ;
+    nVertLevels = decom.dims[2][1];
     StrLen      = 64 ;
 
     /* define dimensions */
@@ -909,7 +909,7 @@ int def_G_case(e3sm_io_config   &cfg,
     DEF_DIM("nVertices",     decom.dims[4][0], &dim_nVertices)
     DEF_DIM("nVertLevelsP1", decom.dims[5][1], &dim_nVertLevelsP1)
     DEF_DIM("nVertLevels",   decom.dims[2][1], &dim_nVertLevels)
-    DEF_DIM("StrLen",        64,               &dim_StrLen)
+    DEF_DIM("StrLen",        StrLen,           &dim_StrLen)
 
     if (cfg.strategy == blob && cfg.api != adios) {
         for (i=0; i<decom.num_decomp; i++)

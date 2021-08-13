@@ -904,17 +904,17 @@ int def_G_case_scorpio(e3sm_io_config   &cfg,
       D5.total_nreqs = 7441216 ;     7441216 x 80    nVertices x nVertLevels
       D6.total_nreqs = 3693225 ;     3693225 x 81    nCells    x nVertLevelsP1
     */
-    nVertLevels = 80 ;
+    nVertLevels = decom.dims[2][1];
     StrLen      = 64 ;
 
     /* define dimensions */
-    DEF_DIM ("Time", NC_UNLIMITED, &dim_Time)
-    DEF_DIM ("nCells", decom.dims[0][0], &dim_nCells)
-    DEF_DIM ("nEdges", decom.dims[1][0], &dim_nEdges)
-    DEF_DIM ("nVertices", decom.dims[4][0], &dim_nVertices)
+    DEF_DIM ("Time",          NC_UNLIMITED,     &dim_Time)
+    DEF_DIM ("nCells",        decom.dims[0][0], &dim_nCells)
+    DEF_DIM ("nEdges",        decom.dims[1][0], &dim_nEdges)
+    DEF_DIM ("nVertices",     decom.dims[4][0], &dim_nVertices)
     DEF_DIM ("nVertLevelsP1", decom.dims[5][1], &dim_nVertLevelsP1)
-    DEF_DIM ("nVertLevels", decom.dims[2][1], &dim_nVertLevels)
-    DEF_DIM ("StrLen", 64, &dim_StrLen)
+    DEF_DIM ("nVertLevels",   decom.dims[2][1], &dim_nVertLevels)
+    DEF_DIM ("StrLen",        StrLen,           &dim_StrLen)
 
     { /* canonical or ADIOS blob */
         fix_dimids[0][0] = dim_nCells;
