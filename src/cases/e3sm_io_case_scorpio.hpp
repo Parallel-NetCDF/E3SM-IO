@@ -159,7 +159,7 @@ inline int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
             // Record block size to be written into the data later
             var->ndim = ndim;
             for (i = 0; i < ndim; i++) { 
-                var->bsize[i] = dsize[ndim - i - 1]; 
+                var->bsize[i] = dsize[i]; 
             }
             // Convert into byte array
             for (i = 0; i < ndim; i++) { vsize *= dsize[i]; }
