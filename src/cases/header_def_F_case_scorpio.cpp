@@ -20,11 +20,11 @@
 #include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
 
-#define CHECK_VAR_ERR(varid)                                                                  \
+#define CHECK_VAR_ERR(varp)                                                                  \
     {                                                                                         \
         if (err != 0) {                                                                       \
             char var_name[64];                                                                \
-            driver.inq_var_name (ncid, (varid).data, var_name);                               \
+            driver.inq_var_name (ncid, varp->vid, var_name);                               \
             printf ("Error in %s:%d: %s() var %s\n", __FILE__, __LINE__, __func__, var_name); \
             goto err_out;                                                                     \
         }                                                                                     \
@@ -36,10 +36,10 @@
     }
 #define DEF_VAR(name, type, ndims, dimids, decomid)                                 \
     {                                                                               \
-        varid++;                                                                    \
+        varp++;                                                                    \
         err = e3sm_io_scorpio_define_var (                                          \
-            driver, cfg, dnames, decom, decomid, decomid,                           \
-            ncid, name, type, ndims, dimids, &varid->vid);                          \
+            driver, cfg, dnames, decom, decomid,                           \
+            ncid, name, type, ndims, dimids, varp);                          \
         if (err != 0) {                                                             \
             printf ("Error in %s line %d: def_var %s\n", __FILE__, __LINE__, name); \
             goto err_out;                                                           \
@@ -64,25 +64,25 @@
 }
 #define PUT_ATTR_TXT(name, buf)                                                            \
     {                                                                                      \
-        err = e3sm_io_scorpio_put_att (driver, ncid, varid->vid, name, NC_CHAR, strlen (buf), \
+        err = e3sm_io_scorpio_put_att (driver, ncid, varp->vid, name, NC_CHAR, strlen (buf), \
                                        (void *)buf);                                       \
-        CHECK_VAR_ERR (varid->vid)                                                             \
+        CHECK_VAR_ERR(varp)                                                             \
     }
 #define PUT_ATTR_INT(name, num, buf)                                                           \
     {                                                                                          \
-        err = e3sm_io_scorpio_put_att (driver, ncid, varid->vid, name, NC_INT, num, (void *)buf); \
-        CHECK_VAR_ERR (varid->vid)                                                                 \
+        err = e3sm_io_scorpio_put_att (driver, ncid, varp->vid, name, NC_INT, num, (void *)buf); \
+        CHECK_VAR_ERR(varp)                                                                 \
     }
 #define PUT_ATTR_FLOAT(name, num, buf)                                                           \
     {                                                                                            \
-        err = e3sm_io_scorpio_put_att (driver, ncid, varid->vid, name, NC_FLOAT, num, (void *)buf); \
-        CHECK_VAR_ERR (varid->vid)                                                                   \
+        err = e3sm_io_scorpio_put_att (driver, ncid, varp->vid, name, NC_FLOAT, num, (void *)buf); \
+        CHECK_VAR_ERR(varp)                                                                   \
     }
 #define PUT_ATTR_INT64(name, num, buf)                                                             \
     {                                                                                              \
         err = err =                                                                                \
-            e3sm_io_scorpio_put_att (driver, ncid, varid->vid, name, NC_INT64, num, (void *)buf); \
-        CHECK_VAR_ERR (varid->vid)                                                                     \
+            e3sm_io_scorpio_put_att (driver, ncid, varp->vid, name, NC_INT64, num, (void *)buf); \
+        CHECK_VAR_ERR(varp)                                                                     \
     }
 #define PUT_ATTR_DECOMP(A, B, C) \
     {}
@@ -90,10 +90,10 @@
 #define SET_VAR_META(dtype, id, rec, buflen, varlen) {                \
     size_t vlen = (cfg.api == adios && id >= 0) ? decom.raw_nreqs[id] \
                                                  : varlen;            \
-    varid->itype     = dtype;                                         \
-    varid->decomp_id = id;                                            \
-    varid->isRecVar  = rec;                                           \
-    varid->vlen      = vlen;                                          \
+    varp->itype      = dtype;                                         \
+    varp->decomp_id  = id;                                            \
+    varp->isRecVar   = rec;                                           \
+    varp->vlen       = vlen;                                          \
     wr_buf->buflen  += vlen + wr_buf->gap;                            \
 }
 
@@ -212,12 +212,12 @@ int def_F_case_scorpio(e3sm_io_driver   &driver,
                        e3sm_io_config   &cfg,
                        e3sm_io_decom    &decom,
                        int               ncid,   /* file ID */
-                       var_meta_scorpio *vars, /* variable IDs */
+                       var_meta_scorpio *vars,   /* variable metadata */
                        int              *scorpiovars,
                        io_buffers       *wr_buf)
 {
     int i, j, k;
-    var_meta_scorpio *varid;
+    var_meta_scorpio *varp;
     int err, ndims, dimids[3], mdims = 1;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
     int nblobs_ID, nelems_D[3], max_nreqs_D[3], dimids_D[3][3];
@@ -262,7 +262,7 @@ int def_F_case_scorpio(e3sm_io_driver   &driver,
     CHECK_ERR
 
     /* Total 414 climate variables (15 fixed-size and 399 record variables) */
-    varid = vars - 1;
+    varp = vars - 1;
 
     /* below 10 are fixed-size climate variables ---------------------------*/
 
@@ -3964,9 +3964,9 @@ else {
     SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 }
     if (cfg.strategy == blob && cfg.api != adios)
-        assert (varid - vars + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
+        assert (varp - vars + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
     else
-        assert (varid - vars + 1 == cfg.nvars);
+        assert (varp - vars + 1 == cfg.nvars);
 
 err_out:
     return err;

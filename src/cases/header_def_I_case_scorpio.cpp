@@ -20,11 +20,11 @@
 #include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
 
-#define CHECK_VAR_ERR(varid)                                                                  \
+#define CHECK_VAR_ERR(varp)                                                                  \
     {                                                                                         \
         if (err != 0) {                                                                       \
             char var_name[64];                                                                \
-            driver.inq_var_name (ncid, (varid.data), var_name);                               \
+            driver.inq_var_name (ncid, varp->vid, var_name);                               \
             printf ("Error in %s:%d: %s() var %s\n", __FILE__, __LINE__, __func__, var_name); \
             goto err_out;                                                                     \
         }                                                                                     \
@@ -34,10 +34,10 @@
     CHECK_ERR                                                                  \
 }
 #define DEF_VAR(name, type, ndims, dimids, decomid) {                           \
-    varid++;                                                                    \
+    varp++;                                                                    \
     err = e3sm_io_scorpio_define_var (                                          \
-        driver, cfg, dnames, decom, decomid, decomid,                           \
-        ncid, name, type, ndims, dimids, &varid->vid);                          \
+        driver, cfg, dnames, decom, decomid,                           \
+        ncid, name, type, ndims, dimids, varp);                          \
     if (err != 0) {                                                             \
         printf ("Error in %s line %d: def_var %s\n", __FILE__, __LINE__, name); \
         goto err_out;                                                           \
@@ -61,31 +61,31 @@
     CHECK_ERR                                                           \
 }
 #define PUT_ATTR_TXT(name, buf) {                                          \
-    err = e3sm_io_scorpio_put_att(driver, ncid, varid->vid, name, NC_CHAR, \
+    err = e3sm_io_scorpio_put_att(driver, ncid, varp->vid, name, NC_CHAR, \
                                   strlen (buf), (void *)buf);              \
-    CHECK_VAR_ERR (varid->vid)                                             \
+    CHECK_VAR_ERR(varp)                                             \
 }
 #define PUT_ATTR_INT1(name, val)  {                                        \
     int buf = val;                                                         \
-    err = e3sm_io_scorpio_put_att(driver, ncid, varid->vid, name, NC_INT,  \
+    err = e3sm_io_scorpio_put_att(driver, ncid, varp->vid, name, NC_INT,  \
                                   1, (void*)(&buf));                       \
-    CHECK_VAR_ERR (varid->vid)                                             \
+    CHECK_VAR_ERR(varp)                                             \
 }
 #define PUT_ATTR_INT(name, num, buf) {                                     \
-    err = e3sm_io_scorpio_put_att(driver, ncid, varid->vid, name, NC_INT,  \
+    err = e3sm_io_scorpio_put_att(driver, ncid, varp->vid, name, NC_INT,  \
                                   num, (void *)buf);                       \
-    CHECK_VAR_ERR (varid->vid)                                             \
+    CHECK_VAR_ERR(varp)                                             \
 }
 #define PUT_ATTR_FLOAT(name, num, buf) {                                   \
     float flt = buf;                                                       \
-    err = e3sm_io_scorpio_put_att(driver, ncid, varid->vid, name, NC_FLOAT,\
+    err = e3sm_io_scorpio_put_att(driver, ncid, varp->vid, name, NC_FLOAT,\
                                   num, (void *)(&flt));                    \
-    CHECK_VAR_ERR (varid->vid)                                             \
+    CHECK_VAR_ERR(varp)                                             \
 }
 #define PUT_ATTR_INT64(name, num, buf) {                                   \
-    err = e3sm_io_scorpio_put_att(driver, ncid, varid->vid, name,          \
+    err = e3sm_io_scorpio_put_att(driver, ncid, varp->vid, name,          \
                                   NC_INT64, num, (void *)buf);             \
-    CHECK_VAR_ERR (varid->vid)                                             \
+    CHECK_VAR_ERR(varp)                                             \
 }
 
 #define PUT_ATTR_DECOMP(D, ndims, dimids) \
@@ -94,10 +94,10 @@
 #define SET_VAR_META(dtype, id, rec, buflen, varlen) {                \
     size_t vlen = (cfg.api == adios && id >= 0) ? decom.raw_nreqs[id] \
                                                  : varlen;            \
-    varid->itype     = dtype;                                         \
-    varid->decomp_id = id;                                            \
-    varid->isRecVar  = rec;                                           \
-    varid->vlen      = vlen;                                          \
+    varp->itype      = dtype;                                         \
+    varp->decomp_id  = id;                                            \
+    varp->isRecVar   = rec;                                           \
+    varp->vlen       = vlen;                                          \
     wr_buf->buflen  += vlen + wr_buf->gap;                            \
 }
 
@@ -170,7 +170,7 @@ int def_I_case_scorpio(e3sm_io_config   &cfg,
     /* Total 52 variables */
     char name[64];
     int i, j, k, err = 0, ndims, dimids[2];
-    var_meta_scorpio *varid;
+    var_meta_scorpio *varp;
     int fix_dimids[MAX_NUM_DECOMP][4], rec_dimids[MAX_NUM_DECOMP][4];
     int dim_time, dim_lon, dim_lat, dim_gridcell, dim_topounit, dim_landunit;
     int dim_column, dim_pft, dim_levgrnd, dim_levurb, dim_levlak, dim_numrad;
@@ -302,7 +302,7 @@ int def_I_case_scorpio(e3sm_io_config   &cfg,
      * Thus, 14 not partitioned variable (also small) are written by root only:
      *     5 fixed-size, 9 record variables
      */
-    varid = vars - 1;
+    varp = vars - 1;
 
     /* float levgrnd(levgrnd) */
     DEF_VAR("levgrnd", NC_FLOAT, 1, &dim_levgrnd, -1)
@@ -6387,9 +6387,9 @@ int def_I_case_scorpio(e3sm_io_config   &cfg,
     SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
 
     if (cfg.strategy == blob && cfg.api != adios)
-        assert(varid - vars + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
+        assert(varp - vars + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
     else
-        assert(varid - vars + 1 == cfg.nvars);
+        assert(varp - vars + 1 == cfg.nvars);
 
 err_out:
     return err;
