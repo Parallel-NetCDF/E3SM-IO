@@ -197,13 +197,13 @@ int def_I_case(e3sm_io_config   &cfg,
      *                                 not decomposed: 14 variables
      */
 
-    lat           = 360;
-    lon           = 720;
-    levgrnd       =  15;
-    levdcmp       =  15;
-    levlak        =  10;
-    ltype         =   9;
-    natpft        =  17;
+    lat           = decom.dims[0][0];
+    lon           = decom.dims[0][1];
+    levgrnd       = decom.dims[1][0];
+    levdcmp       = decom.dims[1][0];
+    levlak        = decom.dims[2][0];
+    ltype         = decom.dims[3][0];
+    natpft        = decom.dims[4][0];
     string_length =  16;
     hist_interval =   2;
 
