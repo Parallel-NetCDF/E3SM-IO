@@ -29,7 +29,7 @@
 #define CHECK_VAR_ERR(varid) {                                            \
     if (err != 0) {                                                       \
         char var_name[64];                                                \
-        driver.inq_var_name(ncid, varid.data, var_name);                  \
+        driver.inq_var_name(ncid, varid.vid, var_name);                   \
         printf("Error in %s:%d: %s() var %s\n"     ,                      \
                __FILE__, __LINE__, __func__, var_name);                   \
         goto err_out;                                                     \
@@ -249,7 +249,7 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
 
         /* write all climate variables */
         for (j=num_decomp_vars; j<nvars; j++) {
-            e3sm_io_scorpio_var          varid = vars[j].vid;
+            var_meta_scorpio varid = vars[j];
             int          dp    = vars[j].decomp_id;
             MPI_Datatype itype = vars[j].itype;
             size_t       adv   = vars[j].vlen + gap;
@@ -340,5 +340,256 @@ err_out:
     if (!cfg.keep_outfile && sub_rank == 0) unlink(cmeta->outfile);
 
     return err;
+}
+
+int e3sm_io_scorpio_define_dim(e3sm_io_driver &driver,
+                               int fid,
+                               std::string name,
+                               MPI_Offset size,
+                               std::map<int, std::string> &dnames,
+                               int *did)
+{
+    int err;
+
+    err = driver.def_dim (fid, name, size, did);
+    CHECK_ERR
+
+    dnames[*did] = name;
+
+err_out:
+    return err;
+}
+
+int e3sm_io_scorpio_define_var(e3sm_io_driver &driver,
+                               e3sm_io_config &cfg,
+                               std::map<int, std::string> &dnames,
+                               e3sm_io_decom &decom,
+                               int decomp_id,
+                               int fid,
+                               std::string name,
+                               nc_type xtype,
+                               int ndims,
+                               int *dimids,
+                               var_meta_scorpio *var)
+{
+    int i, err, ibuf;
+    char cbuf[64];
+    std::vector<const char*> dnames_array (ndims);
+
+    var->piodecomid = decomp_id + 512;
+    var->ndims = ndims;
+
+    for(i = 0; i < ndims; i++){
+        dnames_array[i] = dnames[dimids[i]].c_str();
+    }
+
+    // If there is a decomposition map associated with the variable,
+    // created 2 associated scalar variables frame_id (timesteps) and decom_id (decomposition map)
+    if (decomp_id >= 0) {
+        MPI_Offset one = 1;
+
+        err = driver.def_local_var (fid, name, xtype, 1, &(decom.raw_nreqs[decomp_id]), &var->vid);
+        CHECK_ERR
+
+        assert(ndims > 0);
+
+        err = driver.def_local_var(fid, "frame_id/" + name, NC_INT, 1,
+                                   &one, &var->frame_id);
+        CHECK_ERR
+
+        err = driver.def_local_var(fid, "decomp_id/" + name, NC_INT, 1,
+                                   &one, &var->decom_id);
+        CHECK_ERR
+
+        // Double vars have an additional fillval_id
+        if (xtype == NC_DOUBLE) {
+            err = driver.def_local_var(fid, "fillval_id/" + name, xtype,
+                                       1, &one, &(var->fillval_id));
+            CHECK_ERR
+        } else {
+            var->fillval_id = -1;
+        }
+
+        // Attributes
+        // err = driver.put_att (fid, var->vid, "_FillValue", var->type, 1, cbuf);
+        // CHECK_ERR
+
+        // Scorpio attributes are only written by rank 0
+        if (cfg.rank == 0) {
+            // Decomposition map
+            sprintf(cbuf, "%d", var->piodecomid);
+            err = driver.put_att (fid, var->vid, "__pio__/decomp", NC_CHAR, strlen(cbuf), &cbuf);
+            CHECK_ERR
+
+            err = driver.put_att (fid, var->vid, "__pio__/dims", NC_STRING, ndims, dnames_array.data());
+            CHECK_ERR
+
+            // Type of NetCDF API called
+            err = driver.put_att (fid, var->vid, "__pio__/ncop", NC_CHAR, 7, (void *)"darray");
+            CHECK_ERR
+
+            // NetCDF type enum
+            ibuf = xtype;
+            err  = driver.put_att (fid, var->vid, "__pio__/nctype", NC_INT, 1, &ibuf);
+            CHECK_ERR
+
+            // Number of dimensions
+            err = driver.put_att (fid, var->vid, "__pio__/ndims", NC_INT, 1, &ndims);
+            CHECK_ERR
+        }
+    } else { /* this variable is not partitioned */
+        std::vector<MPI_Offset> dsize (ndims);
+        MPI_Offset vsize = 1;
+        int esize;
+
+        for (i = 0; i < ndims; i++) {
+            err = driver.inq_dimlen (fid, dimids[i], &dsize[i]);
+            CHECK_ERR
+
+            // Time dim is always 0, but block size should be 1
+            if (dsize[i] == 0) dsize[i] = 1;
+            var->dims[i] = dsize[i];
+            vsize *= dsize[i];
+        }
+
+        // flatten into 1 dim only apply to non-scalar variables
+        if (ndims){
+            // Convert into byte array
+            err = e3sm_io_xlen_nc_type(xtype, &esize);
+            CHECK_MPIERR
+            vsize *= esize;
+            vsize += 8 * 2 * ndims; // Include start and count array
+            err = driver.def_local_var (fid, name, NC_UBYTE, 1, &vsize, &var->vid);
+            CHECK_ERR
+        }
+        else{
+            err = driver.def_local_var (fid, name, xtype, ndims, NULL, &var->vid);
+            CHECK_ERR
+        }
+
+        // Attributes for non-constant small vars
+        // Scorpio attributes are only written by rank 0
+        if (cfg.rank == 0) {
+            // ADIOS type enum, variables without decomposition map are stored as byte array
+            ibuf = (int)e3sm_io_type_nc2adios (xtype);
+            err  = driver.put_att (fid, var->vid, "__pio__/adiostype", NC_INT, 1, &ibuf);
+            CHECK_ERR
+
+            // Scalar var does not have dims
+            if (ndims > 0) {
+                err = driver.put_att (fid, var->vid, "__pio__/dims", NC_STRING, ndims, dnames_array.data());
+                CHECK_ERR
+            }
+
+            // Type of NetCDF API called
+            err = driver.put_att (fid, var->vid, "__pio__/ncop", NC_CHAR, 7, (void *)"put_var");
+            CHECK_ERR
+
+            // NetCDF type enum
+            ibuf = xtype;
+            err  = driver.put_att (fid, var->vid, "__pio__/nctype", NC_INT, 1, &ibuf);
+            CHECK_ERR
+
+            // Number of dimensions
+            err = driver.put_att (fid, var->vid, "__pio__/ndims", NC_INT, 1, &ndims);
+            CHECK_ERR
+        }
+
+        var->decom_id   = -1;
+        var->frame_id   = -1;
+        var->fillval_id = -1;
+    }
+err_out:
+    return err;
+}
+
+int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
+                                  int frameid,
+                                  int fid,
+                                  var_meta_scorpio &var,
+                                  MPI_Datatype itype,
+                                  void *buf,
+                                  e3sm_io_op_mode mode) {
+    int err, decomid;
+    void *wbuf;
+
+    if (var.isRecVar) frameid = -1;
+
+    /* prepend start and count to write buffer for small, not-partitioned,
+     * non-scalar variables This must be done by allocating another buffer,
+     * add start/count, and copy over user write buffer.
+     * These variables are stored as arrays of type byte.
+     */
+    if (var.decomp_id < 0 && var.ndims) {
+        int esize;
+        size_t cp_len;
+
+#ifdef DEBUG
+        size_t i, vlen=1;
+        for (i=0; i<var.ndims; i++) vlen *= var.dims[i];
+        assert(vlen == var.vlen);
+#endif
+
+        MPI_Type_size(itype, &esize);
+        cp_len = var.ndims * sizeof(int64_t);
+        wbuf = (void*) malloc(2 * cp_len + var.vlen * esize);
+        memset(wbuf, 0, cp_len);
+        memcpy((char*)wbuf+cp_len,   var.dims, cp_len);
+        memcpy((char*)wbuf+cp_len*2, buf,      var.vlen * esize);
+    }
+    else
+        wbuf = buf;
+
+    if ((var.frame_id < 0) && var.ndims){
+        itype = MPI_BYTE;
+    }
+
+    err = driver.put_varl (fid, var.vid, itype, wbuf, nbe);
+    CHECK_ERR
+
+    if (var.frame_id >= 0) {
+
+        err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, nbe);
+        CHECK_ERR
+
+        decomid = var.piodecomid ;
+        if (var.fillval_id < 0) {
+            decomid *= -1;
+        }
+        err = driver.put_varl (fid, var.decom_id, MPI_INT, &decomid, nbe);
+        CHECK_ERR
+
+        if (var.fillval_id >= 0) {
+            double fbuf = 1e+20;
+
+            err = driver.put_varl (fid, var.fillval_id, MPI_DOUBLE, &fbuf, nbe);
+            CHECK_ERR
+        }
+    }
+
+err_out:
+    if (wbuf != buf) free(wbuf);
+
+    return err;
+}
+
+int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
+                                int fid,
+                                int vid,
+                                std::string name,
+                                nc_type xtype,
+                                MPI_Offset size,
+                                void *buf) {
+    return driver.put_att (fid, vid, name, xtype, size, buf);
+}
+
+int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
+                                int fid,
+                                var_meta_scorpio &var,
+                                std::string name,
+                                nc_type xtype,
+                                MPI_Offset size,
+                                void *buf) {
+    return driver.put_att (fid, var.vid, name, xtype, size, buf);
 }
 
