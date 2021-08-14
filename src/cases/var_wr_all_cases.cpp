@@ -140,10 +140,6 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     MPI_Offset starts[MAX_NUM_DECOMP][2], counts[MAX_NUM_DECOMP][2];
     MPI_Offset start[2], count[2];
     var_meta *vars;
-#if 0
-    var_meta_scorpio *vars;
-    int scorpiovars[7];
-#endif
 
     MPI_Barrier(cfg.io_comm); /*---------------------------------------------*/
     cmeta->end2end_time = timing = MPI_Wtime();
@@ -196,14 +192,11 @@ int var_wr_all_cases(e3sm_io_config &cfg,
 #if 0
     if (cfg.api == adios) {
         if (cfg.run_case == F)
-            err = def_F_case_scorpio(driver, cfg, decom, ncid, vars,
-                                     scorpiovars, &wr_buf);
+            err = def_F_case_scorpio(driver, cfg, decom, ncid, vars, &wr_buf);
         else if (cfg.run_case == G)
-            err = def_G_case_scorpio(cfg, decom, driver, ncid, vars,
-                                     scorpiovars, &wr_buf);
+            err = def_G_case_scorpio(cfg, decom, driver, ncid, vars, &wr_buf);
         else if (cfg.run_case == I)
-            err = def_I_case_scorpio(cfg, decom, driver, ncid, vars,
-                                     scorpiovars, &wr_buf);
+            err = def_I_case_scorpio(cfg, decom, driver, ncid, vars, &wr_buf);
     } else
 #endif
     if (cfg.run_case == F)
@@ -252,13 +245,13 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     /* write decomposition maps */
     if (cfg.api == adios) {
         for (j=0; j<decom.num_decomp; j++) {
-            err = driver.put_varl(ncid, scorpiovars[j], MPI_LONG_LONG,
+            err = driver.put_varl(ncid, vars[j].vid, MPI_LONG_LONG,
                                   decom.raw_offsets[j], nb);
             CHECK_ERR
         }
         // Nproc only written by rank 0
         if (cfg.rank == 0) {
-            err = driver.put_varl(ncid, scorpiovars[j], MPI_INT, &cfg.np, nb);
+            err = driver.put_varl(ncid, vars[j].vid, MPI_INT, &cfg.np, nb);
             CHECK_ERR
         }
     } else

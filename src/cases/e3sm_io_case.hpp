@@ -57,11 +57,19 @@ class e3sm_io_all_cases : public e3sm_io_case {
 #define BUF_GAP 10
 
 typedef struct {
-    int vid;        /* variable ID */
-    int decomp_id;  /* decomposition map ID */
-    int isRecVar;   /* whether is a record variable */
-    size_t vlen;    /* length to be written by this rank */
-    MPI_Datatype itype;
+    int vid;         /* variable ID (ADIOS or NetCDF) */
+
+    int frame_id;    /* ADIOS ID */
+    int fillval_id;  /* ADIOS ID */
+    int decom_id;    /* ADIOS ID of decomposition map variable */
+    int piodecomid;  /* map IDs used on Scorpio starting at 512 */
+    int64_t dims[3]; /* dimension sizes */
+    int ndims;
+
+    int decomp_id;      /* decomposition map ID */
+    int isRecVar;       /* whether is a record variable */
+    size_t vlen;        /* length to be written by this rank */
+    MPI_Datatype itype; /* memory buffer of internal data type */
 } var_meta;
 
 typedef struct {

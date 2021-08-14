@@ -20,81 +20,78 @@
 #include <e3sm_io_case_scorpio.hpp>
 #include <e3sm_io_driver.hpp>
 
-#define CHECK_VAR_ERR(varp)                                                                  \
-    {                                                                                         \
-        if (err != 0) {                                                                       \
-            char var_name[64];                                                                \
-            driver.inq_var_name (ncid, varp->vid, var_name);                               \
-            printf ("Error in %s:%d: %s() var %s\n", __FILE__, __LINE__, __func__, var_name); \
-            goto err_out;                                                                     \
-        }                                                                                     \
-    }
-#define DEF_DIM(name, num, dimid)                                                  \
-    {                                                                              \
-        err = e3sm_io_scorpio_define_dim (driver, ncid, name, num, dnames, dimid); \
-        CHECK_ERR                                                                  \
-    }
-#define DEF_VAR(name, type, ndims, dimids, decomid)                                 \
-    {                                                                               \
-        varp++;                                                                    \
-        err = e3sm_io_scorpio_define_var (                                          \
-            driver, cfg, dnames, decom, decomid,                           \
-            ncid, name, type, ndims, dimids, varp);                          \
-        if (err != 0) {                                                             \
-            printf ("Error in %s line %d: def_var %s\n", __FILE__, __LINE__, name); \
-            goto err_out;                                                           \
-        }                                                                           \
-    }
-#define PUT_GATTR_TXT(name, buf) {                                      \
-    err = e3sm_io_scorpio_put_att(driver, ncid, NC_GLOBAL, prefix name, \
-                                  NC_CHAR,  strlen (buf), (void *)buf); \
-    CHECK_ERR                                                           \
+#define CHECK_VAR_ERR(varp) {                                                 \
+    if (err != 0) {                                                           \
+        char var_name[64];                                                    \
+        driver.inq_var_name(ncid, varp->vid, var_name);                       \
+        printf("Error in %s:%d: %s() var %s\n",                               \
+               __FILE__, __LINE__, __func__, var_name);                       \
+        goto err_out;                                                         \
+    }                                                                         \
 }
-#define PUT_GATTR_INT(name, val) {                                      \
-    int buf = val;                                                      \
-    err = e3sm_io_scorpio_put_att(driver, ncid, NC_GLOBAL, prefix name, \
-                                  NC_INT, 1, (void *)(&buf));           \
-    CHECK_ERR                                                           \
+#define DEF_DIM(name, num, dimid) {                                           \
+    err = e3sm_io_scorpio_define_dim(driver, ncid, name, num, dnames, dimid); \
+    CHECK_ERR                                                                 \
 }
-#define PUT_GATTR_DBL(name, val) {                                      \
-    double buf = val;                                                   \
-    err = e3sm_io_scorpio_put_att(driver, ncid, NC_GLOBAL, prefix name, \
-                                  NC_DOUBLE, 1, (void *)(&buf));        \
-    CHECK_ERR                                                           \
+#define DEF_VAR(name, type, ndims, dimids, decomid) {                         \
+    varp++;                                                                   \
+    err = e3sm_io_scorpio_define_var(driver, cfg, dnames, decom, decomid,     \
+                                     ncid, name, type, ndims, dimids,         \
+                                     varp);                                   \
+    if (err != 0) {                                                           \
+        printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__,       \
+               name);                                                         \
+        goto err_out;                                                         \
+    }                                                                         \
 }
-#define PUT_ATTR_TXT(name, buf)                                                            \
-    {                                                                                      \
-        err = e3sm_io_scorpio_put_att (driver, ncid, varp->vid, name, NC_CHAR, strlen (buf), \
-                                       (void *)buf);                                       \
-        CHECK_VAR_ERR(varp)                                                             \
-    }
-#define PUT_ATTR_INT(name, num, buf)                                                           \
-    {                                                                                          \
-        err = e3sm_io_scorpio_put_att (driver, ncid, varp->vid, name, NC_INT, num, (void *)buf); \
-        CHECK_VAR_ERR(varp)                                                                 \
-    }
-#define PUT_ATTR_FLOAT(name, num, buf)                                                           \
-    {                                                                                            \
-        err = e3sm_io_scorpio_put_att (driver, ncid, varp->vid, name, NC_FLOAT, num, (void *)buf); \
-        CHECK_VAR_ERR(varp)                                                                   \
-    }
-#define PUT_ATTR_INT64(name, num, buf)                                                             \
-    {                                                                                              \
-        err = err =                                                                                \
-            e3sm_io_scorpio_put_att (driver, ncid, varp->vid, name, NC_INT64, num, (void *)buf); \
-        CHECK_VAR_ERR(varp)                                                                     \
-    }
+#define PUT_GATTR_TXT(name, buf) {                                           \
+    err = e3sm_io_scorpio_put_att(driver, ncid, NC_GLOBAL, prefix name,      \
+                                  NC_CHAR,  strlen (buf), (void *)buf);      \
+    CHECK_ERR                                                                \
+}
+#define PUT_GATTR_INT(name, val) {                                           \
+    int buf = val;                                                           \
+    err = e3sm_io_scorpio_put_att(driver, ncid, NC_GLOBAL, prefix name,      \
+                                  NC_INT, 1, (void *)(&buf));                \
+    CHECK_ERR                                                                \
+}
+#define PUT_GATTR_DBL(name, val) {                                           \
+    double buf = val;                                                        \
+    err = e3sm_io_scorpio_put_att(driver, ncid, NC_GLOBAL, prefix name,      \
+                                  NC_DOUBLE, 1, (void *)(&buf));             \
+    CHECK_ERR                                                                \
+}
+#define PUT_ATTR_TXT(name, buf) {                                            \
+    err = e3sm_io_scorpio_put_att(driver, ncid, varp->vid, name, NC_CHAR,    \
+                                  strlen (buf), (void *)buf);                \
+    CHECK_VAR_ERR(varp)                                                      \
+}
+#define PUT_ATTR_INT(name, num, buf) {                                       \
+    err = e3sm_io_scorpio_put_att(driver, ncid, varp->vid, name, NC_INT,     \
+                                  num, (void *)buf);                         \
+    CHECK_VAR_ERR(varp)                                                      \
+}
+#define PUT_ATTR_FLOAT(name, num, buf) {                                     \
+    err = e3sm_io_scorpio_put_att(driver, ncid, varp->vid, name, NC_FLOAT,   \
+                                  num, (void *)buf);                         \
+    CHECK_VAR_ERR(varp)                                                      \
+}
+#define PUT_ATTR_INT64(name, num, buf) {                                     \
+    err = e3sm_io_scorpio_put_att(driver, ncid, varp->vid, name, NC_INT64,   \
+                                  num, (void *)buf);                         \
+    CHECK_VAR_ERR(varp)                                                      \
+}
 #define PUT_ATTR_DECOMP(A, B, C) \
     {}
 
-#define SET_VAR_META(dtype, id, rec, buflen, varlen) {                \
-    size_t vlen = (cfg.api == adios && id >= 0) ? decom.raw_nreqs[id] \
-                                                 : varlen;            \
-    varp->itype      = dtype;                                         \
-    varp->decomp_id  = id;                                            \
-    varp->isRecVar   = rec;                                           \
-    varp->vlen       = vlen;                                          \
-    wr_buf->buflen  += vlen + wr_buf->gap;                            \
+#define SET_VAR_META(dtype, id, rec, buflen, varlen) {                       \
+    size_t vlen = (cfg.api == adios && id >= 0) ? decom.raw_nreqs[id]        \
+                                                 : varlen;                   \
+    varp->itype      = dtype;                                                \
+    varp->decomp_id  = id;                                                   \
+    varp->isRecVar   = rec;                                                  \
+    varp->vlen       = vlen;                                                 \
+    wr_buf->buflen  += vlen + wr_buf->gap;                                   \
 }
 
 /*----< add_gattrs() >-------------------------------------------------------*/
@@ -208,17 +205,15 @@ err_out:
 }
 
 /*----< def_F_case_scorpio() >-----------------------------------------------*/
-int def_F_case_scorpio(e3sm_io_driver   &driver,
-                       e3sm_io_config   &cfg,
-                       e3sm_io_decom    &decom,
-                       int               ncid,   /* file ID */
-                       var_meta_scorpio *vars,   /* variable metadata */
-                       int              *scorpiovars,
-                       io_buffers       *wr_buf)
+int def_F_case_scorpio(e3sm_io_driver &driver,
+                       e3sm_io_config &cfg,
+                       e3sm_io_decom  &decom,
+                       int             ncid,   /* file ID */
+                       var_meta       *vars,   /* variable metadata */
+                       io_buffers     *wr_buf)
 {
     int i, j, k;
-    var_meta_scorpio *varp;
-    int err, ndims, dimids[3], mdims = 1;
+    int err, ndims, dimids[3], mdims = 1, varid;
     int dim_ncol, dim_time, dim_nbnd, dim_chars, dim_lev, dim_ilev;
     int nblobs_ID, nelems_D[3], max_nreqs_D[3], dimids_D[3][3];
     int fix_D[3][3], rec_D[3][3];
@@ -226,6 +221,7 @@ int def_F_case_scorpio(e3sm_io_driver   &driver,
     std::map<int, std::string> dnames;
     char name[128];
     MPI_Offset nbnd, nchars, lev, ilev;
+    var_meta *varp;
 
     /* add global attributes: */
     err = add_gattrs (cfg, decom, driver, ncid);
@@ -241,28 +237,29 @@ int def_F_case_scorpio(e3sm_io_driver   &driver,
         int piodims[MAX_NUM_DECOMP];
         sprintf (name, "/__pio__/decomp/%d", (j + 512));
         err = driver.def_local_var(ncid, name, NC_INT64, 1, decom.raw_nreqs + j,
-                                   scorpiovars + j);
+                                   &varid);
         CHECK_ERR
+        vars[j].vid = varid;
 
         for (i = 0; i < decom.ndims[j]; i++) piodims[i] = (int)decom.dims[j][i];
 
-        err = driver.put_att(ncid, scorpiovars[j], "dimlen", NC_INT,
-                             decom.ndims[j], piodims);
+        err = driver.put_att(ncid, varid, "dimlen", NC_INT, decom.ndims[j],
+                             piodims);
         CHECK_ERR
-        err = driver.put_att(ncid, scorpiovars[j], "ndims", NC_INT, 1,
-                             decom.ndims + j);
+        err = driver.put_att(ncid, varid, "ndims", NC_INT, 1, decom.ndims + j);
         CHECK_ERR
 
         k = 6;
-        err = driver.put_att(ncid, scorpiovars[j], "piotype", NC_INT, 1, &k);
+        err = driver.put_att(ncid, varid, "piotype", NC_INT, 1, &k);
         CHECK_ERR
     }
     err = driver.def_local_var(ncid, "/__pio__/info/nproc", NC_INT, 0, NULL,
-                               scorpiovars + j);
+                               &varid);
     CHECK_ERR
+    vars[j].vid = varid;
 
     /* Total 414 climate variables (15 fixed-size and 399 record variables) */
-    varp = vars - 1;
+    varp = vars + j;
 
     /* below 10 are fixed-size climate variables ---------------------------*/
 
@@ -3963,10 +3960,14 @@ else {
     PUT_ATTR_DECOMP(two, 2, dimids_D[1])
     SET_VAR_META(REC_ITYPE, 1, 1, rec_buflen, decom.count[1])
 }
-    if (cfg.strategy == blob && cfg.api != adios)
-        assert (varp - vars + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
+    if (cfg.strategy == blob) {
+        if (cfg.api == adios)
+            assert (varp-vars+1 == cfg.nvars + decom.num_decomp + 1);
+        else
+            assert (varp-vars+1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
+    }
     else
-        assert (varp - vars + 1 == cfg.nvars);
+        assert (varp-vars+1 == cfg.nvars);
 
 err_out:
     return err;

@@ -24,23 +24,6 @@
 #include <e3sm_io_driver_adios2.hpp>
 #include <e3sm_io_driver_pnc.hpp>
 
-typedef struct {
-    int vid;        /* variable ID (ADIOS or NetCDF) */
-
-    int frame_id;    /* ADIOS ID */
-    int fillval_id;  /* ADIOS ID */
-    int decom_id;    /* ADIOS ID of decomposition map variable */
-    int piodecomid;  /* map IDs used on Scorpio starting at 512 */
-    int64_t dims[3]; /* dimension sizes */
-    int ndims;
-
-    int decomp_id;      /* decomposition map ID */
-    int isRecVar;       /* whether is a record variable */
-    size_t vlen;        /* length to be written by this rank */
-    MPI_Datatype itype; /* memory buffer of internal data type */
-} var_meta_scorpio;
-
-
 extern
 int e3sm_io_scorpio_define_dim (e3sm_io_driver &driver,
                                    int fid,
@@ -60,13 +43,13 @@ int e3sm_io_scorpio_define_var (e3sm_io_driver &driver,
                                    nc_type xtype,
                                    int ndims,
                                    int *dimids,
-                                   var_meta_scorpio *var);
+                                   var_meta *var);
 
 extern
 int e3sm_io_scorpio_write_var (e3sm_io_driver &driver,
                                   int frameid,
                                   int fid,
-                                  var_meta_scorpio &var,
+                                  var_meta &var,
                                   MPI_Datatype itype,
                                   void *buf,
                                   e3sm_io_op_mode mode);
@@ -81,21 +64,11 @@ int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
                                 void *buf);
 
 extern
-int e3sm_io_scorpio_put_att (e3sm_io_driver &driver,
-                                int fid,
-                                var_meta_scorpio &var,
-                                std::string name,
-                                nc_type xtype,
-                                MPI_Offset size,
-                                void *buf);
-
-extern
 int def_F_case_scorpio(e3sm_io_driver   &driver,
                        e3sm_io_config   &cfg,
                        e3sm_io_decom    &decom,
                        int               ncid,
-                       var_meta_scorpio *vars,
-                       int              *scorpiovars,
+                       var_meta         *vars,
                        io_buffers       *wr_buf);
 
 extern
@@ -103,8 +76,7 @@ int def_G_case_scorpio(e3sm_io_config   &cfg,
                        e3sm_io_decom    &decom,
                        e3sm_io_driver   &driver,
                        int               ncid, /* file ID */
-                       var_meta_scorpio *vars, /* variable IDs */
-                       int              *scorpiovars,
+                       var_meta         *vars, /* variable IDs */
                        io_buffers       *wr_buf);
 
 extern
@@ -112,8 +84,7 @@ int def_I_case_scorpio(e3sm_io_config   &cfg,
                        e3sm_io_decom    &decom,
                        e3sm_io_driver   &driver,
                        int               ncid,    /* file ID */
-                       var_meta_scorpio *vars,    /* variable metadata */
-                       int              *scorpiovars,
+                       var_meta         *vars,    /* variable metadata */
                        io_buffers       *wr_buf);
 
 extern
@@ -121,3 +92,4 @@ int var_wr_all_cases_scorpio(e3sm_io_config &cfg,
                              e3sm_io_decom  &decom,
                              e3sm_io_driver &driver,
                              case_meta      *cmeta);
+
