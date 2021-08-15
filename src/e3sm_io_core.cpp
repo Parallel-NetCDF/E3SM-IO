@@ -38,11 +38,9 @@
 #endif
 
 e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
-    int err                    = 0;
-    const char *cdf_signature  = "CDF";
-    const char *path;
+    int err=0, fd;
+    const char *cdf_signature="CDF", *path;
     char signature[8];
-    int fd;
     ssize_t rlen;
     e3sm_io_driver *driver = NULL;
 #ifdef ENABLE_HDF5
@@ -141,20 +139,25 @@ done_check:
         CHECK_MPIERR
     }
 
-    // Cannot infer by file content, use command-line option -a
+    /* For read tests, the read driver is determined by the format of input
+     * file. However, if the input file is an HDF5 in canonical layout, the
+     * read driver will be selected based on command-line option -a, because
+     * the file can be read either by the official release of HDF5 library or
+     * the develop branch that implements the multi-dataset APIs, not yet in
+     * the official release.
+     */
     switch (cfg->api) {
         case pnetcdf:
             driver = new e3sm_io_driver_pnc (cfg);
             break;
         case hdf5:
-#ifdef ENABLE_HDF5
+#ifndef ENABLE_HDF5
+            ERR_OUT ("HDF5 support was not enabled in this build")
+#endif
             if (cfg->strategy == blob)
                 driver = new e3sm_io_driver_h5blob (cfg);
             else
                 driver = new e3sm_io_driver_hdf5 (cfg);
-#else
-            ERR_OUT ("HDF5 support was not enabled in this build")
-#endif
             break;
 #ifdef E3SM_IO_DEBUG
         case hdf5_ra:
@@ -190,7 +193,7 @@ err_out:;
 }
 
 extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
-    int err, nerrs = 0;
+    int err=0;
     e3sm_io_case *tcase    = NULL;
     e3sm_io_driver *driver = NULL;
 
@@ -249,5 +252,5 @@ err_out:
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_CORE)
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_TOTAL)
 
-    return (err != 0) ? err : nerrs;
+    return err;
 }
