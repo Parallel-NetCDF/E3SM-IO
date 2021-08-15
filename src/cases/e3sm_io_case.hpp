@@ -6,7 +6,7 @@
  * This program is part of the E3SM I/O benchmark.
  *
  *********************************************************************/
-//
+
 #pragma once
 
 #include <vector>
@@ -15,8 +15,43 @@
 #include <e3sm_io.h>
 #include <e3sm_io_driver.hpp>
 
+#define BUF_GAP 10
+
+typedef struct {
+    size_t  gap;
+
+    /* buffers for fixed-size variables */
+    size_t  fix_txt_buflen; char   *fix_txt_buf;
+    size_t  fix_int_buflen; int    *fix_int_buf;
+    size_t  fix_dbl_buflen; double *fix_dbl_buf;
+    size_t  fix_buflen;     vtype  *fix_buf;
+
+    /* buffers for record variables */
+    size_t  rec_txt_buflen; char   *rec_txt_buf;
+    size_t  rec_int_buflen; int    *rec_int_buf;
+    size_t  rec_dbl_buflen; double *rec_dbl_buf;
+    size_t  rec_buflen;     vtype  *rec_buf;
+} io_buffers;
+
+typedef struct {
+    int vid;         /* variable ID */
+
+    int frame_id;    /* ID used by adios driver */
+    int fillval_id;  /* ID used by adios driver */
+    int decom_id;    /* ID of decomposition map variable used by adios driver */
+    int piodecomid;  /* map IDs used on Scorpio starting at 512 */
+    int64_t dims[3]; /* dimension sizes */
+    int ndims;       /* number of dimensions */
+
+    int decomp_id;      /* decomposition map ID, e.g. 0, 1, 2, ... */
+    int isRecVar;       /* whether is a record variable */
+    size_t vlen;        /* length to be written by this rank */
+    MPI_Datatype itype; /* memory buffer of internal data type */
+} var_meta;
+
 class e3sm_io_case {
     protected:
+        /* TODO: merge below buffer pointers for read test with wr_buf */
         double *dbl_buf_h0 = NULL, *dbl_buf_h1 = NULL;
         vtype  *rec_buf_h0 = NULL, *rec_buf_h1 = NULL;
         char   *txt_buf = NULL;
@@ -33,74 +68,62 @@ class e3sm_io_case {
                *D4_fix_int_buf = NULL,
                *D5_fix_int_buf = NULL;
 
+        io_buffers  wr_buf;  /* write buffers and length metadata */
+        var_meta   *vars;    /* variable metadata */
+
+        int var_wr_case(e3sm_io_config &cfg,
+                        e3sm_io_decom  &decom,
+                        e3sm_io_driver &driver,
+                        case_meta      *cmeta);
+
+        int  def_F_case(e3sm_io_config &cfg,
+                        e3sm_io_decom  &decom,
+                        e3sm_io_driver &driver,
+                        int             ncid);
+
+        int  def_G_case(e3sm_io_config &cfg,
+                        e3sm_io_decom  &decom,
+                        e3sm_io_driver &driver,
+                        int             ncid);
+
+        int  def_I_case(e3sm_io_config &cfg,
+                        e3sm_io_decom  &decom,
+                        e3sm_io_driver &driver,
+                        int             ncid);
+
+        int check_malloc(e3sm_io_config *cfg,
+                         e3sm_io_driver *driver);
+
+        void wr_buf_init(int gap);
+
+        int wr_buf_malloc(e3sm_io_config &cfg,
+                          int ffreq);
+
+        void wr_buf_free(void);
+
+        int def_var_decomp(e3sm_io_config &cfg,
+                           e3sm_io_decom  &decom,
+                           e3sm_io_driver &driver,
+                           int             ncid,
+                           int             dim_time,
+                           int             dim_nblobs,
+                           int             dim_max_nreqs[MAX_NUM_DECOMP],
+                           int             orig_dimids[MAX_NUM_DECOMP][4]);
+
     public:
          e3sm_io_case();
         ~e3sm_io_case();
+
         int wr_test(e3sm_io_config &cfg,
                     e3sm_io_decom  &decom,
                     e3sm_io_driver &driver);
+
         int rd_test(e3sm_io_config &cfg,
                     e3sm_io_decom  &decom,
                     e3sm_io_driver &driver);
 };
 
-#define BUF_GAP 10
-
-typedef struct {
-    int vid;         /* variable ID (ADIOS or NetCDF) */
-
-    int frame_id;    /* ADIOS ID */
-    int fillval_id;  /* ADIOS ID */
-    int decom_id;    /* ADIOS ID of decomposition map variable */
-    int piodecomid;  /* map IDs used on Scorpio starting at 512 */
-    int64_t dims[3]; /* dimension sizes */
-    int ndims;
-
-    int decomp_id;      /* decomposition map ID */
-    int isRecVar;       /* whether is a record variable */
-    size_t vlen;        /* length to be written by this rank */
-    MPI_Datatype itype; /* memory buffer of internal data type */
-} var_meta;
-
-typedef struct {
-    size_t  gap;
-
-    /* buffers for fixed-size variables */
-    size_t  fix_txt_buflen;
-    char   *fix_txt_buf;
-    size_t  fix_int_buflen;
-    int    *fix_int_buf;
-    size_t  fix_dbl_buflen;
-    double *fix_dbl_buf;
-    size_t  fix_buflen;
-    vtype  *fix_buf;
-
-    /* buffers for record variables */
-    size_t  rec_txt_buflen;
-    char   *rec_txt_buf;
-    size_t  rec_int_buflen;
-    int    *rec_int_buf;
-    size_t  rec_dbl_buflen;
-    double *rec_dbl_buf;
-    size_t  rec_buflen;
-    vtype  *rec_buf;
-} io_buffers;
-
-extern
-int var_wr_all_cases(e3sm_io_config &cfg,
-                     e3sm_io_decom  &decom,
-                     e3sm_io_driver &driver,
-                     case_meta      *cmeta);
-
 /*---- functions for F case -------------------------------------------------*/
-extern
-int def_F_case(e3sm_io_config &cfg,
-               e3sm_io_decom  &decom,
-               e3sm_io_driver &driver,
-               int             ncid,
-               var_meta       *vars,
-               io_buffers     *wr_buf);
-
 extern
 int inq_F_case_h0(e3sm_io_driver &driver,
                   int ncid,           /* file ID */
@@ -126,14 +149,6 @@ run_varn_F_case_rd(e3sm_io_config &cfg,
 
 
 /*---- functions for G case -------------------------------------------------*/
-extern
-int def_G_case(e3sm_io_config &cfg,
-               e3sm_io_decom  &decom,
-               e3sm_io_driver &driver,
-               int             ncid,
-               var_meta       *vars,
-               io_buffers     *wr_buf);
-
 extern int
 inq_G_case(e3sm_io_driver &driver,
               int ncid,              /* file ID */
@@ -162,40 +177,7 @@ run_varn_G_case_rd(e3sm_io_config &cfg,
                    double **D6_rec_dbl_bufp,  /* D6 rec double buffer */
                    double **D1_fix_dbl_bufp); /* D1 fix double buffer */
 
-/*---- functions for I case -------------------------------------------------*/
-extern
-int def_I_case(e3sm_io_config &cfg,
-               e3sm_io_decom  &decom,
-               e3sm_io_driver &driver,
-               int             ncid,
-               var_meta       *vars,
-               io_buffers     *wr_buf);
-
-extern
-int check_malloc(e3sm_io_config *cfg,
-                 e3sm_io_driver *driver);
-
-extern
-void wr_buf_init(io_buffers &buf, int gap);
-
-extern
-int wr_buf_malloc(e3sm_io_config &cfg, int ffreq, io_buffers &buf);
-
-extern
-void wr_buf_free(io_buffers &buf);
-
-
-extern
-int def_var_decomp(e3sm_io_config &cfg,
-                   e3sm_io_decom  &decom,
-                   e3sm_io_driver &driver,
-                   int             ncid,
-                   int             dim_time,
-                   int             nblobs_ID,
-                   int             max_nreqs_D[3],
-                   int             dimids_D[MAX_NUM_DECOMP][4],
-                   var_meta       *vars);
-
+/*---- wrapper functions for adios driver -----------------------------------*/
 extern
 int e3sm_io_scorpio_define_dim(e3sm_io_driver &driver,
                                int fid,
@@ -226,6 +208,7 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
                               void *buf,
                               e3sm_io_op_mode mode);
 
+/*---- MACROS used by header define functions -------------------------------*/
 
 #define CHECK_VAR_ERR(varid) {                                                \
     if (err != 0) {                                                           \
@@ -284,7 +267,7 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
                                                  : varlen;                    \
     varp->itype      = dtype;                                                 \
     varp->vlen       = vlen;                                                  \
-    wr_buf->buflen  += vlen + wr_buf->gap;                                    \
+    wr_buf.buflen  += vlen + wr_buf.gap;                                      \
 }
 #define DEF_VAR(name, xtype, ndims, dimids, decomid) {                        \
     int *dim_ids = dimids;                                                    \
@@ -300,7 +283,7 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
         if (decomid >= 0 && cfg.strategy == blob)                             \
             num_dims = varp->isRecVar ? 2 : 1; /* blob var is 1D or 2D */     \
         err = driver.def_var(ncid, name, xtype, num_dims, dimids, &varp->vid);\
-        if (cfg.strategy == blob && decomid >= 0) {                           \
+        if (decomid >= 0 && cfg.strategy == blob) {                           \
             int ival = decomid + 1;                                           \
             int *dimsp = orig_dimids[decomid];                                \
             if (!varp->isRecVar) dimsp = orig_dimids[decomid] + 1;            \
