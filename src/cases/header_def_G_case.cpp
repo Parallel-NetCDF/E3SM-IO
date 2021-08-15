@@ -796,19 +796,18 @@ err_out:
 }
 
 /*----< def_G_case() >-------------------------------------------------------*/
-int def_G_case(e3sm_io_config   &cfg,
-               e3sm_io_decom    &decom,
-               e3sm_io_driver   &driver,
-               int               ncid,    /* file ID */
-               var_meta         *vars,    /* variable metadata */
-               io_buffers       *wr_buf)
+int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
+                             e3sm_io_decom    &decom,
+                             e3sm_io_driver   &driver,
+                             int               ncid)    /* file ID */
 {
     /* Total 52 variables */
     char name[64];
-    int i, err, nprocs, nblobs_ID, ndims, dimids[2], nvars_decomp;
-    int nelems_D[MAX_NUM_DECOMP], max_nreqs_dimid[MAX_NUM_DECOMP];
+    int i, err, nprocs, ndims, dimids[2], nvars_decomp;
     int dim_time, dim_nCells, dim_nEdges, dim_nVertices, dim_StrLen;
-    int dim_nVertLevels, dim_nVertLevelsP1, orig_dimids[MAX_NUM_DECOMP][4];
+    int dim_nVertLevels, dim_nVertLevelsP1, dim_nblobs;
+    int dim_nelems[MAX_NUM_DECOMP], dim_max_nreqs[MAX_NUM_DECOMP];
+    int orig_dimids[MAX_NUM_DECOMP][4];
     int fix_dimids[MAX_NUM_DECOMP][3], rec_dimids[MAX_NUM_DECOMP][3];
     MPI_Offset nVertLevels, StrLen;
     std::map<int, std::string> dnames;
@@ -862,22 +861,22 @@ int def_G_case(e3sm_io_config   &cfg,
 
         /* additional dimensions to be used by decomposition variables */
         MPI_Comm_size(cfg.sub_comm, &nprocs);
-        DEF_DIM("nblobs", (MPI_Offset)nprocs, &nblobs_ID)
+        DEF_DIM("nblobs", (MPI_Offset)nprocs, &dim_nblobs)
 
         for (i=0; i<decom.num_decomp; i++) {
             sprintf(name, "D%d.nelems", i+1);
-            DEF_DIM(name, decom.nelems[i], &nelems_D[i])
+            DEF_DIM(name, decom.nelems[i], &dim_nelems[i])
         }
 
         for (i=0; i<decom.num_decomp; i++) {
             sprintf(name, "D%d.max_nreqs", i+1);
-            DEF_DIM(name, (MPI_Offset)decom.max_nreqs[i], &max_nreqs_dimid[i])
+            DEF_DIM(name, (MPI_Offset)decom.max_nreqs[i], &dim_max_nreqs[i])
         }
 
         for (i=0; i<decom.num_decomp; i++) {
-            fix_dimids[i][0] = nelems_D[i];
+            fix_dimids[i][0] = dim_nelems[i];
             rec_dimids[i][0] = dim_time;
-            rec_dimids[i][1] = nelems_D[i];
+            rec_dimids[i][1] = dim_nelems[i];
         }
     }
     else { /* canonical or ADIOS blob */
@@ -910,8 +909,8 @@ int def_G_case(e3sm_io_config   &cfg,
         else
             nvars_decomp = NVARS_DECOMP * decom.num_decomp;
 
-        err = def_var_decomp(cfg, decom, driver, ncid, dim_time, nblobs_ID,
-                             max_nreqs_dimid, orig_dimids, vars);
+        err = def_var_decomp(cfg, decom, driver, ncid, dim_time, dim_nblobs,
+                             dim_max_nreqs, orig_dimids);
         CHECK_ERR
     }
 

@@ -138,11 +138,11 @@
     if (rec_no == 0) nvars_D[dp]++;                                       \
 }
 
-/*----< var_wr_all_cases() >-------------------------------------------------*/
-int var_wr_all_cases(e3sm_io_config &cfg,
-                     e3sm_io_decom  &decom,
-                     e3sm_io_driver &driver,
-                     case_meta      *cmeta)
+/*----< var_wr_case() >------------------------------------------------------*/
+int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
+                              e3sm_io_decom  &decom,
+                              e3sm_io_driver &driver,
+                              case_meta      *cmeta)
 {
     char *fix_txt_buf_ptr, *rec_txt_buf_ptr;
     int i, j, err=0, sub_rank, global_rank, ncid=-1, nflushes=0;
@@ -152,8 +152,6 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     MPI_Offset previous_size, metadata_size, total_size;
     MPI_Comm comm;
     vtype *fix_buf_ptr, *rec_buf_ptr;
-    io_buffers wr_buf;
-    var_meta *vars;
 
     int contig_nreqs[MAX_NUM_DECOMP];
     MPI_Offset blob_start[MAX_NUM_DECOMP], blob_count[MAX_NUM_DECOMP];
@@ -210,14 +208,14 @@ int var_wr_all_cases(e3sm_io_config &cfg,
 
     if (cfg.non_contig_buf) gap = BUF_GAP;
 
-    wr_buf_init(wr_buf, gap);
+    wr_buf_init(gap);
 
     if (cfg.run_case == F)
-        err = def_F_case(cfg, decom, driver, ncid, vars, &wr_buf);
+        err = def_F_case(cfg, decom, driver, ncid);
     else if (cfg.run_case == G)
-        err = def_G_case(cfg, decom, driver, ncid, vars, &wr_buf);
+        err = def_G_case(cfg, decom, driver, ncid);
     else if (cfg.run_case == I)
-        err = def_I_case(cfg, decom, driver, ncid, vars, &wr_buf);
+        err = def_I_case(cfg, decom, driver, ncid);
     CHECK_ERR
 
     /* exit define mode and enter data mode */
@@ -241,7 +239,7 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     ffreq = (cfg.api == pnetcdf) ? cmeta->ffreq : 1;
 
     /* allocate write buffers */
-    wr_buf_malloc(cfg, ffreq, wr_buf);
+    wr_buf_malloc(cfg, ffreq);
 
     nvars_D = cmeta->nvars_D;
     for (j=0; j<decom.num_decomp; j++)
@@ -398,7 +396,7 @@ int var_wr_all_cases(e3sm_io_config &cfg,
     timing = MPI_Wtime();
 
     /* free up previously allocated heap memory space */
-    wr_buf_free(wr_buf);
+    wr_buf_free();
     if (vars != NULL) free(vars);
 
     FILE_CLOSE
