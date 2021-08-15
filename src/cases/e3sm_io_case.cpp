@@ -55,7 +55,7 @@ int e3sm_io_case::wr_test(e3sm_io_config &cfg,
         }
 
         cfg.nvars = cmeta->nvars;
-        err = var_wr_all_cases(cfg, decom, driver, cmeta);
+        err = var_wr_case(cfg, decom, driver, cmeta);
         CHECK_ERR
 
         goto err_out;
@@ -95,7 +95,7 @@ int e3sm_io_case::wr_test(e3sm_io_config &cfg,
 
         cfg.hist = h0;
         cfg.nvars = cmeta->nvars;
-        err = var_wr_all_cases(cfg, decom, driver, cmeta);
+        err = var_wr_case(cfg, decom, driver, cmeta);
         CHECK_ERR
     }
 
@@ -132,7 +132,7 @@ int e3sm_io_case::wr_test(e3sm_io_config &cfg,
 
         cfg.hist = h1;
         cfg.nvars = cmeta->nvars;
-        err = var_wr_all_cases(cfg, decom, driver, cmeta);
+        err = var_wr_case(cfg, decom, driver, cmeta);
         CHECK_ERR
     }
 
