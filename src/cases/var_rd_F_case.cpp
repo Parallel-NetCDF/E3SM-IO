@@ -23,16 +23,6 @@
 #include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
 
-#define CHECK_VAR_ERR(varid) {                                \
-    if (err != 0) {                                           \
-        char var_name[64];                                    \
-        driver.inq_var_name(ncid, varid, var_name);           \
-        printf("Error in %s:%d: %s() var %s\n"     ,          \
-               __FILE__, __LINE__, __func__, var_name);       \
-        goto err_out;                                         \
-    }                                                         \
-}
-
 #define IGET_VAR_DOUBLE(F, D, B, R)            driver.get_vara (F, D, MPI_DOUBLE, NULL, NULL, B, nb);
 #define IGET_VAR_FLOAT(F, D, B, R)             driver.get_vara (F, D, MPI_FLOAT, NULL, NULL, B, nb);
 #define IGET_VAR_INT(F, D, B, R)               driver.get_vara (F, D, MPI_INT, NULL, NULL, B, nb);

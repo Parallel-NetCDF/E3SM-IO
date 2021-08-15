@@ -199,7 +199,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
     /* Select test case */
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_INIT_CASE)
-    tcase = new e3sm_io_all_cases();
+    tcase = new e3sm_io_case();
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_CASE)
 
     /* perform read */
@@ -213,8 +213,8 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_RD)
         err = tcase->rd_test (*cfg, *decom, *driver);
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_RD)
         CHECK_ERR
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_RD)
 
         cfg->api = api_tmp;  // Restore API to user setting for write test
 
@@ -228,13 +228,13 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     if (cfg->wr) {
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_INIT_DRIVER)
         driver = e3sm_io_get_driver (NULL, cfg);
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_DRIVER)
         CHECK_PTR (driver)
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_DRIVER)
 
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_WR)
         err = tcase->wr_test (*cfg, *decom, *driver);
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_WR)
         CHECK_ERR
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_WR)
 
         if (driver) {
             delete driver;

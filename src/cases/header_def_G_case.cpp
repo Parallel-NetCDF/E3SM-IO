@@ -19,74 +19,6 @@
 #include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
 
-#define CHECK_VAR_ERR(varid) {                                               \
-    if (err != 0) {                                                          \
-        char var_name[64];                                                   \
-        driver.inq_var_name(ncid, varid, var_name);                          \
-        printf("Error in %s:%d: %s() var %s\n",                              \
-               __FILE__, __LINE__, __func__, var_name);                      \
-        goto err_out;                                                        \
-    }                                                                        \
-}
-#define DEF_DIM(name, num, dimid) {                                          \
-    err = driver.def_dim(ncid, name, num, dimid);                            \
-    CHECK_ERR                                                                \
-}
-#define DEF_VAR(name, type, ndims, dimids) {                                 \
-    err = driver.def_var(ncid, name, type, ndims, dimids, &varid);           \
-    if (err != 0) {                                                          \
-        printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__,      \
-               name);                                                        \
-        goto err_out;                                                        \
-    }                                                                        \
-}
-#define PUT_GATTR_TXT(name, buf) {                                           \
-    err = driver.put_att(ncid, NC_GLOBAL, name, NC_CHAR, strlen(buf), buf);  \
-    CHECK_ERR                                                                \
-}
-#define PUT_GATTR_INT(name, val) {                                           \
-    int buf = val;                                                           \
-    err = driver.put_att(ncid, NC_GLOBAL, name, NC_INT, 1, &buf); \
-    CHECK_ERR                                                                \
-}
-#define PUT_GATTR_DBL(name, val) {                                           \
-    double buf = val;                                                        \
-    err = driver.put_att(ncid, NC_GLOBAL, name, NC_DOUBLE, 1, &buf);         \
-    CHECK_ERR                                                                \
-}
-#define PUT_ATTR_TXT(name, buf) {                                            \
-    err = driver.put_att(ncid, varid, name, NC_CHAR, strlen(buf), buf);      \
-    CHECK_VAR_ERR(varid)                                                     \
-}
-#define PUT_ATTR_INT(name, num, buf) {                                       \
-    err = driver.put_att(ncid, varid, name, NC_INT, num, buf);               \
-    CHECK_VAR_ERR(varid)                                                     \
-}
-#define PUT_ATTR_FLOAT(name, num, buf) {                                     \
-    err = driver.put_att(ncid, varid, name, NC_FLOAT, num, buf);             \
-    CHECK_VAR_ERR(varid)                                                     \
-}
-#define PUT_ATTR_INT64(name, num, buf) {                                     \
-    err = driver.put_att(ncid, varid, name, NC_INT64, num, buf);             \
-    CHECK_VAR_ERR(varid)                                                     \
-}
-#define PUT_ATTR_DECOMP(D, ndims, dimids) {                                   \
-    if (cfg.strategy == blob && cfg.api != adios) {                           \
-        err = driver.put_att(ncid,varid,"decomposition_ID",NC_INT,1,&D);      \
-        CHECK_VAR_ERR(varid)                                                  \
-        err = driver.put_att(ncid,varid,"global_dimids",NC_INT,ndims,dimids); \
-        CHECK_VAR_ERR(varid)                                                  \
-    }                                                                         \
-}
-#define SET_VAR_META(dtype, id, rec, buflen, varlen) { \
-    vars[varid].vid       = varid;                     \
-    vars[varid].itype     = dtype;                     \
-    vars[varid].decomp_id = id;                        \
-    vars[varid].isRecVar  = rec;                       \
-    vars[varid].vlen      = varlen;                    \
-    wr_buf->buflen       += varlen + wr_buf->gap;      \
-}
-
 /*----< add_gattrs() >-------------------------------------------------------*/
 static
 int add_gattrs(e3sm_io_config &cfg,
@@ -95,6 +27,8 @@ int add_gattrs(e3sm_io_config &cfg,
                int             ncid)
 {
     int err=0, nprocs;
+
+#define prefix
 
     /* save number of processes as global attributes */
     if (cfg.strategy == blob) {
@@ -871,16 +805,20 @@ int def_G_case(e3sm_io_config   &cfg,
 {
     /* Total 52 variables */
     char name[64];
-    int one=1, two=2, three=3, four=4, five=5, six=6;
-    int i, err, nprocs, nprocs_ID, ndims, dimids[2], varid;
+    int i, err, nprocs, nblobs_ID, ndims, dimids[2], nvars_decomp;
     int nelems_D[MAX_NUM_DECOMP], max_nreqs_dimid[MAX_NUM_DECOMP];
-    int dim_Time, dim_nCells, dim_nEdges, dim_nVertices, dim_StrLen;
-    int dim_nVertLevels, dim_nVertLevelsP1, orig_dimids[MAX_NUM_DECOMP][3];
+    int dim_time, dim_nCells, dim_nEdges, dim_nVertices, dim_StrLen;
+    int dim_nVertLevels, dim_nVertLevelsP1, orig_dimids[MAX_NUM_DECOMP][4];
     int fix_dimids[MAX_NUM_DECOMP][3], rec_dimids[MAX_NUM_DECOMP][3];
     MPI_Offset nVertLevels, StrLen;
+    std::map<int, std::string> dnames;
+    var_meta *varp;
  
+    /* add global attributes */
     err = add_gattrs(cfg, decom, driver, ncid);
     CHECK_ERR
+
+    /* define dimensions */
 
     /* GMPAS-NYF_T62_oRRS18to6v3.mpaso.hist.0001-01-01_00000
       nCells        =  3693225 ;
@@ -903,7 +841,7 @@ int def_G_case(e3sm_io_config   &cfg,
     StrLen      = 64 ;
 
     /* define dimensions */
-    DEF_DIM("Time",          NC_UNLIMITED,     &dim_Time)
+    DEF_DIM("Time",          NC_UNLIMITED,     &dim_time)
     DEF_DIM("nCells",        decom.dims[0][0], &dim_nCells)
     DEF_DIM("nEdges",        decom.dims[1][0], &dim_nEdges)
     DEF_DIM("nVertices",     decom.dims[4][0], &dim_nVertices)
@@ -913,7 +851,7 @@ int def_G_case(e3sm_io_config   &cfg,
 
     if (cfg.strategy == blob && cfg.api != adios) {
         for (i=0; i<decom.num_decomp; i++)
-            orig_dimids[i][0] = dim_Time;
+            orig_dimids[i][0] = dim_time;
 
         orig_dimids[0][1] = dim_nCells;
         orig_dimids[1][1] = dim_nEdges;
@@ -924,7 +862,7 @@ int def_G_case(e3sm_io_config   &cfg,
 
         /* additional dimensions to be used by decomposition variables */
         MPI_Comm_size(cfg.sub_comm, &nprocs);
-        DEF_DIM("nblobs", (MPI_Offset)nprocs, &nprocs_ID)
+        DEF_DIM("nblobs", (MPI_Offset)nprocs, &nblobs_ID)
 
         for (i=0; i<decom.num_decomp; i++) {
             sprintf(name, "D%d.nelems", i+1);
@@ -938,7 +876,7 @@ int def_G_case(e3sm_io_config   &cfg,
 
         for (i=0; i<decom.num_decomp; i++) {
             fix_dimids[i][0] = nelems_D[i];
-            rec_dimids[i][0] = dim_Time;
+            rec_dimids[i][0] = dim_time;
             rec_dimids[i][1] = nelems_D[i];
         }
     }
@@ -950,12 +888,12 @@ int def_G_case(e3sm_io_config   &cfg,
         fix_dimids[4][0] = dim_nVertices; fix_dimids[4][1] = dim_nVertLevels;
         fix_dimids[5][0] = dim_nCells;    fix_dimids[5][1] = dim_nVertLevelsP1;
 
-        rec_dimids[0][0] = dim_Time;
-        rec_dimids[1][0] = dim_Time;
-        rec_dimids[2][0] = dim_Time;
-        rec_dimids[3][0] = dim_Time;
-        rec_dimids[4][0] = dim_Time;
-        rec_dimids[5][0] = dim_Time;
+        rec_dimids[0][0] = dim_time;
+        rec_dimids[1][0] = dim_time;
+        rec_dimids[2][0] = dim_time;
+        rec_dimids[3][0] = dim_time;
+        rec_dimids[4][0] = dim_time;
+        rec_dimids[5][0] = dim_time;
         rec_dimids[0][1] = dim_nCells;
         rec_dimids[1][1] = dim_nEdges;
         rec_dimids[2][1] = dim_nCells;    rec_dimids[2][2] = dim_nVertLevels;
@@ -964,429 +902,370 @@ int def_G_case(e3sm_io_config   &cfg,
         rec_dimids[5][1] = dim_nCells;    rec_dimids[5][2] = dim_nVertLevelsP1;
     }
 
-    /* define decomposition variables */
-    if (cfg.strategy == blob && cfg.api != adios) {
-        for (i=0; i<decom.num_decomp; i++) {
-            dimids[0] = nprocs_ID;
-            dimids[1] = max_nreqs_dimid[i];
-            sprintf(name, "D%d.nreqs", i+1);
-            DEF_VAR(name, NC_INT, 1, dimids)
-            PUT_ATTR_TXT("description", "Number of noncontiguous requests per blob")
-            PUT_ATTR_INT("global_dimids", decom.ndims[i], orig_dimids[i]+1)
-            vars[varid].decomp_id = -1;
-            sprintf(name, "D%d.blob_start", i+1);
-            DEF_VAR(name, NC_INT64, 1, dimids)
-            PUT_ATTR_TXT("description", "Starting variable array index per blob")
-            vars[varid].decomp_id = -1;
-            sprintf(name, "D%d.blob_count", i+1);
-            DEF_VAR(name, NC_INT64, 1, dimids)
-            PUT_ATTR_TXT("description", "Number of variable array elements per blob")
-            vars[varid].decomp_id = -1;
-            sprintf(name, "D%d.offsets", i+1);
-            DEF_VAR(name, NC_INT, 2, dimids)
-            PUT_ATTR_TXT("description", "Flattened starting indices of noncontiguous requests")
-            vars[varid].decomp_id = -1;
-            sprintf(name, "D%d.lengths", i+1);
-            DEF_VAR(name, NC_INT, 2, dimids)
-            PUT_ATTR_TXT("description", "Lengths of noncontiguous requests")
-            vars[varid].decomp_id = -1;
-        }
+    /* define variables related to decompositions */
+    nvars_decomp = 0;
+    if (cfg.strategy == blob) {
+        if (cfg.api == adios)
+            nvars_decomp = decom.num_decomp + 1;
+        else
+            nvars_decomp = NVARS_DECOMP * decom.num_decomp;
+
+        err = def_var_decomp(cfg, decom, driver, ncid, dim_time, nblobs_ID,
+                             max_nreqs_dimid, orig_dimids, vars);
+        CHECK_ERR
     }
 
     /* define 52 climate variables (11 fixed-size and 41 record variables) */
+    varp = vars + nvars_decomp - 1;
 
     /* double salinitySurfaceRestoringTendency(Time, nCells) */
-    DEF_VAR("salinitySurfaceRestoringTendency", NC_DOUBLE, 2, rec_dimids[0])
+    DEF_VAR("salinitySurfaceRestoringTendency", NC_DOUBLE, 2, rec_dimids[0], 0)
     PUT_ATTR_TXT("units", "m PSU/s")
     PUT_ATTR_TXT("long_name", "salinity tendency due to surface restoring")
-    PUT_ATTR_DECOMP(one, 2, orig_dimids[0])
-    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[0])
 
     /* double vertTransportVelocityTop(Time, nCells, nVertLevelsP1) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("vertTransportVelocityTop", NC_DOUBLE, ndims, rec_dimids[5])
+    DEF_VAR("vertTransportVelocityTop", NC_DOUBLE, ndims, rec_dimids[5], 5)
     PUT_ATTR_TXT("units", "m s^{-1}")
     PUT_ATTR_TXT("long_name", "vertical tracer-transport velocity defined at center (horizontally) and top (vertically) of cell.  This is not the vertical ALE transport, but is Eulerian (fixed-frame) in the vertical, and computed from the continuity equation from the horizontal total tracer-transport velocity.")
-    PUT_ATTR_DECOMP(six, 3, orig_dimids[5])
-    SET_VAR_META(REC_ITYPE, 5, 1, rec_buflen, decom.count[5])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[5])
 
     /* double vertGMBolusVelocityTop(Time, nCells, nVertLevelsP1) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("vertGMBolusVelocityTop", NC_DOUBLE, ndims, rec_dimids[5])
+    DEF_VAR("vertGMBolusVelocityTop", NC_DOUBLE, ndims, rec_dimids[5], 5)
     PUT_ATTR_TXT("units", "m s^{-1}")
     PUT_ATTR_TXT("long_name", "vertical tracer-transport velocity defined at center (horizontally) and top (vertically) of cell.  This is not the vertical ALE transport, but is Eulerian (fixed-frame) in the vertical, and computed from the continuity equation from the horizontal GM Bolus velocity.")
-    PUT_ATTR_DECOMP(six, 3, orig_dimids[5])
-    SET_VAR_META(REC_ITYPE, 5, 1, rec_buflen, decom.count[5])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[5])
 
     /* double vertAleTransportTop(Time, nCells, nVertLevelsP1) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("vertAleTransportTop", NC_DOUBLE, ndims, rec_dimids[5])
+    DEF_VAR("vertAleTransportTop", NC_DOUBLE, ndims, rec_dimids[5], 5)
     PUT_ATTR_TXT("units", "m s^{-1}")
     PUT_ATTR_TXT("long_name", "vertical transport through the layer interface at the top of the cell")
-    PUT_ATTR_DECOMP(six, 3, orig_dimids[5])
-    SET_VAR_META(REC_ITYPE, 5, 1, rec_buflen, decom.count[5])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[5])
 
     /* double tendSSH(Time, nCells) */
-    DEF_VAR("tendSSH", NC_DOUBLE, 2, rec_dimids[0])
+    DEF_VAR("tendSSH", NC_DOUBLE, 2, rec_dimids[0], 0)
     PUT_ATTR_TXT("units", "m s^{-1}")
     PUT_ATTR_TXT("long_name", "time tendency of sea-surface height")
-    PUT_ATTR_DECOMP(one, 2, orig_dimids[0])
-    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[0])
 
     /* double layerThickness(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("layerThickness", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("layerThickness", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "layer thickness")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double normalVelocity(Time, nEdges, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("normalVelocity", NC_DOUBLE, ndims, rec_dimids[3])
+    DEF_VAR("normalVelocity", NC_DOUBLE, ndims, rec_dimids[3], 3)
     PUT_ATTR_TXT("units", "m s^{-1}")
     PUT_ATTR_TXT("long_name", "horizonal velocity, normal component to an edge")
-    PUT_ATTR_DECOMP(four, 3, orig_dimids[3])
-    SET_VAR_META(REC_ITYPE, 3, 1, rec_buflen, decom.count[3])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[3])
 
     /* double ssh(Time, nCells) */
-    DEF_VAR("ssh", NC_DOUBLE, 2, rec_dimids[0])
+    DEF_VAR("ssh", NC_DOUBLE, 2, rec_dimids[0], 0)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "sea surface height")
-    PUT_ATTR_DECOMP(one, 2, orig_dimids[0])
-    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[0])
 
     /* int maxLevelEdgeTop(nEdges) */
-    DEF_VAR("maxLevelEdgeTop", NC_INT, 1, fix_dimids[1])
+    DEF_VAR("maxLevelEdgeTop", NC_INT, 1, fix_dimids[1], 1)
     PUT_ATTR_TXT("units", "unitless")
     PUT_ATTR_TXT("long_name", "Index to the last edge in a column with active ocean cells on both sides of it.")
-    PUT_ATTR_DECOMP(two, 1, orig_dimids[1]+1)
-    SET_VAR_META(MPI_INT, 1, 0, fix_int_buflen, decom.count[1])
+    SET_VAR_META(MPI_INT, fix_int_buflen, decom.count[1])
 
     /* double vertCoordMovementWeights(nVertLevels) */
-    DEF_VAR("vertCoordMovementWeights", NC_DOUBLE, 1, &dim_nVertLevels)
+    DEF_VAR("vertCoordMovementWeights", NC_DOUBLE, 1, &dim_nVertLevels, -1)
     PUT_ATTR_TXT("units", "unitless")
     PUT_ATTR_TXT("long_name", "Weights used for distribution of sea surface height perturbations through multiple vertical levels.")
-    SET_VAR_META(REC_ITYPE, -1, 0, fix_buflen, nVertLevels)
+    SET_VAR_META(REC_ITYPE, fix_buflen, nVertLevels)
 
     /* int edgeMask(nEdges, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 1 : 2;
-    DEF_VAR("edgeMask", NC_INT, ndims, fix_dimids[3])
+    DEF_VAR("edgeMask", NC_INT, ndims, fix_dimids[3], 3)
     PUT_ATTR_TXT("units", "unitless")
     PUT_ATTR_TXT("long_name", "Mask on edges that determines if computations should be done on edges.")
-    PUT_ATTR_DECOMP(four, 2, orig_dimids[3]+1)
-    SET_VAR_META(MPI_INT, 3, 0, fix_int_buflen, decom.count[3])
+    SET_VAR_META(MPI_INT, fix_int_buflen, decom.count[3])
 
     /* int cellMask(nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 1 : 2;
-    DEF_VAR("cellMask", NC_INT, ndims, fix_dimids[2])
+    DEF_VAR("cellMask", NC_INT, ndims, fix_dimids[2], 2)
     PUT_ATTR_TXT("units", "unitless")
     PUT_ATTR_TXT("long_name", "Mask on cells that determines if computations should be done on cells.")
-    PUT_ATTR_DECOMP(three, 2, orig_dimids[2]+1)
-    SET_VAR_META(MPI_INT, 2, 0, fix_int_buflen, decom.count[2])
+    SET_VAR_META(MPI_INT, fix_int_buflen, decom.count[2])
 
     /* int vertexMask(nVertices, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 1 : 2;
-    DEF_VAR("vertexMask", NC_INT, ndims, fix_dimids[4])
+    DEF_VAR("vertexMask", NC_INT, ndims, fix_dimids[4], 4)
     PUT_ATTR_TXT("units", "unitless")
     PUT_ATTR_TXT("long_name", "Mask on vertices that determines if computations should be done on vertices.")
-    PUT_ATTR_DECOMP(five, 2, orig_dimids[4]+1)
-    SET_VAR_META(MPI_INT, 4, 0, fix_int_buflen, decom.count[4])
+    SET_VAR_META(MPI_INT, fix_int_buflen, decom.count[4])
 
     /* double refZMid(nVertLevels) */
-    DEF_VAR("refZMid", NC_DOUBLE, 1, &dim_nVertLevels)
+    DEF_VAR("refZMid", NC_DOUBLE, 1, &dim_nVertLevels, -1)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "Reference mid z-coordinate of ocean for each vertical level. This has a negative value.")
-    SET_VAR_META(REC_ITYPE, -1, 0, fix_buflen, nVertLevels)
+    SET_VAR_META(REC_ITYPE, fix_buflen, nVertLevels)
 
     /* double refLayerThickness(nVertLevels) */
-    DEF_VAR("refLayerThickness", NC_DOUBLE, 1, &dim_nVertLevels)
+    DEF_VAR("refLayerThickness", NC_DOUBLE, 1, &dim_nVertLevels, -1)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "Reference layerThickness of ocean for each vertical level.")
-    SET_VAR_META(REC_ITYPE, -1, 0, fix_buflen, nVertLevels)
+    SET_VAR_META(REC_ITYPE, fix_buflen, nVertLevels)
 
     /* char xtime(Time, StrLen) */
-    dimids[0] = dim_Time;
+    dimids[0] = dim_time;
     dimids[1] = dim_StrLen;
-    DEF_VAR("xtime", NC_CHAR, 2, dimids)
+    DEF_VAR("xtime", NC_CHAR, 2, dimids, -1)
     PUT_ATTR_TXT("units", "unitless")
     PUT_ATTR_TXT("long_name", "model time, with format \'YYYY-MM-DD_HH:MM:SS\'")
-    SET_VAR_META(MPI_CHAR, -1, 1, rec_txt_buflen, StrLen)
+    SET_VAR_META(MPI_CHAR, rec_txt_buflen, StrLen)
 
     /* double kineticEnergyCell(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("kineticEnergyCell", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("kineticEnergyCell", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "m^2 s^{-2}")
     PUT_ATTR_TXT("long_name", "kinetic energy of horizontal velocity on cells")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double relativeVorticityCell(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("relativeVorticityCell", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("relativeVorticityCell", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "s^{-1}")
     PUT_ATTR_TXT("long_name", "curl of horizontal velocity, averaged from vertices to cell centers")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double relativeVorticity(Time, nVertices, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("relativeVorticity", NC_DOUBLE, ndims, rec_dimids[4])
+    DEF_VAR("relativeVorticity", NC_DOUBLE, ndims, rec_dimids[4], 4)
     PUT_ATTR_TXT("units", "s^{-1}")
     PUT_ATTR_TXT("long_name", "curl of horizontal velocity, defined at vertices")
-    PUT_ATTR_DECOMP(five, 3, orig_dimids[4])
-    SET_VAR_META(REC_ITYPE, 4, 1, rec_buflen, decom.count[4])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[4])
 
     /* double divergence(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("divergence", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("divergence", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "s^{-1}")
     PUT_ATTR_TXT("long_name", "divergence of horizontal velocity")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double areaCellGlobal(Time) */
-    DEF_VAR("areaCellGlobal", NC_DOUBLE, 1, &dim_Time)
+    DEF_VAR("areaCellGlobal", NC_DOUBLE, 1, &dim_time, -1)
     PUT_ATTR_TXT("units", "m^2")
     PUT_ATTR_TXT("long_name", "sum of the areaCell variable over the full domain, used to normalize global statistics")
-    SET_VAR_META(REC_ITYPE, -1, 1, rec_buflen, 1)
+    SET_VAR_META(REC_ITYPE, rec_buflen, 1)
 
     /* double areaEdgeGlobal(Time) */
-    DEF_VAR("areaEdgeGlobal", NC_DOUBLE, 1, &dim_Time)
+    DEF_VAR("areaEdgeGlobal", NC_DOUBLE, 1, &dim_time, -1)
     PUT_ATTR_TXT("units", "m^2")
     PUT_ATTR_TXT("long_name", "sum of the areaEdge variable over the full domain, used to normalize global statistics")
-    SET_VAR_META(REC_ITYPE, -1, 1, rec_buflen, 1)
+    SET_VAR_META(REC_ITYPE, rec_buflen, 1)
 
     /* double areaTriangleGlobal(Time) */
-    DEF_VAR("areaTriangleGlobal", NC_DOUBLE, 1, &dim_Time)
+    DEF_VAR("areaTriangleGlobal", NC_DOUBLE, 1, &dim_time, -1)
     PUT_ATTR_TXT("units", "m^2")
     PUT_ATTR_TXT("long_name", "sum of the areaTriangle variable over the full domain, used to normalize global statistics")
-    SET_VAR_META(REC_ITYPE, -1, 1, rec_buflen, 1)
+    SET_VAR_META(REC_ITYPE, rec_buflen, 1)
 
     /* double volumeCellGlobal(Time) */
-    DEF_VAR("volumeCellGlobal", NC_DOUBLE, 1, &dim_Time)
+    DEF_VAR("volumeCellGlobal", NC_DOUBLE, 1, &dim_time, -1)
     PUT_ATTR_TXT("units", "m^3")
     PUT_ATTR_TXT("long_name", "sum of the volumeCell variable over the full domain, used to normalize global statistics")
-    SET_VAR_META(REC_ITYPE, -1, 1, rec_buflen, 1)
+    SET_VAR_META(REC_ITYPE, rec_buflen, 1)
 
     /* double volumeEdgeGlobal(Time) */
-    DEF_VAR("volumeEdgeGlobal", NC_DOUBLE, 1, &dim_Time)
+    DEF_VAR("volumeEdgeGlobal", NC_DOUBLE, 1, &dim_time, -1)
     PUT_ATTR_TXT("units", "m^3")
     PUT_ATTR_TXT("long_name", "sum of the volumeEdge variable over the full domain, used to normalize global statistics")
-    SET_VAR_META(REC_ITYPE, -1, 1, rec_buflen, 1)
+    SET_VAR_META(REC_ITYPE, rec_buflen, 1)
 
     /* double CFLNumberGlobal(Time) */
-    DEF_VAR("CFLNumberGlobal", NC_DOUBLE, 1, &dim_Time)
+    DEF_VAR("CFLNumberGlobal", NC_DOUBLE, 1, &dim_time, -1)
     PUT_ATTR_TXT("units", "unitless")
     PUT_ATTR_TXT("long_name", "maximum CFL number over the full domain")
-    SET_VAR_META(REC_ITYPE, -1, 1, rec_buflen, 1)
+    SET_VAR_META(REC_ITYPE, rec_buflen, 1)
 
     /* double BruntVaisalaFreqTop(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("BruntVaisalaFreqTop", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("BruntVaisalaFreqTop", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "s^{-2}")
     PUT_ATTR_TXT("long_name", "Brunt Vaisala frequency defined at the center (horizontally) and top (vertically) of cell")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double vertVelocityTop(Time, nCells, nVertLevelsP1) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("vertVelocityTop", NC_DOUBLE, ndims, rec_dimids[5])
+    DEF_VAR("vertVelocityTop", NC_DOUBLE, ndims, rec_dimids[5], 5)
     PUT_ATTR_TXT("units", "m s^{-1}")
     PUT_ATTR_TXT("long_name", "vertical velocity defined at center (horizontally) and top (vertically) of cell")
-    PUT_ATTR_DECOMP(six, 3, orig_dimids[5])
-    SET_VAR_META(REC_ITYPE, 5, 1, rec_buflen, decom.count[5])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[5])
 
     /* double velocityZonal(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("velocityZonal", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("velocityZonal", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "m s^{-1}")
     PUT_ATTR_TXT("long_name", "component of horizontal velocity in the eastward direction")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double velocityMeridional(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("velocityMeridional", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("velocityMeridional", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "m s^{-1}")
     PUT_ATTR_TXT("long_name", "component of horizontal velocity in the northward direction")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double displacedDensity(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("displacedDensity", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("displacedDensity", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "kg m^{-3}")
     PUT_ATTR_TXT("long_name", "Density displaced adiabatically to the mid-depth one layer deeper.  That is, layer k has been displaced to the depth of layer k+1.")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double potentialDensity(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("potentialDensity", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("potentialDensity", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "kg m^{-3}")
     PUT_ATTR_TXT("long_name", "potential density: density displaced adiabatically to the mid-depth of top layer")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double pressure(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("pressure", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("pressure", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "N m^{-2}")
     PUT_ATTR_TXT("long_name", "pressure used in the momentum equation")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double refBottomDepth(nVertLevels) */
-    DEF_VAR("refBottomDepth", NC_DOUBLE, 1, &dim_nVertLevels)
+    DEF_VAR("refBottomDepth", NC_DOUBLE, 1, &dim_nVertLevels, -1)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "Reference depth of ocean for each vertical level. Used in \'z-level\' type runs.")
-    SET_VAR_META(REC_ITYPE, -1, 0, fix_buflen, nVertLevels)
+    SET_VAR_META(REC_ITYPE, fix_buflen, nVertLevels)
 
     /* double zMid(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("zMid", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("zMid", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "z-coordinate of the mid-depth of the layer")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double bottomDepth(nCells) */
-    DEF_VAR("bottomDepth", NC_DOUBLE, 1, fix_dimids[0])
+    DEF_VAR("bottomDepth", NC_DOUBLE, 1, fix_dimids[0], 0)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "Depth of the bottom of the ocean. Given as a positive distance from sea level.")
-    PUT_ATTR_DECOMP(one, 1, orig_dimids[0]+1)
-    SET_VAR_META(REC_ITYPE, 0, 0, fix_buflen, decom.count[0])
+    SET_VAR_META(REC_ITYPE, fix_buflen, decom.count[0])
 
     /* int maxLevelCell(nCells) */
-    DEF_VAR("maxLevelCell", NC_INT, 1, fix_dimids[0])
+    DEF_VAR("maxLevelCell", NC_INT, 1, fix_dimids[0], 0)
     PUT_ATTR_TXT("units", "unitless")
     PUT_ATTR_TXT("long_name", "Index to the last active ocean cell in each column.")
-    PUT_ATTR_DECOMP(one, 1, orig_dimids[0]+1)
-    SET_VAR_META(MPI_INT, 0, 0, fix_int_buflen, decom.count[0])
+    SET_VAR_META(MPI_INT, fix_int_buflen, decom.count[0])
 
     /* int maxLevelEdgeBot(nEdges) */
-    DEF_VAR("maxLevelEdgeBot", NC_INT, 1, fix_dimids[1])
+    DEF_VAR("maxLevelEdgeBot", NC_INT, 1, fix_dimids[1], 1)
     PUT_ATTR_TXT("units", "unitless")
     PUT_ATTR_TXT("long_name", "Index to the last edge in a column with at least one active ocean cell on either side of it.")
-    PUT_ATTR_DECOMP(two, 1, orig_dimids[1]+1)
-    SET_VAR_META(MPI_INT, 1, 0, fix_int_buflen, decom.count[1])
+    SET_VAR_META(MPI_INT, fix_int_buflen, decom.count[1])
 
     /* double columnIntegratedSpeed(Time, nCells) */
-    DEF_VAR("columnIntegratedSpeed", NC_DOUBLE, 2, rec_dimids[0])
+    DEF_VAR("columnIntegratedSpeed", NC_DOUBLE, 2, rec_dimids[0], 0)
     PUT_ATTR_TXT("units", "m^2 s^{-1}")
     PUT_ATTR_TXT("long_name", "speed = sum(h*sqrt(2*ke)), where ke is kineticEnergyCell and the sum is over the full column at cell centers.")
-    PUT_ATTR_DECOMP(one, 2, orig_dimids[0])
-    SET_VAR_META(REC_ITYPE, 0, 1, rec_buflen, decom.count[0])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[0])
 
     /* double temperatureHorizontalAdvectionTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("temperatureHorizontalAdvectionTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("temperatureHorizontalAdvectionTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "potential temperature tendency due to horizontal advection")
     PUT_ATTR_TXT("units", "degrees Celsius per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double salinityHorizontalAdvectionTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("salinityHorizontalAdvectionTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("salinityHorizontalAdvectionTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "salinity tendency due to horizontal advection")
     PUT_ATTR_TXT("units", "PSU per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double temperatureVerticalAdvectionTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("temperatureVerticalAdvectionTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("temperatureVerticalAdvectionTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "potential temperature tendency due to vertical advection")
     PUT_ATTR_TXT("units", "degrees Celsius per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double salinityVerticalAdvectionTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("salinityVerticalAdvectionTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("salinityVerticalAdvectionTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "salinity tendency due to vertical advection")
     PUT_ATTR_TXT("units", "PSU per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double temperatureVertMixTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("temperatureVertMixTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("temperatureVertMixTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "potential temperature tendency due to vertical mixing")
     PUT_ATTR_TXT("units", "degrees Celsius per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double salinityVertMixTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("salinityVertMixTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("salinityVertMixTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "salinity tendency due to vertical mixing")
     PUT_ATTR_TXT("units", "PSU per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double temperatureSurfaceFluxTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("temperatureSurfaceFluxTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("temperatureSurfaceFluxTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "potential temperature tendency due to surface fluxes")
     PUT_ATTR_TXT("units", "degrees Celsius per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double salinitySurfaceFluxTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("salinitySurfaceFluxTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("salinitySurfaceFluxTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "salinity tendency due to surface fluxes")
     PUT_ATTR_TXT("units", "PSU per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double temperatureShortWaveTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("temperatureShortWaveTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("temperatureShortWaveTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("units", "degrees Celsius per second")
     PUT_ATTR_TXT("long_name", "potential temperature tendency due to penetrating shortwave")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double temperatureNonLocalTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("temperatureNonLocalTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("temperatureNonLocalTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "potential temperature tendency due to kpp non-local flux")
     PUT_ATTR_TXT("units", "degrees Celsius per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double salinityNonLocalTendency(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("salinityNonLocalTendency", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("salinityNonLocalTendency", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "salinity tendency due to kpp non-local flux")
     PUT_ATTR_TXT("units", "PSU per second")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double temperature(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("temperature", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("temperature", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "potential temperature")
     PUT_ATTR_TXT("units", "degrees Celsius")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
     /* double salinity(Time, nCells, nVertLevels) */
     ndims = (cfg.strategy == blob) ? 2 : 3;
-    DEF_VAR("salinity", NC_DOUBLE, ndims, rec_dimids[2])
+    DEF_VAR("salinity", NC_DOUBLE, ndims, rec_dimids[2], 2)
     PUT_ATTR_TXT("long_name", "salinity")
     PUT_ATTR_TXT("units", "grams salt per kilogram seawater")
-    PUT_ATTR_DECOMP(three, 3, orig_dimids[2])
-    SET_VAR_META(REC_ITYPE, 2, 1, rec_buflen, decom.count[2])
+    SET_VAR_META(REC_ITYPE, rec_buflen, decom.count[2])
 
-    if (cfg.strategy == blob && cfg.api != adios)
-        assert(varid + 1 == cfg.nvars + NVARS_DECOMP*decom.num_decomp);
-    else
-        assert(varid + 1 == cfg.nvars);
+    assert(varp - vars + 1 == cfg.nvars + nvars_decomp);
 
 err_out:
     return err;

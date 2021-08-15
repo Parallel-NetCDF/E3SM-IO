@@ -11,7 +11,7 @@ AM_CPPFLAGS += -I${top_srcdir}/src/cases
 
 noinst_LIBRARIES = libe3sm_io_cases.a
 
-CXX_SRCS =  e3sm_io_all_cases.cpp \
+CXX_SRCS =  e3sm_io_case.cpp \
             header_def_F_case.cpp \
             header_def_G_case.cpp \
             header_def_I_case.cpp \
@@ -19,20 +19,12 @@ CXX_SRCS =  e3sm_io_all_cases.cpp \
             header_inq_G_case.cpp \
             var_rd_F_case.cpp \
             var_rd_G_case.cpp \
-            var_wr_all_cases.cpp \
+            var_wr_case.cpp \
+            scorpio_wrapper.cpp \
             report_timing.cpp \
             utils.cpp
 
 H_SRCS =    e3sm_io_case.hpp
-
-if ENABLE_ADIOS2
-CXX_SRCS += header_def_F_case_scorpio.cpp \
-            header_def_G_case_scorpio.cpp \
-            header_def_I_case_scorpio.cpp \
-            var_wr_all_cases_scorpio.cpp
-
-H_SRCS   += e3sm_io_case_scorpio.hpp
-endif
 
 libe3sm_io_cases_a_SOURCES = $(CXX_SRCS) $(H_SRCS)
 

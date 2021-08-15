@@ -133,9 +133,9 @@ int read_decomp(e3sm_io_config *cfg,
     /* open input file that contains I/O decomposition information */
     err = ncmpi_open(cfg->io_comm, cfg->cfg_path, NC_NOWRITE, info, &ncid);
     if (err != NC_NOERR) {
-        printf ("Error in %s line %d function %s:\n", __FILE__, __LINE__,
-                __func__);
-        printf ("\t(%s) %s\n", ncmpi_strerrno (err), ncmpi_strerror (err));
+        printf("Error in %s line %d function %s:\n", __FILE__, __LINE__,
+               __func__);
+        printf("\t(%s) %s\n", ncmpi_strerrno(err), ncmpi_strerror(err));
         goto err_out;
     }
 
