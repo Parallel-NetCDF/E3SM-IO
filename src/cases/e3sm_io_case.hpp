@@ -179,14 +179,6 @@ run_varn_G_case_rd(e3sm_io_config &cfg,
 
 /*---- wrapper functions for adios driver -----------------------------------*/
 extern
-int e3sm_io_scorpio_define_dim(e3sm_io_driver &driver,
-                               int fid,
-                               std::string name,
-                               MPI_Offset size,
-                               std::map<int, std::string> &dnames,
-                               int *did);
-
-extern
 int e3sm_io_scorpio_define_var(e3sm_io_config &cfg,
                                e3sm_io_decom &decom,
                                e3sm_io_driver &driver,
