@@ -88,7 +88,6 @@ static void usage (char *argv0) {
 "       [-v] Verbose mode\n"
 "       [-k] Keep the output files when program exits\n"
 "       [-m] Run test using noncontiguous write buffer\n"
-"       [-t] Write 2D variables followed by 3D variables\n"
 "       [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for\n"
 "                h1 only, -1 for both (default: -1)\n"
 "       [-r num] Number of records/time steps for F case h1 file (default: 1)\n"
@@ -172,7 +171,7 @@ int main (int argc, char **argv) {
     ffreq = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dmtf:ha:x:g:y:p")) != EOF)
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dmf:ha:x:g:y:p")) != EOF)
         switch (i) {
             case 'v':
                 cfg.verbose = 1;
@@ -239,9 +238,6 @@ int main (int argc, char **argv) {
                 break;
             case 'm':
                 cfg.non_contig_buf = 1;
-                break;
-            case 't':
-                cfg.two_buf = 1;
                 break;
             case 'f':
                 cfg.hx = atoi (optarg);

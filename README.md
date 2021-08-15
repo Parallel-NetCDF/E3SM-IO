@@ -179,7 +179,6 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-v] Verbose mode
        [-k] Keep the output files when program exits
        [-m] Run test using noncontiguous write buffer
-       [-t] Write 2D variables followed by 3D variables
        [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for h1
                 only, -1 for both (default: -1)
        [-r num] Number of records/time steps for F case h1 file (default: 1)
