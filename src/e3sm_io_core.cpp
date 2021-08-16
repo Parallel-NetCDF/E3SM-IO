@@ -9,28 +9,28 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-//
+
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-//
+
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
-//
+
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
-
 #include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
 #include <e3sm_io_driver_pnc.hpp>
 #include <e3sm_io_profile.hpp>
+
 #ifdef ENABLE_HDF5
 #include <hdf5.h>
-
 #include <e3sm_io_driver_hdf5.hpp>
 #include <e3sm_io_driver_h5blob.hpp>
 #endif
+
 #ifdef ENABLE_ADIOS2
 #include <adios2_c.h>
 
@@ -151,13 +151,14 @@ done_check:
             driver = new e3sm_io_driver_pnc (cfg);
             break;
         case hdf5:
-#ifndef ENABLE_HDF5
-            ERR_OUT ("HDF5 support was not enabled in this build")
-#endif
+#ifdef ENABLE_HDF5
             if (cfg->strategy == blob)
                 driver = new e3sm_io_driver_h5blob (cfg);
             else
                 driver = new e3sm_io_driver_hdf5 (cfg);
+#else
+            ERR_OUT ("HDF5 support was not enabled in this build")
+#endif
             break;
 #ifdef E3SM_IO_DEBUG
         case hdf5_ra:
