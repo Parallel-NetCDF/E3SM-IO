@@ -1,9 +1,9 @@
 netcdf i_case_h0 {
 // file format: CDF-5 (big variables)
 dimensions:
-	time = UNLIMITED ; // (10 currently)
-	lon = 720 ;
-	lat = 360 ;
+	time = UNLIMITED ; // (25 currently)
+	lon = 144 ;
+	lat = 96 ;
 	gridcell = 62482 ;
 	topounit = 62482 ;
 	landunit = 271014 ;
