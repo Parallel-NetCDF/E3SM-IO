@@ -68,6 +68,10 @@ class e3sm_io_case {
                *D4_fix_int_buf = NULL,
                *D5_fix_int_buf = NULL;
 
+        /* dimension IDs used to define blob variables */
+        int fix_dimids[MAX_NUM_DECOMP];    /* fixed-size variables are 1D */
+        int rec_dimids[MAX_NUM_DECOMP][2]; /* record     variables are 2D */
+
         io_buffers  wr_buf;  /* write buffers and length metadata */
         var_meta   *vars;    /* variable metadata */
 
@@ -253,35 +257,38 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
     err = driver.put_att(ncid, varp->vid, name, NC_INT64, num, buf);          \
     CHECK_VAR_ERR(varp->vid)                                                  \
 }
-#define SET_VAR_META(dtype, buflen, varlen) {                                 \
+#define SET_BUF_META(dtype, buflen, varlen) {                                 \
     int id = varp->decomp_id;                                                 \
     size_t vlen = (cfg.api == adios && id >= 0) ? decom.raw_nreqs[id]         \
-                                                 : varlen;                    \
-    varp->itype      = dtype;                                                 \
-    varp->vlen       = vlen;                                                  \
-    wr_buf.buflen  += vlen + wr_buf.gap;                                      \
+                                                : varlen;                     \
+    varp->itype    = dtype;                                                   \
+    varp->vlen     = vlen;                                                    \
+    wr_buf.buflen += vlen + wr_buf.gap;                                       \
 }
 #define DEF_VAR(name, xtype, ndims, dimids, decomid) {                        \
-    int *dim_ids = dimids;                                                    \
+    int *_dimids = dimids;                                                    \
     varp++;                                                                   \
     varp->decomp_id = decomid;  /* decomposition map ID */                    \
-    varp->isRecVar  = (dim_ids != NULL && dim_ids[0] == dim_time);            \
-    if (cfg.api == adios)                                                     \
+    varp->isRecVar  = (ndims != 0 && *_dimids == dim_time);                   \
+    if (cfg.api == adios) {                                                   \
         err = e3sm_io_scorpio_define_var(cfg, decom, driver, dnames, decomid, \
                                          ncid, name, xtype, ndims, dimids,    \
                                          varp);                               \
-    else {                                                                    \
-        int num_dims = ndims;                                                 \
-        if (decomid >= 0 && cfg.strategy == blob)                             \
-            num_dims = varp->isRecVar ? 2 : 1; /* blob var is 1D or 2D */     \
-        err = driver.def_var(ncid, name, xtype, num_dims, dimids, &varp->vid);\
-        if (decomid >= 0 && cfg.strategy == blob) {                           \
-            int ival = decomid + 1;                                           \
-            int *dimsp = orig_dimids[decomid];                                \
-            if (!varp->isRecVar) dimsp = orig_dimids[decomid] + 1;            \
-            PUT_ATTR_INT("decomposition_ID", 1, &ival)                        \
-            PUT_ATTR_INT("global_dimids", ndims, dimsp)                       \
+    } else if (cfg.strategy == blob && decomid >= 0) {                        \
+        int ival, _ndims;                                                     \
+        if (varp->isRecVar) {                                                 \
+            _ndims = 2;  /* all blob record variables are 2D */               \
+            _dimids = rec_dimids[decomid];                                    \
+        } else {                                                              \
+            _ndims = 1;  /* all blob fixed-size variables are 1D */           \
+            _dimids = &fix_dimids[decomid];                                   \
         }                                                                     \
+        err = driver.def_var(ncid, name, xtype, _ndims, _dimids, &varp->vid); \
+        ival = decomid + 1;                                                   \
+        PUT_ATTR_INT("decomposition_ID", 1, &ival)                            \
+        PUT_ATTR_INT("global_dimids", ndims, dimids)                          \
+    } else { /* cfg.strategy == canonical or log or decomid == -1 */          \
+        err = driver.def_var(ncid, name, xtype, ndims, dimids, &varp->vid);   \
     }                                                                         \
     if (err != 0) {                                                           \
         printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__,       \
