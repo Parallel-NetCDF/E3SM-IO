@@ -34,11 +34,11 @@ typedef struct {
 } io_buffers;
 
 typedef struct {
-    int vid;         /* variable ID */
+    int vid;         /* variable ID, returned from the driver */
 
-    int frame_id;    /* ID used by adios driver */
-    int fillval_id;  /* ID used by adios driver */
-    int decom_id;    /* ID of decomposition map variable used by adios driver */
+    int frame_id;    /* frame variable ID returned from adios driver */
+    int fillval_id;  /* fillval variable ID returned from adios driver */
+    int decom_id;    /* decomposition map variable ID returned from adios driver */
     int piodecomid;  /* map IDs used on Scorpio starting at 512 */
     int64_t dims[3]; /* dimension sizes */
     int ndims;       /* number of dimensions */
@@ -72,7 +72,7 @@ class e3sm_io_case {
         int fix_dimids[MAX_NUM_DECOMP];    /* fixed-size variables are 1D */
         int rec_dimids[MAX_NUM_DECOMP][2]; /* record     variables are 2D */
 
-        io_buffers  wr_buf;  /* write buffers and length metadata */
+        io_buffers  wr_buf;  /* write buffers and their length metadata */
         var_meta   *vars;    /* variable metadata */
 
         int var_wr_case(e3sm_io_config &cfg,
@@ -112,7 +112,7 @@ class e3sm_io_case {
                            int             dim_time,
                            int             dim_nblobs,
                            int             dim_max_nreqs[MAX_NUM_DECOMP],
-                           int             orig_dimids[MAX_NUM_DECOMP][4]);
+                           int             g_dimids[MAX_NUM_DECOMP][4]);
 
     public:
          e3sm_io_case();
@@ -261,11 +261,12 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
     int id = varp->decomp_id;                                                 \
     size_t vlen = (cfg.api == adios && id >= 0) ? decom.raw_nreqs[id]         \
                                                 : varlen;                     \
-    varp->itype    = dtype;                                                   \
-    varp->vlen     = vlen;                                                    \
+    varp->itype    = dtype; /* internal data type of write buffer */          \
+    varp->vlen     = vlen;  /* length of this write request */                \
     wr_buf.buflen += vlen + wr_buf.gap;                                       \
 }
 #define DEF_VAR(name, xtype, ndims, dimids, decomid) {                        \
+    /* ndims and dimids are canonical dimensions */                           \
     int *_dimids = dimids;                                                    \
     varp++;                                                                   \
     varp->decomp_id = decomid;  /* decomposition map ID */                    \
@@ -275,6 +276,7 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
                                          ncid, name, xtype, ndims, dimids,    \
                                          varp);                               \
     } else if (cfg.strategy == blob && decomid >= 0) {                        \
+        /* use blob dimensions to define blob variables */                    \
         int ival, _ndims;                                                     \
         if (varp->isRecVar) {                                                 \
             _ndims = 2;  /* all blob record variables are 2D */               \
@@ -284,6 +286,7 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
             _dimids = &fix_dimids[decomid];                                   \
         }                                                                     \
         err = driver.def_var(ncid, name, xtype, _ndims, _dimids, &varp->vid); \
+        /* save the canonical domensions as attributes */                     \
         ival = decomid + 1;                                                   \
         PUT_ATTR_INT("decomposition_ID", 1, &ival)                            \
         PUT_ATTR_INT("global_dimids", ndims, dimids)                          \
