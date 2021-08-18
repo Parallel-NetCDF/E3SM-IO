@@ -221,18 +221,18 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
     if (cfg.api == adios) dnames[*dimid] = name;                              \
 }
 #define PUT_GATTR_TXT(name, buf) {                                            \
-    err = driver.put_att(ncid, NC_GLOBAL, prefix name, NC_CHAR, strlen(buf),  \
+    err = driver.put_att(ncid, NC_GLOBAL, prefix+name, NC_CHAR, strlen(buf),  \
                          buf);                                                \
     CHECK_ERR                                                                 \
 }
 #define PUT_GATTR_INT(name, val) {                                            \
     int buf = val;                                                            \
-    err = driver.put_att(ncid, NC_GLOBAL, prefix name, NC_INT, 1, &buf);      \
+    err = driver.put_att(ncid, NC_GLOBAL, prefix+name, NC_INT, 1, &buf);      \
     CHECK_ERR                                                                 \
 }
 #define PUT_GATTR_DBL(name, val) {                                            \
     double buf = val;                                                         \
-    err = driver.put_att(ncid, NC_GLOBAL, prefix name, NC_DOUBLE, 1, &buf);   \
+    err = driver.put_att(ncid, NC_GLOBAL, prefix+name, NC_DOUBLE, 1, &buf);   \
     CHECK_ERR                                                                 \
 }
 #define PUT_ATTR_TXT(name, buf) {                                             \

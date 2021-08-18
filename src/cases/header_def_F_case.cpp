@@ -26,15 +26,21 @@ int add_gattrs(e3sm_io_config &cfg,
                e3sm_io_driver &driver,
                int             ncid)
 {
+    std::string prefix("");
     int err, nprocs;
 
-#define prefix
-
-    if (cfg.strategy == blob && (cfg.api == pnetcdf || cfg.api == hdf5)) {
-        MPI_Comm_size(cfg.io_comm, &nprocs);
-        PUT_GATTR_INT("global_nprocs", nprocs)
-        PUT_GATTR_INT("num_decompositions", decom.num_decomp)
-        PUT_GATTR_INT("num_subfiles", cfg.num_subfiles)
+    /* save number of processes as global attributes */
+    if (cfg.strategy == blob) {
+        if (cfg.api == adios) {
+            PUT_GATTR_INT("/__pio__/fillmode", 256)
+            prefix = "pio_global/";
+        }
+        else {
+            MPI_Comm_size(cfg.io_comm, &nprocs);
+            PUT_GATTR_INT("global_nprocs", nprocs)
+            PUT_GATTR_INT("num_decompositions", decom.num_decomp)
+            PUT_GATTR_INT("num_subfiles", cfg.num_subfiles)
+        }
     }
 
     /* save number of processes as global attributes */
