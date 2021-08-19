@@ -210,10 +210,18 @@ int e3sm_io_case::def_I_case(e3sm_io_config   &cfg,
         CHECK_ERR
     }
 
-    /* define 560 climate variables
-     *     18 are fixed-size,      542 are record variables
-     *     14 are not partitioned, 546 are partitioned.
-     * Thus, 14 not partitioned variable (also small) are written by root only:
+    /* For h0 file, There are 560 climate variables:
+     *    0 scalar variables     + 560 array variables
+     *   18 fixed-size variables + 542 record variables
+     *   14 not partitioned      + 546 partitioned
+     *
+     * For h1 file, There are 552 climate variables:
+     *    0 scalar variables     + 552 array variables
+     *   10 fixed-size variables + 542 record variables
+     *   14 not partitioned      + 538 partitioned
+     *
+     * For both h0 and h1 files, those 14 not partitioned variables are written
+     * by root only:
      *     5 fixed-size, 9 record variables
      */
     varp = vars + nvars_decomp - 1;
