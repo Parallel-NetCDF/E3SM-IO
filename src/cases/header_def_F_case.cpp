@@ -492,8 +492,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AEROD_v", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Total Aerosol Optical Depth in visible band")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -525,8 +525,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODABS", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol absorption optical depth 550 nm")
     PUT_ATTR_TXT("standard_name", "atmosphere_absorption_optical_thickness_due_to_ambient_aerosol_particles")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -536,8 +536,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODABSBC", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol absorption optical depth 550 nm from BC")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -546,8 +546,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODALL", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "AOD 550 nm for all time and species")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -556,8 +556,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODBC", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from BC")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -566,8 +566,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODDUST", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from dust")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -576,8 +576,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODDUST1", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm model 1 from dust")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -586,8 +586,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODDUST3", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm model 3 from dust")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -596,8 +596,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODDUST4", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm model 4 from dust")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -606,8 +606,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODMODE1", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm mode 1")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -616,8 +616,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODMODE2", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm mode 2")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -626,8 +626,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODMODE3", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm mode 3")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -636,8 +636,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODMODE4", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm mode 4")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -646,8 +646,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODNIR", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 850 nm")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -656,8 +656,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODPOM", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from POM")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -666,8 +666,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODSO4", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from SO4")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -676,8 +676,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODSOA", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from SOA")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -686,8 +686,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODSS", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from seasalt")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -696,8 +696,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODUV", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 350 nm")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -706,8 +706,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("AODVIS", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm")
     PUT_ATTR_TXT("standard_name", "atmosphere_optical_thickness_due_to_ambient_aerosol_particles")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -838,8 +838,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("BURDEN1", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Aerosol burden mode 1")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -849,8 +849,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("BURDEN2", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Aerosol burden mode 2")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -860,8 +860,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("BURDEN3", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Aerosol burden mode 3")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -871,8 +871,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("BURDEN4", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Aerosol burden mode 4")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1138,8 +1138,8 @@ if (cfg.hist == h0) {
     dimids[2] = dim_ncol;
     DEF_VAR("EXTINCT", NC_FLOAT, 3, dimids, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "/m")
     PUT_ATTR_TXT("long_name", "Aerosol extinction")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1161,8 +1161,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FLDS", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Downwelling longwave flux at surface")
     PUT_ATTR_TXT("standard_name", "surface_downwelling_longwave_flux_in_air")
@@ -1174,8 +1174,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FLNS", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Net longwave flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1186,8 +1186,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FLNSC", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Clearsky net longwave flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1198,8 +1198,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FLNT", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Net longwave flux at top of model")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1211,8 +1211,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FLNTC", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Clearsky net longwave flux at top of model")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1223,8 +1223,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FLUT", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Upwelling longwave flux at top of model")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1235,8 +1235,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FLUTC", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Clearsky upwelling longwave flux at top of model")
     PUT_ATTR_TXT("standard_name", "toa_outgoing_longwave_flux_assuming_clear_sky")
@@ -1292,8 +1292,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSDS", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Downwelling solar flux at surface")
     PUT_ATTR_TXT("standard_name", "surface_downwelling_shortwave_flux_in_air")
@@ -1305,8 +1305,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSDSC", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Clearsky downwelling solar flux at surface")
     PUT_ATTR_TXT("standard_name", "surface_downwelling_shortwave_flux_in_air_assuming_clear_sky")
@@ -1318,8 +1318,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSNS", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Net solar flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1330,8 +1330,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSNSC", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Clearsky net solar flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1342,8 +1342,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSNT", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Net solar flux at top of model")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1354,8 +1354,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSNTC", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Clearsky net solar flux at top of model")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1366,8 +1366,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSNTOA", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Net solar flux at top of atmosphere")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1378,8 +1378,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSNTOAC", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Clearsky net solar flux at top of atmosphere")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1390,8 +1390,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSUTOA", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Upwelling solar flux at top of atmosphere")
     PUT_ATTR_TXT("standard_name", "toa_outgoing_shortwave_flux")
@@ -1403,8 +1403,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("FSUTOAC", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Clearsky upwelling solar flux at top of atmosphere")
     PUT_ATTR_TXT("standard_name", "toa_outgoing_shortwave_flux_assuming_clear_sky")
@@ -1595,8 +1595,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("LWCF", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Longwave cloud forcing")
     PUT_ATTR_TXT("standard_name", "toa_longwave_cloud_radiative_effect")
@@ -1927,8 +1927,8 @@ if (cfg.hist == h0) {
     DEF_VAR("QRL", NC_FLOAT, 3, dimids, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "K/s")
     PUT_ATTR_TXT("long_name", "Longwave heating rate")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1941,8 +1941,8 @@ if (cfg.hist == h0) {
     DEF_VAR("QRS", NC_FLOAT, 3, dimids, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "K/s")
     PUT_ATTR_TXT("long_name", "Solar heating rate")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2389,8 +2389,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("SOLIN", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Solar insolation")
     PUT_ATTR_TXT("standard_name", "toa_incoming_shortwave_flux")
@@ -2401,8 +2401,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("SSAVIS", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol singel-scatter albedo")
     PUT_ATTR_TXT("cell_methods", "time: mean")
     SET_BUF_META(REC_ITYPE, rec_buflen, decom.count[1])
@@ -2430,8 +2430,8 @@ if (cfg.hist == h0) {
     dimids[1] = dim_ncol;
     DEF_VAR("SWCF", NC_FLOAT, 2, dimids, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Shortwave cloud forcing")
     PUT_ATTR_TXT("standard_name", "toa_shortwave_cloud_radiative_effect")
@@ -2562,8 +2562,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("TROP_P", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "Pa")
     PUT_ATTR_TXT("long_name", "Tropopause Pressure")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2573,8 +2573,8 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
     DEF_VAR("TROP_T", NC_FLOAT, 2, dimids, 1)
-    PUT_ATTR_FLT(_FillValue, fillv)
-    PUT_ATTR_FLT("missing_value", missv)
+    PUT_ATTR_FILL(_FillValue, fillv)
+    PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "K")
     PUT_ATTR_TXT("long_name", "Tropopause Temperature")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -4324,6 +4324,12 @@ else {
 }
 
     assert(varp - vars + 1 == cfg.nvars + nvars_decomp);
+
+    if (cfg.api == adios) {
+        for (i=nvars_decomp; i<cfg.nvars+nvars_decomp; i++)
+            if (vars[i].name != NULL)
+                free(vars[i].name);
+    }
 
 err_out:
     return err;
