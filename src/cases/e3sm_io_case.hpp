@@ -36,12 +36,13 @@ typedef struct {
 typedef struct {
     int vid;         /* variable ID, returned from the driver */
 
+    char *name;      /* name of variable */
     int frame_id;    /* frame variable ID returned from adios driver */
-    int fillval_id;  /* fillval variable ID returned from adios driver */
     int decom_id;    /* decomposition map variable ID returned from adios driver */
     int piodecomid;  /* map IDs used on Scorpio starting at 512 */
     int64_t dims[3]; /* dimension sizes */
     int ndims;       /* number of dimensions */
+    nc_type xType;
 
     int decomp_id;      /* decomposition map ID, e.g. 0, 1, 2, ... */
     int isRecVar;       /* whether is a record variable */
@@ -183,26 +184,32 @@ run_varn_G_case_rd(e3sm_io_config &cfg,
 
 /*---- wrapper functions for adios driver -----------------------------------*/
 extern
-int e3sm_io_scorpio_define_var(e3sm_io_config &cfg,
-                               e3sm_io_decom &decom,
-                               e3sm_io_driver &driver,
-                               std::map<int, std::string> &dnames,
-                               int decomid,
-                               int fid,
-                               std::string name,
-                               nc_type xtype,
-                               int ndims,
-                               int *dimids,
-                               var_meta *var);
+int scorpio_define_var(e3sm_io_config &cfg,
+                       e3sm_io_decom &decom,
+                       e3sm_io_driver &driver,
+                       std::map<int, std::string> &dnames,
+                       int decomid,
+                       int fid,
+                       std::string name,
+                       nc_type xtype,
+                       int ndims,
+                       int *dimids,
+                       var_meta *var);
 
 extern
-int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
-                              int frameid,
-                              int fid,
-                              var_meta &var,
-                              MPI_Datatype itype,
-                              void *buf,
-                              e3sm_io_op_mode mode);
+int scorpio_write_var(e3sm_io_driver &driver,
+                      int frameid,
+                      int fid,
+                      var_meta &var,
+                      MPI_Datatype itype,
+                      void *buf,
+                      e3sm_io_op_mode mode);
+
+extern
+int scorpio_put_fill_att(e3sm_io_driver &driver,
+                         int             fid,
+                         void           *buf,
+                         var_meta       *varp);
 
 /*---- MACROS used by header define functions -------------------------------*/
 
@@ -248,9 +255,38 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
     err = driver.put_att(ncid, varp->vid, name, NC_INT, num, buf);            \
     CHECK_VAR_ERR(varp->vid)                                                  \
 }
-#define PUT_ATTR_FLT(name, val) {                                             \
+#define PUT_ATTR_FLT1(name, val) {                                            \
     float buf = val;                                                          \
     err = driver.put_att(ncid, varp->vid, name, NC_FLOAT, 1, &buf);           \
+    CHECK_VAR_ERR(varp->vid)                                                  \
+}
+#define PUT_ATTR_DBL1(name, val) {                                            \
+    double buf = val;                                                         \
+    err = driver.put_att(ncid, varp->vid, name, NC_DOUBLE, 1, &buf);          \
+    CHECK_VAR_ERR(varp->vid)                                                  \
+}
+#define PUT_ATTR_FILL(name, val) {                                            \
+    if (varp->xType == NC_FLOAT) {                                            \
+        float buf = (float)val;                                               \
+        if (cfg.api == adios)                                                 \
+            err = scorpio_put_fill_att(driver, ncid, &buf, varp);             \
+        else                                                                  \
+            err = driver.put_att(ncid, varp->vid, name, NC_FLOAT, 1, &buf);   \
+    }                                                                         \
+    else if (varp->xType == NC_INT) {                                         \
+        int buf = (int)val;                                                   \
+        if (cfg.api == adios)                                                 \
+            err = scorpio_put_fill_att(driver, ncid, &buf, varp);             \
+        else                                                                  \
+            err = driver.put_att(ncid, varp->vid, name, NC_INT, 1, &buf);     \
+    }                                                                         \
+    else if (varp->xType == NC_DOUBLE) {                                      \
+        double buf = (double)val;                                             \
+        if (cfg.api == adios)                                                 \
+            err = scorpio_put_fill_att(driver, ncid, &buf, varp);             \
+        else                                                                  \
+            err = driver.put_att(ncid, varp->vid, name, NC_DOUBLE, 1, &buf);  \
+    }                                                                         \
     CHECK_VAR_ERR(varp->vid)                                                  \
 }
 #define PUT_ATTR_INT64(name, num, buf) {                                      \
@@ -269,12 +305,12 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
     /* ndims and dimids are canonical dimensions */                           \
     int *_dimids = dimids;                                                    \
     varp++;                                                                   \
+    varp->xType = xtype;                                                      \
     varp->decomp_id = decomid;  /* decomposition map ID */                    \
     varp->isRecVar  = (ndims != 0 && *_dimids == dim_time);                   \
     if (cfg.api == adios) {                                                   \
-        err = e3sm_io_scorpio_define_var(cfg, decom, driver, dnames, decomid, \
-                                         ncid, name, xtype, ndims, dimids,    \
-                                         varp);                               \
+        err = scorpio_define_var(cfg, decom, driver, dnames, decomid, ncid,   \
+                                 name, xtype, ndims, dimids, varp);           \
     } else if (cfg.strategy == blob && decomid >= 0) {                        \
         /* use blob dimensions to define blob variables */                    \
         int ival, _ndims;                                                     \
