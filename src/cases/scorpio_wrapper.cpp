@@ -222,13 +222,10 @@ int scorpio_write_var(e3sm_io_driver &driver,
     CHECK_ERR
 
     if (var.frame_id >= 0) {
-
         err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, nbe);
         CHECK_ERR
 
         decomid = var.piodecomid;
-        if (var.decomp_id < 0) decomid *= -1;
-
         err = driver.put_varl (fid, var.decom_id, MPI_INT, &decomid, nbe);
         CHECK_ERR
     }
