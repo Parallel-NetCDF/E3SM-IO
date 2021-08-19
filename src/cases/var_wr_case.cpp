@@ -64,8 +64,8 @@
 }
 #define IPUT_VARA(varp, itype, adv, buf) {                                \
     if (cfg.api == adios)                                                 \
-        err = e3sm_io_scorpio_write_var(driver, rec_no, ncid, varp,       \
-                                        itype, buf, nb);                  \
+        err = scorpio_write_var(driver, rec_no, ncid, varp, itype, buf,   \
+                                nb);                                      \
     else                                                                  \
         err = driver.put_vara(ncid, varp.vid, itype, start, count,        \
                               buf, nb);                                   \
@@ -75,8 +75,7 @@
 }
 #define IPUT_VAR(varp, itype, adv, buf) {                                 \
     if (cfg.api == adios)                                                 \
-        err = e3sm_io_scorpio_write_var(driver, -1, ncid, varp,           \
-                                        itype, buf, nb);                  \
+        err = scorpio_write_var(driver, -1, ncid, varp, itype, buf, nb);  \
     else                                                                  \
         err = driver.put_vara(ncid, varp.vid, itype, NULL, NULL,          \
                               buf, nb);                                   \
@@ -99,8 +98,7 @@
         buf += decom.count[dp] + gap;                                     \
     }                                                                     \
     else if (cfg.api == adios) {                                          \
-        err = e3sm_io_scorpio_write_var(driver, -1, ncid, varp, itype,    \
-                                        buf, nb);                         \
+        err = scorpio_write_var(driver, -1, ncid, varp, itype, buf, nb);  \
         my_nreqs++;                                                       \
         buf += decom.raw_nreqs[dp] + gap;                                 \
     }                                                                     \
@@ -123,8 +121,8 @@
         buf += decom.count[dp] + gap;                                     \
     }                                                                     \
     else if (cfg.api == adios) {                                          \
-        err = e3sm_io_scorpio_write_var(driver, rec_no, ncid, varp,       \
-                                        itype, buf, nb);                  \
+        err = scorpio_write_var(driver, rec_no, ncid, varp, itype, buf,   \
+                                nb);                                      \
         my_nreqs++;                                                       \
         buf += decom.raw_nreqs[dp] + gap;                                 \
     }                                                                     \
@@ -204,7 +202,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     nvars = cmeta->nvars + num_decomp_vars;
 
     /* allocate space to store variable metadata */
-    vars = (var_meta*) malloc(nvars * sizeof(var_meta));
+    vars = (var_meta*) calloc(nvars, sizeof(var_meta));
 
     if (cfg.non_contig_buf) gap = BUF_GAP;
 
