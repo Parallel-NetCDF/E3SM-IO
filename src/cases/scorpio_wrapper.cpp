@@ -26,17 +26,17 @@
 #include <e3sm_io_driver_adios2.hpp>
 #endif
 
-int e3sm_io_scorpio_define_var(e3sm_io_config &cfg,
-                               e3sm_io_decom &decom,
-                               e3sm_io_driver &driver,
-                               std::map<int, std::string> &dnames,
-                               int decomp_id,
-                               int fid,
-                               std::string name,
-                               nc_type xtype,
-                               int ndims,
-                               int *dimids,
-                               var_meta *var)
+int scorpio_define_var(e3sm_io_config &cfg,
+                       e3sm_io_decom &decom,
+                       e3sm_io_driver &driver,
+                       std::map<int, std::string> &dnames,
+                       int decomp_id,
+                       int fid,
+                       std::string name,
+                       nc_type xtype,
+                       int ndims,
+                       int *dimids,
+                       var_meta *var)
 {
 #ifdef ENABLE_ADIOS2
     int i, err, ibuf;
@@ -45,6 +45,7 @@ int e3sm_io_scorpio_define_var(e3sm_io_config &cfg,
 
     var->piodecomid = decomp_id + 512;
     var->ndims = ndims;
+    var->name = strdup(name.c_str());
 
     for (i = 0; i < ndims; i++)
         dnames_array[i] = dnames[dimids[i]].c_str();
@@ -68,14 +69,6 @@ int e3sm_io_scorpio_define_var(e3sm_io_config &cfg,
         err = driver.def_local_var(fid, "decomp_id/" + name, NC_INT, 1,
                                    &one, &var->decom_id);
         CHECK_ERR
-
-        // Double vars have an additional fillval_id
-        if (xtype == NC_DOUBLE) {
-            err = driver.def_local_var(fid, "fillval_id/" + name, xtype,
-                                       1, &one, &(var->fillval_id));
-            CHECK_ERR
-        } else
-            var->fillval_id = -1;
 
         /* Add attributes */
 
@@ -175,7 +168,6 @@ int e3sm_io_scorpio_define_var(e3sm_io_config &cfg,
 
         var->decom_id   = -1;
         var->frame_id   = -1;
-        var->fillval_id = -1;
     }
 err_out:
     return err;
@@ -184,13 +176,13 @@ err_out:
 #endif
 }
 
-int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
-                              int frameid,
-                              int fid,
-                              var_meta &var,
-                              MPI_Datatype itype,
-                              void *buf,
-                              e3sm_io_op_mode mode)
+int scorpio_write_var(e3sm_io_driver &driver,
+                      int frameid,
+                      int fid,
+                      var_meta &var,
+                      MPI_Datatype itype,
+                      void *buf,
+                      e3sm_io_op_mode mode)
 {
 #ifdef ENABLE_ADIOS2
     int err, decomid;
@@ -234,24 +226,51 @@ int e3sm_io_scorpio_write_var(e3sm_io_driver &driver,
         err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, nbe);
         CHECK_ERR
 
-        decomid = var.piodecomid ;
-        if (var.fillval_id < 0) {
-            decomid *= -1;
-        }
+        decomid = var.piodecomid;
+        if (var.decomp_id < 0) decomid *= -1;
+
         err = driver.put_varl (fid, var.decom_id, MPI_INT, &decomid, nbe);
         CHECK_ERR
-
-        if (var.fillval_id >= 0) {
-            double fbuf = 1e+20;
-
-            err = driver.put_varl (fid, var.fillval_id, MPI_DOUBLE, &fbuf, nbe);
-            CHECK_ERR
-        }
     }
 
 err_out:
     if (wbuf != buf) free(wbuf);
 
+    return err;
+#else
+    return -1;
+#endif
+}
+
+int scorpio_put_fill_att(e3sm_io_driver &driver,
+                         int             fid,
+                         void           *buf,
+                         var_meta       *varp)
+{
+#ifdef ENABLE_ADIOS2
+    int err, varid;
+    std::string name("fillval_id/");
+    MPI_Offset one = 1;
+    MPI_Datatype xType;
+
+    /* define a local variable to store fill value */
+    name.append(varp->name);
+    err = driver.def_local_var(fid, name, varp->xType, 1, &one, &varid);
+    CHECK_ERR
+
+         if (varp->xType == NC_FLOAT)  xType = MPI_FLOAT;
+    else if (varp->xType == NC_INT)    xType = MPI_INT;
+    else if (varp->xType == NC_DOUBLE) xType = MPI_DOUBLE;
+    else assert(0);
+
+    err = driver.put_varl(fid, varid, xType, buf, nbe);
+    CHECK_ERR
+
+    /* also add attribute _FillValue */
+    err = driver.put_att(fid, varp->vid, _FillValue, varp->xType, 1, buf);
+    CHECK_ERR
+
+err_out:
     return err;
 #else
     return -1;
