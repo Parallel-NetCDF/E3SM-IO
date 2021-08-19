@@ -229,7 +229,16 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
         CHECK_ERR
     }
 
-    /* Total 414 climate variables (15 fixed-size and 399 record variables) */
+    /* For h0 file, there are 414 climate variables:
+     *    6 scalar variables     + 408 array variables
+     *   15 fixed-size variables + 399 record variables
+     *   25 not partitioned      + 389 partitioned
+     *
+     * For h1 file, there are 51 climate variables:
+     *    6 scalar variables     + 45 array variables
+     *   15 fixed-size variables + 36 record variables
+     *   27 not partitioned      + 24 partitioned
+     */
     varp = vars + nvars_decomp - 1;
 
     /* below 10 are fixed-size climate variables ---------------------------*/
