@@ -215,18 +215,24 @@ int scorpio_write_var(e3sm_io_driver &driver,
     else
         wbuf = buf;
 
+    /* not partitioned variables are stored as byte type */
     if (var.frame_id < 0 && var.ndims)
         itype = MPI_BYTE;
 
-    err = driver.put_varl (fid, var.vid, itype, wbuf, nbe);
+    err = driver.put_varl(fid, var.vid, itype, wbuf, nbe);
     CHECK_ERR
 
     if (var.frame_id >= 0) {
-        err = driver.put_varl (fid, var.frame_id, MPI_INT, &frameid, nbe);
+        /* Scorpio allows variables to be written with different numbers of
+         * time steps.
+         */
+        err = driver.put_varl(fid, var.frame_id, MPI_INT, &frameid, nbe);
         CHECK_ERR
 
-        decomid = var.piodecomid;
-        err = driver.put_varl (fid, var.decom_id, MPI_INT, &decomid, nbe);
+        /* Scorpio allows variables to switch decomposition at different time
+         * steps.
+         */
+        err = driver.put_varl(fid, var.decom_id, MPI_INT, &var.piodecomid, nbe);
         CHECK_ERR
     }
 
@@ -250,7 +256,7 @@ int scorpio_put_fill_att(e3sm_io_driver &driver,
     MPI_Offset one = 1;
     MPI_Datatype xType;
 
-    /* define a local variable to store fill value */
+    /* define a local variable fillval_id/var_name to store fill value */
     name.append(varp->name);
     err = driver.def_local_var(fid, name, varp->xType, 1, &one, &varid);
     CHECK_ERR
