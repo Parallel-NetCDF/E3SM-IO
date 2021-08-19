@@ -811,7 +811,7 @@ int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
     MPI_Offset nVertLevels, StrLen;
     std::map<int, std::string> dnames;
     var_meta *varp;
- 
+
     /* add global attributes */
     err = add_gattrs(cfg, decom, driver, ncid);
     CHECK_ERR
@@ -891,7 +891,12 @@ int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
         CHECK_ERR
     }
 
-    /* define 52 climate variables (11 fixed-size and 41 record variables) */
+    /* There are 52 climate variables:
+     *    0 scalar variables     + 52 array variables
+     *   11 fixed-size variables + 41 record variables
+     *   11 not partitioned      + 41 partitioned
+     */
+
     varp = vars + nvars_decomp - 1;
 
     /* double salinitySurfaceRestoringTendency(Time, nCells) */
