@@ -112,6 +112,7 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
     adios2_error aerr;
     adios2_file *fp;
     char ng[32];
+    adios2_step_status stat;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
@@ -147,6 +148,11 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
     CHECK_AERR
     fp->ep   = NULL;
     fp->read = 0;
+
+    fp->ep = adios2_open (fp->iop, fp->path.c_str (), adios2_mode_write);
+    CHECK_APTR (fp->ep)
+    aerr = adios2_begin_step (fp->ep, adios2_step_mode_append, -1, &stat);
+    CHECK_AERR
 
     *fid = this->files.size ();
     this->files.push_back (fp);
@@ -512,32 +518,12 @@ int e3sm_io_driver_adios2::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
 int e3sm_io_driver_adios2::enddef (int fid) {
     int err = 0;
     size_t i;
-    adios2_error aerr;
     adios2_file *fp = this->files[fid];
-    adios2_step_status stat;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_ENDDEF)
 
-    if (fp->read) {
-        E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_OPEN)
-        fp->ep = adios2_open (fp->iop, fp->path.c_str (), adios2_mode_read);
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_OPEN)
-        CHECK_APTR (fp->ep)
-        E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_BEGIN_STEP)
-        aerr = adios2_begin_step (fp->ep, adios2_step_mode_read, -1, &stat);
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_BEGIN_STEP)
-        CHECK_AERR
-    } else {
-        E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_OPEN)
-        fp->ep = adios2_open (fp->iop, fp->path.c_str (), adios2_mode_write);
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_OPEN)
-        CHECK_APTR (fp->ep)
-        E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_BEGIN_STEP)
-        aerr = adios2_begin_step (fp->ep, adios2_step_mode_append, -1, &stat);
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_BEGIN_STEP)
-        CHECK_AERR
-
+    if (!fp->read) {
         // Write dim variables
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_PUT_VAR)
         if (this->cfg->rank == 0) {
@@ -549,7 +535,6 @@ int e3sm_io_driver_adios2::enddef (int fid) {
         E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_PUT_VAR)
     }
 
-err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_ENDDEF)
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
