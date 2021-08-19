@@ -185,7 +185,7 @@ int scorpio_write_var(e3sm_io_driver &driver,
                       e3sm_io_op_mode mode)
 {
 #ifdef ENABLE_ADIOS2
-    int err, decomid;
+    int err;
     void *wbuf;
 
     if (var.isRecVar) frameid = -1;
