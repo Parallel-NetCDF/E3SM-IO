@@ -55,25 +55,25 @@ int e3sm_io_case::check_malloc(e3sm_io_config *cfg,
 /*----< wr_buf_init() >------------------------------------------------------*/
 void e3sm_io_case::wr_buf_init(int gap)
 {
-    wr_buf.gap             = gap;
+    wr_buf.gap = gap;
 
-    wr_buf.fix_txt_buflen  = 0;
-    wr_buf.fix_int_buflen  = 0;
-    wr_buf.fix_dbl_buflen  = 0;
-    wr_buf.fix_buflen      = 0;
-    wr_buf.rec_txt_buflen  = 0;
-    wr_buf.rec_int_buflen  = 0;
-    wr_buf.rec_dbl_buflen  = 0;
-    wr_buf.rec_buflen      = 0;
+    wr_buf.fix_txt_buflen = 0;
+    wr_buf.fix_int_buflen = 0;
+    wr_buf.fix_flt_buflen = 0;
+    wr_buf.fix_dbl_buflen = 0;
+    wr_buf.rec_txt_buflen = 0;
+    wr_buf.rec_int_buflen = 0;
+    wr_buf.rec_flt_buflen = 0;
+    wr_buf.rec_dbl_buflen = 0;
 
-    wr_buf.fix_txt_buf  = NULL;
-    wr_buf.fix_int_buf  = NULL;
-    wr_buf.fix_dbl_buf  = NULL;
-    wr_buf.fix_buf      = NULL;
-    wr_buf.rec_txt_buf  = NULL;
-    wr_buf.rec_int_buf  = NULL;
-    wr_buf.rec_dbl_buf  = NULL;
-    wr_buf.rec_buf      = NULL;
+    wr_buf.fix_txt_buf = NULL;
+    wr_buf.fix_int_buf = NULL;
+    wr_buf.fix_flt_buf = NULL;
+    wr_buf.fix_dbl_buf = NULL;
+    wr_buf.rec_txt_buf = NULL;
+    wr_buf.rec_int_buf = NULL;
+    wr_buf.rec_flt_buf = NULL;
+    wr_buf.rec_dbl_buf = NULL;
 }
 
 /*----< wr_buf_malloc() >----------------------------------------------------*/
@@ -85,14 +85,14 @@ int e3sm_io_case::wr_buf_malloc(e3sm_io_config &cfg, int ffreq)
     MPI_Comm_rank(cfg.io_comm, &rank);
 
     if (cfg.api == adios) {
-        wr_buf.fix_int_buflen += 64;
-        wr_buf.fix_dbl_buflen += 64;
         wr_buf.fix_txt_buflen += 64;
-        wr_buf.fix_buflen += 64;
-        wr_buf.rec_dbl_buflen += 64;
-        wr_buf.rec_int_buflen += 64;
+        wr_buf.fix_int_buflen += 64;
+        wr_buf.fix_flt_buflen += 64;
+        wr_buf.fix_dbl_buflen += 64;
         wr_buf.rec_txt_buflen += 64;
-        wr_buf.rec_buflen += 64;
+        wr_buf.rec_int_buflen += 64;
+        wr_buf.rec_flt_buflen += 64;
+        wr_buf.rec_dbl_buflen += 64;
     }
 
     if (cfg.api == pnetcdf) {
@@ -101,30 +101,30 @@ int e3sm_io_case::wr_buf_malloc(e3sm_io_config &cfg, int ffreq)
          * will be copied and cached into internally allocated buffers and user
          * buffers can be reused after put call returned.
          */
-        wr_buf.rec_dbl_buflen *= ffreq;
-        wr_buf.rec_int_buflen *= ffreq;
         wr_buf.rec_txt_buflen *= ffreq;
-        wr_buf.rec_buflen     *= ffreq;
+        wr_buf.rec_int_buflen *= ffreq;
+        wr_buf.rec_flt_buflen *= ffreq;
+        wr_buf.rec_dbl_buflen *= ffreq;
     }
 
     /* allocate and initialize write buffers */
-    wr_buf.fix_buf     = (vtype*)  malloc(wr_buf.fix_buflen     * sizeof(vtype));
     wr_buf.fix_txt_buf = (char*)   malloc(wr_buf.fix_txt_buflen * sizeof(char));
     wr_buf.fix_int_buf = (int*)    malloc(wr_buf.fix_int_buflen * sizeof(int));
+    wr_buf.fix_flt_buf = (float*)  malloc(wr_buf.fix_flt_buflen * sizeof(float));
     wr_buf.fix_dbl_buf = (double*) malloc(wr_buf.fix_dbl_buflen * sizeof(double));
     wr_buf.rec_txt_buf = (char*)   malloc(wr_buf.rec_txt_buflen * sizeof(char));
     wr_buf.rec_int_buf = (int*)    malloc(wr_buf.rec_int_buflen * sizeof(int));
+    wr_buf.rec_flt_buf = (float*)  malloc(wr_buf.rec_flt_buflen * sizeof(float));
     wr_buf.rec_dbl_buf = (double*) malloc(wr_buf.rec_dbl_buflen * sizeof(double));
-    wr_buf.rec_buf     = (vtype*)  malloc(wr_buf.rec_buflen     * sizeof(vtype));
 
     for (j=0; j<wr_buf.fix_txt_buflen; j++) wr_buf.fix_txt_buf[j] = 'a' + rank;
     for (j=0; j<wr_buf.fix_int_buflen; j++) wr_buf.fix_int_buf[j] = rank;
+    for (j=0; j<wr_buf.fix_flt_buflen; j++) wr_buf.fix_flt_buf[j] = rank;
     for (j=0; j<wr_buf.fix_dbl_buflen; j++) wr_buf.fix_dbl_buf[j] = rank;
-    for (j=0; j<wr_buf.fix_buflen;     j++) wr_buf.fix_buf[j]     = rank;
     for (j=0; j<wr_buf.rec_txt_buflen; j++) wr_buf.rec_txt_buf[j] = 'a' + rank;
     for (j=0; j<wr_buf.rec_int_buflen; j++) wr_buf.rec_int_buf[j] = rank;
+    for (j=0; j<wr_buf.rec_flt_buflen; j++) wr_buf.rec_flt_buf[j] = rank;
     for (j=0; j<wr_buf.rec_dbl_buflen; j++) wr_buf.rec_dbl_buf[j] = rank;
-    for (j=0; j<wr_buf.rec_buflen;     j++) wr_buf.rec_buf[j]     = rank;
 
     return 0;
 }
@@ -134,29 +134,29 @@ void e3sm_io_case::wr_buf_free(void)
 {
     if (wr_buf.fix_txt_buf != NULL) free(wr_buf.fix_txt_buf);
     if (wr_buf.fix_int_buf != NULL) free(wr_buf.fix_int_buf);
+    if (wr_buf.fix_flt_buf != NULL) free(wr_buf.fix_flt_buf);
     if (wr_buf.fix_dbl_buf != NULL) free(wr_buf.fix_dbl_buf);
-    if (wr_buf.fix_buf     != NULL) free(wr_buf.fix_buf);
     if (wr_buf.rec_txt_buf != NULL) free(wr_buf.rec_txt_buf);
     if (wr_buf.rec_int_buf != NULL) free(wr_buf.rec_int_buf);
+    if (wr_buf.rec_flt_buf != NULL) free(wr_buf.rec_flt_buf);
     if (wr_buf.rec_dbl_buf != NULL) free(wr_buf.rec_dbl_buf);
-    if (wr_buf.rec_buf     != NULL) free(wr_buf.rec_buf);
 
-    wr_buf.fix_txt_buf  = NULL;
-    wr_buf.fix_int_buf  = NULL;
-    wr_buf.fix_dbl_buf  = NULL;
-    wr_buf.fix_buf      = NULL;
-    wr_buf.rec_txt_buf  = NULL;
-    wr_buf.rec_int_buf  = NULL;
-    wr_buf.rec_dbl_buf  = NULL;
-    wr_buf.rec_buf      = NULL;
+    wr_buf.fix_txt_buf = NULL;
+    wr_buf.fix_int_buf = NULL;
+    wr_buf.fix_flt_buf = NULL;
+    wr_buf.fix_dbl_buf = NULL;
+    wr_buf.rec_txt_buf = NULL;
+    wr_buf.rec_int_buf = NULL;
+    wr_buf.rec_flt_buf = NULL;
+    wr_buf.rec_dbl_buf = NULL;
 
-    wr_buf.fix_txt_buflen  = 0;
-    wr_buf.fix_int_buflen  = 0;
-    wr_buf.fix_dbl_buflen  = 0;
-    wr_buf.fix_buflen      = 0;
-    wr_buf.rec_txt_buflen  = 0;
-    wr_buf.rec_int_buflen  = 0;
-    wr_buf.rec_dbl_buflen  = 0;
-    wr_buf.rec_buflen      = 0;
+    wr_buf.fix_txt_buflen = 0;
+    wr_buf.fix_int_buflen = 0;
+    wr_buf.fix_flt_buflen = 0;
+    wr_buf.fix_dbl_buflen = 0;
+    wr_buf.rec_txt_buflen = 0;
+    wr_buf.rec_int_buflen = 0;
+    wr_buf.rec_flt_buflen = 0;
+    wr_buf.rec_dbl_buflen = 0;
 }
 
