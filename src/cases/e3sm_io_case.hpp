@@ -205,12 +205,6 @@ int scorpio_write_var(e3sm_io_driver &driver,
                       void *buf,
                       e3sm_io_op_mode mode);
 
-extern
-int scorpio_put_fill_att(e3sm_io_driver &driver,
-                         int             fid,
-                         void           *buf,
-                         var_meta       *varp);
-
 /*---- MACROS used by header define functions -------------------------------*/
 
 #define CHECK_VAR_ERR(varid) {                                                \
@@ -265,27 +259,18 @@ int scorpio_put_fill_att(e3sm_io_driver &driver,
     err = driver.put_att(ncid, varp->vid, name, NC_DOUBLE, 1, &buf);          \
     CHECK_VAR_ERR(varp->vid)                                                  \
 }
-#define PUT_ATTR_FILL(name, val) {                                            \
+#define PUT_ATTR_FILL(val) {                                                  \
     if (varp->xType == NC_FLOAT) {                                            \
         float buf = (float)val;                                               \
-        if (cfg.api == adios)                                                 \
-            err = scorpio_put_fill_att(driver, ncid, &buf, varp);             \
-        else                                                                  \
-            err = driver.put_att(ncid, varp->vid, name, NC_FLOAT, 1, &buf);   \
+        err = driver.put_att(ncid,varp->vid,_FillValue,varp->xType, 1, &buf); \
     }                                                                         \
     else if (varp->xType == NC_INT) {                                         \
         int buf = (int)val;                                                   \
-        if (cfg.api == adios)                                                 \
-            err = scorpio_put_fill_att(driver, ncid, &buf, varp);             \
-        else                                                                  \
-            err = driver.put_att(ncid, varp->vid, name, NC_INT, 1, &buf);     \
+        err = driver.put_att(ncid,varp->vid,_FillValue,varp->xType, 1, &buf); \
     }                                                                         \
     else if (varp->xType == NC_DOUBLE) {                                      \
         double buf = (double)val;                                             \
-        if (cfg.api == adios)                                                 \
-            err = scorpio_put_fill_att(driver, ncid, &buf, varp);             \
-        else                                                                  \
-            err = driver.put_att(ncid, varp->vid, name, NC_DOUBLE, 1, &buf);  \
+        err = driver.put_att(ncid,varp->vid,_FillValue,varp->xType, 1, &buf); \
     }                                                                         \
     CHECK_VAR_ERR(varp->vid)                                                  \
 }
