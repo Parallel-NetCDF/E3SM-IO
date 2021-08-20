@@ -23,14 +23,14 @@ typedef struct {
     /* buffers for fixed-size variables */
     size_t  fix_txt_buflen; char   *fix_txt_buf;
     size_t  fix_int_buflen; int    *fix_int_buf;
+    size_t  fix_flt_buflen; float  *fix_flt_buf;
     size_t  fix_dbl_buflen; double *fix_dbl_buf;
-    size_t  fix_buflen;     vtype  *fix_buf;
 
     /* buffers for record variables */
     size_t  rec_txt_buflen; char   *rec_txt_buf;
     size_t  rec_int_buflen; int    *rec_int_buf;
+    size_t  rec_flt_buflen; float  *rec_flt_buf;
     size_t  rec_dbl_buflen; double *rec_dbl_buf;
-    size_t  rec_buflen;     vtype  *rec_buf;
 } io_buffers;
 
 typedef struct {
@@ -40,14 +40,14 @@ typedef struct {
     int frame_id;    /* frame variable ID returned from adios driver */
     int decom_id;    /* decomposition map variable ID returned from adios driver */
     int piodecomid;  /* map IDs used on Scorpio starting at 512 */
-    int64_t dims[3]; /* dimension sizes */
-    int ndims;       /* number of dimensions */
+    int ndims;                  /* number of dimensions */
+    MPI_Offset dims[MAX_NDIMS]; /* dimension sizes */
     nc_type xType;
 
     int decomp_id;      /* decomposition map ID, e.g. 0, 1, 2, ... */
     int isRecVar;       /* whether is a record variable */
     size_t vlen;        /* length to be written by this rank */
-    MPI_Datatype itype; /* memory buffer of internal data type */
+    MPI_Datatype iType; /* memory buffer of internal data type */
 } var_meta;
 
 class e3sm_io_case {
@@ -70,8 +70,8 @@ class e3sm_io_case {
                *D5_fix_int_buf = NULL;
 
         /* dimension IDs used to define blob variables */
-        int fix_dimids[MAX_NUM_DECOMP];    /* fixed-size variables are 1D */
-        int rec_dimids[MAX_NUM_DECOMP][2]; /* record     variables are 2D */
+        int fix_dimids[MAX_NUM_DECOMP];    /* fixed-size blob variables are 1D */
+        int rec_dimids[MAX_NUM_DECOMP][2]; /* record     blob variables are 2D */
 
         io_buffers  wr_buf;  /* write buffers and their length metadata */
         var_meta   *vars;    /* variable metadata */
@@ -109,11 +109,11 @@ class e3sm_io_case {
         int def_var_decomp(e3sm_io_config &cfg,
                            e3sm_io_decom  &decom,
                            e3sm_io_driver &driver,
-                           int             ncid,
-                           int             dim_time,
-                           int             dim_nblobs,
-                           int             dim_max_nreqs[MAX_NUM_DECOMP],
-                           int             g_dimids[MAX_NUM_DECOMP][4]);
+                           int ncid,
+                           int dim_time,
+                           int dim_nblobs,
+                           int dim_max_nreqs[MAX_NUM_DECOMP],
+                           int g_dimids[MAX_NUM_DECOMP][MAX_NDIMS]);
 
     public:
          e3sm_io_case();
@@ -293,24 +293,26 @@ int scorpio_put_fill_att(e3sm_io_driver &driver,
     err = driver.put_att(ncid, varp->vid, name, NC_INT64, num, buf);          \
     CHECK_VAR_ERR(varp->vid)                                                  \
 }
-#define SET_BUF_META(dtype, buflen, varlen) {                                 \
-    int id = varp->decomp_id;                                                 \
-    size_t vlen = (cfg.api == adios && id >= 0) ? decom.raw_nreqs[id]         \
-                                                : varlen;                     \
-    varp->itype    = dtype; /* internal data type of write buffer */          \
-    varp->vlen     = vlen;  /* length of this write request */                \
-    wr_buf.buflen += vlen + wr_buf.gap;                                       \
-}
-#define DEF_VAR(name, xtype, ndims, dimids, decomid) {                        \
+#define DEF_VAR(name, xtype, ndims, dimids, itype, decomid) {                 \
     /* ndims and dimids are canonical dimensions */                           \
-    int *_dimids = dimids;                                                    \
+    int _i, *_dimids = dimids;                                                \
     varp++;                                                                   \
-    varp->xType = xtype;                                                      \
-    varp->decomp_id = decomid;  /* decomposition map ID */                    \
+    varp->iType     = itype;   /* internal data type of write buffer */       \
+    varp->xType     = xtype;   /* external data type of variable in file */   \
+    varp->decomp_id = decomid; /* decomposition map ID */                     \
     varp->isRecVar  = (ndims != 0 && *_dimids == dim_time);                   \
+    /* calculate variable size */                                             \
+    for (varp->vlen=1, _i=0; _i<ndims; _i++) {                                \
+        err = driver.inq_dimlen(ncid, _dimids[_i], &varp->dims[_i]);          \
+        CHECK_ERR                                                             \
+        if (_i == 0 && varp->isRecVar) varp->dims[_i] = 1;                    \
+        varp->vlen *= varp->dims[_i];                                         \
+    }                                                                         \
+    /* define a new variable */                                               \
     if (cfg.api == adios) {                                                   \
         err = scorpio_define_var(cfg, decom, driver, dnames, decomid, ncid,   \
                                  name, xtype, ndims, dimids, varp);           \
+        if (decomid >= 0) varp->vlen = decom.raw_nreqs[decomid];              \
     } else if (cfg.strategy == blob && decomid >= 0) {                        \
         /* use blob dimensions to define blob variables */                    \
         int ival, _ndims;                                                     \
@@ -322,10 +324,11 @@ int scorpio_put_fill_att(e3sm_io_driver &driver,
             _dimids = &fix_dimids[decomid];                                   \
         }                                                                     \
         err = driver.def_var(ncid, name, xtype, _ndims, _dimids, &varp->vid); \
-        /* save the canonical domensions as attributes */                     \
+        /* save the canonical dimensions as attributes */                     \
         ival = decomid + 1;                                                   \
         PUT_ATTR_INT("decomposition_ID", 1, &ival)                            \
         PUT_ATTR_INT("global_dimids", ndims, dimids)                          \
+        varp->vlen = decom.count[decomid];                                    \
     } else { /* cfg.strategy == canonical or log or decomid == -1 */          \
         err = driver.def_var(ncid, name, xtype, ndims, dimids, &varp->vid);   \
     }                                                                         \
@@ -333,5 +336,25 @@ int scorpio_put_fill_att(e3sm_io_driver &driver,
         printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__,       \
                name);                                                         \
         goto err_out;                                                         \
+    }                                                                         \
+    /* increment I/O buffer sizes */                                          \
+    if (varp->isRecVar) {                                                     \
+        if (varp->iType == MPI_DOUBLE)                                        \
+            wr_buf.rec_dbl_buflen += varp->vlen + wr_buf.gap;                 \
+        else if (varp->iType == MPI_INT)                                      \
+            wr_buf.rec_int_buflen += varp->vlen + wr_buf.gap;                 \
+        else if (varp->iType == MPI_CHAR)                                     \
+            wr_buf.rec_txt_buflen += varp->vlen + wr_buf.gap;                 \
+        else if (varp->iType == MPI_FLOAT)                                    \
+            wr_buf.rec_flt_buflen += varp->vlen + wr_buf.gap;                 \
+    } else {                                                                  \
+        if (varp->iType == MPI_DOUBLE)                                        \
+            wr_buf.fix_dbl_buflen += varp->vlen + wr_buf.gap;                 \
+        else if (varp->iType == MPI_INT)                                      \
+            wr_buf.fix_int_buflen += varp->vlen + wr_buf.gap;                 \
+        else if (varp->iType == MPI_CHAR)                                     \
+            wr_buf.fix_txt_buflen += varp->vlen + wr_buf.gap;                 \
+        else if (varp->iType == MPI_FLOAT)                                    \
+            wr_buf.fix_flt_buflen += varp->vlen + wr_buf.gap;                 \
     }                                                                         \
 }
