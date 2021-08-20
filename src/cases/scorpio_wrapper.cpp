@@ -102,18 +102,16 @@ int scorpio_define_var(e3sm_io_config &cfg,
             CHECK_ERR
         }
     } else { /* this variable is not partitioned */
-        std::vector<MPI_Offset> dsize (ndims);
         MPI_Offset vsize = 1;
         int esize;
 
         for (i = 0; i < ndims; i++) {
-            err = driver.inq_dimlen (fid, dimids[i], &dsize[i]);
+            err = driver.inq_dimlen (fid, dimids[i], &var->dims[i]);
             CHECK_ERR
 
             // Time dim is always 0, but block size should be 1
-            if (dsize[i] == 0) dsize[i] = 1;
-            var->dims[i] = dsize[i];
-            vsize *= dsize[i];
+            if (i == 0 && var->isRecVar) var->dims[i] = 1;
+            vsize *= var->dims[i];
         }
 
         // flatten into 1 dim only apply to non-scalar variables
@@ -186,7 +184,7 @@ int scorpio_write_var(e3sm_io_driver &driver,
 {
 #ifdef ENABLE_ADIOS2
     int err;
-    void *wbuf;
+    void *wbuf=buf;
 
     if (var.isRecVar) frameid = -1;
 
@@ -196,24 +194,16 @@ int scorpio_write_var(e3sm_io_driver &driver,
      * These variables are stored as arrays of type byte.
      */
     if (var.decomp_id < 0 && var.ndims) {
-        int esize;
-        size_t cp_len;
-
-#ifdef DEBUG
-        size_t i, vlen=1;
-        for (i=0; i<var.ndims; i++) vlen *= var.dims[i];
-        assert(vlen == var.vlen);
-#endif
+        int i, esize;
+        int64_t *ptr;
 
         MPI_Type_size(itype, &esize);
-        cp_len = var.ndims * sizeof(int64_t);
-        wbuf = (void*) malloc(2 * cp_len + var.vlen * esize);
-        memset(wbuf, 0, cp_len);
-        memcpy((char*)wbuf+cp_len,   var.dims, cp_len);
-        memcpy((char*)wbuf+cp_len*2, buf,      var.vlen * esize);
+        wbuf = (void*) malloc(2 * var.ndims * sizeof(int64_t) + var.vlen * esize);
+        ptr = (int64_t*)wbuf;
+        for (i=0; i<var.ndims;   i++) *(ptr++) = 0;
+        for (;    i<var.ndims*2; i++) *(ptr++) = var.dims[i];
+        memcpy(ptr, buf, var.vlen * esize);
     }
-    else
-        wbuf = buf;
 
     /* not partitioned variables are stored as byte type */
     if (var.frame_id < 0 && var.ndims)
@@ -256,7 +246,10 @@ int scorpio_put_fill_att(e3sm_io_driver &driver,
     MPI_Offset one = 1;
     MPI_Datatype xType;
 
-    /* define a local variable fillval_id/var_name to store fill value */
+    /* define a local variable fillval_id/var_name to store fill value
+     * TODO: Note adding this local variable is unnecessary. This will be
+     * removed in the future.
+     */
     name.append(varp->name);
     err = driver.def_local_var(fid, name, varp->xType, 1, &one, &varid);
     CHECK_ERR
