@@ -148,9 +148,9 @@ int print_timing_WR(e3sm_io_config *cfg,
             }
             else {
                 printf("History output subfile names       = %s.xxxx\n", cmeta->outfile);
-                printf("Number of subfiles                 = %3d\n", cfg->num_subfiles);
+                printf("Number of subfiles                 = %d\n", cfg->num_subfiles);
             }
-            printf("No. decomposition variables        = %3d\n", cmeta->num_decomp_vars);
+            printf("No. decomposition variables        = %d\n", cmeta->num_decomp_vars);
             if (cfg->api == adios) {
                 MPI_Offset amount = 0;
                 for (i=0; i<ndecomp; i++)
