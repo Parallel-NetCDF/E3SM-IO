@@ -102,25 +102,17 @@ int scorpio_define_var(e3sm_io_config &cfg,
             CHECK_ERR
         }
     } else { /* this variable is not partitioned */
-        MPI_Offset vsize = 1;
-        int esize;
-
-        for (i = 0; i < ndims; i++) {
-            err = driver.inq_dimlen (fid, dimids[i], &var->dims[i]);
-            CHECK_ERR
-
-            // Time dim is always 0, but block size should be 1
-            if (i == 0 && var->isRecVar) var->dims[i] = 1;
-            vsize *= var->dims[i];
-        }
-
         // flatten into 1 dim only apply to non-scalar variables
         if (ndims){
+            int esize;
+            MPI_Offset vsize;
+
             // Convert into byte array
             err = e3sm_io_xlen_nc_type(xtype, &esize);
             CHECK_MPIERR
-            vsize *= esize;
-            vsize += 8 * 2 * ndims; // Include start and count array
+
+            vsize = 2 * sizeof(int64_t) * ndims  // Include start and count arrays
+                  + var->vlen * esize;
             err = driver.def_local_var(fid, name, NC_UBYTE, 1, &vsize,
                                        &var->vid);
             CHECK_ERR
@@ -203,11 +195,10 @@ int scorpio_write_var(e3sm_io_driver &driver,
         for (i=0; i<var.ndims;   i++) *(ptr++) = 0;
         for (;    i<var.ndims*2; i++) *(ptr++) = var.dims[i];
         memcpy(ptr, buf, var.vlen * esize);
-    }
 
-    /* not partitioned variables are stored as byte type */
-    if (var.frame_id < 0 && var.ndims)
+        /* not partitioned variables are stored as byte type */
         itype = MPI_BYTE;
+    }
 
     err = driver.put_varl(fid, var.vid, itype, wbuf, nbe);
     CHECK_ERR
@@ -229,44 +220,6 @@ int scorpio_write_var(e3sm_io_driver &driver,
 err_out:
     if (wbuf != buf) free(wbuf);
 
-    return err;
-#else
-    return -1;
-#endif
-}
-
-int scorpio_put_fill_att(e3sm_io_driver &driver,
-                         int             fid,
-                         void           *buf,
-                         var_meta       *varp)
-{
-#ifdef ENABLE_ADIOS2
-    int err, varid;
-    std::string name("fillval_id/");
-    MPI_Offset one = 1;
-    MPI_Datatype xType;
-
-    /* define a local variable fillval_id/var_name to store fill value
-     * TODO: Note adding this local variable is unnecessary. This will be
-     * removed in the future.
-     */
-    name.append(varp->name);
-    err = driver.def_local_var(fid, name, varp->xType, 1, &one, &varid);
-    CHECK_ERR
-
-         if (varp->xType == NC_FLOAT)  xType = MPI_FLOAT;
-    else if (varp->xType == NC_INT)    xType = MPI_INT;
-    else if (varp->xType == NC_DOUBLE) xType = MPI_DOUBLE;
-    else assert(0);
-
-    err = driver.put_varl(fid, varid, xType, buf, nbe);
-    CHECK_ERR
-
-    /* also add attribute _FillValue */
-    err = driver.put_att(fid, varp->vid, _FillValue, varp->xType, 1, buf);
-    CHECK_ERR
-
-err_out:
     return err;
 #else
     return -1;
