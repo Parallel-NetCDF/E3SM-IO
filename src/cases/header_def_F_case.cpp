@@ -360,7 +360,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
 #ifdef _DOUBLE_TYPE_
     SET_BUF_META(MPI_DOUBLE, rec_buflen, 1)
 #else
-    SET_BUF_META(MPI_DOUBLE, fix_dbl_buflen, 1)
+    SET_BUF_META(MPI_DOUBLE, rec_dbl_buflen, 1)
 #endif
 
     /* int date(time) */
@@ -381,7 +381,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
 #ifdef _DOUBLE_TYPE_
     SET_BUF_META(MPI_DOUBLE, rec_buflen, nbnd)
 #else
-    SET_BUF_META(MPI_DOUBLE, fix_dbl_buflen, nbnd)
+    SET_BUF_META(MPI_DOUBLE, rec_dbl_buflen, nbnd)
 #endif
 
     /* char date_written(time, chars) */
@@ -442,7 +442,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
 #ifdef _DOUBLE_TYPE_
     SET_BUF_META(MPI_DOUBLE, rec_buflen, 1)
 #else
-    SET_BUF_META(MPI_DOUBLE, fix_dbl_buflen, 1)
+    SET_BUF_META(MPI_DOUBLE, rec_dbl_buflen, 1)
 #endif
 
     /* double ch4vmr(time) */
@@ -451,7 +451,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
 #ifdef _DOUBLE_TYPE_
     SET_BUF_META(MPI_DOUBLE, rec_buflen, 1)
 #else
-    SET_BUF_META(MPI_DOUBLE, fix_dbl_buflen, 1)
+    SET_BUF_META(MPI_DOUBLE, rec_dbl_buflen, 1)
 #endif
 
     /* double n2ovmr(time) */
@@ -460,7 +460,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
 #ifdef _DOUBLE_TYPE_
     SET_BUF_META(MPI_DOUBLE, rec_buflen, 1)
 #else
-    SET_BUF_META(MPI_DOUBLE, fix_dbl_buflen, 1)
+    SET_BUF_META(MPI_DOUBLE, rec_dbl_buflen, 1)
 #endif
 
     /* double f11vmr(time) */
@@ -469,7 +469,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
 #ifdef _DOUBLE_TYPE_
     SET_BUF_META(MPI_DOUBLE, rec_buflen, 1)
 #else
-    SET_BUF_META(MPI_DOUBLE, fix_dbl_buflen, 1)
+    SET_BUF_META(MPI_DOUBLE, rec_dbl_buflen, 1)
 #endif
 
     /* double f12vmr(time) */
@@ -478,7 +478,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
 #ifdef _DOUBLE_TYPE_
     SET_BUF_META(MPI_DOUBLE, rec_buflen, 1)
 #else
-    SET_BUF_META(MPI_DOUBLE, fix_dbl_buflen, 1)
+    SET_BUF_META(MPI_DOUBLE, rec_dbl_buflen, 1)
 #endif
 
     /* double sol_tsi(time) */
@@ -488,7 +488,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
 #ifdef _DOUBLE_TYPE_
     SET_BUF_META(MPI_DOUBLE, rec_buflen, 1)
 #else
-    SET_BUF_META(MPI_DOUBLE, fix_dbl_buflen, 1)
+    SET_BUF_META(MPI_DOUBLE, rec_dbl_buflen, 1)
 #endif
 
     /* int nsteph(time) */
