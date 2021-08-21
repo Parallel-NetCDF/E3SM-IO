@@ -20,6 +20,7 @@
 #include <e3sm_io_driver.hpp>
 
 /*----< add_gattrs() >-------------------------------------------------------*/
+/* add global attributes */
 static
 int add_gattrs(e3sm_io_config &cfg,
                e3sm_io_decom  &decom,
@@ -835,7 +836,6 @@ int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
       D6.total_nreqs = 3693225 ;     3693225 x 81    nCells    x nVertLevelsP1
     */
 
-    /* define dimensions */
     DEF_DIM("Time",          NC_UNLIMITED,     &dim_time)
     DEF_DIM("nCells",        decom.dims[0][0], &dim_nCells)
     DEF_DIM("nEdges",        decom.dims[1][0], &dim_nEdges)

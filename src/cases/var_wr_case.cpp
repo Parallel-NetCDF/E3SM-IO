@@ -167,8 +167,8 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     else
         comm = cfg.io_comm;
 
-    MPI_Comm_rank(cfg.io_comm,  &global_rank);
-    MPI_Comm_rank(comm,         &sub_rank);
+    MPI_Comm_rank(cfg.io_comm, &global_rank);
+    MPI_Comm_rank(comm,        &sub_rank);
 
     /* I/O amount from previous I/O */
     INQ_PUT_SIZE(previous_size)
@@ -189,7 +189,9 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
-    /* there are num_decomp_vars number of decomposition variables */
+    /* there are num_decomp_vars number of decomposition variables when blob
+     * I/O is enabled
+     */
     if (cfg.strategy == blob) {
         if (cfg.api == adios)
             num_decomp_vars = decom.num_decomp + 1;
@@ -204,10 +206,12 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     /* allocate space to store variable metadata */
     vars = (var_meta*) calloc(nvars, sizeof(var_meta));
 
+    /* mimic noncontiguous buffers in memory by adding BUG_GAP between them */
     if (cfg.non_contig_buf) gap = BUF_GAP;
 
     wr_buf_init(gap);
 
+    /* define dimensions, variables, and attributes */
     if (cfg.run_case == F)
         err = def_F_case(cfg, decom, driver, ncid);
     else if (cfg.run_case == G)
@@ -223,6 +227,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     INQ_PUT_SIZE(metadata_size)
     metadata_size -= previous_size;
 
+    /* obtain I/O hints actually used by the MPI-IO underneath */
     INQ_FILE_INFO(cmeta->info_used)
 
     cmeta->def_time = MPI_Wtime() - timing;
@@ -230,7 +235,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
-    /* flush drequency only affects pnetcdf API.  Note for HDF5 and ADIOS blob
+    /* flush frequency only affects pnetcdf API.  Note for HDF5 and ADIOS blob
      * I/O, write data is copied into their internal buffers and only flushed
      * at file close. Calling driver.wait() takes no effect.
      */
@@ -258,7 +263,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
                                   decom.raw_offsets[j], nb);
             CHECK_ERR
         }
-        // Nproc only written by rank 0
+        /* nproc, number of processes, is only written by rank 0 */
         if (cfg.rank == 0) {
             err = driver.put_varl(ncid, vars[j].vid, MPI_INT, &cfg.np, nb);
             CHECK_ERR
@@ -301,6 +306,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
         }
     }
 
+    /* pointers to buffers in memory for fixed-size variables */
     fix_txt_buf_ptr = wr_buf.fix_txt_buf;
     fix_int_buf_ptr = wr_buf.fix_int_buf;
     fix_flt_buf_ptr = wr_buf.fix_flt_buf;
@@ -309,14 +315,14 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     for (rec_no=0; rec_no<cmeta->nrecs; rec_no++) {
 
         if (rec_no % ffreq == 0) {
-            /* reset the pointers to the beginning of the buffers */
+            /* reset buffer pointers for record variables */
             rec_txt_buf_ptr = wr_buf.rec_txt_buf;
             rec_int_buf_ptr = wr_buf.rec_int_buf;
             rec_flt_buf_ptr = wr_buf.rec_flt_buf;
             rec_dbl_buf_ptr = wr_buf.rec_dbl_buf;
         }
 
-        /* set the start index for the next record */
+        /* set start index for the next record */
         if (cfg.api != adios) {
             for (i=0; i<decom.num_decomp; i++) {
                 if (cfg.strategy == blob)
@@ -386,14 +392,13 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
             }
         }
 
-        /* flush out the pending iput requests */
+        /* flush out all the pending iput requests */
         if ((rec_no + 1) % ffreq == 0 || (rec_no + 1) == cmeta->nrecs) {
             cmeta->post_time += MPI_Wtime() - timing;
 
             MPI_Barrier(comm); /*--------------------------------------------*/
             timing = MPI_Wtime();
 
-            /* flush once per time record */
             WAIT_ALL_REQS
             cmeta->flush_time += MPI_Wtime() - timing;
 
@@ -404,10 +409,11 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
-    /* free up previously allocated heap memory space */
+    /* free up allocated heap memory for write buffers */
     wr_buf_free();
     if (vars != NULL) free(vars);
 
+    /* close file */
     FILE_CLOSE
 
     cmeta->close_time = MPI_Wtime() - timing;
@@ -416,6 +422,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     INQ_PUT_SIZE(total_size)
     total_size -= previous_size;
 
+    /* update metadata for this case study */
     cmeta->num_flushes     = nflushes;
     cmeta->num_decomp_vars = num_decomp_vars;
     cmeta->my_nreqs        = my_nreqs;

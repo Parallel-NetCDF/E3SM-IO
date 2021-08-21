@@ -20,6 +20,7 @@
 #include <e3sm_io_driver.hpp>
 
 /*----< add_gattrs() >-------------------------------------------------------*/
+/* add global attributes */
 static
 int add_gattrs(e3sm_io_config &cfg,
                e3sm_io_decom  &decom,

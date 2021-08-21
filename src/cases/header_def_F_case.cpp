@@ -20,6 +20,7 @@
 #include <e3sm_io_driver.hpp>
 
 /*----< add_gattrs() >-------------------------------------------------------*/
+/* add global attributes */
 static
 int add_gattrs(e3sm_io_config &cfg,
                e3sm_io_decom  &decom,
@@ -46,6 +47,7 @@ int add_gattrs(e3sm_io_config &cfg,
     /* save number of processes as global attributes */
     PUT_GATTR_INT("ne", 120)
     PUT_GATTR_INT("np", 21600)
+
     PUT_GATTR_TXT("title", "EAM History file information")
     PUT_GATTR_TXT("source", "E3SM Atmosphere Model")
     PUT_GATTR_TXT("source_id", "025f820fce")
@@ -73,6 +75,7 @@ err_out:
 }
 
 /*----< def_var_decomp() >---------------------------------------------------*/
+/* define decomposition variables. Blob I/O only */
 int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
                                  e3sm_io_decom  &decom,
                                  e3sm_io_driver &driver,
@@ -165,7 +168,6 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
     CHECK_ERR
 
     /* define dimensions */
-
     /*
        nbnd  =   2 ;
        chars =   8 ;
@@ -179,7 +181,6 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
       D3 : lev x ncol
     */
 
-    /* define dimensions */
     DEF_DIM("time",  NC_UNLIMITED,         &dim_time)
     DEF_DIM("nbnd",  2,                    &dim_nbnd)
     DEF_DIM("chars", 8,                    &dim_chars)
