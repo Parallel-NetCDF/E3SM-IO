@@ -316,6 +316,7 @@ int scorpio_write_var(e3sm_io_driver &driver,
         varp->vlen = decom.count[decomid];                                    \
     } else { /* cfg.strategy == canonical or log or decomid == -1 */          \
         err = driver.def_var(ncid, name, xtype, ndims, dimids, &varp->vid);   \
+        if (decomid >= 0) varp->vlen = decom.count[decomid];                  \
     }                                                                         \
     if (err != 0) {                                                           \
         printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__,       \
