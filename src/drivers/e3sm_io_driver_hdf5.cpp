@@ -656,7 +656,7 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
 
     // Extend rec dim
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_EXT_DIM)
-    if (dims[0] < hstart[0] + hblock[0]) {
+    if (ndim && (dims[0] < hstart[0] + hblock[0])) {
         dims[0] = hstart[0] + hblock[0];
         if (fp->recsize < (MPI_Offset)(dims[0])) { fp->recsize = dims[0]; }
 
@@ -793,7 +793,7 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
 
     // Extend rec dim
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_EXT_DIM)
-    if (dims[0] < hstart[0] + (hblock[0] - 1) * hstride[0] + 1) {
+    if (ndim && (dims[0] < hstart[0] + (hblock[0] - 1) * hstride[0] + 1)) {
         dims[0] = hstart[0] + (hblock[0] - 1) * hstride[0] + 1;
         if (fp->recsize < (MPI_Offset)(dims[0])) { fp->recsize = dims[0]; }
 
