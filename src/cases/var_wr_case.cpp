@@ -90,7 +90,7 @@
 }
 
 #define FIX_VAR_IPUT(varp, dp, itype, buf) {                              \
-    if (cfg.strategy == canonical) {                                      \
+    if (((cfg.strategy == canonical) || (cfg.strategy == log))) {         \
         err = driver.put_varn(ncid, varp.vid, itype,                      \
                               decom.contig_nreqs[dp], decom.w_startx[dp], \
                               decom.w_countx[dp], buf, nb);               \
@@ -113,7 +113,7 @@
 }
 
 #define REC_VAR_IPUT(varp, dp, itype, buf) {                              \
-    if (cfg.strategy == canonical) {                                      \
+    if (((cfg.strategy == canonical) || (cfg.strategy == log))) {         \
         err = driver.put_varn(ncid, varp.vid, itype,                      \
                               decom.contig_nreqs[dp], decom.w_starts[dp], \
                               decom.w_counts[dp], buf, nb);               \
