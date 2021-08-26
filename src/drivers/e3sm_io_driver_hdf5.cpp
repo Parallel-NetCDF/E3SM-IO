@@ -1002,7 +1002,7 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
             hstarts[i] = hstarts[i - 1] + ndim;
             hcounts[i] = hcounts[i - 1] + ndim;
         }
-        for (i = 1; i < nreq; i++) {
+        for (i = 0; i < nreq; i++) {
             for (j = 0; j < ndim; j++) {
                 hstarts[i][j] = (hsize_t)starts[i][j];
                 hcounts[i][j] = (hsize_t)counts[i][j];
