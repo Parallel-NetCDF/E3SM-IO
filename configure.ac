@@ -180,6 +180,8 @@ AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX(17, , optional)
 AM_CONDITIONAL(HAVE_CXX17, [test "x${HAVE_CXX17}" = x1])
 
+AX_CXX_COMPILE_STDCXX(11, , mandatory)
+
 dnl Set output variable CPP to a command that runs the C preprocessor.
 dnl Some C compilers require -E to be used as C preprocessor.
 AC_PROG_CPP
@@ -506,8 +508,12 @@ AC_ARG_WITH([adios2],
 ])
 AM_CONDITIONAL(ENABLE_ADIOS2, [test "x$have_adios2" = xyes])
 
-# C++ 17 required
+# Enable C++ 17 if available
+if test "x${HAVE_CXX17}" = x1 ; then
 CXXFLAGS="$CXXFLAGS -std=c++17"
+else
+CXXFLAGS="$CXXFLAGS -std=c++11"
+fi
 
 if test "x$LIBS" = x ; then
 LIBS="-lpnetcdf"
