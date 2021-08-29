@@ -214,17 +214,9 @@ int e3sm_io_driver_hdf5::close (int fid) {
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     ssize_t namelen;
-    struct stat file_stat;
     char fname[1024];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
-
-    namelen = H5Fget_name (fp->id, fname, 1024);
-    CHECK_HID (namelen)
-    stat (fname, &file_stat);
-
-    /* FIXME: using file size as write amount is incorrect! */
-    this->amount_WR += (MPI_Offset) (file_stat.st_size);
 
     for (auto did : fp->dids) {
         herr = H5Dclose (did);
@@ -374,6 +366,7 @@ err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return err;
 }
+
 int e3sm_io_driver_hdf5::def_local_var (
     int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did) {
     int err = 0;
@@ -545,7 +538,7 @@ int e3sm_io_driver_hdf5::put_att (
     if (fp->rank == 0) {
         size_t esize = H5Tget_size(h5_xtype);
         CHECK_MPIERR
-        fp->putsize += asize * esize;
+        this->amount_WR += asize * esize;
     }
 
 err_out:;
@@ -736,7 +729,7 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
     tid     = H5Dget_type (did);
     putsize = H5Tget_size (tid);
     for (i = 0; i < ndim; i++) { putsize *= hblock[i]; }
-    fp->putsize += putsize;
+    this->amount_WR += putsize;
 
 err_out:;
     if (tid >= 0) H5Tclose (tid);
@@ -871,7 +864,7 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
     tid     = H5Dget_type (did);
     putsize = H5Tget_size (tid);
     for (i = 0; i < ndim; i++) { putsize *= hblock[i]; }
-    fp->putsize += putsize;
+    this->amount_WR += putsize;
 
 err_out:;
     if (tid >= 0) H5Tclose (tid);
@@ -1104,7 +1097,7 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
     for (j = 0; j < nreq; j++) {
         putsize = tsize;
         for (i = 0; i < ndim; i++) putsize *= counts[j][i];
-        fp->putsize += putsize;
+        this->amount_WR += putsize;
     }
 
 err_out:;
