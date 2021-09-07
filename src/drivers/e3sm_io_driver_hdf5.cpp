@@ -680,14 +680,6 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
 
     E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
     switch (mode) {
-        case indep: {
-            dxplid = this->dxplid_indep;
-            break;
-        }
-        case coll: {
-            dxplid = this->dxplid_coll;
-            break;
-        }
         case nb: {
             dxplid = this->dxplid_indep_nb;
             break;
@@ -698,6 +690,14 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
             } else {
                 throw "bput not supported";
             }
+            break;
+        }
+        case indep: {
+            dxplid = this->dxplid_indep;
+            break;
+        }
+        case coll: {
+            dxplid = this->dxplid_coll;
             break;
         }
         default:
@@ -815,14 +815,6 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
 
     E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
     switch (mode) {
-        case indep: {
-            dxplid = this->dxplid_indep;
-            break;
-        }
-        case coll: {
-            dxplid = this->dxplid_coll;
-            break;
-        }
         case nb: {
             dxplid = this->dxplid_indep_nb;
             break;
@@ -833,6 +825,14 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
             } else {
                 throw "bput not supported";
             }
+            break;
+        }
+        case indep: {
+            dxplid = this->dxplid_indep;
+            break;
+        }
+        case coll: {
+            dxplid = this->dxplid_coll;
             break;
         }
         default:
@@ -958,14 +958,6 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_EXT_DIM)
 
     switch (mode) {
-        case indep: {
-            dxplid = this->dxplid_indep;
-            break;
-        }
-        case coll: {
-            dxplid = this->dxplid_coll;
-            break;
-        }
         case nb: {
             dxplid = this->dxplid_indep_nb;
             break;
@@ -976,6 +968,14 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
             } else {
                 throw "bput not supported";
             }
+            break;
+        }
+        case indep: {
+            dxplid = this->dxplid_indep;
+            break;
+        }
+        case coll: {
+            dxplid = this->dxplid_coll;
             break;
         }
         default:
@@ -1183,20 +1183,20 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
 
     E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
     switch (mode) {
-        case indep: {
-            dxplid = this->dxplid_indep;
-            break;
-        }
-        case coll: {
-            dxplid = this->dxplid_coll;
-            break;
-        }
         case nb: {
             dxplid = this->dxplid_indep_nb;
             break;
         }
         case nbe: {
             throw "bput not supported for read";
+            break;
+        }
+        case indep: {
+            dxplid = this->dxplid_indep;
+            break;
+        }
+        case coll: {
+            dxplid = this->dxplid_coll;
             break;
         }
         default:
@@ -1297,20 +1297,20 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
 
     E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
     switch (mode) {
-        case indep: {
-            dxplid = this->dxplid_indep;
-            break;
-        }
-        case coll: {
-            dxplid = this->dxplid_coll;
-            break;
-        }
         case nb: {
             dxplid = this->dxplid_indep_nb;
             break;
         }
         case nbe: {
             throw "bput not supported for read";
+            break;
+        }       
+        case indep: {
+            dxplid = this->dxplid_indep;
+            break;
+        }
+        case coll: {
+            dxplid = this->dxplid_coll;
             break;
         }
         default:
@@ -1417,20 +1417,20 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
     CHECK_HID (ndim)
 
     switch (mode) {
-        case indep: {
-            dxplid = this->dxplid_indep;
-            break;
-        }
-        case coll: {
-            dxplid = this->dxplid_coll;
-            break;
-        }
         case nb: {
             dxplid = this->dxplid_indep_nb;
             break;
         }
         case nbe: {
             throw "bput not supported in read";
+            break;
+        }
+        case indep: {
+            dxplid = this->dxplid_indep;
+            break;
+        }
+        case coll: {
+            dxplid = this->dxplid_coll;
             break;
         }
         default:
