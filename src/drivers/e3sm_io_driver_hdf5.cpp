@@ -104,6 +104,7 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
     int err = 0;
     herr_t herr;
     hid_t faplid;
+    H5AC_cache_config_t mdcc;
     hdf5_file *fp;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
@@ -118,6 +119,16 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
     herr = H5Pset_fapl_mpio (faplid, comm, info);
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
+    CHECK_HERR
+    // Enlarge metadata cache
+    mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
+    herr         = H5Pget_mdc_config (faplid, &mdcc);
+    CHECK_HERR
+    mdcc.max_size         = 128 * 1024 * 1024;
+    mdcc.min_size         = 32 * 1024 * 1024;
+    mdcc.initial_size     = 32 * 1024 * 1024;
+    mdcc.set_initial_size = true;
+    herr                  = H5Pset_mdc_config (faplid, &mdcc);
     CHECK_HERR
 
     fp->id = H5Fcreate (path.c_str (), H5F_ACC_TRUNC, H5P_DEFAULT, faplid);
@@ -137,6 +148,7 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
     int err = 0;
     herr_t herr;
     hid_t faplid;
+    H5AC_cache_config_t mdcc;
     hdf5_file *fp;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
@@ -151,6 +163,16 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
     herr = H5Pset_fapl_mpio (faplid, comm, info);
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
+    CHECK_HERR
+    // Enlarge metadata cache
+    mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
+    herr         = H5Pget_mdc_config (faplid, &mdcc);
+    CHECK_HERR
+    mdcc.max_size         = 128 * 1024 * 1024;
+    mdcc.min_size         = 32 * 1024 * 1024;
+    mdcc.initial_size     = 32 * 1024 * 1024;
+    mdcc.set_initial_size = true;
+    herr                  = H5Pset_mdc_config (faplid, &mdcc);
     CHECK_HERR
 
     fp->id = H5Fopen (path.c_str (), H5F_ACC_RDONLY, faplid);
