@@ -15,15 +15,15 @@
 //
 #include <sys/stat.h>
 //
-#include <hdf5.h>
 #include <H5VL_log.h>
+#include <hdf5.h>
 //
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 
 #include <e3sm_io_driver_hdf5.hpp>
-#include <e3sm_io_driver_hdf5_log.hpp>
 #include <e3sm_io_driver_hdf5_int.hpp>
+#include <e3sm_io_driver_hdf5_log.hpp>
 #include <e3sm_io_profile.hpp>
 
 e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
@@ -96,6 +96,7 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
     int err = 0;
     herr_t herr;
     hid_t faplid;
+    H5AC_cache_config_t mdcc;
     hdf5_file_log *fp;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
@@ -112,6 +113,16 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
     herr = H5Pset_vol (faplid, this->log_vlid, NULL);
+    CHECK_HERR
+    // Enlarge metadata cache
+    mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
+    herr         = H5Pget_mdc_config (faplid, &mdcc);
+    CHECK_HERR
+    mdcc.max_size         = 128 * 1024 * 1024;
+    mdcc.min_size         = 32 * 1024 * 1024;
+    mdcc.initial_size     = 32 * 1024 * 1024;
+    mdcc.set_initial_size = true;
+    herr                  = H5Pset_mdc_config (faplid, &mdcc);
     CHECK_HERR
 
     fp->id = H5Fcreate (path.c_str (), H5F_ACC_TRUNC, H5P_DEFAULT, faplid);
@@ -131,6 +142,7 @@ int e3sm_io_driver_hdf5_log::open (std::string path, MPI_Comm comm, MPI_Info inf
     int err = 0;
     herr_t herr;
     hid_t faplid;
+    H5AC_cache_config_t mdcc;
     hdf5_file_log *fp;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
@@ -147,6 +159,16 @@ int e3sm_io_driver_hdf5_log::open (std::string path, MPI_Comm comm, MPI_Info inf
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
     herr = H5Pset_vol (faplid, this->log_vlid, NULL);
+    CHECK_HERR
+    // Enlarge metadata cache
+    mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
+    herr         = H5Pget_mdc_config (faplid, &mdcc);
+    CHECK_HERR
+    mdcc.max_size         = 128 * 1024 * 1024;
+    mdcc.min_size         = 32 * 1024 * 1024;
+    mdcc.initial_size     = 32 * 1024 * 1024;
+    mdcc.set_initial_size = true;
+    herr                  = H5Pset_mdc_config (faplid, &mdcc);
     CHECK_HERR
 
     fp->id = H5Fopen (path.c_str (), H5F_ACC_RDONLY, faplid);
@@ -328,7 +350,7 @@ err_out:;
 }
 
 int e3sm_io_driver_hdf5_log::inq_var (int fid, std::string name, int *did) {
-    int err       = 0;
+    int err           = 0;
     hdf5_file_log *fp = this->files[fid];
     hid_t h5did;
 
@@ -359,8 +381,8 @@ int e3sm_io_driver_hdf5_log::def_dim (int fid, std::string name, MPI_Offset size
     int err = 0;
     herr_t herr;
     hdf5_file_log *fp = this->files[fid];
-    hid_t sid     = -1;
-    hid_t aid     = -1;
+    hid_t sid         = -1;
+    hid_t aid         = -1;
     hsize_t hsize;
     char aname[128];
 
@@ -393,7 +415,7 @@ int e3sm_io_driver_hdf5_log::inq_dim (int fid, std::string name, int *dimid) {
     int err = 0;
     herr_t herr;
     hdf5_file_log *fp = this->files[fid];
-    hid_t aid     = -1;
+    hid_t aid         = -1;
     hsize_t hsize;
     char aname[128];
 
@@ -774,7 +796,7 @@ int e3sm_io_driver_hdf5_log::put_varn (int fid,
     hid_t dxplid;
     hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
-    hid_t tid = -1;
+    hid_t tid         = -1;
     hsize_t **hstarts = NULL, **hcounts;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
