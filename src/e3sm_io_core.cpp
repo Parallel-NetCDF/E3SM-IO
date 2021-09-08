@@ -29,6 +29,9 @@
 #include <hdf5.h>
 #include <e3sm_io_driver_hdf5.hpp>
 #include <e3sm_io_driver_h5blob.hpp>
+#ifdef ENABLE_LOGVOL
+#include <e3sm_io_driver_hdf5_log.hpp>
+#endif
 #endif
 
 #ifdef ENABLE_ADIOS2
@@ -166,7 +169,11 @@ done_check:
         case hdf5_md:
         case hdf5_log:
 #ifdef ENABLE_HDF5
-            driver = new e3sm_io_driver_hdf5 (cfg);
+#ifdef ENABLE_LOGVOL
+            driver = new e3sm_io_driver_hdf5_log (cfg);
+#else
+            ERR_OUT ("Log VOL support was not enabled in this build")
+#endif
 #else
             ERR_OUT ("HDF5 support was not enabled in this build")
 #endif

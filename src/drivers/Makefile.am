@@ -29,6 +29,12 @@ H_SRCS +=   e3sm_io_driver_hdf5.hpp \
             blob_ncmpio.h
 endif
 
+if ENABLE_LOGVOL
+C_SRCS +=   e3sm_io_driver_hdf5_log.cpp
+
+H_SRCS +=   e3sm_io_driver_hdf5_log.hpp 
+endif
+
 if ENABLE_ADIOS2
 C_SRCS += e3sm_io_driver_adios2.cpp
 H_SRCS += e3sm_io_driver_adios2.hpp
