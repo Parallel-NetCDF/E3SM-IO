@@ -192,8 +192,6 @@ int e3sm_io_driver_hdf5::close (int fid) {
     int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
-    ssize_t namelen;
-    char fname[1024];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
