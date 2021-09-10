@@ -490,15 +490,24 @@ int e3sm_io_driver_hdf5::put_att (
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     asize = (size_t)size;
-    asid  = H5Screate_simple (1, &asize, &asize);
-    CHECK_HID (asid)
 
     if (vid == NC_GLOBAL)
         did = fp->id;
     else
         did = fp->dids[vid];
 
-    h5_xtype = e3sm_io_type_nc2hdf5(xtype);
+    if (xtype == NC_CHAR) { /* string attribute */
+        asid = H5Screate(H5S_SCALAR);
+        CHECK_HID(asid)
+        h5_xtype = H5Tcopy(H5T_C_S1);
+        H5Tset_size(h5_xtype, asize+1);
+        H5Tset_strpad(h5_xtype, H5T_STR_NULLTERM);
+    }
+    else {
+        asid = H5Screate_simple (1, &asize, &asize);
+        CHECK_HID (asid)
+        h5_xtype = e3sm_io_type_nc2hdf5(xtype);
+    }
 
     exists = H5Aexists (did, name.c_str ());
     if (!exists) {
@@ -511,6 +520,11 @@ int e3sm_io_driver_hdf5::put_att (
 
     herr = H5Awrite (aid, h5_xtype, buf);
     CHECK_HERR
+
+    if (xtype == NC_CHAR) { /* string attribute */
+        herr = H5Tclose(h5_xtype);
+        CHECK_HERR
+    }
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 
