@@ -26,6 +26,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
         char *data;
     } Index_order;
 
+   protected:
     class hdf5_file {
        public:
         e3sm_io_driver_hdf5 &driver;
@@ -75,6 +76,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
     hsize_t one[H5S_MAX_RANK];
 
+   private:
     // Config
     bool use_dwrite_multi = false;
     bool merge_varn       = false;
