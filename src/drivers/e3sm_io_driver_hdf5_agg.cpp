@@ -506,11 +506,7 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     }
 
     // Call H5Dread immediately if blocking or Log VOL is used
-    if ((mode == indep) || (mode == coll)
-#ifdef ENABLE_LOGVOL
-        || this->use_logvol
-#endif
-    ) {
+    if ((mode == indep) || (mode == coll)) {
         herr = H5Dwrite (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
         CHECK_HERR
     } else {  // Otherwier, queue request in driver
@@ -641,11 +637,7 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
     }
 
     // Call H5Dread immediately if blocking or Log VOL is used
-    if ((mode == indep) || (mode == coll)
-#ifdef ENABLE_LOGVOL
-        || this->use_logvol
-#endif
-    ) {
+    if ((mode == indep) || (mode == coll)) {
         herr = H5Dread (did, mpi_type_to_hdf5_type (type), msid, dsid, dxplid, buf);
         CHECK_HERR
     } else {  // Otherwier, queue request in driver
