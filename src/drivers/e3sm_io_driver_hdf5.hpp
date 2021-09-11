@@ -72,14 +72,10 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     hid_t dxplid_indep;
     hid_t dxplid_coll_nb;
     hid_t dxplid_indep_nb;
-#ifdef ENABLE_LOGVOL
-    hid_t log_vlid;
-#endif
+
     hsize_t one[H5S_MAX_RANK];
 
     // Config
-    bool use_logvol       = false;
-    bool use_logvol_varn  = false;
     bool use_dwrite_multi = false;
     bool merge_varn       = false;
 
