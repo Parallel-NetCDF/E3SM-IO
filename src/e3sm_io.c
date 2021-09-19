@@ -286,6 +286,10 @@ int main (int argc, char **argv) {
     /* neither command-line option -i or -o is used */
     if (!cfg.wr && !cfg.rd)
         ERR_OUT("Error: neither command-line option -i nor -o is used")
+    if (cfg.out_path[0] == '-')
+        ERR_OUT ("Empty output file path")
+    if (cfg.in_path[0] == '-')
+        ERR_OUT ("Empty input file path")
 
     /* check yet to support APIs and I/O strategies */
     if (cfg.api == undef_api) cfg.api = pnetcdf;
@@ -401,6 +405,15 @@ int main (int argc, char **argv) {
 
     if (cfg.profiling) e3sm_io_print_profile(&cfg);
 
+    timing[0] = MPI_Wtime() - timing[0];
+    MPI_Reduce(timing, max_t, 3, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    if (cfg.rank == 0) {
+        printf("read_decomp=%.2f e3sm_io_core=%.2f MPI init-to-finalize=%.2f\n",
+               max_t[1],max_t[2],max_t[0]);
+        printf("-----------------------------------------------------------\n");
+        printf("\n\n");
+    }
+
 err_out:
     if (cfg.info != MPI_INFO_NULL)
         MPI_Info_free (&(cfg.info));
@@ -416,15 +429,6 @@ err_out:
             free(decom.w_starts[i][0]);
             free(decom.w_starts[i]);
         }
-    }
-
-    timing[0] = MPI_Wtime() - timing[0];
-    MPI_Reduce(timing, max_t, 3, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-    if (cfg.rank == 0) {
-        printf("read_decomp=%.2f e3sm_io_core=%.2f MPI init-to-finalize=%.2f\n",
-               max_t[1],max_t[2],max_t[0]);
-        printf("-----------------------------------------------------------\n");
-        printf("\n\n");
     }
 
     MPI_Finalize ();
