@@ -135,6 +135,7 @@ int read_decomp(e3sm_io_config *cfg,
     if (err != NC_NOERR) {
         printf("Error in %s line %d function %s:\n", __FILE__, __LINE__,
                __func__);
+        printf("\tncmpi_open() file %s\n", cfg->cfg_path);
         printf("\t(%s) %s\n", ncmpi_strerrno(err), ncmpi_strerror(err));
         goto err_out;
     }
