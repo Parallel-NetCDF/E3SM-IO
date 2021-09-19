@@ -143,7 +143,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
                               case_meta      *cmeta)
 {
     int i, j, err=0, sub_rank, global_rank, ncid=-1, nflushes=0;
-    int rec_no, ffreq, gap=0, my_nreqs, nvars, num_decomp_vars, *nvars_D;
+    int rec_no, gap=0, my_nreqs, nvars, num_decomp_vars, *nvars_D;
     char   *fix_txt_buf_ptr, *rec_txt_buf_ptr;
     int    *fix_int_buf_ptr, *rec_int_buf_ptr;
     float  *fix_flt_buf_ptr, *rec_flt_buf_ptr;
@@ -235,14 +235,8 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
-    /* flush frequency only affects pnetcdf API.  Note for HDF5 and ADIOS blob
-     * I/O, write data is copied into their internal buffers and only flushed
-     * at file close. Calling driver.wait() takes no effect.
-     */
-    ffreq = (cfg.api == pnetcdf) ? cmeta->ffreq : 1;
-
     /* allocate write buffers */
-    wr_buf_malloc(cfg, ffreq);
+    wr_buf_malloc(cfg, cmeta->ffreq);
 
     nvars_D = cmeta->nvars_D;
     for (j=0; j<decom.num_decomp; j++)
@@ -314,7 +308,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
 
     for (rec_no=0; rec_no<cmeta->nrecs; rec_no++) {
 
-        if (rec_no % ffreq == 0) {
+        if (rec_no % cmeta->ffreq == 0) {
             /* reset buffer pointers for record variables */
             rec_txt_buf_ptr = wr_buf.rec_txt_buf;
             rec_int_buf_ptr = wr_buf.rec_int_buf;
@@ -392,8 +386,12 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
             }
         }
 
-        /* flush out all the pending iput requests */
-        if ((rec_no + 1) % ffreq == 0 || (rec_no + 1) == cmeta->nrecs) {
+        /* flush out all the pending iput requests. Note flush frequency does
+         * not affect HDF5 and ADIOS blob I/O, where write data is copied into
+         * their internal buffers and only flushed at file close. Calling
+         * driver.wait() takes no effect.
+         */
+        if ((rec_no + 1) % cmeta->ffreq == 0 || (rec_no + 1) == cmeta->nrecs) {
             cmeta->post_time += MPI_Wtime() - timing;
 
             MPI_Barrier(comm); /*--------------------------------------------*/
