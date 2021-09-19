@@ -8,10 +8,11 @@
 #define DEBUG_ABORT                                        \
     {                                                      \
         char *val = getenv ("E3SM_IO_DEBUG_ABORT_ON_ERR"); \
-        if (val && (strcmp (val, "1") == 0)) { abort (); } \
+        if (val != NULL && strcmp (val, "1") == 0)         \
+            MPI_Abort(MPI_COMM_WORLD, -1);                 \
     }
 #else
-#define DEBUG_ABORT
+#define DEBUG_ABORT MPI_Abort(MPI_COMM_WORLD, -1);
 #endif
 
 #define CHECK_ERR {                                                      \
