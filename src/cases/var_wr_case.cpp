@@ -235,11 +235,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
-    /* flush frequency only affects pnetcdf API.  Note for HDF5 and ADIOS blob
-     * I/O, write data is copied into their internal buffers and only flushed
-     * at file close. Calling driver.wait() takes no effect.
-     */
-    ffreq = (cfg.api == pnetcdf) ? cmeta->ffreq : 1;
+    ffreq = cmeta->ffreq;
 
     /* allocate write buffers */
     wr_buf_malloc(cfg, ffreq);
