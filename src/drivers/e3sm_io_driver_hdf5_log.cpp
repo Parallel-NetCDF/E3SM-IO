@@ -65,7 +65,7 @@ e3sm_io_driver_hdf5_log::~e3sm_io_driver_hdf5_log () {
     if (dxplid_indep >= 0) H5Pclose (dxplid_indep);
     if (dxplid_coll_nb >= 0) H5Pclose (dxplid_coll_nb);
     if (dxplid_indep_nb >= 0) H5Pclose (dxplid_indep_nb);
-    
+
     // if (dxplid_nb >= 0) H5Pclose (dxplid_nb);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     */
@@ -514,6 +514,10 @@ int e3sm_io_driver_hdf5_log::put_varn (int fid,
 err_out:;
     if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
+    if (hstarts) {
+        free (hstarts[0]);
+        free (hstarts);
+    }
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return err;
