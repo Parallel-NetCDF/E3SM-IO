@@ -95,11 +95,12 @@ int e3sm_io_case::wr_buf_malloc(e3sm_io_config &cfg, int ffreq)
         wr_buf.rec_dbl_buflen += 64;
     }
 
-    if (cfg.api == pnetcdf) {
-        /* write buffers should not be touched when using PnetCDF iput before
-         * ncmpi_wait_all is called. For HDF5 and ADIOS blob I/O, write data
-         * will be copied and cached into internally allocated buffers and user
-         * buffers can be reused after put call returned.
+    if (cfg.api != adios && !(cfg.strategy == blob && cfg.api == hdf5)) {
+        /* Note HDF5 and ADIOS blob I/O copy write data into their internal
+         * buffers and only flush them out at file close. Thus, write buffers
+         * can be reused for these two I/O methods. For others, such as PnetCDF
+         * and HDF5 log-based VOL, write buffers should not be touched as they
+         * will later be used during the flushing is called.
          */
         wr_buf.rec_txt_buflen *= ffreq;
         wr_buf.rec_int_buflen *= ffreq;

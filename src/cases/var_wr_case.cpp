@@ -308,8 +308,14 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
 
     for (rec_no=0; rec_no<cmeta->nrecs; rec_no++) {
 
-        if (rec_no % cmeta->ffreq == 0) {
-            /* reset buffer pointers for record variables */
+        if (cfg.api == adios || (cfg.strategy == blob && cfg.api == hdf5) ||
+            rec_no % cmeta->ffreq == 0) {
+            /* reset buffer pointers for record variables. Note HDF5 and ADIOS
+             * blob I/O copy write data into their internal buffers and only
+             * flushed at file close. Thus, write buffers can be reused for
+             * these two I/O methods. For all other methods, reuse write
+             * buffers only after flush.
+             */
             rec_txt_buf_ptr = wr_buf.rec_txt_buf;
             rec_int_buf_ptr = wr_buf.rec_int_buf;
             rec_flt_buf_ptr = wr_buf.rec_flt_buf;
