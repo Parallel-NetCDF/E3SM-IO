@@ -182,8 +182,9 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
        [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for h1
                 only, -1 for both (default: -1)
        [-r num] Number of records/time steps for F case h1 file (default: 1)
-       [-y num] Frequency of I/O flush (affect PnetCDF API only). 1 for once
-                per time step (default), -1 for once for all time steps
+       [-y num] Data flush frequency (takes no effect on ADIOS and HDF5 blob
+                I/O options, which always flushes at file close). 1: flush
+                every time step (default), -1: flush once for all time steps
        [-s num] MPI rank stride for selecting processes to perform I/O tasks
                 (default: 1)
        [-g num] Number of subfiles, used in blob I/O only (default: 1)
