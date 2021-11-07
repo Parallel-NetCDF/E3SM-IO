@@ -390,6 +390,8 @@ AC_ARG_WITH([hdf5],
 ])
 AM_CONDITIONAL(ENABLE_HDF5, [test "x$have_hdf5" = xyes])
 AM_CONDITIONAL(HDF5_HAVE_DWRITE_MULTI, [test "x$have_multi_dset" = xyes])
+HDF5_LIB_DIR=${hdf5_lib}
+AC_SUBST([HDF5_LIB_DIR])
 
 # Check for logvol
 have_logvol=no
@@ -439,6 +441,8 @@ AC_ARG_WITH([logvol],
    fi
 ])
 AM_CONDITIONAL(ENABLE_LOGVOL, [test "x$have_logvol" = xyes])
+LOGVOL_LIB_DIR=${logvol_lib}
+AC_SUBST([LOGVOL_LIB_DIR])
 
 # Check for ADIOS2
 have_adios2=no
@@ -507,6 +511,18 @@ AC_ARG_WITH([adios2],
    fi
 ])
 AM_CONDITIONAL(ENABLE_ADIOS2, [test "x$have_adios2" = xyes])
+ADIOS2_LIB_DIR=${adios2_lib}
+AC_SUBST([ADIOS2_LIB_DIR])
+
+AC_ARG_VAR(TESTMPIRUN, [MPI run command for "make ptest", @<:@default: mpiexec -n NP@:>@])
+if test "x${TESTMPIRUN}" = x ; then
+   dnl if TESTMPIRUN has not been set by users, then
+   dnl set default to "mpiexec -n NP"
+   UD_MPI_PATH_PROGS([TESTMPIRUN], [mpiexec mpirun srun])
+   if test "x${TESTMPIRUN}" != x ; then
+      TESTMPIRUN="$TESTMPIRUN -n NP"
+   fi
+fi
 
 # Enable C++ 17 if available
 if test "x${HAVE_CXX17}" = x1 ; then
