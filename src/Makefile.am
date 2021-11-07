@@ -50,4 +50,3 @@ DIST_SUBDIRS = cases drivers
 EXTRA_DIST = $(M4H_SRCS) $(M4_SRCS)
 
 CLEANFILES = $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
-
