@@ -47,7 +47,26 @@ BUILT_SOURCES = $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
 SUBDIRS = cases drivers
 DIST_SUBDIRS = cases drivers
 
-EXTRA_DIST = $(M4H_SRCS) $(M4_SRCS)
+EXTRA_DIST = $(M4H_SRCS) $(M4_SRCS) wrap_runs.sh
 
 CLEANFILES = $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
 
+TESTS_ENVIRONMENT  = export top_srcdir="$(top_srcdir)";
+TESTS_ENVIRONMENT += export srcdir="$(srcdir)";
+TESTS_ENVIRONMENT += export TESTMPIRUN="$(TESTMPIRUN)";
+TESTS_ENVIRONMENT += export E3SM_IO_DEBUG="$(E3SM_IO_DEBUG)";
+TESTS_ENVIRONMENT += export LD_LIBRARY_PATH="@HDF5_LIB_DIR@:@LOGVOL_LIB_DIR@:@ADIOS2_LIB_DIR@:${LD_LIBRARY_PATH}";
+TESTS_ENVIRONMENT += export ENABLE_ADIOS2="$(ENABLE_ADIOS2)";
+TESTS_ENVIRONMENT += export ENABLE_LOGVOL="$(ENABLE_LOGVOL)";
+TESTS_ENVIRONMENT += export ENABLE_HDF5="$(ENABLE_HDF5)";
+
+TESTS = e3sm_io
+TEST_EXTENSIONS = .sh
+LOG_COMPILER = $(srcdir)/wrap_runs.sh
+SH_LOG_COMPILER =
+
+distclean-local: clean-local-check
+clean-local: clean-local-check
+.PHONY: clean-local-check
+clean-local-check:
+	-rm -rf test_output_*

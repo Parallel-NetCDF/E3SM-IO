@@ -16,7 +16,7 @@ if ENABLE_LOGVOL
    TESTS_ENVIRONMENT += export ENABLE_LOGVOL=1;
 endif
 
-TESTS = seq_runs.sh
+TESTS =
 
 EXTRA_DIST =   seq_runs.sh \
                parallel_run.sh \
