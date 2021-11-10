@@ -1,0 +1,116 @@
+name: Ubuntu
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - 'docs/**'
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      timeout-minutes: 60
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set up dependencies
+          run: |
+            sudo apt-get update
+            sudo apt-get install automake autoconf libtool libtool-bin m4
+            # mpi
+            sudo apt-get install mpich
+            # zlib
+            sudo apt-get install zlib1g-dev        
+        - name: Install PnetCDF
+          run: |
+            WORKDIR=$(pwd)
+            git clone https://github.com/Parallel-NetCDF/PnetCDF.git -b checkpoint.1.12.2 pnc
+            cd pnc
+            autoreconf -i
+            ./configure --prefix=${WORKDIR}/.local/pnc/1.12.2
+            make -j 2
+            make -j 2 install
+        - name: Build E3SM_IO PnetCDF
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            autoreconf -i
+            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx 
+            make -s V=1 LIBTOOLFLAGS=--silent 
+        - name: Print log
+          if: ${{ failure() }}
+          run: |
+            WORKDIR=$(pwd)
+            cat ${WORKDIR}/config.log
+        - name: Test E3SM_IO PnetCDF
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            make check
+            make ptest
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+        - name: Print log
+          if: ${{ failure() }}
+          run: |
+            WORKDIR=$(pwd)
+            cat ${WORKDIR}/test.sh.log
+        - name: Install HDF5
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            git clone https://github.com/HDFGroup/hdf5.git -b develop hdf5
+            cd hdf5
+            export HDF5_LIBTOOL=/usr/bin/libtoolize
+            ./autogen.sh
+            ./configure --prefix=${WORKDIR}/.local/hdf5/develop --enable-hl --enable-parallel --enable-build-mode=production CC=mpicc
+            make -j 2
+            make -j 2 install
+        - name: Install log VOL
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            git clone https://github.com/DataLib-ECP/vol-log-based.git -b master logvol
+            cd logvol
+            autoreconf -i
+            ./configure --prefix=${WORKDIR}/.local/logvol/master --with-hdf5=${WORKDIR}/.local/hdf5/develop --enable-shared
+            make -j 2
+            make -j 2 install
+        - name: Install ADIOS2
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            git clone https://github.com/ornladios/ADIOS2.git -b v2.7.1 adios2
+            mkdir adios2_build
+            cd adios2_build
+            cmake -DCMAKE_INSTALL_PREFIX=${WORKDIR}/.local/adios2/2.7.1 -DADIOS2_USE_MPI=ON -DADIOS2_USE_Fortran=OFF -DADIOS2_USE_Python=OFF -DADIOS2_USE_ZeroMQ=OFF -DADIOS2_USE_HDF5=OFF -DADIOS2_USE_SST=OFF -DADIOS2_USE_BZip2=OFF -DADIOS2_USE_ZFP=OFF -D-DADIOS2_USE_SZ=OFF -DADIOS2_USE_MGARD=OFF -DADIOS2_USE_PNG=OFF -DADIOS2_USE_Blosc=OFF -DADIOS2_BUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF ../adios2
+            make -j 2
+            make -j 2 install
+        - name: Build E3SM_IO all APIs
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            autoreconf -i
+            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 --with-hdf5=${WORKDIR}/.local/hdf5/develop --with-logvol=${WORKDIR}/.local/logvol/master --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx 
+            make -s V=1 LIBTOOLFLAGS=--silent 
+        - name: Print log all APIs
+          if: ${{ failure() }}
+          run: |
+            WORKDIR=$(pwd)
+            cat ${WORKDIR}/config.log
+        - name: Test E3SM_IO all APIs
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            make check
+            make ptest
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 --with-hdf5=${WORKDIR}/.local/hdf5/develop --with-logvol=${WORKDIR}/.local/logvol/master --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx"
+        - name: Print log all APIs
+          if: ${{ failure() }}
+          run: |
+            WORKDIR=$(pwd)
+            cat ${WORKDIR}/test.sh.log
+
+        
