@@ -437,6 +437,9 @@ AC_ARG_WITH([logvol],
       to specify the location of logvol installation. Disable logvol support.
       -----------------------------------------------------------------------])
    fi
+   if test "x$have_logvol" = xyes ; then
+      AC_SUBST(LOGVOL_LIB_PATH, [$logvol_lib])
+   fi
 ])
 AM_CONDITIONAL(ENABLE_LOGVOL, [test "x$have_logvol" = xyes])
 
@@ -505,8 +508,21 @@ AC_ARG_WITH([adios2],
       to specify the location of ADIOS2 installation. Disable ADIOS2 support.
       -----------------------------------------------------------------------])
    fi
+   if test "x$have_adios2" = xyes ; then
+      AC_SUBST(ADIOS2_LIB_PATH, [$adios2_lib])
+   fi
 ])
 AM_CONDITIONAL(ENABLE_ADIOS2, [test "x$have_adios2" = xyes])
+
+AC_ARG_VAR(TESTMPIRUN, [MPI run command for "make ptest", @<:@default: mpiexec -n NP@:>@])
+if test "x${TESTMPIRUN}" = x ; then
+   dnl if TESTMPIRUN has not been set by users, then
+   dnl set default to "mpiexec -n NP"
+   UD_MPI_PATH_PROGS([TESTMPIRUN], [mpiexec mpirun srun])
+   if test "x${TESTMPIRUN}" != x ; then
+      TESTMPIRUN="$TESTMPIRUN -n NP"
+   fi
+fi
 
 # Enable C++ 17 if available
 if test "x${HAVE_CXX17}" = x1 ; then
