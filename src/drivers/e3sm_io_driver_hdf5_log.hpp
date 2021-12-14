@@ -23,7 +23,7 @@ class e3sm_io_driver_hdf5_log : public e3sm_io_driver_hdf5 {
     hid_t log_vlid;
         
     // Config
-    bool use_logvol_varn  = false;
+    bool use_logvol_varn  = true;
     bool merge_varn       = false;
 
    public:

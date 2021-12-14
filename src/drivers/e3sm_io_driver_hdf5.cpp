@@ -74,7 +74,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
             this->use_logvol = true;
             env              = getenv ("E3SM_IO_HDF5_USE_LOGVOL_WRITEN");
             if (env) {
-                if (std::string (env) == "1") { this->use_logvol_varn = true; }
+                if (std::string (env) == "0") { this->use_logvol_varn = false; }
             }
         }
     }
