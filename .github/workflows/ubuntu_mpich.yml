@@ -30,7 +30,7 @@ jobs:
             git clone https://github.com/Parallel-NetCDF/PnetCDF.git -b checkpoint.1.12.2 pnc
             cd pnc
             autoreconf -i
-            ./configure --prefix=${WORKDIR}/.local/pnc/1.12.2
+            ./configure --prefix=${WORKDIR}/.local/pnc/1.12.2 --disable-fortran --disable-cxx
             make -j 2
             make -j 2 install
         - name: Build E3SM_IO PnetCDF
