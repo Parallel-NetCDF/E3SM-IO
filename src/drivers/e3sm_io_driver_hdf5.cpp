@@ -127,7 +127,7 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
     mdcc.max_size         = 128 * 1024 * 1024;
     mdcc.min_size         = 32 * 1024 * 1024;
     mdcc.initial_size     = 32 * 1024 * 1024;
-    mdcc.evictions_enabled = false;
+    // mdcc.evictions_enabled = false;
     mdcc.incr_mode = H5C_incr__off;
     mdcc.decr_mode = H5C_decr__off;
     mdcc.set_initial_size = true;
