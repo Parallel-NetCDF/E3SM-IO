@@ -107,6 +107,9 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
 
     fp = new hdf5_file (*this);
 
+    err = MPI_Comm_dup(comm, &(fp->comm));
+    CHECK_MPIERR
+
     err = MPI_Comm_rank (comm, &(fp->rank));
     CHECK_MPIERR
 
@@ -153,6 +156,9 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     fp = new hdf5_file (*this);
+
+    err = MPI_Comm_dup(comm, &(fp->comm));
+    CHECK_MPIERR
 
     err = MPI_Comm_rank (comm, &(fp->rank));
     CHECK_MPIERR
@@ -204,6 +210,8 @@ int e3sm_io_driver_hdf5::close (int fid) {
 
     herr = H5Fclose (fp->id);
     CHECK_HERR
+
+    MPI_Comm_free(&(fp->comm));
 
     delete fp;
 
@@ -338,6 +346,7 @@ int e3sm_io_driver_hdf5::def_var (
 
     *did = fp->dids.size ();
     fp->dids.push_back (h5did);
+    fp->inv_dids[h5did] = *did;
 
 err_out:;
     if (sid != -1) H5Sclose (sid);
@@ -368,6 +377,7 @@ int e3sm_io_driver_hdf5::inq_var (int fid, std::string name, int *did) {
 
     *did = fp->dids.size ();
     fp->dids.push_back (h5did);
+    fp->inv_dids[h5did] = *did;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)

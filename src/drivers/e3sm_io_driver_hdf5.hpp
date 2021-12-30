@@ -29,11 +29,13 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
    protected:
     class hdf5_file {
        public:
+        MPI_Comm comm;
         e3sm_io_driver_hdf5 &driver;
         e3sm_io_config *cfg;
         hid_t id;
         std::vector<hid_t> dids;
         std::vector<hsize_t> dsizes;
+        std::map<hid_t, int> inv_dids;
         MPI_Offset recsize = 0;
         MPI_Offset putsize = 0;
         MPI_Offset getsize = 0;
