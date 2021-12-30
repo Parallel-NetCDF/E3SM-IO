@@ -870,6 +870,7 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
     int i, j;
     hsize_t esize, rsize, rsize_old = 0;
     int ndim;
+    int nreq_all;   // max # requests across all processes
     hid_t dsid = -1, msid = -1;
     hid_t mtype;
     char *bufp = (char *)buf;
@@ -939,12 +940,20 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
 
     // Call H5Dwrite immediately if blocking or Log VOL is used
     if ((mode == indep) || (mode == coll)) {
+        if (mode == indep) {
+            nreq_all = nreq;
+        }
+        else {
+            err = MPI_Allreduce(&nreq, &nreq_all, 1, MPI_INT, MPI_MAX, fp->comm);
+            CHECK_MPIERR
+        }
+
         // Call H5DWrite
-        for (i = 0; i < nreq; i++) {
+        for (i = 0; i < nreq_all; i++) {
             rsize = esize;
             for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
-
-            if (rsize) {
+            
+            if (i < nreq && rsize) {
                 for (j = 0; j < ndim; j++) {
                     start[j] = (hsize_t)starts[i][j];
                     block[j] = (hsize_t)counts[i][j];
@@ -971,6 +980,19 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
                 E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
                 bufp += rsize;
+            }
+            else{
+                    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+                    
+                    herr = H5Sselect_none (dsid);
+                    CHECK_HERR
+
+                    E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+
+                    herr = H5Dwrite (did, mtype, H5S_ALL, dsid, dxplid, NULL);
+                    CHECK_HERR
+
+                    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
             }
         }
     } else {  // Otherwise, queue request in driver
@@ -1262,6 +1284,7 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
     int i, j;
     hsize_t esize, rsize, rsize_old = 0;
     int ndim;
+    int nreq_all;   // max # requests across all processes
     hid_t dsid = -1, msid = -1;
     hid_t mtype;
     char *bufp = (char *)buf;
@@ -1312,12 +1335,20 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
 
     // Call H5Dread immediately if blocking or Log VOL is used
     if ((mode == indep) || (mode == coll)) {
+        if (mode == indep) {
+            nreq_all = nreq;
+        }
+        else {
+            err = MPI_Allreduce(&nreq, &nreq_all, 1, MPI_INT, MPI_MAX, fp->comm);
+            CHECK_MPIERR
+        }
+
         // Call H5DWrite
-        for (i = 0; i < nreq; i++) {
+        for (i = 0; i < nreq_all; i++) {
             rsize = esize;
             for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
-
-            if (rsize) {
+            
+            if (i < nreq && rsize) {
                 for (j = 0; j < ndim; j++) {
                     start[j] = (hsize_t)starts[i][j];
                     block[j] = (hsize_t)counts[i][j];
@@ -1342,6 +1373,16 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
                 E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
 
                 bufp += rsize;
+            }
+            else{
+                    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+                    herr = H5Sselect_none (dsid);
+                    CHECK_HERR
+
+                    E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
+                    herr = H5Dread (did, mtype, msid, dsid, dxplid, bufp);
+                    CHECK_HERR
+                    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
             }
         }
     } else {  // Otherwier, queue request in driver
