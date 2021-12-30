@@ -235,7 +235,7 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     int *nreqs = NULL;  // # requests per dataset
     int *nreqs_all;  // max # requests per dataset across all processes
 
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    MPI_Comm_rank (comm, &rank);
 
 #ifdef HDF5_HAVE_DWRITE_MULTI
     if (this->driver.use_dwrite_multi) {    
@@ -338,7 +338,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     int *nreqs = NULL;  // # requests per dataset
     int *nreqs_all;  // max # requests per dataset across all processes
     
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    MPI_Comm_rank (comm, &rank);
 
     // printf("Rank %d number of datasets to be written %d\n", rank, multi_datasets.size());
 #ifdef HDF5_HAVE_DWRITE_MULTI
@@ -503,7 +503,7 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
 
     // Call H5DWrite
     int rank;
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    MPI_Comm_rank (fp->comm, &rank);
 
 #if defined(DEBUG) && DEBUG == 1
     char filename[128];
