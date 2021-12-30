@@ -200,11 +200,6 @@ int main (int argc, char **argv) {
                     cfg.api = hdf5_log;
                 else if (strcmp (optarg, "adios") == 0)
                     cfg.api = adios;
-#ifdef E3SM_IO_DEBUG
-                /* For debug purpose only */
-                else if (strcmp (optarg, "hdf5_ra") == 0)
-                    cfg.api = hdf5_ra;
-#endif
                 else
                     ERR_OUT ("Unknown API")
                 break;
@@ -323,18 +318,6 @@ int main (int argc, char **argv) {
         else if (cfg.strategy == blob)
             ERR_OUT ("HDF5 multi-dataset with blob I/O strategy is not supported yet")
     }
-
-#ifdef E3SM_IO_DEBUG
-    /* For debug purpose only */
-    if (cfg.api == hdf5_ra) {
-        if (cfg.strategy == undef_io)
-            cfg.strategy = canonical;
-        else if (cfg.strategy == log)
-            ERR_OUT ("HDF5 multi-dataset with log I/O strategy is not supported yet")
-        else if (cfg.strategy == blob)
-            ERR_OUT ("HDF5 multi-dataset with blob I/O strategy is not supported yet")
-    }
-#endif
 
     if (cfg.api == hdf5_log) {
 #ifndef ENABLE_LOGVOL
