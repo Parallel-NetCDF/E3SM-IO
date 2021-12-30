@@ -266,7 +266,7 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
             CHECK_HERR
 
             // Dummy type for dummy call
-            tid = H5Dget_type (dsid);
+            tid = H5Dget_type (dids[j]);
             CHECK_HID(tid)
 
             for (i = 0; i < nreqs_all[j]; ++i) {
@@ -370,7 +370,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
             CHECK_HERR
 
             // Dummy type for dummy call
-            tid = H5Dget_type (dsid);
+            tid = H5Dget_type (dids[j]);
             CHECK_HID(tid)
 
             for (i = 0; i < nreqs_all[j]; ++i) {
