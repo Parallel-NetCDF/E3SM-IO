@@ -45,13 +45,11 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
             hid_t dset_space_id; /* dataset selection dataspace ID */
             hid_t mem_type_id;   /* memory datatype ID */
             hid_t mem_space_id;  /* memory selection dataspace ID */
-            union {
-                void *rbuf;       /* pointer to read buffer */
-                const void *wbuf; /* pointer to write buffer */
-            } u;
+            void *buf;           /* pointer to data buffer */
         } H5D_rw_multi_t;
 #endif
-        std::vector<H5D_rw_multi_t> multi_datasets;
+        std::vector<H5D_rw_multi_t> wreqs;
+        std::vector<H5D_rw_multi_t> rreqs;
 
         std::vector<std::vector<e3sm_io_driver_hdf5::Index_order> > dataset_segments;
 
