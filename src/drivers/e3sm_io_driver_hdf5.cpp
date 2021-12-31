@@ -277,6 +277,42 @@ int e3sm_io_driver_hdf5::inq_rec_size (int fid, MPI_Offset *size) {
     return 0;
 }
 
+int e3sm_io_driver_hdf5::expand_rec_size (int fid, MPI_Offset size) {
+    int err;
+    herr_t herr;
+    hdf5_file *fp = this->files[fid];
+    hid_t dsid = -1;    // Dataaset space ID
+    int ndim;   // Dataset #dims
+    hsize_t dims[H5S_MAX_RANK]; // Dataspace dsid dimensions
+    hsize_t mdims[H5S_MAX_RANK]; // Dataspace dsid maxdimensions
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_EXT_DIM)
+
+    for(auto did: fp->dids){
+        // Get current dim size
+        dsid = H5Dget_space (did);
+        CHECK_HID (dsid)
+        ndim = H5Sget_simple_extent_dims (dsid, dims, mdims);
+        CHECK_HID (ndim)
+        H5Sclose (dsid);
+        dsid = -1;
+
+        // Extend rec dim if needed
+        if (ndim && mdims[0] == H5S_UNLIMITED && dims[0] < size) {
+            dims[0] = size;
+            herr = H5Dset_extent (did, dims);
+            CHECK_HERR
+        }
+    }
+
+err_out:;
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_EXT_DIM)
+    if (dsid >= 0) {
+        H5Sclose (dsid);
+    }
+    return err;
+}
+
 int e3sm_io_driver_hdf5::def_var (
     int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did) {
     int err = 0;
@@ -411,7 +447,7 @@ int e3sm_io_driver_hdf5::def_dim (int fid, std::string name, MPI_Offset size, in
     sid = H5Screate (H5S_SCALAR);
     CHECK_HID (sid)
 
-    sprintf (aname, "_DIM_%s", name.c_str ());
+    sprintf (aname, "-DIM_%s", name.c_str ());
     aid = H5Acreate2 (fp->id, aname, H5T_NATIVE_HSIZE, sid, H5P_DEFAULT, H5P_DEFAULT);
     CHECK_HID (aid)
 
@@ -438,7 +474,7 @@ int e3sm_io_driver_hdf5::inq_dim (int fid, std::string name, int *dimid) {
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
-    sprintf (aname, "_DIM_%s", name.c_str ());
+    sprintf (aname, "-DIM_%s", name.c_str ());
     aid = H5Aopen (fp->id, aname, H5P_DEFAULT);
     CHECK_HID (aid)
 
@@ -649,20 +685,6 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
         }
     }
 
-    // Extend rec dim
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_EXT_DIM)
-    if (ndim && (dims[0] < hstart[0] + hblock[0])) {
-        dims[0] = hstart[0] + hblock[0];
-        if (fp->recsize < (MPI_Offset)(dims[0])) { fp->recsize = dims[0]; }
-
-        H5Sclose (dsid);
-        herr = H5Dset_extent (did, dims);
-        CHECK_HERR
-        dsid = H5Dget_space (did);
-        CHECK_HID (dsid)
-    }
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_EXT_DIM)
-
     // Init memory space
     msid = H5Screate_simple (ndim, hblock, hblock);
     CHECK_HID (msid)
@@ -764,20 +786,6 @@ int e3sm_io_driver_hdf5::put_vars (int fid,
         hblock[i]  = (hsize_t)count[i];
         hstride[i] = (hsize_t)stride[i];
     }
-
-    // Extend rec dim
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_EXT_DIM)
-    if (ndim && (dims[0] < hstart[0] + (hblock[0] - 1) * hstride[0] + 1)) {
-        dims[0] = hstart[0] + (hblock[0] - 1) * hstride[0] + 1;
-        if (fp->recsize < (MPI_Offset)(dims[0])) { fp->recsize = dims[0]; }
-
-        H5Sclose (dsid);
-        herr = H5Dset_extent (did, dims);
-        CHECK_HERR
-        dsid = H5Dget_space (did);
-        CHECK_HID (dsid)
-    }
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_EXT_DIM)
 
     // Init memory space
     msid = H5Screate_simple (ndim, hblock, hblock);
@@ -895,26 +903,6 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
 
     ndim = H5Sget_simple_extent_dims (dsid, dims, mdims);
     CHECK_HID (ndim)
-
-    // Extend rec dim if needed
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_EXT_DIM)
-    if (ndim && mdims[0] == H5S_UNLIMITED) {
-        MPI_Offset max_rec = 0;
-        for (i = 0; i < nreq; i++) {
-            if (max_rec < starts[i][0] + counts[i][0]) { max_rec = starts[i][0] + counts[i][0]; }
-        }
-        if (dims[0] < (hsize_t)max_rec) {
-            dims[0] = (hsize_t)max_rec;
-            if (fp->recsize < (MPI_Offset)(dims[0])) { fp->recsize = dims[0]; }
-
-            H5Sclose (dsid);
-            herr = H5Dset_extent (did, dims);
-            CHECK_HERR
-            dsid = H5Dget_space (did);
-            CHECK_HID (dsid)
-        }
-    }
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_EXT_DIM)
 
     switch (mode) {
         case nb: {

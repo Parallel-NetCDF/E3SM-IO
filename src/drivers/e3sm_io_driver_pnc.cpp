@@ -154,6 +154,10 @@ err_out:
     return err;
 }
 
+int e3sm_io_driver_pnc::expand_rec_size (int fid, MPI_Offset size) {
+    return 0;
+}
+
 int e3sm_io_driver_pnc::def_var (
     int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *varid) {
     int err;
