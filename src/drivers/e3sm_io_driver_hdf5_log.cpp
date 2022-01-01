@@ -82,6 +82,9 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
 
     fp = new hdf5_file (*this);
 
+    err = MPI_Comm_dup(comm, &(fp->comm));
+    CHECK_MPIERR
+
     err = MPI_Comm_rank (comm, &(fp->rank));
     CHECK_MPIERR
 
@@ -128,6 +131,9 @@ int e3sm_io_driver_hdf5_log::open (std::string path, MPI_Comm comm, MPI_Info inf
 
     fp = new hdf5_file (*this);
 
+    err = MPI_Comm_dup(comm, &(fp->comm));
+    CHECK_MPIERR
+    
     err = MPI_Comm_rank (comm, &(fp->rank));
     CHECK_MPIERR
 
