@@ -307,8 +307,10 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     fix_dbl_buf_ptr = wr_buf.fix_dbl_buf;
 
     for (rec_no=0; rec_no<cmeta->nrecs; rec_no++) {
-        err = driver.expand_rec_size (ncid, rec_no + 1);
-        CHECK_ERR
+        if (cfg.api == hdf5 && cfg.strategy == canonical) {
+            err = driver.expand_rec_size (ncid, rec_no + 1);
+            CHECK_ERR
+        }
 
         if (cfg.api == adios || (cfg.strategy == blob && cfg.api == hdf5) ||
             rec_no % cmeta->ffreq == 0) {
