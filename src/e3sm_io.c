@@ -303,8 +303,22 @@ int main (int argc, char **argv) {
 #endif
         if (cfg.strategy == undef_io)
             cfg.strategy = canonical;
-        else if (cfg.strategy == log)
-            ERR_OUT ("HDF5 rearranger with log I/O strategy is not supported yet")
+
+        if (cfg.strategy == canonical){
+            char *env;
+            // Block the use of log-based VOL
+            env = getenv ("HDF5_VOL_CONNECTOR");
+            if (env && (strncmp (env, "LOG", 3) == 0)) {
+                ERR_OUT ("HDF5 with canonical strategy is not compatible with log-based VOL")    
+            }
+        } else if (cfg.strategy == log) {
+            char *env;
+            // Make sure to use log-based VOL
+            env = getenv ("HDF5_VOL_CONNECTOR");
+            if (!env || (strncmp (env, "LOG", 3) != 0)) {
+                ERR_OUT ("HDF5 with log strategy must use log-based VOL")    
+            }
+        }
     }
 
     if (cfg.api == hdf5_md) {
