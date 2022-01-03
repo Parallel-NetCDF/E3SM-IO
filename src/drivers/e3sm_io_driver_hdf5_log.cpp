@@ -733,7 +733,7 @@ int e3sm_io_driver_hdf5_log::get_varn (int fid,
     hid_t tid = -1;
     MPI_Offset getsize;
     MPI_Offset **count;
-    // hsize_t **hstarts = NULL, **hcounts;
+    hsize_t **hstarts = NULL, **hcounts;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -770,7 +770,6 @@ int e3sm_io_driver_hdf5_log::get_varn (int fid,
             throw "Unrecognized mode";
     }
 
-#if false  // H5Dread_n not implemented
     if (this->use_logvol_varn) {
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
         // Convert starts and counts;
@@ -789,12 +788,10 @@ int e3sm_io_driver_hdf5_log::get_varn (int fid,
             }
         }
         E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL,E3SM_IO_TIMER_HDF5_RD)
-        // herr = H5Dread_n (did, mtype, nreq, hstarts, hcounts, dxplid, buf);
-        // CHECK_HERR
+        herr = H5Dread_n (did, mtype, nreq, hstarts, hcounts, dxplid, buf);
+        CHECK_HERR
         E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
-    } else
-#endif
-    {
+    } else {
         // Call H5DWrite
         for (i = 0; i < nreq; i++) {
             rsize = esize;
