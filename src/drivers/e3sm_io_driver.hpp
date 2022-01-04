@@ -27,6 +27,7 @@ class e3sm_io_driver {
     virtual int inq_malloc_size (MPI_Offset *size)                                = 0;
     virtual int inq_malloc_max_size (MPI_Offset *size)                            = 0;
     virtual int inq_rec_size (int fid, MPI_Offset *size)                          = 0;
+    virtual int expand_rec_size (int fid, MPI_Offset size)                        = 0;
     virtual int def_var (
         int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did) = 0;
     virtual int def_local_var (

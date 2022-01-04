@@ -335,6 +335,10 @@ int e3sm_io_driver_h5blob::inq_rec_size (int fid, MPI_Offset *size) {
     return 0;
 }
 
+int e3sm_io_driver_h5blob::expand_rec_size (int fid, MPI_Offset size) {
+    return 0;
+}
+
 int e3sm_io_driver_h5blob::def_var(int          fid,
                                    std::string  name,
                                    nc_type      xtype,

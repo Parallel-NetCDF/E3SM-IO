@@ -29,11 +29,13 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
    protected:
     class hdf5_file {
        public:
+        MPI_Comm comm;
         e3sm_io_driver_hdf5 &driver;
         e3sm_io_config *cfg;
         hid_t id;
-        std::vector<hid_t> dids;
-        std::vector<hsize_t> dsizes;
+        std::vector<hid_t> dids; // HDF5 dataset IDs
+        std::vector<hsize_t> dsizes; // Size of dimensions
+        std::map<hid_t, int> inv_dids;  // Inverse of dids
         MPI_Offset recsize = 0;
         MPI_Offset putsize = 0;
         MPI_Offset getsize = 0;
@@ -45,13 +47,11 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
             hid_t dset_space_id; /* dataset selection dataspace ID */
             hid_t mem_type_id;   /* memory datatype ID */
             hid_t mem_space_id;  /* memory selection dataspace ID */
-            union {
-                void *rbuf;       /* pointer to read buffer */
-                const void *wbuf; /* pointer to write buffer */
-            } u;
+            void *buf;           /* pointer to data buffer */
         } H5D_rw_multi_t;
 #endif
-        std::vector<H5D_rw_multi_t> multi_datasets;
+        std::vector<H5D_rw_multi_t> wreqs;
+        std::vector<H5D_rw_multi_t> rreqs;
 
         std::vector<std::vector<e3sm_io_driver_hdf5::Index_order> > dataset_segments;
 
@@ -78,6 +78,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
    private:
     // Config
+    bool collective_flush = false;
     bool use_dwrite_multi = false;
     bool merge_varn       = false;
 
@@ -94,6 +95,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
     int inq_malloc_size (MPI_Offset *size);
     int inq_malloc_max_size (MPI_Offset *size);
     int inq_rec_size (int fid, MPI_Offset *size);
+    int expand_rec_size (int fid, MPI_Offset size);
     int def_var (int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did);
     int def_local_var (
         int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did);

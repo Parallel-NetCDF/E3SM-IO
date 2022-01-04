@@ -326,6 +326,10 @@ int e3sm_io_driver_adios2::inq_rec_size (int fid, MPI_Offset *size) {
     return 0;
 }
 
+int e3sm_io_driver_adios2::expand_rec_size (int fid, MPI_Offset size) {
+    return 0;
+}
+
 int e3sm_io_driver_adios2::def_var (
     int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did) {
     int err = 0;

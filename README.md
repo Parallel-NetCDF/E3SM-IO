@@ -223,6 +223,12 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   the benchmark will first read the input file and use the data to write to the
   output file. If read option is not set, the benchmark will write some
   non-zero data.
+* When using hdf5 API (-a hdf5), the content of environment variable '
+  HDF5_VOL_CONNECTOR must match the I/O strategy used.
+  + If I/O strategy is canonical (-x canonical), HDF5_VOL_CONNECTOR must not 
+    be set to use log-based VOL.
+  + If I/O strategy is log (-x log), HDF5_VOL_CONNECTOR must be set to use 
+    log-based VOL.  
 * Current supported APIs (option `-a`) and I/O strategies (option `-x`)
   + **pnetcdf + canonical**
     * A single NetCDF file in the classic CDF5 format will be created. All data
@@ -275,29 +281,37 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
       ```
       mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o blob_F_out.h5 -x blob -a hdf5 -r 25
       ```
-  + **hdf5_md + canonical**
-    * hdf5_md reads/writes data using the multi-dataset APIs, which is a new
-      HDF5 feature and currently under development. The APIs allow users to
-      read/write multiple requests in a single API call and thus achieve a
-      better I/O performance.
-    * This option requires to configure this benchmark with the
-      [develop branch](https://bitbucket.hdfgroup.org/projects/HDFFV/repos/hdf5/browse)
-      of HDF5 that implements the multi-dataset APIs.
-    * The output file is a regular HDF5, which is understandable by regular
-      HDF5 and its third-party software.
+  + **hdf5 + canonical**
+    * hdf5 + canonical reads/writes data using the default VOL of HDF5.
+    * The default VOL can be overloaded by setting the HDF5_VOL_CONNECTOR environment variable.
+      + If HDF5_VOL_CONNECTOR is not set, HDF5 will use the native VOL.
+        The output file of the native VOL is a regular HDF5, which is understandable 
+        by regular HDF5 and its third-party software.
+      + This combination does not allow the use of log-based VOL, E3SM-I/O will not run if 
+        HDF5_VOL_CONNECTOR is set to use log-based VOL.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.h5 -x canonical -a hdf5_md -r 25
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.h5 -x canonical -a hdf5 -r 25
+      ```
+  + **hdf5 + log**
+    * hdf5 + log reads/writes data using the HDF5 API and log-based VOL.
+    * The log-based VOL stores data in a log layout, rather than a canonical 
+      layout. The output file is a valid HDF5 file but requires the log-based
+      VOL to read and understand the data structures.
+    * The HDF5_VOL_CONNECTOR environment variable must be set to use log-based VOL.
+      + E3SM-I/O will not run if HDF5_VOL_CONNECTOR is not properly set.
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.h5 -x log -a hdf5 -r 25
       ```
   + **hdf5_log + log**
-    * hdf5_log reads/writes data using the log-based VOL, which stores data in
-      a log layout, rather than a canonical layout. The output file is a valid
-      HDF5 file, but requires the log-based VOL to read and understand the data
-      structures.
-    * The output file is a single HDF5 file.
+    * This configuration is similar to `hdf5 + log`, but utilizes special features of 
+      log-based VOL to improve I/O performance.
+      + It takes advantage of log-based VOL's I/O aggregation feature.
+      + It calls the `H5Dwrite_n` API provided by log-based VOL to write to multiple locations in a dataset.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o log_F_out.h5 -x blob -a hdf5_log -r 25
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o log_F_out.h5 -x log -a hdf5_log -r 25
       ```
   + **adios + blob**
     * Multiple subfiles in BP format will be created.
@@ -334,12 +348,7 @@ sharing Decomposition 4, 2 sharing Decomposition 5, and 4 sharing Decomposition
   available upon request.
 
 ### Environment variables
-* **hdf5_log + log**
-  * E3SM_IO_HDF5_USE_LOGVOL_WRITEN
-    + 1: Use the H5Dwrite_N API in Log I/O VOL
-    + 0: Use the HDF5 driver varn implementation (default)
-    + Only effective when E3SM_IO_HDF5_ENABLE_LOGVOL is 1
-* **hdf5_md + canonical**
+* **hdf5**
   * E3SM_IO_HDF5_MERGE_VARN
     + 1: Merge varn's hyper-slabs of a variable into one dataspace selection
     + 0: Call one H5Dwrite per hyper-slab (default)
@@ -428,4 +437,3 @@ joint project of the U.S. Department of Energy's Office of Science and National
 Nuclear Security Administration, responsible for delivering a capable exascale
 ecosystem, including software, applications, and hardware technology, to
 support the nation's exascale computing imperative.
-

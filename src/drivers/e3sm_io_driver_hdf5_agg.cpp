@@ -114,13 +114,12 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::register_multidataset (
     dset.mem_space_id  = msid;
     dset.dset_space_id = dsid;
     dset.mem_type_id   = mtype;
+    dset.buf = buf;
     if (write) {
-        dset.u.wbuf = buf;
+        wreqs.push_back (dset);
     } else {
-        dset.u.rbuf = buf;
+        rreqs.push_back (dset);
     }
-
-    multi_datasets.push_back (dset);
 
     return 0;
 }
@@ -225,100 +224,207 @@ static inline void print_no_collective_cause (uint32_t local_no_collective_cause
 int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     herr_t herr=0;
     int err = 0, rank;
-    size_t i, esize;
-    hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
+    int j;
+    size_t i;
+    size_t esize;   // Element size of the memory type
+    hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];    // Memory space dims
+    hid_t dsid = -1; // Dataset space ID for following dummy call
+    hid_t tid = -1; // Dataset type ID for following dummy call
+    int ndset = dids.size();    // # datasets
+    std::vector<std::vector<H5D_rw_multi_t>> reqs(ndset);   // Requests organized by datasaet ID
+    int *nreqs = NULL;  // # requests per dataset
+    int *nreqs_all;  // max # requests per dataset across all processes
 
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    MPI_Comm_rank (comm, &rank);
 
 #ifdef HDF5_HAVE_DWRITE_MULTI
     if (this->driver.use_dwrite_multi) {    
-        H5Dwrite_multi (this->driver.dxplid_coll, multi_datasets.size (), multi_datasets.data());
+        H5Dwrite_multi (this->driver.dxplid_coll, wreqs.size (), wreqs.data());
     }
     else
 #endif
     {
-        for (i = 0; i < multi_datasets.size (); ++i) {
-            // MPI_Barrier(MPI_COMM_WORLD);
-            herr = H5Dwrite (multi_datasets[i].dset_id, multi_datasets[i].mem_type_id,
-                            multi_datasets[i].mem_space_id, multi_datasets[i].dset_space_id,
-                            driver.dxplid_coll, multi_datasets[i].u.wbuf);
-            CHECK_HERR
+        if (this->driver.collective_flush) {
+            // Organize by did
+            for(auto &r: wreqs){
+                reqs[inv_dids[r.dset_id]].push_back(r);
+            }
 
-            if (!rank) {
-                uint32_t local_no_collective_cause, global_no_collective_cause;
-                H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
-                                                &global_no_collective_cause);
-                print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
+            // Count #req per dataset
+            nreqs = (int*)malloc(sizeof(int) * ndset * 2);
+            nreqs_all = nreqs + ndset;
+            for(i = 0; i < ndset; i++){
+                nreqs[i] = reqs[i].size();
+            }
+            err = MPI_Allreduce(nreqs, nreqs_all, ndset, MPI_INT, MPI_MAX, comm);
+            CHECK_MPIERR
+
+            for(j = 0; j < ndset; j++){
+                // Dummy space for dummy call
+                dsid = H5Dget_space (dids[j]);
+                CHECK_HID(dsid);
+                herr = H5Sselect_none (dsid);
+                CHECK_HERR
+
+                // Dummy type for dummy call
+                tid = H5Dget_type (dids[j]);
+                CHECK_HID(tid)
+
+                for (i = 0; i < nreqs_all[j]; ++i) {
+                    if (i < nreqs[j]){
+                        herr = H5Dwrite (dids[j], reqs[j][i].mem_type_id,
+                                        reqs[j][i].mem_space_id, reqs[j][i].dset_space_id,
+                                        driver.dxplid_coll, reqs[j][i].buf);
+                    }
+                    else{   // Follow collective I/O with dummy call
+                        herr = H5Dwrite (dids[j], tid,
+                                        H5S_ALL, dsid,
+                                        driver.dxplid_coll, NULL);
+                    }
+                    CHECK_HERR
+                    /* Lagacy code to study why HDF5 does not follow collective dxpl
+                    if (!rank) {
+                        uint32_t local_no_collective_cause, global_no_collective_cause;
+                        H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
+                                                        &global_no_collective_cause);
+                        print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
+                    }
+                    */
+                }
+
+                H5Sclose (dsid);
+                dsid = -1;
+
+                H5Tclose (tid);
+                tid = -1;
+            }
+        }
+        else{
+            for(auto &r: wreqs){
+                herr = H5Dwrite (r.dset_id, r.mem_type_id, r.mem_space_id, r.dset_space_id,
+                                 driver.dxplid_indep, r.buf);
+                CHECK_HERR
             }
         }
     }
 
     // Count data size
-    for (i = 0; i < multi_datasets.size (); ++i) {
-        H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
-        esize = H5Tget_size (multi_datasets[i].mem_type_id);
+    for (i = 0; i < wreqs.size (); ++i) {
+        H5Sget_simple_extent_dims (wreqs[i].mem_space_id, dims, mdims);
+        esize = H5Tget_size (wreqs[i].mem_type_id);
         E3SM_IO_TIMER_ADD (E3SM_IO_TIMER_HDF5_DSIZE, (dims[0] * esize))
     }
 
     // Free data spaces
-    for (auto &req : multi_datasets) {
+    for (auto &req : wreqs) {
         H5Sclose (req.dset_space_id);
         H5Sclose (req.mem_space_id);
     }
-    multi_datasets.clear ();
+    wreqs.clear ();
 
 err_out:;
+    if (dsid >= 0) {
+        H5Sclose (dsid);
+    }
+    if (tid >= 0) {
+        H5Tclose (tid);
+    }
     return err;
 }
 
 herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
-    unsigned j;
-    int rank;
+    herr_t herr=0;
+    int err = 0, rank;
+    int j;
     char *temp_buf   = NULL, *temp_buf_ptr;
-    size_t i, temp_size = 0, esize;
-    hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];
-
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    size_t i, temp_size = 0;
+    size_t esize;   // Element size of the memory type
+    hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];    // Memory space dims
+    hid_t dsid = -1; // Dataset space ID for following dummy call
+    hid_t tid = -1; // Dataset type ID for following dummy call
+    int ndset = dids.size();    // # datasets
+    std::vector<std::vector<H5D_rw_multi_t>> reqs(ndset);   // Requests organized by datasaet ID
+    int *nreqs = NULL;  // # requests per dataset
+    int *nreqs_all;  // max # requests per dataset across all processes
+    
+    MPI_Comm_rank (comm, &rank);
 
     // printf("Rank %d number of datasets to be written %d\n", rank, multi_datasets.size());
 #ifdef HDF5_HAVE_DWRITE_MULTI
-    H5Dread_multi (this->driver.dxplid_coll, multi_datasets.size (), multi_datasets.data());
-#else
-    for (i = 0; i < multi_datasets.size (); ++i) {
-        // MPI_Barrier(MPI_COMM_WORLD);
-        /*
-                hsize_t total_data_size = 1, total_mem_size = 1;
-                ndim = H5Sget_simple_extent_dims (multi_datasets[i].dset_space_id, dims, mdims);
-                for ( j = 0; j < ndim; ++j ) {
-                    printf("dataspace: dims[%d]=%lld\n", j, (long long int) dims[j]);
-                    total_data_size *= dims[j];
-                }
-                ndim = H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
-                for ( j = 0; j < ndim; ++j ) {
-                    printf("memspace: dims[%d]=%lld\n", j, (long long int) dims[j]);
-                    total_mem_size *= dims[j];
-                }
-                printf("total_data_size = %lld, total_mem_size = %lld\n", (long long int)
-           total_data_size, (long long int) total_mem_size);
-        */
+    if (this->driver.use_dwrite_multi) {    
+        H5Dread_multi (this->driver.dxplid_coll, rreqs.size (), rreqs.data());
+    }
+    else
+#endif
+    {
+        if (this->driver.collective_flush) {
+            // Organize by did
+            for(auto &r: rreqs){
+                reqs[inv_dids[r.dset_id]].push_back(r);
+            }
 
-        H5Dread (multi_datasets[i].dset_id, multi_datasets[i].mem_type_id,
-                 multi_datasets[i].mem_space_id, multi_datasets[i].dset_space_id,
-                 driver.dxplid_coll, multi_datasets[i].u.rbuf);
+            // Count #req per dataset
+            nreqs = (int*)malloc(sizeof(int) * ndset * 2);
+            nreqs_all = nreqs + ndset;
+            for(i = 0; i < ndset; i++){
+                nreqs[i] = reqs[i].size();
+            }
+            err = MPI_Allreduce(nreqs, nreqs_all, ndset, MPI_INT, MPI_MAX, comm);
+            CHECK_MPIERR
 
-        if (!rank) {
-            uint32_t local_no_collective_cause, global_no_collective_cause;
-            H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
-                                             &global_no_collective_cause);
-            print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
+            for(j = 0; j < ndset; j++){
+                // Dummy space for dummy call
+                dsid = H5Dget_space (dids[j]);
+                CHECK_HID(dsid);
+                herr = H5Sselect_none (dsid);
+                CHECK_HERR
+
+                // Dummy type for dummy call
+                tid = H5Dget_type (dids[j]);
+                CHECK_HID(tid)
+
+                for (i = 0; i < nreqs_all[j]; ++i) {
+                    if (i < nreqs[j]){
+                        herr = H5Dread (dids[j], reqs[j][i].mem_type_id,
+                                        reqs[j][i].mem_space_id, reqs[j][i].dset_space_id,
+                                        driver.dxplid_coll, reqs[j][i].buf);
+                    }
+                    else{   // Follow collective I/O with dummy call
+                        herr = H5Dread (dids[j], tid,
+                                        H5S_ALL, dsid,
+                                        driver.dxplid_coll, NULL);
+                    }
+                    CHECK_HERR
+                    /* Lagacy code to study why HDF5 does not follow collective dxpl
+                    if (!rank) {
+                        uint32_t local_no_collective_cause, global_no_collective_cause;
+                        H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
+                                                        &global_no_collective_cause);
+                        print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
+                    }
+                    */
+                }
+
+                H5Sclose (dsid);
+                dsid = -1;
+
+                H5Tclose (tid);
+                tid = -1;
+            }
+        }
+        else{
+            for (auto &r: rreqs){
+                herr = H5Dread (r.dset_id, r.mem_type_id, r.mem_space_id, r.dset_space_id,
+                                 driver.dxplid_indep, r.buf);
+                CHECK_HERR
+            } 
         }
     }
-#endif
 
     // Count data size
-    for (i = 0; i < multi_datasets.size (); ++i) {
-        H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
-        esize = H5Tget_size (multi_datasets[i].mem_type_id);
+    for (i = 0; i < rreqs.size (); ++i) {
+        H5Sget_simple_extent_dims (rreqs[i].mem_space_id, dims, mdims);
+        esize = H5Tget_size (rreqs[i].mem_type_id);
         // data using the recorded dataset_segments.
         E3SM_IO_TIMER_ADD (E3SM_IO_TIMER_HDF5_DSIZE, (dims[0] * esize))
     }
@@ -328,11 +434,11 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     // Read is completed here, but data is out-of-order in user buffer. We need to rearrange all
     // data using the recorded dataset_segments.
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_CPY)
-    for (i = 0; i < multi_datasets.size (); ++i) {
+    for (i = 0; i < rreqs.size (); ++i) {
         // First, we make a copy of data in the current dataset.
-        H5Sget_simple_extent_dims (multi_datasets[i].mem_space_id, dims, mdims);
+        H5Sget_simple_extent_dims (rreqs[i].mem_space_id, dims, mdims);
 
-        esize = H5Tget_size (multi_datasets[i].mem_type_id);
+        esize = H5Tget_size (rreqs[i].mem_type_id);
         if (dims[0] * esize > temp_size) {
             if (temp_size) {
                 free (temp_buf);
@@ -341,11 +447,11 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
             temp_size = dims[0] * esize;
             temp_buf  = (char *)malloc (sizeof (char) * temp_size);
         }
-        memcpy (temp_buf, multi_datasets[i].u.rbuf, esize * dims[0]);
+        memcpy (temp_buf, rreqs[i].buf, esize * dims[0]);
         // Copy data back from temp_buf to user memory defined by data_segments. This array is
         // sorted previously to align the HDF5 memory space.
         temp_buf_ptr = temp_buf;
-        for (j = 0; j < dataset_segments[i].size (); ++j) {
+        for (j = 0; j < (int)(dataset_segments[i].size ()); ++j) {
             memcpy (dataset_segments[i][j].data, temp_buf_ptr, dataset_segments[i][j].coverage);
             temp_buf_ptr += dataset_segments[i][j].coverage;
         }
@@ -353,8 +459,15 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_CPY)
     if (temp_size) { free (temp_buf); }
 
-    multi_datasets.clear ();
+    rreqs.clear ();
 
+err_out:;
+    if (dsid >= 0) {
+        H5Sclose (dsid);
+    }
+    if (tid >= 0) {
+        H5Tclose (tid);
+    }
     return 0;
 }
 
@@ -408,7 +521,7 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
 
     // Call H5DWrite
     int rank;
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    MPI_Comm_rank (fp->comm, &rank);
 
 #if defined(DEBUG) && DEBUG == 1
     char filename[128];
@@ -576,10 +689,10 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
 
     herr = count_data (nreq, ndim, counts, &total_blocks);
     CHECK_HERR
-    if (fp->dataset_segments.size () <= fp->multi_datasets.size ()) {
-        fp->dataset_segments.resize (fp->multi_datasets.size ());
+    if (fp->dataset_segments.size () <= fp->rreqs.size ()) {
+        fp->dataset_segments.resize (fp->rreqs.size ());
     }
-    fp->dataset_segments[fp->multi_datasets.size ()].resize (total_blocks);
+    fp->dataset_segments[fp->rreqs.size ()].resize (total_blocks);
 
     index = 0;
     for (i = 0; i < nreq; ++i) {
@@ -588,7 +701,7 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
             block[j] = (hsize_t)counts[i][j];
         }
 
-        herr = pack_data (fp->dataset_segments[fp->multi_datasets.size ()].data (), &index, bufp,
+        herr = pack_data (fp->dataset_segments[fp->rreqs.size ()].data (), &index, bufp,
                           esize, ndim, dims, start, block);
         CHECK_HERR
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
@@ -606,7 +719,7 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
     }
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SORT_REQ)
-    qsort (fp->dataset_segments[fp->multi_datasets.size ()].data (), total_blocks,
+    qsort (fp->dataset_segments[fp->rreqs.size ()].data (), total_blocks,
            sizeof (Index_order), index_order_cmp);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_SORT_REQ)
 
