@@ -78,6 +78,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 
    private:
     // Config
+    bool collective_flush = false;
     bool use_dwrite_multi = false;
     bool merge_varn       = false;
 

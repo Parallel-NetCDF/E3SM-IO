@@ -244,58 +244,67 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     else
 #endif
     {
-        // Organize by did
-        for(auto &r: wreqs){
-            reqs[inv_dids[r.dset_id]].push_back(r);
-        }
-
-        // Count #req per dataset
-        nreqs = (int*)malloc(sizeof(int) * ndset * 2);
-        nreqs_all = nreqs + ndset;
-        for(i = 0; i < ndset; i++){
-            nreqs[i] = reqs[i].size();
-        }
-        err = MPI_Allreduce(nreqs, nreqs_all, ndset, MPI_INT, MPI_MAX, comm);
-        CHECK_MPIERR
-
-        for(j = 0; j < ndset; j++){
-            // Dummy space for dummy call
-            dsid = H5Dget_space (dids[j]);
-            CHECK_HID(dsid);
-            herr = H5Sselect_none (dsid);
-            CHECK_HERR
-
-            // Dummy type for dummy call
-            tid = H5Dget_type (dids[j]);
-            CHECK_HID(tid)
-
-            for (i = 0; i < nreqs_all[j]; ++i) {
-                if (i < nreqs[j]){
-                    herr = H5Dwrite (dids[j], reqs[j][i].mem_type_id,
-                                    reqs[j][i].mem_space_id, reqs[j][i].dset_space_id,
-                                    driver.dxplid_coll, reqs[j][i].buf);
-                }
-                else{   // Follow collective I/O with dummy call
-                    herr = H5Dwrite (dids[j], tid,
-                                    H5S_ALL, dsid,
-                                    driver.dxplid_coll, NULL);
-                }
-                CHECK_HERR
-                /* Lagacy code to study why HDF5 does not follow collective dxpl
-                if (!rank) {
-                    uint32_t local_no_collective_cause, global_no_collective_cause;
-                    H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
-                                                    &global_no_collective_cause);
-                    print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
-                }
-                */
+        if (this->driver.collective_flush) {
+            // Organize by did
+            for(auto &r: wreqs){
+                reqs[inv_dids[r.dset_id]].push_back(r);
             }
 
-            H5Sclose (dsid);
-            dsid = -1;
+            // Count #req per dataset
+            nreqs = (int*)malloc(sizeof(int) * ndset * 2);
+            nreqs_all = nreqs + ndset;
+            for(i = 0; i < ndset; i++){
+                nreqs[i] = reqs[i].size();
+            }
+            err = MPI_Allreduce(nreqs, nreqs_all, ndset, MPI_INT, MPI_MAX, comm);
+            CHECK_MPIERR
 
-            H5Tclose (tid);
-            tid = -1;
+            for(j = 0; j < ndset; j++){
+                // Dummy space for dummy call
+                dsid = H5Dget_space (dids[j]);
+                CHECK_HID(dsid);
+                herr = H5Sselect_none (dsid);
+                CHECK_HERR
+
+                // Dummy type for dummy call
+                tid = H5Dget_type (dids[j]);
+                CHECK_HID(tid)
+
+                for (i = 0; i < nreqs_all[j]; ++i) {
+                    if (i < nreqs[j]){
+                        herr = H5Dwrite (dids[j], reqs[j][i].mem_type_id,
+                                        reqs[j][i].mem_space_id, reqs[j][i].dset_space_id,
+                                        driver.dxplid_coll, reqs[j][i].buf);
+                    }
+                    else{   // Follow collective I/O with dummy call
+                        herr = H5Dwrite (dids[j], tid,
+                                        H5S_ALL, dsid,
+                                        driver.dxplid_coll, NULL);
+                    }
+                    CHECK_HERR
+                    /* Lagacy code to study why HDF5 does not follow collective dxpl
+                    if (!rank) {
+                        uint32_t local_no_collective_cause, global_no_collective_cause;
+                        H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
+                                                        &global_no_collective_cause);
+                        print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
+                    }
+                    */
+                }
+
+                H5Sclose (dsid);
+                dsid = -1;
+
+                H5Tclose (tid);
+                tid = -1;
+            }
+        }
+        else{
+            for(auto &r: wreqs){
+                herr = H5Dwrite (r.dset_id, r.mem_type_id, r.mem_space_id, r.dset_space_id,
+                                 driver.dxplid_indep, r.buf);
+                CHECK_HERR
+            }
         }
     }
 
@@ -348,58 +357,67 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     else
 #endif
     {
-        // Organize by did
-        for(auto &r: rreqs){
-            reqs[inv_dids[r.dset_id]].push_back(r);
-        }
-
-        // Count #req per dataset
-        nreqs = (int*)malloc(sizeof(int) * ndset * 2);
-        nreqs_all = nreqs + ndset;
-        for(i = 0; i < ndset; i++){
-            nreqs[i] = reqs[i].size();
-        }
-        err = MPI_Allreduce(nreqs, nreqs_all, ndset, MPI_INT, MPI_MAX, comm);
-        CHECK_MPIERR
-
-        for(j = 0; j < ndset; j++){
-            // Dummy space for dummy call
-            dsid = H5Dget_space (dids[j]);
-            CHECK_HID(dsid);
-            herr = H5Sselect_none (dsid);
-            CHECK_HERR
-
-            // Dummy type for dummy call
-            tid = H5Dget_type (dids[j]);
-            CHECK_HID(tid)
-
-            for (i = 0; i < nreqs_all[j]; ++i) {
-                if (i < nreqs[j]){
-                    herr = H5Dread (dids[j], reqs[j][i].mem_type_id,
-                                    reqs[j][i].mem_space_id, reqs[j][i].dset_space_id,
-                                    driver.dxplid_coll, reqs[j][i].buf);
-                }
-                else{   // Follow collective I/O with dummy call
-                    herr = H5Dread (dids[j], tid,
-                                    H5S_ALL, dsid,
-                                    driver.dxplid_coll, NULL);
-                }
-                CHECK_HERR
-                /* Lagacy code to study why HDF5 does not follow collective dxpl
-                if (!rank) {
-                    uint32_t local_no_collective_cause, global_no_collective_cause;
-                    H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
-                                                    &global_no_collective_cause);
-                    print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
-                }
-                */
+        if (this->driver.collective_flush) {
+            // Organize by did
+            for(auto &r: rreqs){
+                reqs[inv_dids[r.dset_id]].push_back(r);
             }
 
-            H5Sclose (dsid);
-            dsid = -1;
+            // Count #req per dataset
+            nreqs = (int*)malloc(sizeof(int) * ndset * 2);
+            nreqs_all = nreqs + ndset;
+            for(i = 0; i < ndset; i++){
+                nreqs[i] = reqs[i].size();
+            }
+            err = MPI_Allreduce(nreqs, nreqs_all, ndset, MPI_INT, MPI_MAX, comm);
+            CHECK_MPIERR
 
-            H5Tclose (tid);
-            tid = -1;
+            for(j = 0; j < ndset; j++){
+                // Dummy space for dummy call
+                dsid = H5Dget_space (dids[j]);
+                CHECK_HID(dsid);
+                herr = H5Sselect_none (dsid);
+                CHECK_HERR
+
+                // Dummy type for dummy call
+                tid = H5Dget_type (dids[j]);
+                CHECK_HID(tid)
+
+                for (i = 0; i < nreqs_all[j]; ++i) {
+                    if (i < nreqs[j]){
+                        herr = H5Dread (dids[j], reqs[j][i].mem_type_id,
+                                        reqs[j][i].mem_space_id, reqs[j][i].dset_space_id,
+                                        driver.dxplid_coll, reqs[j][i].buf);
+                    }
+                    else{   // Follow collective I/O with dummy call
+                        herr = H5Dread (dids[j], tid,
+                                        H5S_ALL, dsid,
+                                        driver.dxplid_coll, NULL);
+                    }
+                    CHECK_HERR
+                    /* Lagacy code to study why HDF5 does not follow collective dxpl
+                    if (!rank) {
+                        uint32_t local_no_collective_cause, global_no_collective_cause;
+                        H5Pget_mpio_no_collective_cause (this->driver.dxplid_coll, &local_no_collective_cause,
+                                                        &global_no_collective_cause);
+                        print_no_collective_cause (local_no_collective_cause, global_no_collective_cause);
+                    }
+                    */
+                }
+
+                H5Sclose (dsid);
+                dsid = -1;
+
+                H5Tclose (tid);
+                tid = -1;
+            }
+        }
+        else{
+            for (auto &r: rreqs){
+                herr = H5Dread (r.dset_id, r.mem_type_id, r.mem_space_id, r.dset_space_id,
+                                 driver.dxplid_indep, r.buf);
+                CHECK_HERR
+            } 
         }
     }
 

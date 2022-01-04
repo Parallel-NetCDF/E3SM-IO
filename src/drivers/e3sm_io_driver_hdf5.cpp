@@ -28,6 +28,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
     int err     = 0;
     herr_t herr = 0;
     int i;
+    char *env;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -80,6 +81,11 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
         if (std::string (env) == "1") { this->merge_varn = true; }
     }
     */
+
+    env = getenv ("E3SM_IO_HDF5_FLUSH_COLL");
+    if (env) {
+        if (std::string (env) == "1") { this->collective_flush = true; }
+    }
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
