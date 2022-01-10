@@ -284,7 +284,7 @@ int e3sm_io_driver_hdf5::inq_rec_size (int fid, MPI_Offset *size) {
 }
 
 int e3sm_io_driver_hdf5::expand_rec_size (int fid, MPI_Offset size) {
-    int err;
+    int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     hid_t dsid = -1;    // Dataaset space ID
