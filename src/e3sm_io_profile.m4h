@@ -80,6 +80,7 @@ extern double e3sm_io_profile_counts[E3SM_IO_NTIMER];
 #ifdef __cplusplus
 extern "C" {
 #endif
+int e3sm_io_reset_profile();
 int e3sm_io_print_profile(e3sm_io_config *cfg);
 #ifdef __cplusplus
 }
