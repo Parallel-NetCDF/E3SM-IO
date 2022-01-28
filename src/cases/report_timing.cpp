@@ -31,6 +31,7 @@ int print_timing_WR(e3sm_io_config *cfg,
     MPI_Offset vlen, sum_decomp_varlen;
     double wTime;
     MPI_Comm comm=cfg->io_comm;
+    char prefix[16];
 
     ndecomp = decom->num_decomp;
 
@@ -201,6 +202,63 @@ int print_timing_WR(e3sm_io_config *cfg,
 
         /* print MPI-IO hints actually used */
         if (cfg->verbose) print_info(&cmeta->info_used);
+                
+        if (cfg->run_case == F) {   // F case
+            if (cmeta->nvars == NVARS_F_CASE_H0){ // H0
+                sprintf(prefix, "e3smio_f0");
+            }
+            else {   // H1
+                sprintf(prefix, "e3smio_f1");
+            }
+        }
+        else if (cfg->run_case == I) {   // I case
+            if (cmeta->nvars == NVARS_I_CASE_H0){ // H0
+                sprintf(prefix, "e3smio_i0");
+            }
+            else {   // H1
+                sprintf(prefix, "e3smio_i1");
+            }
+        }
+        else { // G case
+            sprintf(prefix, "e3smio_g");
+        }
+
+        printf ("#%%$: %s_fname: %s\n", prefix, cmeta->outfile);
+        if (cfg->verbose) {
+            printf ("#%%$: %s_file_size_mib: %.2f\n", prefix, (double)(cmeta->file_size) / 1048576);
+            printf ("#%%$: %s_file_size_gib: %.2f\n", prefix, (double)(cmeta->file_size) / 1073741824);
+        }
+        else{
+            printf ("#%%$: %s_file_size_mib: 0.0\n", prefix);
+            printf ("#%%$: %s_file_size_gib: 0.0\n", prefix);
+        }
+        printf ("#%%$: %s_n_subfile: %d\n", prefix, cfg->num_subfiles);
+        printf ("#%%$: %s_n_group: %d\n", prefix, cfg->num_group);
+        printf ("#%%$: %s_n_decom_var: %3d\n", prefix, cmeta->num_decomp_vars);
+        printf ("#%%$: %s_n_non_decom_var: %3d\n", prefix, nvars_noD);
+        for (i=0; i<ndecomp; i++)
+            printf("#%%$: %s_n_decom_%d_var: %3d\n", prefix,
+                   i, cmeta->nvars_D[i]);
+        printf ("#%%$: %s_n_var: %3d\n", prefix, cmeta->nvars);
+        printf ("#%%$: %s_n_rec: %3d\n", prefix, cmeta->nrecs);
+        printf ("#%%$: %s_n_req_all: %3lld\n", prefix, sum_nreqs);
+        printf ("#%%$: %s_n_req_max: %3lld\n", prefix, max_nreqs);
+        printf ("#%%$: %s_n_flush: %3d\n", prefix, cmeta->num_flushes);
+        printf ("#%%$: %s_write_size_mib: %.2f\n", prefix, (double)sum_amount_WR / 1048576);
+        printf ("#%%$: %s_write_size_gib: %.2f\n", prefix, (double)sum_amount_WR / 1073741824);
+        printf ("#%%$: %s_prep_time: %.4f\n", prefix, pre_time);
+        printf ("#%%$: %s_open_create_time: %.4f\n", prefix, open_time);
+        printf ("#%%$: %s_def_time: %.4f\n", prefix, def_time);
+        printf ("#%%$: %s_post_time: %.4f\n", prefix, post_time);
+        printf ("#%%$: %s_flush_time: %.4f\n", prefix, flush_time);
+        printf ("#%%$: %s_close_time: %.4f\n", prefix, close_time);
+        printf ("#%%$: %s_e2e_time: %.4f\n", prefix, end2end_time);
+        printf ("#%%$: %s_bw_o2c_mib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / end2end_time);
+        printf ("#%%$: %s_bw_o2c_gib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / end2end_time / 1024.0);
+        printf ("#%%$: %s_bw_wr_mib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / wTime);
+        printf ("#%%$: %s_bw_wr_gib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / wTime / 1024.0);
+        printf ("#%%$: %s_rbw_o2c_mib: %.4f\n", prefix, (double)(cmeta->file_size) / 1048576.0 / end2end_time);
+        printf ("#%%$: %s_rbw_o2c_gib: %.4f\n", prefix, (double)(cmeta->file_size) / 1048576.0 / end2end_time / 1024.0);
     }
     fflush(stdout);
 
