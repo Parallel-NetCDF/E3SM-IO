@@ -442,8 +442,12 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     check_malloc(&cfg, &driver);
 
     /* note inquiring file size may be expensive on some machines */
-    if (cfg.verbose && global_rank == 0)
+
+    if (cfg.verbose){
+        if ((global_rank == 0) || ((cfg.strategy == blob) && (sub_rank == 0)))
         driver.inq_file_size(cmeta->outfile, &cmeta->file_size);
+        else cmeta->file_size = 0;
+    }
 
 err_out:
     if (err < 0 && ncid >= 0) driver.close(ncid);
