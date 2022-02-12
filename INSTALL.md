@@ -286,10 +286,20 @@
       ```
 
 ### Example input and run script files
-* A median-size decomposition file `datasets/f_case_48602x72_512p.nc` contains
-  the I/O pattern from an E3SM experiment ran on 512 MPI processes.
-* Two large decomposition files `f_case_72x777602_21632p.nc.gz` (60 MB) and
-  `g_case_11135652x80_9600p.nc.gz` (126 MB) from high-resolution simulations of
+* Three small-size decomposition NetCDF files are available for testing. They
+  are generated from runs of E3SM using 16 MPI processes.
+  + `datasets/f_case_866x72_16p.nc` for F case
+  + `datasets/g_case_cmpaso_16p.nc` for G case
+  + `datasets/i_case_f19_g16_16p.nc` for I case
+* A median-size decomposition file is also availble that are produced from a
+  512-process run.
+  + `datasets/f_case_48602x72_512p.nc` for F case
+* Three large decomposition files are available upon request.
+  + `piodecomp21600tasks_F_case.nc` (266 MB) for F case produced from 21600 processes.
+  + `GMPAS-NYF_T62_oRRS18to6v3_9600p.nc` (303 MB) for G case produced from 9600 processes.
+  + `i_case_1344p.nc` (12 MB)for I case produced from 1344 processes.
+
+from high-resolution simulations of
   F and G cases running on 21632 and 9600 MPI processes respectively are
   available upon request.
 * An example batch script file for running a job on Cori @NERSC with 8 KNL

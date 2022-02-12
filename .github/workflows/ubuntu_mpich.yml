@@ -2,13 +2,15 @@ name: Ubuntu
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches: master
     paths-ignore:
       - '**.md'
       - '**.txt'
-      - 'docs/**'
+  pull_request:
+    branches: master
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
 
 jobs:
     build:
