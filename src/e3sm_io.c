@@ -82,43 +82,43 @@ void print_info (MPI_Info *info_used) {
 
 /*----< usage() >------------------------------------------------------------*/
 static void usage (char *argv0) {
-    char *help =
-"Usage: %s [OPTION]... FILE\n"
-"       [-h] Print this help message\n"
-"       [-v] Verbose mode\n"
-"       [-k] Keep the output files when program exits\n"
-"       [-m] Run test using noncontiguous write buffer\n"
-"       [-f num] Set history output files h0 and/or h1: 0 for h0 only, 1 for\n"
-"                h1 only, -1 for both (default: -1)\n"
-"       [-r num] Number of records/time steps for F case h1 file (default: 1)\n"
-"       [-y num] Data flush frequency (takes no effect on ADIOS and HDF5 blob\n"
-"                I/O options, which always flushes at file close). 1: flush\n"
-"                every time step (default), -1: flush once for all time steps\n"
-"       [-s num] MPI rank stride for selecting processes to perform I/O tasks\n"
-"                (default: 1)\n"
-"       [-g num] Number of subfiles, used in blob I/O only (default: 1)\n"
-"       [-i path] Enable read performance evaluation and set the input file\n"
-"                 (folder) path\n"
-"       [-o path] Enable write performance evaluation and set the output file\n"
-"                 (folder) path\n"
-"       [-a api]  I/O library name to perform write operation\n"
-"           pnetcdf:   PnetCDF library (default)\n"
-"           hdf5:      HDF5 library\n"
-"           hdf5_log:  HDF5 library with Log-based VOL\n"
-"           hdf5_md:   HDF5 library with multi-dataset APIs\n"
-"           adios:     ADIOS2 library using BP3 format\n"
-"       [-x strategy] I/O strategy to write\n"
-"           canonical: Store E3SM variables in the canonical layout (default)\n"
-"           log:       Store E3SM variables as is in log-based storage layout\n"
-"           blob:      Write data is stored in a contiguous block (blob),\n"
-"                      ignoring variable's canonical order\n"
-"       [-c size] Data chunk size to be used when compression is enabled.\n"
-"                 (default 0, i.e. no chunking)\n"
-"       [-z filter] Enable data compression in write and use the supplied the\n"
-"                 filter name (default: none)\n"
-"       FILE: Name of input NetCDF file describing data decompositions\n\n";
+    char *help = "Usage: %s [OPTION] FILE\n\
+       [-h] Print this help message\n\
+       [-v] Verbose mode\n\
+       [-k] Keep the output files when program exits (default: deleted)\n\
+       [-m] Run test using noncontiguous write buffer (default: contiguous)\n\
+       [-f num] Output history files h0 or h1: 0 for h0 only, 1 for h1 only,\n\
+                -1 for both. Affect only F and I cases. (default: -1)\n\
+       [-r num] Number of time records/steps written in F case h1 file and I\n\
+                case h0 file (default: 1)\n\
+       [-y num] Data flush frequency. (1: flush every time step, the default,\n\
+                and -1: flush once for all time steps. (No effect on ADIOS\n\
+                and HDF5 blob I/O options, which always flushes at file close).\n\
+       [-s num] Stride interval of ranks for selecting MPI processes to perform\n\
+                I/O tasks (default: 1, i.e. all MPI processes).\n\
+       [-g num] Number of subfiles, used by ADIOS I/O only (default: 1).\n\
+       [-o path] Output file path (folder name when subfiling is used, file\n\
+                 name otherwise).\n\
+       [-a api]  I/O library name\n\
+           pnetcdf:   PnetCDF library (default)\n\
+           hdf5:      HDF5 library\n\
+           hdf5_log:  HDF5 library with Log-based VOL\n\
+           adios:     ADIOS library using BP3 format\n\
+       [-x strategy] I/O strategy\n\
+           canonical: Store variables in the canonical layout (default).\n\
+           log:       Store variables in the log-based storage layout.\n\
+           blob:      Pack and store all data written locally in a contiguous\n\
+                      block (blob), ignoring variable's canonical order.\n\
+       FILE: Name of input file storing data decomposition maps.\n";
     fprintf (stderr, help, argv0);
 }
+
+/* command-line options -c and -z are for experimental data compression feature
+ * in PnetCDF.
+"       [-c size] Data chunk size used to compress data and metadata. This\n"
+"                 option affects only hdf5_log. (default 0, i.e. no chunking)\n"
+"       [-z filter] Filter name to compress data and metadata (default: none)\n"
+*/
 
 /*----< main() >-------------------------------------------------------------*/
 int main (int argc, char **argv) {
