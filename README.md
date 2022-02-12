@@ -15,13 +15,13 @@ in each of all MPI processes.
 
 The I/O patterns (describing the data decomposition of multi-dimensional arrays
 representing the problem domain among MPI processes) used in this case study
-were captured by the [PIO](https://github.com/NCAR/ParallelIO) library during
-the E3SM production runs. A data decomposition file records the data access
-patterns at the array element level by each MPI process. The access offsets are
-stored in a text file, referred to by PIO as the "decomposition map file". This
-benchmark currently studies three cases from E3SM, namely F, G and I cases.
-Information about the climate variables written in these three case studies and
-their decomposition maps can be found in [variables.md](./variables.md).
+were captured by the Scorpio library during the E3SM production runs. A data
+decomposition file records the data access patterns at the array element level
+by each MPI process. The access offsets are stored in a text file, referred to
+as the "decomposition map file". This benchmark currently studies three cases
+from E3SM, namely F, G and I cases. Information about the climate variables
+written in these three case studies and their decomposition maps can be found
+in [variables.md](./variables.md).
 
 ### Compile and Run Instructions for E3SM-IO
 * See [INSTALL.md](./INSTALL.md)
