@@ -24,7 +24,12 @@ EXTRA_DIST =   test.sh \
                m4/foreach_idx.m4 \
                m4/foreach.m4 \
                m4/list_len.m4 \
-               m4/utils.m4 
+               m4/utils.m4 \
+               README.md \
+               INSTALL.md \
+               COPYRIGHT \
+               AUTHORS \
+               slurm.knl
 
 ptest: $(check_PROGRAMS)
 	@echo "==========================================================="
