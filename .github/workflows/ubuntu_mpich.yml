@@ -6,11 +6,15 @@ on:
     paths-ignore:
       - '**.md'
       - '**.txt'
+      - '**.jpg'
+      - '**.png'
   pull_request:
     branches: master
     paths-ignore:
       - '**.md'
       - '**.txt'
+      - '**.jpg'
+      - '**.png'
 
 jobs:
     build:
