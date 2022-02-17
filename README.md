@@ -30,15 +30,16 @@ in [variables.md](./variables.md).
 * [Github Action](https://github.com/Parallel-NetCDF/E3SM-IO/actions)
 
 ### Performance Results on Cori at NERSC
-Below show the performance in execution times for three blob I/O methods on
-[Cori](https://docs.nersc.gov/systems/cori/) at [NERSC](https://www.nersc.gov).
+Below shows the performance in execution times collected in September 2021 for
+three blob I/O methods on [Cori](https://docs.nersc.gov/systems/cori/) at
+[NERSC](https://www.nersc.gov).
 <p align="center">
 <img align="center" src="cori.jpg" alt="Performance of blob I/O methods on Cori" width="600">
 </p>
 
 ### Performance Results on Summit at OLCF
-Below show the performance in execution times for three blob I/O methods on
-[Summit at OLCF](https://www.olcf.ornl.gov/summit/).
+Below shows the performance in execution times collected in September 2021 for
+three blob I/O methods on [Summit at OLCF](https://www.olcf.ornl.gov/summit/).
 <p align="center">
 <img align="center" src="summit.jpg" alt="Performance of blob I/O methods on Summit" width="600">
 </p>
