@@ -25,9 +25,8 @@ in [variables.md](./variables.md).
 
 ### Compile and Run Instructions for E3SM-IO
 * See [INSTALL.md](./INSTALL.md)
-
-### Current build status
-* [Github Action](https://github.com/Parallel-NetCDF/E3SM-IO/actions)
+* Current build status:
+  [![Ubuntu](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_mpich.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_mpich.yml)
 
 ### Performance Results on Cori at NERSC
 Below shows the performance in execution times collected in September 2021 for
