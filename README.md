@@ -23,6 +23,9 @@ from E3SM, namely F, G and I cases. Information about the climate variables
 written in these three case studies and their decomposition maps can be found
 in [variables.md](./variables.md).
 
+[BLOB_IO.md](./BLOB_IO.md) describes the designs of blob I/O methods
+implemented in this benchmark.
+
 ### Compile and Run Instructions for E3SM-IO
 * See [INSTALL.md](./INSTALL.md)
 * Current build status:
