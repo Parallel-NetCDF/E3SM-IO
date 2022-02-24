@@ -25,36 +25,57 @@
       value as global_nprocs when num_subfiles is 1).
     * There are 2 additional dimensions per decomposition map.
       + **D1.nelems** - number of array elements in decomposition map D1 in a
-        subfile. See subroutine `blob_metadata()` in calc_metadata.c. The sum
-        of this dimension of all subfiles should be equal to the size of
-        original dimension decomposed by map D1.
-      + **D1.max_nreqs** - max number of contiguous request (offset-length
-        pairs) among processes sharing a subfile for decomposition map D1.  See
-        subroutine `blob_metadata()` in calc_metadata.c.
+        subfile. See subroutine `blob_metadata()` in
+        [calc_metadata.c](src/calc_metadata.c). The sum of this dimension
+        across all subfiles is equal to the size of original dimension
+        decomposed by map D1.
+      + **D1.max_nreqs** - max number of flattened noncontiguous requests
+        (offset-length pairs) among processes sharing a subfile for
+        decomposition map D1. Note the numers of noncontiguous requests
+        assigned to processes can be different. See subroutine
+        `blob_metadata()` in [calc_metadata.c](.src/calc_metadata.c).
       + If there are more decomposition maps, the additional map dimensions
         will be D2.nelems, D2.max_nreqs, D3.nelems, D3.max_nreqs, and so on.
-  + Additional variables and their attributes (See subroutine `e3sm_io_case::def_var_decomp()`)
+  + Additional variables and their attributes (See subroutine
+    `e3sm_io_case::def_var_decomp()`)
     * There are 5 additional variables per decomposition map. Below uses an
       example of map D3.
-      + **int D3.nreqs(nblobs)** for decomposition D3
-        * D3.nreqs:description = "Number of noncontiguous requests in each blob" ;
+      + **int D3.nreqs(nblobs)**
+        * D3.nreqs:description = "Number of noncontiguous requests in
+          individual blobs"
         * D3.nreqs:global_dimids = 3, 5 ;
-          // map D3 decomposes along global dimensions 3 and 5, i.e. `lev` and `ncol`.
-        * **Note** Global dimensions are referred to the original dimensions
-          regardless of subfiling.
-      + **int64 D3.blob_start(nblobs)** for decomposition D3
-        * D3.blob_start:description = "Starting variable array index in each blob" ;
-      + **int64 D3.blob_count(nblobs)** for decomposition D3
-        * D3.blob_count:description = "Number of variable array elements in each blob" ;
-      + **int D3.offsets(nblobs, D3.max_nreqs)** for decomposition D3
-        * D3.offsets:description = "Flattened starting indices of noncontiguous requests" ;
-      + **int D3.lengths(nblobs, D3.max_nreqs)** for decomposition D3
-        * D3.lengths:description = "Lengths of noncontiguous requests" ;
+        * **Note**
+          + `nblobs` is the number of blobs (processes) sharing this subfile.
+          + Each element of D3.nreqs is the number of noncontiguous requests in
+            offset-length pairs assigned to a process.
+          + Attribute global_dimids contains the IDs of global dimensions.  In
+            this example, map D3 decomposes along global dimensions 3 and 5
+            (`lev` and `ncol` respectively).
+          + Global dimensions are referred to the original dimensions
+            regardless of subfiling.
+      + **int64 D3.blob_start(nblobs)**
+        * D3.blob_start:description = "Starting array indices of individual
+          blobs stored in a variable"
+      + **int64 D3.blob_count(nblobs)**
+        * D3.blob_count:description = "Number of contiguous array elements in
+          individual blobs stored in a variable"
+      + **int D3.offsets(nblobs, D3.max_nreqs)**
+        * D3.offsets:description = "Starting indices of flattened canonical
+          noncontiguous requests of individual blobs"
+        * **Note**
+          + As the numers of noncontiguous requests assigned to processes can
+            be different, the 2nd dimension of this 2D array actually has
+            staggered lengths.
+      + **int D3.lengths(nblobs, D3.max_nreqs)**
+        * D3.lengths:description = "Number of elements of flattened canonical
+          noncontiguous requests of individual blobs"
+        * **Note**
+          + Similar to D3.offsets, the 2nd dimension of this 2D array has
+            staggered lengths.
     * Note that the contents of decomposition variables are not used when
       writing the climate variables. Thus, they can be defined together with
       climate variables in the same define mode and written in the same data
       mode as climate variables.
-
 * Changes in variable definitions (See C macro `DEF_VAR` in
   [src/cases/e3sm_io_case.hpp](src/cases/e3sm_io_case.hpp).)
   + The dimensions of a decomposed variable are changed to use decomposition
