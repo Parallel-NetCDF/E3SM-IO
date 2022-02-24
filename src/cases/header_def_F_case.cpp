@@ -85,7 +85,7 @@ int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
                                  int dim_max_nreqs[MAX_NUM_DECOMP],
                                  int g_dimids[MAX_NUM_DECOMP][MAX_NDIMS])
 {
-    char name[128];
+    char name[512];
     int i, j, err=0, dimids[2];
 
     if (cfg.api == adios ) {
@@ -97,7 +97,7 @@ int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
             CHECK_ERR
 
             for (i=0; i<decom.ndims[j]; i++)
-                 piodims[i] = (int)decom.dims[j][i];
+                piodims[i] = (int)decom.dims[j][i];
 
             err = driver.put_att(ncid, vars[j].vid, "dimlen", NC_INT,
                                  decom.ndims[j], piodims);
@@ -124,24 +124,34 @@ int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
             dimids[1] = dim_max_nreqs[i];
             sprintf(name, "D%d.nreqs", i+1);
             DEF_VAR(name, NC_INT, 1, dimids, MPI_INT, -1)
-            PUT_ATTR_TXT("description", "Number of noncontiguous requests per blob")
+            PUT_ATTR_TXT("description", "Number of noncontiguous requests in individual blobs")
             PUT_ATTR_INT("global_dimids", decom.ndims[i], g_dimids[i])
+#ifdef GLOBAL_DIM_USE_STRING
+            name[0] = '\0';
+            for (j=0; j<decom.ndims[i]; j++) {
+                char dim_name[128];
+                ncmpi_inq_dimname(ncid, g_dimids[i][j], dim_name);
+                strcat(name, dim_name);
+                if (j < decom.ndims[i]-1) strcat(name,",");
+            }
+            PUT_ATTR_TXT("global_dims", name)
+#endif
 
             sprintf(name, "D%d.blob_start", i+1);
             DEF_VAR(name, NC_INT64, 1, dimids, MPI_INT, -1)
-            PUT_ATTR_TXT("description", "Starting variable array index per blob")
+            PUT_ATTR_TXT("description", "Starting array indices of individual blobs stored in a variable")
 
             sprintf(name, "D%d.blob_count", i+1);
             DEF_VAR(name, NC_INT64, 1, dimids, MPI_LONG_LONG, -1)
-            PUT_ATTR_TXT("description", "Number of variable array elements per blob")
+            PUT_ATTR_TXT("description", "Number of contiguous array elements in individual blobs stored in a variable")
 
             sprintf(name, "D%d.offsets", i+1);
             DEF_VAR(name, NC_INT, 2, dimids, MPI_INT, -1)
-            PUT_ATTR_TXT("description", "Flattened starting indices of noncontiguous requests")
+            PUT_ATTR_TXT("description", "Starting indices of flattened canonical noncontiguous requests of individual blobs")
 
             sprintf(name, "D%d.lengths", i+1);
             DEF_VAR(name, NC_INT, 2, dimids, MPI_INT, -1)
-            PUT_ATTR_TXT("description", "Lengths of noncontiguous requests")
+            PUT_ATTR_TXT("description", "Number of elements of flattened canonical noncontiguous requests of individual blobs")
         }
     }
 
