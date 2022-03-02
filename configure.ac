@@ -391,6 +391,111 @@ AC_ARG_WITH([hdf5],
 AM_CONDITIONAL(ENABLE_HDF5, [test "x$have_hdf5" = xyes])
 AM_CONDITIONAL(HDF5_HAVE_DWRITE_MULTI, [test "x$have_multi_dset" = xyes])
 
+# Check for NETCDF4
+have_netcdf4=no
+AC_ARG_WITH([netcdf4],
+   [AS_HELP_STRING([--with-netcdf4@<:@=INC,LIB | =DIR@:>@],
+                   [Enable ADIOS-2 feature and provide the ADIOS-2 installation path(s):
+    --with-netcdf4=INC,LIB for include and lib paths separated by a comma.
+    --with-netcdf4=DIR for the path containing include/ and lib/ subdirectories.
+    @<:@default: disabled@:>@
+   ])], [
+   if test "x${withval}" != xyes && test "x${withval}" != xno ; then
+      NETCDF4_INSTALL=${withval}
+   fi
+   case $withval in
+     *,*)
+        netcdf4_inc="`echo $withval |cut -f1 -d,`"
+        netcdf4_lib="`echo $withval |cut -f2 -d, -s`"
+        netcdf4_bindir="$netcdf4_inc/../bin"
+        ;;
+     *)
+        if test -n "$withval"; then
+          netcdf4_inc="$withval/include"
+          netcdf4_lib="$withval/lib"
+          netcdf4_bindir="$NETCDF4_INSTALL/bin"
+        fi
+        ;;
+   esac
+   if test "x$NETCDF4_INSTALL" != x ; then
+      AC_PATH_PROG([netcdf4_config],[nc-config],,[$netcdf4_bindir])
+   else
+      dnl Check netcdf4-config under $PATH
+      AC_PATH_PROG([netcdf4_config],[nc-config])
+   fi
+   echo ${netcdf4_config}
+   if test "x$netcdf4_config" != x ; then
+      netcdf4_cflags=`$netcdf4_config --cflags`
+      netcdf4_lflags=`$netcdf4_config --libs`
+   else
+      netcdf4_cflags="-I$netcdf4_inc"
+      netcdf4_lflags="-L$netcdf4_lib"
+   fi
+   if test "x$netcdf4_cflags" != x ; then
+      if test "x$CPPFLAGS" = x ; then
+         CPPFLAGS="${netcdf4_cflags}"
+      elif ! echo "${CPPFLAGS}" | ${EGREP} -q -w -- "${netcdf4_cflags}" ; then
+         # append only if not already appear in CPPFLAGS
+         CPPFLAGS="$CPPFLAGS ${netcdf4_cflags}"
+      fi
+   fi
+   if test "x$netcdf4_lflags" != x ; then
+      if test "x$LDFLAGS" = x ; then
+         LDFLAGS="$netcdf4_lflags"
+      elif ! echo "${LDFLAGS}" | ${EGREP} -q -w -- "${netcdf4_lflags}" ; then
+         # append only if not already appear in LDFLAGS
+         LDFLAGS="$LDFLAGS $netcdf4_lflags"
+      fi
+   fi
+   AC_CHECK_HEADER([netcdf.h], [have_netcdf4=yes], [have_netcdf4=no])
+   if test "x$have_netcdf4" = xno ; then
+      AC_MSG_WARN([
+      -----------------------------------------------------------------------
+      Missing NetCDF-header files 'netcdf4_c.h' required to build E3SM_IO. Use
+      configure command-line option --with-netcdf4=/path/to/implementation
+      to specify the location of NetCDF installation. Disable NetCDF 4 support.
+      -----------------------------------------------------------------------])
+   fi
+])
+dnl Check if NetCDF version is 4.8.1 or later
+if test "x$have_netcdf4" = xyes ; then
+   AC_MSG_CHECKING([whether NetCDF version is 4.8.1 or later])
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <netcdf_meta.h>
+#define VER_NUM (NC_VERSION_MAJOR*1000000 + NC_VERSION_MINOR*1000 + NC_VERSION_PATCH)
+#if (VER_NUM < 4008001)
+#error NetCDF version is older than 4.8.1
+#endif
+   ]])], [netcdf_ge_4_8_1=yes], [netcdf_ge_4_8_1=no])
+   AC_MSG_RESULT([$netcdf_ge_4_8_1])
+
+   if test "x${netcdf_ge_4_8_1}" = xno; then
+      AC_MSG_WARN([
+      ------------------------------------------------------------
+      Missing NetCDF-4 header file 'netcdf_par.h' required by E3SM-IO.
+      The NetCDF-4 library must be built with parallel I/O and
+      NETCDF-4 support. Check 'config.log' for more information.
+      Disable NetCDF4. 
+      ------------------------------------------------------------])
+      have_netcdf4 = no
+   fi
+fi
+dnl Check if NetCDF support NetCDF 4 parallel
+if test "x$have_netcdf4" = xyes ; then
+   if test "x$netcdf4_has_par" != x ; then
+      netcdf4_has_par=`$netcdf4_config --has-parallel4`
+      if test "x${netcdf_ge_4_8_1}" != xyes; then
+         AC_MSG_WARN([
+         ------------------------------------------------------------
+         NetCDF was not built with parallel NetCDF 4 support.
+         Disable NetCDF4. 
+         ------------------------------------------------------------])
+         have_netcdf4 = no
+      fi
+   fi
+fi
+AM_CONDITIONAL(ENABLE_NETCDF4, [test "x$have_netcdf4" = xyes])
+
 # Check for logvol
 have_logvol=no
 AC_ARG_WITH([logvol],
@@ -535,6 +640,15 @@ if test "x$LIBS" = x ; then
 LIBS="-lpnetcdf"
 else
 LIBS="$LIBS -lpnetcdf"
+fi
+
+if test "x$have_netcdf4" = xyes ; then
+    if test "x$LIBS" = x ; then
+    LIBS="${netcdf4_lflags}"
+    else
+    LIBS="$LIBS ${netcdf4_lflags}"
+    fi
+    AC_DEFINE([ENABLE_NETCDF4], [1], [Build NetCDF4 benchmark])
 fi
 
 if test "x$have_hdf5" = xyes ; then

@@ -198,6 +198,8 @@ int main (int argc, char **argv) {
                     cfg.api = hdf5_md;
                 else if (strcmp (optarg, "hdf5_log") == 0)
                     cfg.api = hdf5_log;
+                else if (strcmp (optarg, "netcdf4") == 0)
+                    cfg.api = netcdf4;
                 else if (strcmp (optarg, "adios") == 0)
                     cfg.api = adios;
                 else
@@ -295,6 +297,13 @@ int main (int argc, char **argv) {
             cfg.strategy = canonical;
         else if (cfg.strategy == log)
             ERR_OUT ("PnetCDF with log I/O strategy is not supported yet")
+    }
+
+    if (cfg.api == netcdf4) {
+        if (cfg.strategy == undef_io)
+            cfg.strategy = canonical;
+        else if (cfg.strategy != canonical)
+            ERR_OUT ("NetCDF 4 only supports canonical strategy")
     }
 
     if (cfg.api == hdf5) {

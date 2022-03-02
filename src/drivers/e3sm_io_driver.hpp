@@ -93,3 +93,4 @@ class e3sm_io_driver {
                           e3sm_io_op_mode mode)                                                 = 0;
 };
 
+e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg);

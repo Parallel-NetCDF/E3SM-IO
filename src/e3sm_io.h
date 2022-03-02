@@ -29,7 +29,7 @@
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
 #endif
 
-#ifndef PNETCDF_VERSION
+#if !defined(PNETCDF_VERSION) && !defined(_NETCDF_)
 #define NC_NAT          0       /**< Not A Type */
 #define NC_BYTE         1       /**< signed 1 byte integer */
 #define NC_CHAR         2       /**< ISO/ASCII character */
@@ -70,6 +70,7 @@ typedef float vtype; /* internal data type of buffer in memory */
 
 typedef enum e3sm_io_api {
     pnetcdf,
+    netcdf4,
     hdf5,
     hdf5_md,
     hdf5_log,

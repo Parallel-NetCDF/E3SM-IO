@@ -29,6 +29,29 @@
     }                                                                       \
 }
 
+inline nc_type mpitype2nctype (MPI_Datatype type) {
+    if (type == MPI_DOUBLE){
+        return NC_DOUBLE;
+    }
+    else if (type == MPI_FLOAT){
+        return NC_FLOAT;
+    }
+    else if (type == MPI_INT){
+        return NC_INT;
+    }
+    else if (type == MPI_LONG_LONG){
+        return NC_INT64;
+    }
+    else if (type == MPI_CHAR){
+        return NC_CHAR;
+    }
+    else if (type == MPI_BYTE){
+        return NC_BYTE;
+    }
+
+    throw "Unsupported datatype";
+}
+
 e3sm_io_driver_pnc::e3sm_io_driver_pnc (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
     if ((cfg->chunksize != 0) && (cfg->filter != none)) {
         throw "Fitler requries chunking in PnetCDF";
@@ -705,24 +728,5 @@ int e3sm_io_driver_pnc::get_varn (int fid,
 
 err_out:
     return err;
-}
-
-/*----< e3sm_io_xlen_nc_type() >---------------------------------------------*/
-int e3sm_io_xlen_nc_type(nc_type xtype, int *size)
-{
-    switch(xtype) {
-        case NC_BYTE:
-        case NC_CHAR:
-        case NC_UBYTE:  *size = 1; return NC_NOERR;
-        case NC_SHORT:
-        case NC_USHORT: *size = 2; return NC_NOERR;
-        case NC_INT:
-        case NC_UINT:
-        case NC_FLOAT:  *size = 4; return NC_NOERR;
-        case NC_DOUBLE:
-        case NC_INT64:
-        case NC_UINT64: *size = 8; return NC_NOERR;
-        default: return -1;
-    }
 }
 
