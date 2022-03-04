@@ -257,6 +257,7 @@ UD_PROG_M4
 M4FLAGS=""
 
 # Check for pnc
+have_pnc=no
 AC_ARG_WITH([pnetcdf],
    [AS_HELP_STRING([--with-pnetcdf@<:@=INC,LIB | =DIR@:>@],
                    [Provide the PnetCDF installation path(s):
@@ -293,31 +294,37 @@ AC_ARG_WITH([pnetcdf],
       fi
    fi
 ])
-AC_CHECK_HEADER([pnetcdf.h], [have_pnc=yes], [have_pnc=no])
-if test "x$have_pnc" = xno ; then
-      AC_MSG_ERROR([
-      -----------------------------------------------------------------------
-      Missing PnetCDF-header files 'pnetcdf.h' required to build E3SM_IO. Use
-      configure command-line option --with-pnetcdf=/path/to/implementation
-      to specify the location of PnetCDF installation. Abort.
-      -----------------------------------------------------------------------])
-fi
-dnl Check if PnetCDF version is 1.10.0 or later
-AC_MSG_CHECKING([whether PnetCDF version is 1.10.0 or later])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <pnetcdf.h>
-#if (PNETCDF_VERSION_MAJOR*1000000 + PNETCDF_VERSION_MINOR*1000 + PNETCDF_VERSION_PATCH < 1010000)
-#error PnetCDF version is older than 1.10.0
-#endif
-]])], [pnc_ge_1_10_0=yes], [pnc_ge_1_10_0=no])
-AC_MSG_RESULT([$pnc_ge_1_10_0])
+if test "x$have_pnc" = xyes ; then
+   AC_CHECK_HEADER([pnetcdf.h], [have_pnc=yes], [have_pnc=no])
+   if test "x$have_pnc" = xno ; then
+         AC_MSG_WARN([
+         -----------------------------------------------------------------------
+         Missing PnetCDF-header files 'pnetcdf.h' required to build E3SM_IO. Use
+         configure command-line option --with-pnetcdf=/path/to/implementation
+         to specify the location of PnetCDF installation. Disable PnetCDF support.
+         -----------------------------------------------------------------------])
+         have_pnc=no
+   else
+      dnl Check if PnetCDF version is 1.10.0 or later
+      AC_MSG_CHECKING([whether PnetCDF version is 1.10.0 or later])
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+      #include <pnetcdf.h>
+      #if (PNETCDF_VERSION_MAJOR*1000000 + PNETCDF_VERSION_MINOR*1000 + PNETCDF_VERSION_PATCH < 1010000)
+      #error PnetCDF version is older than 1.10.0
+      #endif
+      ]])], [pnc_ge_1_10_0=yes], [pnc_ge_1_10_0=no])
+      AC_MSG_WARN([$pnc_ge_1_10_0])
 
-if test x$pnc_ge_1_10_0 = xno; then
-      AC_MSG_ERROR([
-      -----------------------------------------------------------------------
-      PnetCDF version too old. Abort.
-      -----------------------------------------------------------------------])
+      if test x$pnc_ge_1_10_0 = xno; then
+            AC_MSG_ERROR([
+            -----------------------------------------------------------------------
+            PnetCDF version too old. Disable PnetCDF support.
+            -----------------------------------------------------------------------])
+            have_pnc=no
+      fi
+   fi
 fi
+AM_CONDITIONAL(ENABLE_PNC, [test "x$have_pnc" = xyes])
 
 # Check for HDF5
 have_hdf5=no
@@ -619,6 +626,18 @@ AC_ARG_WITH([adios2],
 ])
 AM_CONDITIONAL(ENABLE_ADIOS2, [test "x$have_adios2" = xyes])
 
+if test "x${have_pnc}" = xno && test "x${have_nc4}" = xno ; then
+   AC_MSG_ERROR([
+   -----------------------------------------------------------------------
+    Either PnetCDF or NetCDF must be enabled to build E3SM_IO.
+    Use configure command-line option --with-pnetcdf=/path/to/implementation
+    to specify the location of PnetCDF installation. Disable PnetCDF support. 
+    Use configure command-line option --with-netcdf4=/path/to/implementation
+    to specify the location of NetCDF installation. Disable NetCDF 4 support.
+    Abort.
+   -----------------------------------------------------------------------])
+fi
+
 AC_ARG_VAR(TESTMPIRUN, [MPI run command for "make ptest", @<:@default: mpiexec -n NP@:>@])
 if test "x${TESTMPIRUN}" = x ; then
    dnl if TESTMPIRUN has not been set by users, then
@@ -636,10 +655,13 @@ else
 CXXFLAGS="$CXXFLAGS -std=c++11"
 fi
 
-if test "x$LIBS" = x ; then
-LIBS="-lpnetcdf"
-else
-LIBS="$LIBS -lpnetcdf"
+if test "x$have_pnc" = xyes ; then
+   if test "x$LIBS" = x ; then
+   LIBS="-lpnetcdf"
+   else
+   LIBS="$LIBS -lpnetcdf"
+   fi
+   AC_DEFINE([ENABLE_PNC], [1], [Build PnetCDF benchmark])
 fi
 
 if test "x$have_netcdf4" = xyes ; then
@@ -648,7 +670,7 @@ if test "x$have_netcdf4" = xyes ; then
     else
     LIBS="$LIBS ${netcdf4_lflags}"
     fi
-    AC_DEFINE([ENABLE_NETCDF4], [1], [Build NetCDF4 benchmark])
+    AC_DEFINE([ENABLE_NETCDF4], [1], [Build NetCDF 4 benchmark])
 fi
 
 if test "x$have_hdf5" = xyes ; then

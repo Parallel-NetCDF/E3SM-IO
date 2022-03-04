@@ -13,8 +13,8 @@
 #include <sys/stat.h>
 //
 #include <netcdf.h>
-#include <netcdf_par.h>
 #include <netcdf_dispatch.h>
+#include <netcdf_par.h>
 //
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
@@ -24,7 +24,8 @@
 #define CHECK_NCERR                                                                             \
 	{                                                                                           \
 		if (err != NC_NOERR) {                                                                  \
-			printf ("Error in %s line %d function %s:%d\n", __FILE__, __LINE__, __func__, err); \
+			printf ("Error in %s line %d function %s: %s (%d)\n", __FILE__, __LINE__, __func__, \
+					nc_strerror (err), err);                                                    \
 			DEBUG_ABORT;                                                                        \
 			goto err_out;                                                                       \
 		}                                                                                       \
@@ -183,6 +184,7 @@ int e3sm_io_driver_nc4::expand_rec_size (int fid, MPI_Offset size) {
 
 	for (i = 0; i < nvar; i++) {
 		err = nc_inq_varndims (fid, i, &ndim);
+		CHECK_NCERR
 
 		if (ndim > 0) {
 			if (dimids.size () < ndim) {
@@ -222,8 +224,8 @@ int e3sm_io_driver_nc4::def_var (
 	err = nc_def_var (fid, name.c_str (), xtype, ndim, dimids, varid);
 	CHECK_NCERR
 
-	err	  = e3sm_io_xlen_nc_type (xtype, &esize);
-	CHECK_MPIERR
+	err = e3sm_io_xlen_nc_type (xtype, &esize);
+	CHECK_ERR
 	vsize = esize;
 	for (i = 0; i < ndim; i++) {
 		nc_inq_dimlen (fid, dimids[i], &len);
@@ -365,7 +367,7 @@ int e3sm_io_driver_nc4::put_vara (int fid,
 
 	nc_inq_vartype (fid, vid, &xtype);
 	err = e3sm_io_xlen_nc_type (xtype, &xesize);
-	CHECK_MPIERR
+	CHECK_ERR
 	err = nc_inq_varndims (fid, vid, &ndim);
 	CHECK_NCERR
 
@@ -526,7 +528,7 @@ int e3sm_io_driver_nc4::put_vars (int fid,
 
 	nc_inq_vartype (fid, vid, &xtype);
 	err = e3sm_io_xlen_nc_type (xtype, &esize);
-	CHECK_MPIERR
+	CHECK_ERR
 	for (i = 0; i < ndim; i++) { esize *= count[i]; }
 	this->amount_WR += esize;
 
@@ -622,7 +624,7 @@ int e3sm_io_driver_nc4::get_vara (int fid,
 
 	nc_inq_vartype (fid, vid, &xtype);
 	err = e3sm_io_xlen_nc_type (xtype, &xesize);
-	CHECK_MPIERR
+	CHECK_ERR
 	err = nc_inq_varndims (fid, vid, &ndim);
 	CHECK_NCERR
 
@@ -782,7 +784,7 @@ int e3sm_io_driver_nc4::get_vars (int fid,
 
 	nc_inq_vartype (fid, vid, &xtype);
 	err = e3sm_io_xlen_nc_type (xtype, &esize);
-	CHECK_MPIERR
+	CHECK_ERR
 	for (i = 0; i < ndim; i++) { esize *= count[i]; }
 	this->amount_RD += esize;
 

@@ -14,6 +14,7 @@
 #include <stdlib.h>
 
 #include <mpi.h>
+#include <pnetcdf.h>
 
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
@@ -106,7 +107,7 @@ static int compare(const void *p1, const void *p2) {
  *                    and must be freed by the caller.
  */
 
-int read_decomp(e3sm_io_config *cfg,
+int read_decomp_pnc(e3sm_io_config *cfg,
                 e3sm_io_decom  *decom)
 {
     char name[128];

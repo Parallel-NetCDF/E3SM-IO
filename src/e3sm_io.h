@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * Copyright (C) 2018, Northwestern University
+ * Copyright (C) 2022, Northwestern University
  * See COPYRIGHT notice in top-level directory.
  *
  * This program is part of the E3SM I/O benchmark.
@@ -10,9 +10,17 @@
 #ifndef _H_E3SM_IO_
 #define _H_E3SM_IO_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <mpi.h>
+#ifdef ENABLE_PNC
 #include <pnetcdf.h>
+#elif ENABLE_NETCDF4
+#include <netcdf.h>
+#endif
 
 #define E3SM_IO_MAX_PATH    1024
 #define MAX_NUM_DECOMP      6
@@ -226,7 +234,12 @@ typedef struct e3sm_io_decom {
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom);
+#ifdef ENABLE_PNC
+extern int read_decomp_pnc(e3sm_io_config *cfg, e3sm_io_decom *decom);
+#endif
+#ifdef ENABLE_NETCDF4
+extern int read_decomp_nc4(e3sm_io_config *cfg, e3sm_io_decom *decom);
+#endif
 extern int calc_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern void print_info (MPI_Info *info_used);
 extern int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);

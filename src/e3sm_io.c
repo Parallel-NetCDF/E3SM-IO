@@ -378,7 +378,13 @@ int main (int argc, char **argv) {
     timing[1] = MPI_Wtime();
 
     /* read request information from decomposition file */
-    err = read_decomp(&cfg, &decom);
+#ifdef ENABLE_PNC
+    err = read_decomp_pnc(&cfg, &decom);
+#elif defined(ENABLE_NETCDF4)
+    err = read_decomp_nc4(&cfg, &decom);
+#else
+    #error Both PnetCDF and NetCDF 4 disabled
+#endif
     CHECK_ERR
 
     /* determine run case */
