@@ -6,9 +6,7 @@ AM_CPPFLAGS  = -I${top_srcdir}/src
 AM_CPPFLAGS += -I${top_srcdir}/src/drivers
 AM_CPPFLAGS += -I${top_srcdir}/src/cases
 
-bin_PROGRAMS = dat2nc \
-               datstat \
-               pnetcdf_blob_replay
+bin_PROGRAMS = datstat
 
 if ENABLE_ADIOS2
 if HAVE_CXX17
@@ -17,6 +15,9 @@ endif
 endif
 
 if ENABLE_PNC
+bin_PROGRAMS += dat2nc \
+                pnetcdf_blob_replay
+
 dat2nc_SOURCES = dat2nc.c
 dat2nc_LDADD = -lpnetcdf
 
