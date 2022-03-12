@@ -174,7 +174,7 @@ int e3sm_io_driver_nc4::expand_rec_size (int fid, MPI_Offset size) {
 	int nvar;					// # variables
 	std::vector<int> dimids;	// Var dimids
 	std::vector<size_t> start;	// Starting coordinate to write in var
-	char *buf[16];				// Dummy buffer
+	char buf[16];				// Dummy buffer
 
 	err = nc_inq_unlimdim (fid, &udimid);
 	CHECK_NCERR
