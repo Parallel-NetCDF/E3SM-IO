@@ -462,10 +462,14 @@ AC_ARG_WITH([netcdf4],
       to specify the location of NetCDF installation. Disable NetCDF 4 support.
       -----------------------------------------------------------------------])
    fi
-])
-dnl Check if NetCDF support NetCDF 4 parallel
-if test "x$have_netcdf4" = xyes ; then
-   netcdf4_has_par=`$netcdf4_config --has-parallel4`
+
+   AC_MSG_CHECKING([if NetCDF $netcdf_version is configured with parallel I/O enabled])
+   if test "x$netcdf4_config" != x ; then
+      netcdf4_has_par=`$netcdf4_config --has-parallel4`
+   else
+      AC_CHECK_HEADERS([netcdf_par.h], [netcdf4_has_par=yes], [netcdf4_has_par=no], [[#include <netcdf.h>]])
+   fi
+   AC_MSG_RESULT($netcdf4_has_par)
    if test "x${netcdf4_has_par}" != xyes; then
       AC_MSG_WARN([
       ------------------------------------------------------------
@@ -474,7 +478,7 @@ if test "x$have_netcdf4" = xyes ; then
       ------------------------------------------------------------])
       have_netcdf4 = no
    fi
-fi
+])
 AM_CONDITIONAL(ENABLE_NETCDF4, [test "x$have_netcdf4" = xyes])
 
 # Check for logvol
