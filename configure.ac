@@ -430,7 +430,6 @@ AC_ARG_WITH([netcdf4],
       dnl Check netcdf4-config under $PATH
       AC_PATH_PROG([netcdf4_config],[nc-config])
    fi
-   echo ${netcdf4_config}
    if test "x$netcdf4_config" != x ; then
       netcdf4_cflags=`$netcdf4_config --cflags`
       netcdf4_lflags=`$netcdf4_config --libs`
@@ -464,41 +463,16 @@ AC_ARG_WITH([netcdf4],
       -----------------------------------------------------------------------])
    fi
 ])
-dnl Check if NetCDF version is 4.8.1 or later
+dnl Check if NetCDF support NetCDF 4 parallel
 if test "x$have_netcdf4" = xyes ; then
-   AC_MSG_CHECKING([whether NetCDF version is 4.8.1 or later])
-   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <netcdf_meta.h>
-#define VER_NUM (NC_VERSION_MAJOR*1000000 + NC_VERSION_MINOR*1000 + NC_VERSION_PATCH)
-#if (VER_NUM < 4008001)
-#error NetCDF version is older than 4.8.1
-#endif
-   ]])], [netcdf_ge_4_8_1=yes], [netcdf_ge_4_8_1=no])
-   AC_MSG_RESULT([$netcdf_ge_4_8_1])
-
-   if test "x${netcdf_ge_4_8_1}" = xno; then
+   netcdf4_has_par=`$netcdf4_config --has-parallel4`
+   if test "x${netcdf4_has_par}" != xyes; then
       AC_MSG_WARN([
       ------------------------------------------------------------
-      Missing NetCDF-4 header file 'netcdf_par.h' required by E3SM-IO.
-      The NetCDF-4 library must be built with parallel I/O and
-      NETCDF-4 support. Check 'config.log' for more information.
+      NetCDF was not built with parallel NetCDF 4 support.
       Disable NetCDF4. 
       ------------------------------------------------------------])
       have_netcdf4 = no
-   fi
-fi
-dnl Check if NetCDF support NetCDF 4 parallel
-if test "x$have_netcdf4" = xyes ; then
-   if test "x$netcdf4_has_par" != x ; then
-      netcdf4_has_par=`$netcdf4_config --has-parallel4`
-      if test "x${netcdf_ge_4_8_1}" != xyes; then
-         AC_MSG_WARN([
-         ------------------------------------------------------------
-         NetCDF was not built with parallel NetCDF 4 support.
-         Disable NetCDF4. 
-         ------------------------------------------------------------])
-         have_netcdf4 = no
-      fi
    fi
 fi
 AM_CONDITIONAL(ENABLE_NETCDF4, [test "x$have_netcdf4" = xyes])
