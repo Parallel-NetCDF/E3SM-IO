@@ -476,6 +476,8 @@ AC_ARG_WITH([netcdf4],
       Disable NetCDF4. 
       ------------------------------------------------------------])
       have_netcdf4 = no
+   elif test "x$netcdf4_lib" != x ; then
+      AC_SUBST(NETCDF4_LIB_PATH, [$netcdf4_lib])
    fi
 ])
 AM_CONDITIONAL(ENABLE_NETCDF4, [test "x$have_netcdf4" = xyes])
