@@ -16,10 +16,13 @@
 
 #include <stdio.h>
 #include <mpi.h>
+
+#ifdef ENABLE_NETCDF4
+#include <netcdf.h>
+#endif
+
 #ifdef ENABLE_PNC
 #include <pnetcdf.h>
-#elif ENABLE_NETCDF4
-#include <netcdf.h>
 #endif
 
 #define E3SM_IO_MAX_PATH    1024
