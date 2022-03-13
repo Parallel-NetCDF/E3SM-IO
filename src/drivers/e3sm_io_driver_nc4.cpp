@@ -101,12 +101,8 @@ err_out:
 }
 
 int e3sm_io_driver_nc4::inq_file_info (int fid, MPI_Info *info) {
-	int err;
-
 	*info = MPI_INFO_NULL;
-
-err_out:
-	return err;
+	return NC_NOERR;
 }
 
 int e3sm_io_driver_nc4::inq_file_size (std::string path, MPI_Offset *size) {
@@ -133,20 +129,12 @@ int e3sm_io_driver_nc4::inq_get_size (MPI_Offset *size) {
 }
 
 int e3sm_io_driver_nc4::inq_malloc_size (MPI_Offset *size) {
-	int err;
-
 	*size = 0;
-
-err_out:
-	return err;
+	return NC_NOERR;
 }
 int e3sm_io_driver_nc4::inq_malloc_max_size (MPI_Offset *size) {
-	int err;
-
 	*size = 0;
-
-err_out:
-	return err;
+	return NC_NOERR;
 }
 
 int e3sm_io_driver_nc4::inq_rec_size (int fid, MPI_Offset *size) {
@@ -187,7 +175,7 @@ int e3sm_io_driver_nc4::expand_rec_size (int fid, MPI_Offset size) {
 		CHECK_NCERR
 
 		if (ndim > 0) {
-			if (dimids.size () < ndim) {
+			if (dimids.size () < (size_t)ndim) {
 				dimids.resize (ndim);
 				start.resize (ndim);
 			}
@@ -286,7 +274,6 @@ err_out:
 
 int e3sm_io_driver_nc4::inq_dim (int fid, std::string name, int *dimid) {
 	int err;
-	MPI_Offset size;
 
 	err = nc_inq_dimid (fid, name.c_str (), dimid);
 	CHECK_NCERR
@@ -480,7 +467,6 @@ int e3sm_io_driver_nc4::put_vars (int fid,
 								  e3sm_io_op_mode mode) {
 	int err = NC_NOERR;
 	int i;
-	MPI_Offset size, prev_WR;
 	int ndim;					 // Variable #dim
 	ptrdiff_t *ncstride = NULL;	 // Stride in int32
 	int esize;					 // Element size of variable type
@@ -736,7 +722,6 @@ int e3sm_io_driver_nc4::get_vars (int fid,
 								  e3sm_io_op_mode mode) {
 	int err = NC_NOERR;
 	int i;
-	MPI_Offset size, prev_WR;
 	int ndim;					 // Variable #dim
 	ptrdiff_t *ncstride = NULL;	 // Stride in int32
 	int esize;					 // Element size of variable type
