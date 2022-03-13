@@ -113,12 +113,18 @@ int print_timing_WR(e3sm_io_config *cfg,
             if (cfg->strategy == canonical) {
                 if (cfg->api == pnetcdf)
                     printf("==== PnetCDF canonical I/O using varn API ============\n");
+                else if (cfg->api == hdf5)
+                    printf("==== HDF5 canonical I/O ==============================\n");
                 else if (cfg->api == hdf5_md)
                     printf("==== HDF5 canonical I/O using multi-dataset API ======\n");
+                else if (cfg->api == netcdf4)
+                    printf("==== NetCDF-4 canonical I/O ==========================\n");
             }
             else if (cfg->strategy == log) {
                 if (cfg->api == hdf5_log)
                     printf("==== HDF5 using log-based VOL ========================\n");
+                else if (cfg->api == netcdf4)
+                    printf("==== NetCDF-4 using HDF5 log-based VOL ===============\n");
             }
             else if (cfg->strategy == blob) {
                 if (cfg->api == pnetcdf)
