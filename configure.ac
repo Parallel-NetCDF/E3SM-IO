@@ -293,8 +293,7 @@ AC_ARG_WITH([pnetcdf],
          LDFLAGS="$LDFLAGS -L$pnc_lib"
       fi
    fi
-])
-if test "x$have_pnc" = xyes ; then
+
    AC_CHECK_HEADER([pnetcdf.h], [have_pnc=yes], [have_pnc=no])
    if test "x$have_pnc" = xno ; then
          AC_MSG_WARN([
@@ -323,7 +322,7 @@ if test "x$have_pnc" = xyes ; then
             have_pnc=no
       fi
    fi
-fi
+])
 AM_CONDITIONAL(ENABLE_PNC, [test "x$have_pnc" = xyes])
 
 # Check for HDF5
@@ -696,10 +695,12 @@ echo \
    ${PACKAGE_NAME} Version ${PACKAGE_VERSION}
 
    Features:  Internal debug mode         - ${debug}
-              HDF5 support                - ${have_hdf5}
-              HDF5 log-based VOL support  - ${have_logvol}
-              HDF5 multi-dataset support  - ${have_multi_dset}
-              ADIOS-2 support             - ${have_adios2}
+              PnetCDF                     - ${have_pnc}
+              NetCDF-4                    - ${have_netcdf4}
+              HDF5                        - ${have_hdf5}
+              HDF5 log-based VOL          - ${have_logvol}
+              HDF5 multi-dataset          - ${have_multi_dset}
+              ADIOS-2                     - ${have_adios2}
 
    Compilers: MPICC    = ${MPICC}
               MPICXX   = ${MPICXX}"
