@@ -80,7 +80,7 @@ int e3sm_io_case::wr_test(e3sm_io_config &cfg,
             cmeta->ffreq = cmeta->nrecs;
 
         /* construct file name */
-        if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))
+        if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5") && strcmp(ext, ".nc4")))
             sprintf(cmeta->outfile, "%s_h0", cfg.out_path);
         else { /* add "_h0" before file extension */
             strcpy(cmeta->outfile, cfg.out_path);
@@ -117,7 +117,7 @@ int e3sm_io_case::wr_test(e3sm_io_config &cfg,
             cmeta->ffreq = cmeta->nrecs;
 
         /* construct file name */
-        if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5")))
+        if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5") && strcmp(ext, ".nc4")))
             sprintf(cmeta->outfile, "%s_h1", cfg.out_path);
         else { /* add "_h1" before file extension */
             strcpy(cmeta->outfile, cfg.out_path);

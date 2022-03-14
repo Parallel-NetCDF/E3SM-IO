@@ -5,8 +5,10 @@
 #ifdef E3SM_IO_DEBUG
 #include <stdlib.h>
 #include <string.h>
+static inline int debug_func () { return 0; }
 #define DEBUG_ABORT                                        \
     {                                                      \
+        debug_func ();                                     \
         char *val = getenv ("E3SM_IO_DEBUG_ABORT_ON_ERR"); \
         if (val != NULL && strcmp (val, "1") == 0)         \
             MPI_Abort(MPI_COMM_WORLD, -1);                 \

@@ -22,7 +22,6 @@
 #include <e3sm_io_err.h>
 #include <e3sm_io_case.hpp>
 #include <e3sm_io_driver.hpp>
-#include <e3sm_io_driver_pnc.hpp>
 #include <e3sm_io_profile.hpp>
 
 #ifdef ENABLE_HDF5
@@ -32,6 +31,14 @@
 #ifdef ENABLE_LOGVOL
 #include <e3sm_io_driver_hdf5_log.hpp>
 #endif
+#endif
+
+#ifdef ENABLE_PNC
+#include <e3sm_io_driver_pnc.hpp>
+#endif
+
+#ifdef ENABLE_NETCDF4
+#include <e3sm_io_driver_nc4.hpp>
 #endif
 
 #ifdef ENABLE_ADIOS2
@@ -81,6 +88,15 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
             goto done_check;
         }
 
+        // NetCDF4 ?
+        // NC4 is HDF5, so NC4 must be checked first
+#ifdef ENABLE_NETCDF4
+        if(e3sm_io_driver_nc4::compatible(std::string(path))) {
+            cfg->api = netcdf4;
+            goto done_check;
+        }
+#endif
+
         // HDF5 ?
 #ifdef ENABLE_HDF5
         offset = 512;
@@ -98,10 +114,9 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
             gid = H5Gopen (fid, "_LOG", H5P_DEFAULT);
             if (gid >= 0) {
                 cfg->api = hdf5_log;
-            } else if (!((cfg->api == hdf5_md) || (cfg->api == hdf5))) {
-                ERR_OUT ("Selected API not compatible with input file format");
+            } else {
+                cfg->api = hdf5;
             }
-
             if (gid >= 0) { H5Gclose (gid); }
             if (fid >= 0) { H5Fclose (fid); }
 
@@ -150,9 +165,16 @@ done_check:
      * the official release.
      */
     switch (cfg->api) {
+#ifdef ENABLE_PNC
         case pnetcdf:
             driver = new e3sm_io_driver_pnc (cfg);
             break;
+#endif
+#ifdef ENABLE_NETCDF4
+        case netcdf4:
+            driver = new e3sm_io_driver_nc4 (cfg);
+            break;
+#endif
         case hdf5:
 #ifdef ENABLE_HDF5
             if (cfg->strategy == blob)

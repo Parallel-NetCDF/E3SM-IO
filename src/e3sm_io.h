@@ -1,6 +1,6 @@
 /*********************************************************************
  *
- * Copyright (C) 2018, Northwestern University
+ * Copyright (C) 2022, Northwestern University
  * See COPYRIGHT notice in top-level directory.
  *
  * This program is part of the E3SM I/O benchmark.
@@ -10,9 +10,20 @@
 #ifndef _H_E3SM_IO_
 #define _H_E3SM_IO_
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <stdio.h>
 #include <mpi.h>
+
+#ifdef ENABLE_NETCDF4
+#include <netcdf.h>
+#endif
+
+#ifdef ENABLE_PNC
 #include <pnetcdf.h>
+#endif
 
 #define E3SM_IO_MAX_PATH    1024
 #define MAX_NUM_DECOMP      6
@@ -29,7 +40,7 @@
 #define MIN(a, b) ((a) < (b)) ? (a) : (b)
 #endif
 
-#ifndef PNETCDF_VERSION
+#if !defined(PNETCDF_VERSION) && !defined(_NETCDF_)
 #define NC_NAT          0       /**< Not A Type */
 #define NC_BYTE         1       /**< signed 1 byte integer */
 #define NC_CHAR         2       /**< ISO/ASCII character */
@@ -70,6 +81,7 @@ typedef float vtype; /* internal data type of buffer in memory */
 
 typedef enum e3sm_io_api {
     pnetcdf,
+    netcdf4,
     hdf5,
     hdf5_md,
     hdf5_log,
@@ -225,7 +237,12 @@ typedef struct e3sm_io_decom {
 #ifdef __cplusplus
 extern "C" {
 #endif
-extern int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom);
+#ifdef ENABLE_PNC
+extern int read_decomp_pnc(e3sm_io_config *cfg, e3sm_io_decom *decom);
+#endif
+#ifdef ENABLE_NETCDF4
+extern int read_decomp_nc4(e3sm_io_config *cfg, e3sm_io_decom *decom);
+#endif
 extern int calc_metadata(e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern void print_info (MPI_Info *info_used);
 extern int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);

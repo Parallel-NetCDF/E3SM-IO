@@ -257,6 +257,7 @@ UD_PROG_M4
 M4FLAGS=""
 
 # Check for pnc
+have_pnc=no
 AC_ARG_WITH([pnetcdf],
    [AS_HELP_STRING([--with-pnetcdf@<:@=INC,LIB | =DIR@:>@],
                    [Provide the PnetCDF installation path(s):
@@ -292,32 +293,37 @@ AC_ARG_WITH([pnetcdf],
          LDFLAGS="$LDFLAGS -L$pnc_lib"
       fi
    fi
-])
-AC_CHECK_HEADER([pnetcdf.h], [have_pnc=yes], [have_pnc=no])
-if test "x$have_pnc" = xno ; then
-      AC_MSG_ERROR([
-      -----------------------------------------------------------------------
-      Missing PnetCDF-header files 'pnetcdf.h' required to build E3SM_IO. Use
-      configure command-line option --with-pnetcdf=/path/to/implementation
-      to specify the location of PnetCDF installation. Abort.
-      -----------------------------------------------------------------------])
-fi
-dnl Check if PnetCDF version is 1.10.0 or later
-AC_MSG_CHECKING([whether PnetCDF version is 1.10.0 or later])
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <pnetcdf.h>
-#if (PNETCDF_VERSION_MAJOR*1000000 + PNETCDF_VERSION_MINOR*1000 + PNETCDF_VERSION_PATCH < 1010000)
-#error PnetCDF version is older than 1.10.0
-#endif
-]])], [pnc_ge_1_10_0=yes], [pnc_ge_1_10_0=no])
-AC_MSG_RESULT([$pnc_ge_1_10_0])
 
-if test x$pnc_ge_1_10_0 = xno; then
-      AC_MSG_ERROR([
-      -----------------------------------------------------------------------
-      PnetCDF version too old. Abort.
-      -----------------------------------------------------------------------])
-fi
+   AC_CHECK_HEADER([pnetcdf.h], [have_pnc=yes], [have_pnc=no])
+   if test "x$have_pnc" = xno ; then
+         AC_MSG_WARN([
+         -----------------------------------------------------------------------
+         Missing PnetCDF-header files 'pnetcdf.h' required to build E3SM_IO. Use
+         configure command-line option --with-pnetcdf=/path/to/implementation
+         to specify the location of PnetCDF installation. Disable PnetCDF support.
+         -----------------------------------------------------------------------])
+         have_pnc=no
+   else
+      dnl Check if PnetCDF version is 1.10.0 or later
+      AC_MSG_CHECKING([whether PnetCDF version is 1.10.0 or later])
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+      #include <pnetcdf.h>
+      #if (PNETCDF_VERSION_MAJOR*1000000 + PNETCDF_VERSION_MINOR*1000 + PNETCDF_VERSION_PATCH < 1010000)
+      #error PnetCDF version is older than 1.10.0
+      #endif
+      ]])], [pnc_ge_1_10_0=yes], [pnc_ge_1_10_0=no])
+      AC_MSG_RESULT([$pnc_ge_1_10_0])
+
+      if test x$pnc_ge_1_10_0 = xno; then
+            AC_MSG_ERROR([
+            -----------------------------------------------------------------------
+            PnetCDF version too old. Disable PnetCDF support.
+            -----------------------------------------------------------------------])
+            have_pnc=no
+      fi
+   fi
+])
+AM_CONDITIONAL(ENABLE_PNC, [test "x$have_pnc" = xyes])
 
 # Check for HDF5
 have_hdf5=no
@@ -391,6 +397,91 @@ AC_ARG_WITH([hdf5],
 AM_CONDITIONAL(ENABLE_HDF5, [test "x$have_hdf5" = xyes])
 AM_CONDITIONAL(HDF5_HAVE_DWRITE_MULTI, [test "x$have_multi_dset" = xyes])
 
+# Check for NETCDF4
+have_netcdf4=no
+AC_ARG_WITH([netcdf4],
+   [AS_HELP_STRING([--with-netcdf4@<:@=INC,LIB | =DIR@:>@],
+                   [Enable ADIOS-2 feature and provide the ADIOS-2 installation path(s):
+    --with-netcdf4=INC,LIB for include and lib paths separated by a comma.
+    --with-netcdf4=DIR for the path containing include/ and lib/ subdirectories.
+    @<:@default: disabled@:>@
+   ])], [
+   if test "x${withval}" != xyes && test "x${withval}" != xno ; then
+      NETCDF4_INSTALL=${withval}
+   fi
+   case $withval in
+     *,*)
+        netcdf4_inc="`echo $withval |cut -f1 -d,`"
+        netcdf4_lib="`echo $withval |cut -f2 -d, -s`"
+        netcdf4_bindir="$netcdf4_inc/../bin"
+        ;;
+     *)
+        if test -n "$withval"; then
+          netcdf4_inc="$withval/include"
+          netcdf4_lib="$withval/lib"
+          netcdf4_bindir="$NETCDF4_INSTALL/bin"
+        fi
+        ;;
+   esac
+   if test "x$NETCDF4_INSTALL" != x ; then
+      AC_PATH_PROG([netcdf4_config],[nc-config],,[$netcdf4_bindir])
+   else
+      dnl Check netcdf4-config under $PATH
+      AC_PATH_PROG([netcdf4_config],[nc-config])
+   fi
+   if test "x$netcdf4_config" != x ; then
+      netcdf4_cflags=`$netcdf4_config --cflags`
+      netcdf4_lflags=`$netcdf4_config --libs`
+   else
+      netcdf4_cflags="-I$netcdf4_inc"
+      netcdf4_lflags="-L$netcdf4_lib"
+   fi
+   if test "x$netcdf4_cflags" != x ; then
+      if test "x$CPPFLAGS" = x ; then
+         CPPFLAGS="${netcdf4_cflags}"
+      elif ! echo "${CPPFLAGS}" | ${EGREP} -q -w -- "${netcdf4_cflags}" ; then
+         # append only if not already appear in CPPFLAGS
+         CPPFLAGS="$CPPFLAGS ${netcdf4_cflags}"
+      fi
+   fi
+   if test "x$netcdf4_lflags" != x ; then
+      if test "x$LDFLAGS" = x ; then
+         LDFLAGS="$netcdf4_lflags"
+      elif ! echo "${LDFLAGS}" | ${EGREP} -q -w -- "${netcdf4_lflags}" ; then
+         # append only if not already appear in LDFLAGS
+         LDFLAGS="$LDFLAGS $netcdf4_lflags"
+      fi
+   fi
+   AC_CHECK_HEADER([netcdf.h], [have_netcdf4=yes], [have_netcdf4=no])
+   if test "x$have_netcdf4" = xno ; then
+      AC_MSG_WARN([
+      -----------------------------------------------------------------------
+      Missing NetCDF-header files 'netcdf4_c.h' required to build E3SM_IO. Use
+      configure command-line option --with-netcdf4=/path/to/implementation
+      to specify the location of NetCDF installation. Disable NetCDF 4 support.
+      -----------------------------------------------------------------------])
+   fi
+
+   AC_MSG_CHECKING([if NetCDF $netcdf_version is configured with parallel I/O enabled])
+   if test "x$netcdf4_config" != x ; then
+      netcdf4_has_par=`$netcdf4_config --has-parallel4`
+   else
+      AC_CHECK_HEADERS([netcdf_par.h], [netcdf4_has_par=yes], [netcdf4_has_par=no], [[#include <netcdf.h>]])
+   fi
+   AC_MSG_RESULT($netcdf4_has_par)
+   if test "x${netcdf4_has_par}" != xyes; then
+      AC_MSG_WARN([
+      ------------------------------------------------------------
+      NetCDF was not built with parallel NetCDF 4 support.
+      Disable NetCDF4. 
+      ------------------------------------------------------------])
+      have_netcdf4 = no
+   elif test "x$netcdf4_lib" != x ; then
+      AC_SUBST(NETCDF4_LIB_PATH, [$netcdf4_lib])
+   fi
+])
+AM_CONDITIONAL(ENABLE_NETCDF4, [test "x$have_netcdf4" = xyes])
+
 # Check for logvol
 have_logvol=no
 AC_ARG_WITH([logvol],
@@ -400,6 +491,13 @@ AC_ARG_WITH([logvol],
     --with-logvol=DIR for the path containing include/ and lib/ subdirectories.
     @<:@default: disabled@:>@
    ])], [
+   if test "x$have_hdf5" = xno ; then
+      AC_MSG_ERROR([
+      -----------------------------------------------------------------------
+      Enabling the log-based VOL option requires HDF5. Please add command-line
+      option '--with-hdf5=DIR' to indicate the HDF5 installation path. Abort.
+      -----------------------------------------------------------------------])
+   fi
    case $withval in
      *,*)
         logvol_inc="`echo $withval |cut -f1 -d,`"
@@ -430,11 +528,11 @@ AC_ARG_WITH([logvol],
    fi
    AC_CHECK_HEADER([H5VL_log.h], [have_logvol=yes], [have_logvol=no])
    if test "x$have_logvol" = xno ; then
-      AC_MSG_WARN([
+      AC_MSG_ERROR([
       -----------------------------------------------------------------------
       Missing logvol-header files 'H5VL_log.h' required to build E3SM_IO. Use
       configure command-line option --with-logvol=/path/to/implementation
-      to specify the location of logvol installation. Disable logvol support.
+      to specify the location of logvol installation. Abort.
       -----------------------------------------------------------------------])
    fi
    if test "x$have_logvol" = xyes ; then
@@ -514,6 +612,18 @@ AC_ARG_WITH([adios2],
 ])
 AM_CONDITIONAL(ENABLE_ADIOS2, [test "x$have_adios2" = xyes])
 
+if test "x${have_pnc}" = xno && test "x${have_nc4}" = xno ; then
+   AC_MSG_ERROR([
+   -----------------------------------------------------------------------
+    Either PnetCDF or NetCDF must be enabled to build E3SM_IO.
+    Use configure command-line option --with-pnetcdf=/path/to/implementation
+    to specify the location of PnetCDF installation. Disable PnetCDF support. 
+    Use configure command-line option --with-netcdf4=/path/to/implementation
+    to specify the location of NetCDF installation. Disable NetCDF 4 support.
+    Abort.
+   -----------------------------------------------------------------------])
+fi
+
 AC_ARG_VAR(TESTMPIRUN, [MPI run command for "make ptest", @<:@default: mpiexec -n NP@:>@])
 if test "x${TESTMPIRUN}" = x ; then
    dnl if TESTMPIRUN has not been set by users, then
@@ -531,10 +641,22 @@ else
 CXXFLAGS="$CXXFLAGS -std=c++11"
 fi
 
-if test "x$LIBS" = x ; then
-LIBS="-lpnetcdf"
-else
-LIBS="$LIBS -lpnetcdf"
+if test "x$have_pnc" = xyes ; then
+   if test "x$LIBS" = x ; then
+   LIBS="-lpnetcdf"
+   else
+   LIBS="$LIBS -lpnetcdf"
+   fi
+   AC_DEFINE([ENABLE_PNC], [1], [Build PnetCDF benchmark])
+fi
+
+if test "x$have_netcdf4" = xyes ; then
+    if test "x$LIBS" = x ; then
+    LIBS="${netcdf4_lflags}"
+    else
+    LIBS="$LIBS ${netcdf4_lflags}"
+    fi
+    AC_DEFINE([ENABLE_NETCDF4], [1], [Build NetCDF 4 benchmark])
 fi
 
 if test "x$have_hdf5" = xyes ; then
@@ -582,10 +704,12 @@ echo \
    ${PACKAGE_NAME} Version ${PACKAGE_VERSION}
 
    Features:  Internal debug mode         - ${debug}
-              HDF5 support                - ${have_hdf5}
-              HDF5 log-based VOL support  - ${have_logvol}
-              HDF5 multi-dataset support  - ${have_multi_dset}
-              ADIOS-2 support             - ${have_adios2}
+              PnetCDF                     - ${have_pnc}
+              NetCDF-4                    - ${have_netcdf4}
+              HDF5                        - ${have_hdf5}
+              HDF5 log-based VOL          - ${have_logvol}
+              HDF5 multi-dataset          - ${have_multi_dset}
+              ADIOS-2                     - ${have_adios2}
 
    Compilers: MPICC    = ${MPICC}
               MPICXX   = ${MPICXX}"

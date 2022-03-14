@@ -101,6 +101,7 @@ static void usage (char *argv0) {
                  name otherwise).\n\
        [-a api]  I/O library name\n\
            pnetcdf:   PnetCDF library (default)\n\
+           netcdf4:   NetCDF-4 library\n\
            hdf5:      HDF5 library\n\
            hdf5_log:  HDF5 library with Log-based VOL\n\
            adios:     ADIOS library using BP3 format\n\
@@ -198,6 +199,8 @@ int main (int argc, char **argv) {
                     cfg.api = hdf5_md;
                 else if (strcmp (optarg, "hdf5_log") == 0)
                     cfg.api = hdf5_log;
+                else if (strcmp (optarg, "netcdf4") == 0)
+                    cfg.api = netcdf4;
                 else if (strcmp (optarg, "adios") == 0)
                     cfg.api = adios;
                 else
@@ -297,6 +300,13 @@ int main (int argc, char **argv) {
             ERR_OUT ("PnetCDF with log I/O strategy is not supported yet")
     }
 
+    if (cfg.api == netcdf4) {
+        if (cfg.strategy == undef_io)
+            cfg.strategy = canonical;
+        else if (cfg.strategy == blob)
+            ERR_OUT ("NetCDF 4 only supports canonical and log strategies")
+    }
+
     if (cfg.api == hdf5) {
 #ifndef ENABLE_HDF5
         ERR_OUT("HDF5 is not enabled at configure time")
@@ -369,7 +379,13 @@ int main (int argc, char **argv) {
     timing[1] = MPI_Wtime();
 
     /* read request information from decomposition file */
-    err = read_decomp(&cfg, &decom);
+#ifdef ENABLE_PNC
+    err = read_decomp_pnc(&cfg, &decom);
+#elif defined(ENABLE_NETCDF4)
+    err = read_decomp_nc4(&cfg, &decom);
+#else
+    #error Both PnetCDF and NetCDF 4 disabled
+#endif
     CHECK_ERR
 
     /* determine run case */

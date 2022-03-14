@@ -12,10 +12,9 @@ AM_CPPFLAGS += -I${top_srcdir}/src/cases
 
 noinst_LIBRARIES = libe3sm_io_drivers.a
 
-C_SRCS = e3sm_io_driver_pnc.cpp
+C_SRCS = e3sm_io_driver.cpp 
 
-H_SRCS = e3sm_io_driver.hpp \
-         e3sm_io_driver_pnc.hpp
+H_SRCS = e3sm_io_driver.hpp 
 
 if ENABLE_HDF5
 C_SRCS +=   e3sm_io_driver_hdf5.cpp \
@@ -29,9 +28,18 @@ H_SRCS +=   e3sm_io_driver_hdf5.hpp \
             blob_ncmpio.h
 endif
 
+if ENABLE_PNC
+C_SRCS +=   e3sm_io_driver_pnc.cpp
+H_SRCS +=   e3sm_io_driver_pnc.hpp 
+endif
+
+if ENABLE_NETCDF4
+C_SRCS +=   e3sm_io_driver_nc4.cpp
+H_SRCS +=   e3sm_io_driver_nc4.hpp 
+endif
+
 if ENABLE_LOGVOL
 C_SRCS +=   e3sm_io_driver_hdf5_log.cpp
-
 H_SRCS +=   e3sm_io_driver_hdf5_log.hpp 
 endif
 

@@ -224,13 +224,12 @@ static inline void print_no_collective_cause (uint32_t local_no_collective_cause
 int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
     herr_t herr=0;
     int err = 0, rank;
-    int j;
-    size_t i;
+    size_t i, j;
     size_t esize;   // Element size of the memory type
     hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];    // Memory space dims
     hid_t dsid = -1; // Dataset space ID for following dummy call
     hid_t tid = -1; // Dataset type ID for following dummy call
-    int ndset = dids.size();    // # datasets
+    size_t ndset = dids.size();    // # datasets
     std::vector<std::vector<H5D_rw_multi_t>> reqs(ndset);   // Requests organized by datasaet ID
     int *nreqs = NULL;  // # requests per dataset
     int *nreqs_all;  // max # requests per dataset across all processes
@@ -270,8 +269,8 @@ int e3sm_io_driver_hdf5::hdf5_file::flush_multidatasets () {
                 tid = H5Dget_type (dids[j]);
                 CHECK_HID(tid)
 
-                for (i = 0; i < nreqs_all[j]; ++i) {
-                    if (i < nreqs[j]){
+                for (i = 0; i < (size_t)nreqs_all[j]; ++i) {
+                    if (i < (size_t)nreqs[j]){
                         herr = H5Dwrite (dids[j], reqs[j][i].mem_type_id,
                                         reqs[j][i].mem_space_id, reqs[j][i].dset_space_id,
                                         driver.dxplid_coll, reqs[j][i].buf);
@@ -335,14 +334,13 @@ err_out:;
 herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
     herr_t herr=0;
     int err = 0, rank;
-    int j;
     char *temp_buf   = NULL, *temp_buf_ptr;
-    size_t i, temp_size = 0;
+    size_t i, j, temp_size = 0;
     size_t esize;   // Element size of the memory type
     hsize_t dims[H5S_MAX_RANK], mdims[H5S_MAX_RANK];    // Memory space dims
     hid_t dsid = -1; // Dataset space ID for following dummy call
     hid_t tid = -1; // Dataset type ID for following dummy call
-    int ndset = dids.size();    // # datasets
+    size_t ndset = dids.size();    // # datasets
     std::vector<std::vector<H5D_rw_multi_t>> reqs(ndset);   // Requests organized by datasaet ID
     int *nreqs = NULL;  // # requests per dataset
     int *nreqs_all;  // max # requests per dataset across all processes
@@ -383,8 +381,8 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
                 tid = H5Dget_type (dids[j]);
                 CHECK_HID(tid)
 
-                for (i = 0; i < nreqs_all[j]; ++i) {
-                    if (i < nreqs[j]){
+                for (i = 0; i < (size_t)nreqs_all[j]; ++i) {
+                    if (i < (size_t)nreqs[j]){
                         herr = H5Dread (dids[j], reqs[j][i].mem_type_id,
                                         reqs[j][i].mem_space_id, reqs[j][i].dset_space_id,
                                         driver.dxplid_coll, reqs[j][i].buf);
@@ -451,7 +449,7 @@ herr_t e3sm_io_driver_hdf5::hdf5_file::pull_multidatasets () {
         // Copy data back from temp_buf to user memory defined by data_segments. This array is
         // sorted previously to align the HDF5 memory space.
         temp_buf_ptr = temp_buf;
-        for (j = 0; j < (int)(dataset_segments[i].size ()); ++j) {
+        for (j = 0; j < dataset_segments[i].size (); ++j) {
             memcpy (dataset_segments[i][j].data, temp_buf_ptr, dataset_segments[i][j].coverage);
             temp_buf_ptr += dataset_segments[i][j].coverage;
         }
