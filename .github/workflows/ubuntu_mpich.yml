@@ -33,8 +33,9 @@ jobs:
         - name: Install PnetCDF
           run: |
             WORKDIR=$(pwd)
-            git clone https://github.com/Parallel-NetCDF/PnetCDF.git -b checkpoint.1.12.2 pnc
-            cd pnc
+            wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
+            tar -zxf pnetcdf-1.12.3.tar.gz
+            cd pnetcdf-1.12.3
             autoreconf -i
             ./configure --prefix=${WORKDIR}/.local/pnc/1.12.2 --disable-fortran --disable-cxx
             make -j 2
@@ -67,9 +68,9 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            git clone https://github.com/HDFGroup/hdf5.git hdf5
-            cd hdf5
-            git checkout hdf5-1_13_0
+            wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz
+            tar -zxf hdf5-1.13.0.tar.gz
+            cd hdf5-1.13.0
             export HDF5_LIBTOOL=/usr/bin/libtoolize
             ./autogen.sh
             ./configure --prefix=${WORKDIR}/.local/hdf5/1.13.0 --enable-hl --enable-parallel --enable-build-mode=production CC=mpicc
@@ -79,8 +80,9 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            git clone https://github.com/DataLib-ECP/vol-log-based.git -b master logvol
-            cd logvol
+            wget https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.1.0.tar.gz
+            tar -zxf logvol.1.1.0.tar.gz
+            cd vol-log-based-logvol.1.1.0
             autoreconf -i
             ./configure --prefix=${WORKDIR}/.local/logvol/master --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --enable-shared
             make -j 2
