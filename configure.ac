@@ -491,6 +491,13 @@ AC_ARG_WITH([logvol],
     --with-logvol=DIR for the path containing include/ and lib/ subdirectories.
     @<:@default: disabled@:>@
    ])], [
+   if test "x$have_hdf5" = xno ; then
+      AC_MSG_ERROR([
+      -----------------------------------------------------------------------
+      Enabling the log-based VOL option requires HDF5. Please add command-line
+      option '--with-hdf5=DIR' to indicate the HDF5 installation path. Abort.
+      -----------------------------------------------------------------------])
+   fi
    case $withval in
      *,*)
         logvol_inc="`echo $withval |cut -f1 -d,`"
@@ -521,11 +528,11 @@ AC_ARG_WITH([logvol],
    fi
    AC_CHECK_HEADER([H5VL_log.h], [have_logvol=yes], [have_logvol=no])
    if test "x$have_logvol" = xno ; then
-      AC_MSG_WARN([
+      AC_MSG_ERROR([
       -----------------------------------------------------------------------
       Missing logvol-header files 'H5VL_log.h' required to build E3SM_IO. Use
       configure command-line option --with-logvol=/path/to/implementation
-      to specify the location of logvol installation. Disable logvol support.
+      to specify the location of logvol installation. Abort.
       -----------------------------------------------------------------------])
    fi
    if test "x$have_logvol" = xyes ; then
