@@ -891,7 +891,7 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
 
 	// Call H5Dwrite
 	for (i = 0; i < nreq; i++) {
-		rsize = esize;
+		rsize = 1;
 		for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
 
 		if (rsize) {
@@ -920,7 +920,7 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
 
 			E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
-			bufp += rsize;
+			bufp += rsize * esize;
 		}
 	}
 
@@ -1153,7 +1153,7 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
 
 	// Call H5Dread
 	for (i = 0; i < nreq; i++) {
-		rsize = esize;
+		rsize = 1;
 		for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
 
 		if (rsize) {
@@ -1180,7 +1180,7 @@ int e3sm_io_driver_hdf5::get_varn_expand (int fid,
 			CHECK_HERR
 			E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
 
-			bufp += rsize;
+			bufp += rsize * esize;
 		}
 	}
 
