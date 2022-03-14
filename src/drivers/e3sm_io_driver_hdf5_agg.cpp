@@ -597,6 +597,7 @@ int e3sm_io_driver_hdf5::put_varn_merge (int fid,
     msid = H5Screate_simple (1, &total_memspace_size, &total_memspace_size);
     CHECK_HID (msid)
 
+    mode = indep;
     switch (mode) {
         case indep: {
             dxplid = this->dxplid_indep;
@@ -728,6 +729,7 @@ int e3sm_io_driver_hdf5::get_varn_merge (int fid,
 
     // dataset_size is incremented in the following function.
 
+    mode = indep;
     switch (mode) {
         case indep: {
             dxplid = this->dxplid_indep;

@@ -13,7 +13,9 @@
 #include <cstdlib>
 #include <cstring>
 //
+#include <dirent.h>
 #include <sys/stat.h>
+#include <unistd.h>
 //
 #include <H5VL_log.h>
 #include <hdf5.h>
@@ -33,6 +35,17 @@ e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io
     char *env;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
+
+	this->dxplid_coll = H5Pcreate (H5P_DATASET_XFER);
+	CHECK_HID (this->dxplid_coll)
+	herr = H5Pset_dxpl_mpio (this->dxplid_coll, H5FD_MPIO_COLLECTIVE);
+	CHECK_HERR
+	this->dxplid_coll_nb = H5Pcreate (H5P_DATASET_XFER);
+	CHECK_HID (this->dxplid_coll_nb)
+	herr = H5Pset_dxpl_mpio (this->dxplid_coll_nb, H5FD_MPIO_COLLECTIVE);
+	CHECK_HERR
+	this->dxplid_indep_nb = H5Pcreate (H5P_DATASET_XFER);
+	CHECK_HID (this->dxplid_indep_nb)
 
     herr = H5Pset_nonblocking (this->dxplid_coll, H5VL_LOG_REQ_BLOCKING);
     CHECK_HERR
@@ -58,17 +71,15 @@ err_out:;
 }
 
 e3sm_io_driver_hdf5_log::~e3sm_io_driver_hdf5_log () {
-    /*
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     if (dxplid_coll >= 0) H5Pclose (dxplid_coll);
-    if (dxplid_indep >= 0) H5Pclose (dxplid_indep);
+    //if (dxplid_indep >= 0) H5Pclose (dxplid_indep);
     if (dxplid_coll_nb >= 0) H5Pclose (dxplid_coll_nb);
     if (dxplid_indep_nb >= 0) H5Pclose (dxplid_indep_nb);
 
     // if (dxplid_nb >= 0) H5Pclose (dxplid_nb);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    */
 }
 
 int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
@@ -168,7 +179,44 @@ err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return err;
 }
+inline MPI_Offset get_dir_size (std::string path) {
+    DIR *dir;
+    struct dirent *dit;
+    struct stat st;
+    long size             = 0;
+    MPI_Offset total_size = 0;
+    std::string subpath;
 
+    dir = opendir (path.c_str ());
+    if (dir) {
+        while ((dit = readdir (dir)) != NULL) {
+            if ((strcmp (dit->d_name, ".") == 0) || (strcmp (dit->d_name, "..") == 0)) continue;
+
+            subpath = path + '/' + std::string (dit->d_name);
+            if (lstat (subpath.c_str (), &st) != 0) continue;
+            size = st.st_size;
+
+            if (S_ISREG (st.st_mode)) {
+                total_size += (MPI_Offset)size;
+            } 
+        }
+        closedir (dir);
+    }
+
+    return total_size;
+}
+int e3sm_io_driver_hdf5_log::inq_file_size (std::string path, MPI_Offset *size) {
+    int err = 0;
+    struct stat file_stat;
+
+    err = stat (path.c_str (), &file_stat);
+    CHECK_ERR
+
+    *size = (MPI_Offset) (file_stat.st_size) + get_dir_size (path + ".subfiles");
+
+err_out:;
+    return err;
+}
 int e3sm_io_driver_hdf5_log::put_vara (int fid,
                                        int vid,
                                        MPI_Datatype itype,
