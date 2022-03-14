@@ -101,6 +101,7 @@ static void usage (char *argv0) {
                  name otherwise).\n\
        [-a api]  I/O library name\n\
            pnetcdf:   PnetCDF library (default)\n\
+           netcdf4:   NetCDF-4 library\n\
            hdf5:      HDF5 library\n\
            hdf5_log:  HDF5 library with Log-based VOL\n\
            adios:     ADIOS library using BP3 format\n\
@@ -302,8 +303,8 @@ int main (int argc, char **argv) {
     if (cfg.api == netcdf4) {
         if (cfg.strategy == undef_io)
             cfg.strategy = canonical;
-        else if (cfg.strategy != canonical)
-            ERR_OUT ("NetCDF 4 only supports canonical strategy")
+        else if (cfg.strategy == blob)
+            ERR_OUT ("NetCDF 4 only supports canonical and log strategies")
     }
 
     if (cfg.api == hdf5) {
