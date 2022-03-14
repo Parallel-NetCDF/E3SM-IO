@@ -36,6 +36,17 @@ e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
+	this->dxplid_coll = H5Pcreate (H5P_DATASET_XFER);
+	CHECK_HID (this->dxplid_coll)
+	herr = H5Pset_dxpl_mpio (this->dxplid_coll, H5FD_MPIO_COLLECTIVE);
+	CHECK_HERR
+	this->dxplid_coll_nb = H5Pcreate (H5P_DATASET_XFER);
+	CHECK_HID (this->dxplid_coll_nb)
+	herr = H5Pset_dxpl_mpio (this->dxplid_coll_nb, H5FD_MPIO_COLLECTIVE);
+	CHECK_HERR
+	this->dxplid_indep_nb = H5Pcreate (H5P_DATASET_XFER);
+	CHECK_HID (this->dxplid_indep_nb)
+
     herr = H5Pset_nonblocking (this->dxplid_coll, H5VL_LOG_REQ_BLOCKING);
     CHECK_HERR
     herr = H5Pset_nonblocking (this->dxplid_indep, H5VL_LOG_REQ_BLOCKING);
@@ -60,17 +71,15 @@ err_out:;
 }
 
 e3sm_io_driver_hdf5_log::~e3sm_io_driver_hdf5_log () {
-    /*
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     if (dxplid_coll >= 0) H5Pclose (dxplid_coll);
-    if (dxplid_indep >= 0) H5Pclose (dxplid_indep);
+    //if (dxplid_indep >= 0) H5Pclose (dxplid_indep);
     if (dxplid_coll_nb >= 0) H5Pclose (dxplid_coll_nb);
     if (dxplid_indep_nb >= 0) H5Pclose (dxplid_indep_nb);
 
     // if (dxplid_nb >= 0) H5Pclose (dxplid_nb);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    */
 }
 
 int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
