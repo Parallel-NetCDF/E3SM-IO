@@ -78,6 +78,7 @@ jobs:
             wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.1.0.tar.gz
             tar -zxf logvol.1.1.0.tar.gz
             cd vol-log-based-logvol.1.1.0
+            autoreconf -i
             ./configure --prefix=${WORKDIR}/.local/logvol/master --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --enable-shared
             make -j 4 install
         - name: Install ADIOS2
