@@ -417,12 +417,12 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     MPI_Barrier(comm); /*----------------------------------------------------*/
     timing = MPI_Wtime();
 
+    /* close file */
+    FILE_CLOSE
+    
     /* free up allocated heap memory for write buffers */
     wr_buf_free();
     if (vars != NULL) free(vars);
-
-    /* close file */
-    FILE_CLOSE
 
     cmeta->close_time = MPI_Wtime() - timing;
 
