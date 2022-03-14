@@ -312,7 +312,7 @@ AC_ARG_WITH([pnetcdf],
       #error PnetCDF version is older than 1.10.0
       #endif
       ]])], [pnc_ge_1_10_0=yes], [pnc_ge_1_10_0=no])
-      AC_MSG_WARN([$pnc_ge_1_10_0])
+      AC_MSG_RESULT([$pnc_ge_1_10_0])
 
       if test x$pnc_ge_1_10_0 = xno; then
             AC_MSG_ERROR([
