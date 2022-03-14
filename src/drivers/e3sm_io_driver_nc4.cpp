@@ -206,7 +206,9 @@ int e3sm_io_driver_nc4::def_var (
     int err;
     int i;
     int esize;           // Size of var type element
-    size_t len;           // Dim len
+    int udimid;                    // Record dim ID
+    size_t *dlen = NULL;           // Dim len
+    size_t *csize;  // Chunk size
     MPI_Offset vsize;  // Var size
 
     err = nc_def_var (fid, name.c_str (), xtype, ndim, dimids, varid);
@@ -214,14 +216,30 @@ int e3sm_io_driver_nc4::def_var (
 
     err = e3sm_io_xlen_nc_type (xtype, &esize);
     CHECK_ERR
+    
+    dlen = (size_t*)malloc(sizeof(size_t) * ndim);
+    CHECK_PTR(dlen)
     vsize = esize;
     for (i = 0; i < ndim; i++) {
-        nc_inq_dimlen (fid, dimids[i], &len);
-        vsize *= len;
+        nc_inq_dimlen (fid, dimids[i], dlen + i);
+        vsize *= dlen[i];
     }
     var_size[{fid, *varid}] = vsize;
 
+
+    err = nc_inq_unlimdim (fid, &udimid);
+    CHECK_NCERR
+
+    if (ndim) {
+		if (dimids[0] == udimid) {
+            dlen[0] = 1;
+            err = nc_def_var_chunking(fid, *varid, NC_CHUNKED, dlen);
+            CHECK_ERR
+		}
+	}
+
 err_out:
+    if(dlen) { free(dlen); }
     return err;
 }
 
