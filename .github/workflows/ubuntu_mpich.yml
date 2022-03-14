@@ -67,11 +67,12 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            git clone https://github.com/HDFGroup/hdf5.git -b develop hdf5
+            git clone https://github.com/HDFGroup/hdf5.git hdf5
             cd hdf5
+            git checkout hdf5-1_13_0
             export HDF5_LIBTOOL=/usr/bin/libtoolize
             ./autogen.sh
-            ./configure --prefix=${WORKDIR}/.local/hdf5/develop --enable-hl --enable-parallel --enable-build-mode=production CC=mpicc
+            ./configure --prefix=${WORKDIR}/.local/hdf5/1.13.0 --enable-hl --enable-parallel --enable-build-mode=production CC=mpicc
             make -j 2
             make -j 2 install
         - name: Install log VOL
@@ -81,7 +82,7 @@ jobs:
             git clone https://github.com/DataLib-ECP/vol-log-based.git -b master logvol
             cd logvol
             autoreconf -i
-            ./configure --prefix=${WORKDIR}/.local/logvol/master --with-hdf5=${WORKDIR}/.local/hdf5/develop --enable-shared
+            ./configure --prefix=${WORKDIR}/.local/logvol/master --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --enable-shared
             make -j 2
             make -j 2 install
         - name: Install ADIOS2
@@ -99,7 +100,7 @@ jobs:
           run: |
             WORKDIR=$(pwd)
             autoreconf -i
-            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 --with-hdf5=${WORKDIR}/.local/hdf5/develop --with-logvol=${WORKDIR}/.local/logvol/master --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx 
+            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-logvol=${WORKDIR}/.local/logvol/master --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx 
             make -s V=1 LIBTOOLFLAGS=--silent 
         - name: Print log all APIs
           if: ${{ failure() }}
@@ -112,7 +113,7 @@ jobs:
             WORKDIR=$(pwd)
             make check
             make ptest
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 --with-hdf5=${WORKDIR}/.local/hdf5/develop --with-logvol=${WORKDIR}/.local/logvol/master --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx"
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-logvol=${WORKDIR}/.local/logvol/master --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx"
         - name: Print log all APIs
           if: ${{ failure() }}
           run: |
