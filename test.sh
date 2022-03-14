@@ -22,9 +22,7 @@ if test "x${ENABLE_PNC}" = x1 ; then
    export LD_LIBRARY_PATH=${PNC_LIB_PATH}:${LD_LIBRARY_PATH}
 fi
 if test "x${ENABLE_HDF5}" = x1 ; then
-   # Note "hdf5 canonical" is very slow
-   # APIS+=("hdf5 canonical" "hdf5 blob")
-   APIS+=("hdf5 blob")
+   APIS+=("hdf5 canonical" "hdf5 blob")
    export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${LD_LIBRARY_PATH}
    if test "x${ENABLE_LOGVOL}" = x1 ; then
       APIS+=("hdf5_log log")
