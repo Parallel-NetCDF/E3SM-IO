@@ -28,6 +28,19 @@ define(`E3SM_IO_TIMERS', `( `total', dnl
                             `adios2_get_var', dnl
                             `adios2_flush', dnl
                             `adios2_close', dnl
+                            `nc4', dnl
+                            `nc4_open', dnl
+                            `nc4_enddef', dnl
+                            `nc4_resize', dnl
+                            `nc4_def_dim', dnl
+                            `nc4_inq_dim', dnl
+                            `nc4_def_var', dnl
+                            `nc4_inq_var', dnl
+                            `nc4_put_att', dnl
+                            `nc4_get_att', dnl
+                            `nc4_put_var', dnl
+                            `nc4_get_var', dnl
+                            `nc4_close', dnl
 
 )')`'dnl
 
