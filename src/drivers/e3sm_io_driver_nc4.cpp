@@ -206,10 +206,9 @@ int e3sm_io_driver_nc4::def_var (
     int err;
     int i;
     int esize;           // Size of var type element
-    int udimid;                    // Record dim ID
-    size_t *dlen = NULL;           // Dim len
-    size_t *csize;  // Chunk size
-    MPI_Offset vsize;  // Var size
+    int udimid;          // Record dim ID
+    size_t *dlen = NULL; // Dim len
+    MPI_Offset vsize;    // Var size
 
     err = nc_def_var (fid, name.c_str (), xtype, ndim, dimids, varid);
     CHECK_NCERR

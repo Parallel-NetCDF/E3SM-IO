@@ -25,14 +25,14 @@
 #include <e3sm_io_profile.hpp>
 
 e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
-	int err		= 0;
-	herr_t herr = 0;
+	int err	= 0;
 	int i;
 	char *env;
 
 	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
 	/*
+	herr_t herr = 0;
 	this->dxplid_coll = H5Pcreate (H5P_DATASET_XFER);
 	CHECK_HID (this->dxplid_coll)
 	herr = H5Pset_dxpl_mpio (this->dxplid_coll, H5FD_MPIO_COLLECTIVE);
@@ -306,7 +306,7 @@ int e3sm_io_driver_hdf5::expand_rec_size (int fid, MPI_Offset size) {
 		dsid = -1;
 
 		// Extend rec dim if needed
-		if (ndim && mdims[0] == H5S_UNLIMITED && dims[0] < size) {
+		if (ndim && mdims[0] == H5S_UNLIMITED && dims[0] < (hsize_t)size) {
 			dims[0] = size;
 			herr	= H5Dset_extent (did, dims);
 			CHECK_HERR
@@ -515,20 +515,22 @@ int e3sm_io_driver_hdf5::enddef (int fid) { return 0; }
 int e3sm_io_driver_hdf5::redef (int fid) { return 0; }
 int e3sm_io_driver_hdf5::wait (int fid) {
 	int err = 0;
-	herr_t herr;
-	hdf5_file *fp = this->files[fid];
 
 	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
-	// #ifdef HDF5_HAVE_DWRITE_MULTI
-	// err = fp->flush_multidatasets ();
-	// CHECK_ERR
-	// #endif
+#if 0
+	herr_t herr;
+	hdf5_file *fp = this->files[fid];
+#ifdef HDF5_HAVE_DWRITE_MULTI
+	err = fp->flush_multidatasets ();
+	CHECK_ERR
+#endif
 
-	// herr = H5Fflush (fp->id, H5F_SCOPE_GLOBAL);
-	// CHECK_HERR
+	herr = H5Fflush (fp->id, H5F_SCOPE_GLOBAL);
+	CHECK_HERR
 
 err_out:;
+#endif
 	E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 	return err;
 }

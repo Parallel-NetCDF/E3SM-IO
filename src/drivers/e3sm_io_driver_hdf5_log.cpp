@@ -31,7 +31,6 @@
 e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io_driver_hdf5 (cfg) {
     int err     = 0;
     herr_t herr = 0;
-    int i;
     char *env;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
