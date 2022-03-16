@@ -55,10 +55,6 @@ e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io
     herr = H5Pset_nonblocking (this->dxplid_indep_nb, H5VL_LOG_REQ_NONBLOCKING);
     CHECK_HERR
 
-    // Register LOG VOL plugin
-    this->log_vlid = H5VLregister_connector (&H5VL_log_g, H5P_DEFAULT);
-    CHECK_HID (this->log_vlid)
-
     env = getenv ("E3SM_IO_HDF5_USE_LOGVOL_WRITEN");
     if (env) {
         if (std::string (env) == "0") { this->use_logvol_varn = false; }

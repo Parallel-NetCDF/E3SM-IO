@@ -19,9 +19,7 @@
 
 #include <e3sm_io_driver.hpp>
 
-class e3sm_io_driver_hdf5_log : public e3sm_io_driver_hdf5 {
-    hid_t log_vlid;
-        
+class e3sm_io_driver_hdf5_log : public e3sm_io_driver_hdf5 {      
     // Config
     bool use_logvol_varn  = true;
     bool merge_varn       = false;

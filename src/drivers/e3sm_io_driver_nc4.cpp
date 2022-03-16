@@ -20,6 +20,7 @@
 #include <e3sm_io_err.h>
 
 #include <e3sm_io_driver_nc4.hpp>
+#include <e3sm_io_profile.hpp>
 
 #define CHECK_NCERR                                                                             \
     {                                                                                           \
@@ -73,8 +74,14 @@ e3sm_io_driver_nc4::~e3sm_io_driver_nc4 () {}
 int e3sm_io_driver_nc4::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err;
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_OPEN)
+
     err = nc_create_par (path.c_str (), NC_CLOBBER | NC_NETCDF4, comm, info, fid);
     CHECK_NCERR
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_OPEN)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
 
 err_out:
     return err;
@@ -83,8 +90,14 @@ err_out:
 int e3sm_io_driver_nc4::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err;
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_OPEN)
+
     err = nc_open_par (path.c_str (), NC_NOWRITE, comm, info, fid);
     CHECK_NCERR
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_OPEN)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
 
 err_out:
     return err;
@@ -93,8 +106,14 @@ err_out:
 int e3sm_io_driver_nc4::close (int fid) {
     int err;
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_CLOSE)
+
     err = nc_close (fid);
     CHECK_NCERR
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_CLOSE)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
 
 err_out:
     return err;
@@ -164,6 +183,9 @@ int e3sm_io_driver_nc4::expand_rec_size (int fid, MPI_Offset size) {
     std::vector<size_t> start;    // Starting coordinate to write in var
     char buf[16];                // Dummy buffer
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_RESIZE)
+
     err = nc_inq_unlimdim (fid, &udimid);
     CHECK_NCERR
 
@@ -198,6 +220,8 @@ int e3sm_io_driver_nc4::expand_rec_size (int fid, MPI_Offset size) {
     }
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_RESIZE)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
@@ -209,6 +233,9 @@ int e3sm_io_driver_nc4::def_var (
     int udimid;          // Record dim ID
     size_t *dlen = NULL; // Dim len
     MPI_Offset vsize;    // Var size
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_DEF_VAR)
 
     err = nc_def_var (fid, name.c_str (), xtype, ndim, dimids, varid);
     CHECK_NCERR
@@ -239,6 +266,8 @@ int e3sm_io_driver_nc4::def_var (
 
 err_out:
     if(dlen) { free(dlen); }
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_DEF_VAR)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
@@ -255,18 +284,28 @@ err_out:
 int e3sm_io_driver_nc4::inq_var (int fid, std::string name, int *varid) {
     int err;
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_INQ_VAR)
+
     err = nc_inq_varid (fid, name.c_str (), varid);
     CHECK_NCERR
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_INQ_VAR)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
 int e3sm_io_driver_nc4::inq_var_name (int ncid, int varid, char *name) {
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_INQ_VAR)
+
     int err = nc_inq_varname (ncid, varid, name);
     CHECK_NCERR
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_INQ_VAR)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
@@ -282,20 +321,30 @@ err_out:
 int e3sm_io_driver_nc4::def_dim (int fid, std::string name, MPI_Offset size, int *dimid) {
     int err;
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_DEF_DIM)
+
     err = nc_def_dim (fid, name.c_str (), size, dimid);
     CHECK_NCERR
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_DEF_DIM)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
 int e3sm_io_driver_nc4::inq_dim (int fid, std::string name, int *dimid) {
     int err;
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_INQ_DIM)
+
     err = nc_inq_dimid (fid, name.c_str (), dimid);
     CHECK_NCERR
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_INQ_DIM)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
@@ -303,12 +352,17 @@ int e3sm_io_driver_nc4::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
     int err = 0;
     size_t len;
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_INQ_DIM)
+
     err = nc_inq_dimlen (fid, dimid, &len);
     CHECK_NCERR
 
     *size = len;
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_INQ_DIM)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
@@ -328,20 +382,30 @@ int e3sm_io_driver_nc4::put_att (
     int fid, int vid, std::string name, nc_type xtype, MPI_Offset size, const void *buf) {
     int err;
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_PUT_ATT)
+
     err = nc_put_att (fid, vid, name.c_str (), xtype, size, buf);
     CHECK_NCERR
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_PUT_ATT)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
 int e3sm_io_driver_nc4::get_att (int fid, int vid, std::string name, void *buf) {
     int err;
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_GET_ATT)
+
     err = nc_get_att (fid, vid, name.c_str (), buf);
     CHECK_NCERR
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_GET_ATT)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
@@ -368,6 +432,9 @@ int e3sm_io_driver_nc4::put_vara (int fid,
     int ndim;        // Variable #dim
     size_t bsize;    // Block size
     nc_type xtype;    // Type of the variable
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_PUT_VAR)
 
     nc_inq_vartype (fid, vid, &xtype);
     err = e3sm_io_xlen_nc_type (xtype, &xesize);
@@ -472,6 +539,8 @@ int e3sm_io_driver_nc4::put_vara (int fid,
     CHECK_NCERR
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_PUT_VAR)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 int e3sm_io_driver_nc4::put_vars (int fid,
@@ -488,6 +557,9 @@ int e3sm_io_driver_nc4::put_vars (int fid,
     ptrdiff_t *ncstride = NULL;     // Stride in int32
     int esize;                     // Element size of variable type
     nc_type xtype;                 // Type of the variable
+    
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_PUT_VAR)
 
     err = nc_inq_varndims (fid, vid, &ndim);
     CHECK_NCERR
@@ -537,6 +609,8 @@ int e3sm_io_driver_nc4::put_vars (int fid,
 
 err_out:
     if (ncstride) { free (ncstride); }
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_PUT_VAR)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
@@ -556,6 +630,9 @@ int e3sm_io_driver_nc4::put_varn (int fid,
     int xesize;                   // Element size of variable type
     int ndim;                   // Variable #dim
     nc_type xtype;               // Type of the variable
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_PUT_VAR)
 
     err = nc_inq_varndims (fid, vid, &ndim);
     CHECK_NCERR
@@ -608,6 +685,8 @@ int e3sm_io_driver_nc4::put_varn (int fid,
     }
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_PUT_VAR)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
@@ -624,6 +703,9 @@ int e3sm_io_driver_nc4::get_vara (int fid,
     int ndim;        // Variable #dim
     size_t bsize;    // Block size
     nc_type xtype;    // Type of the variable
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_GET_VAR)
 
     nc_inq_vartype (fid, vid, &xtype);
     err = e3sm_io_xlen_nc_type (xtype, &xesize);
@@ -727,6 +809,8 @@ int e3sm_io_driver_nc4::get_vara (int fid,
     CHECK_NCERR
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_GET_VAR)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 int e3sm_io_driver_nc4::get_vars (int fid,
@@ -743,6 +827,9 @@ int e3sm_io_driver_nc4::get_vars (int fid,
     ptrdiff_t *ncstride = NULL;     // Stride in int32
     int esize;                     // Element size of variable type
     nc_type xtype;                 // Type of the variable
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_GET_VAR)
 
     err = nc_inq_varndims (fid, vid, &ndim);
     CHECK_NCERR
@@ -792,6 +879,8 @@ int e3sm_io_driver_nc4::get_vars (int fid,
 
 err_out:
     if (ncstride) { free (ncstride); }
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_GET_VAR)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
 
@@ -811,6 +900,9 @@ int e3sm_io_driver_nc4::get_varn (int fid,
     int xesize;                   // Element size of variable type
     int ndim;                   // Variable #dim
     nc_type xtype;               // Type of the variable
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_GET_VAR)
 
     err = nc_inq_varndims (fid, vid, &ndim);
     CHECK_NCERR
@@ -863,5 +955,7 @@ int e3sm_io_driver_nc4::get_varn (int fid,
     }
 
 err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_GET_VAR)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
