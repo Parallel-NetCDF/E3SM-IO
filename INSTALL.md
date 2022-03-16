@@ -175,6 +175,13 @@
     log-based VOL.  
 
 ### Current supported APIs (option `-a`) and I/O strategies (option `-x`)
+  + Table below lists the supported combinations.
+     |           | pnetcdf | hdf5 | hdf5_log | netcdf4 | adios |
+     |-----------|:-------:|:----:|:--------:|:-------:|:-----:|
+     | canonical | yes     | yes  | no       | yes     | no    |
+     | log       | no      | yes  | yes      | yes     | no    |
+     | blob      | yes     | yes  | no       | no      | yes   |
+
   + **-a pnetcdf -x canonical**
     * A single NetCDF file in the classic CDF5 format will be created. All
       variables stored in the file are in the canonical order and
