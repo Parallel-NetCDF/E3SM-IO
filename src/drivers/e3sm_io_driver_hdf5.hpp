@@ -68,6 +68,8 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
 // #endif
     };
 
+    hid_t log_vlid;
+
     std::vector<hdf5_file *> files;
     hid_t dxplid_coll;
     hid_t dxplid_indep;
