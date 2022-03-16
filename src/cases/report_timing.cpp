@@ -121,8 +121,10 @@ int print_timing_WR(e3sm_io_config *cfg,
                     printf("==== NetCDF-4 canonical I/O ==========================\n");
             }
             else if (cfg->strategy == log) {
-                if (cfg->api == hdf5_log)
-                    printf("==== HDF5 using log-based VOL ========================\n");
+                if (cfg->api == hdf5)
+                    printf("==== HDF5 using log-based VOL through native APIs=====\n");
+                else if (cfg->api == hdf5_log)
+                    printf("==== HDF5 using log-based VOL APIs ===================\n");
                 else if (cfg->api == netcdf4)
                     printf("==== NetCDF-4 using HDF5 log-based VOL ===============\n");
             }
