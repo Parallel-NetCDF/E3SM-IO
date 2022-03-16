@@ -148,6 +148,7 @@
                  name otherwise).
        [-a api]  I/O library name
            pnetcdf:   PnetCDF library (default)
+           netcdf4:   NetCDF-4 library
            hdf5:      HDF5 library
            hdf5_log:  HDF5 library with Log-based VOL
            adios:     ADIOS library using BP3 format
@@ -204,6 +205,15 @@
       ```
       mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o blob_F_out.nc -a pnetcdf -x blob -r 25
       ```
+  + **-a hdf5 -x canonical**
+    * This option writes data using the HDF5 library.
+    * The data layout of datasets store in the output file is in a canonical
+      order.
+    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH`.
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.h5 -a hdf5 -x canonical -r 25
+      ```
   + **-a hdf5 -x blob**
     * This is the blob I/O implementation using HDF5 library. Different from
       the PnetCDF blob I/O, the implementation of uses the per-process based
@@ -225,29 +235,13 @@
       ```
       mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o blob_F_out.h5 -a hdf5 -x blob -r 25
       ```
-  + **-a hdf5 -x canonical**
-    * This option writes data using the HDF5 library.
-    * The data layout of datasets store in the output file is in a canonical
-      order.
-    * The VOL to be used is determined by the environment variable
-      `HDF5_VOL_CONNECTOR`.
-      + If `HDF5_VOL_CONNECTOR` is not set, HDF5 will use the native VOL. The
-	output file of the native VOL is a regular HDF5, which is
-	understandable by regular HDF5 and its third-party software.
-      + This combination does not allow the use of log-based VOL, E3SM-I/O will
-	fail if `HDF5_VOL_CONNECTOR` is set to use log-based VOL. Use options
-	"-a hdf5 -x log" instead.
-    * Example run command:
-      ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.h5 -a hdf5 -x canonical -r 25
-      ```
   + **-a hdf5 -x log**
     * This option writes data using the HDF5 log-based VOL.
+    * API "H5Dwrite" is used to write the datasets.
     * The log-based VOL stores data in a log layout, rather than a canonical
       layout. The output file is a valid HDF5 file but requires the log-based
       VOL to read and understand the data structures.
-    * The `HDF5_VOL_CONNECTOR` environment variable must be set to use log-based VOL.
-      + E3SM-I/O will not run if `HDF5_VOL_CONNECTOR` is not properly set.
+    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH`.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.h5 -a hdf5 -x log -r 25
@@ -256,9 +250,40 @@
     * This option writes data using the HDF5 log-based VOL and specifically
       makes use of the new API, "H5Dwrite_n", to allow writing multiple
       subarrays of a dataset in a single API call.
+    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH`.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o log_F_out.h5 -a hdf5_log -x log -r 25
+      ```
+  + **-a netcdf4 -x canonical**
+    * This option writes data using the NetCDF-4 library.
+    * The output files are in HDF5 format.
+    * The data layout of datasets store in the output file is in a canonical
+      order.
+    * Because the number of write requests are different among processes, the
+      independent I/O mode is used when writing the data to files.
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.nc4 -a netcdf4 -x canonical -r 25
+      ```
+    * If environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH` are
+      set to use log-based VOL, then this option is equivalent to the below one,
+      i.e. `-a netcdf4 -x log`.
+  + **-a netcdf4 -x log**
+    * This option writes data using the NetCDF-4 library which calls the HDF5
+      log-based VOL underneath.
+    * The log-based VOL stores data in a log layout, rather than a canonical
+      layout. The output file is a valid HDF5 file but requires the log-based
+      VOL to read and understand the data structures.
+    * **Requirements** - The two environment variables `HDF5_VOL_CONNECTOR` and
+      `HDF5_PLUGIN_PATH` must be set to use log-based VOL in order to run. The
+      e3sm_io program will check and error out if they are not set.
+    * Example run command:
+      ```
+      export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/LOG_VOL/lib
+      export HDF5_PLUGIN_PATH=${HOME}/LOG_VOL/lib
+      export HDF5_VOL_CONNECTOR="LOG under_vol=0;under_info={}"
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o log_F_out.nc4 -a netcdf4 -x log -r 25
       ```
   + **-a adios -x blob**
     * This option writes data using the ADIOS library.
@@ -276,7 +301,7 @@
     * This option requires the original PIO decomposition maps in the text
       format. They can be included in the converted NetCDF decomposition file
       by adding a command-line option `-r` when running dat2nc. See README file
-      in the utils folder for more instructions. If the original decomposition
+      in folder `utils` for more instructions. If the original decomposition
       map is not in the decomposition file, the E3SM benchmark will create it
       by expanding the offset and length pairs in the converted decomposition
       map into list of offsets accessed.
@@ -291,7 +316,7 @@
   + `datasets/f_case_866x72_16p.nc` for F case
   + `datasets/g_case_cmpaso_16p.nc` for G case
   + `datasets/i_case_f19_g16_16p.nc` for I case
-* A median-size decomposition file is also availble that are produced from a
+* A median-size decomposition file is also available that are produced from a
   512-process run.
   + `datasets/f_case_48602x72_512p.nc` for F case
 * Three large decomposition files are available upon request.
