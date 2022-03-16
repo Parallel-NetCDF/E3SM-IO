@@ -179,8 +179,10 @@
      |           | pnetcdf | hdf5 | hdf5_log | netcdf4 | adios |
      |-----------|:-------:|:----:|:--------:|:-------:|:-----:|
      | canonical | yes     | yes  | no       | yes     | no    |
-     | log       | no      | yes  | yes      | yes     | no    |
+     | log       | no      | yes  | yes      | yes*    | no    |
      | blob      | yes     | yes  | no       | no      | yes   |
+     
+     `*` Requires setting of 2 VOL environment variables. See description below.
 
   + **-a pnetcdf -x canonical**
     * A single NetCDF file in the classic CDF5 format will be created. All
