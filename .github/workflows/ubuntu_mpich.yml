@@ -111,8 +111,7 @@ jobs:
             make check
             make ptest
             make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-logvol=${WORKDIR}/.local/logvol/master --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx"
-        - name: Print log all APIs
-          if: ${{ failure() }}
+        - name: Print make check log
           run: |
             WORKDIR=$(pwd)
             cat ${WORKDIR}/test.sh.log
