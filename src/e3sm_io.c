@@ -313,7 +313,10 @@ int main (int argc, char **argv) {
             switch (cfg.strategy) {
                 case canonical:;
                     if (env && (strncmp (env, "LOG", 3) == 0)) {
-                        ERR_OUT ("The VOL set in HDF5_VOL_CONNECTOR (%s) is not compatible with NetCDF 4 canonical I/O strategy")    
+                        printf("Error: please unset HDF5_VOL_CONNECTOR to run \"-a netcdf4 -x canonical\"\n");
+                        err = -1;
+                        goto err_out;
+                        // ERR_OUT ("The VOL set in HDF5_VOL_CONNECTOR (%s) is not compatible with NetCDF 4 canonical I/O strategy")
                     }
                     break;
                 case log:;

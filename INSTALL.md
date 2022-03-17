@@ -276,8 +276,8 @@
       mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.nc4 -a netcdf4 -x canonical -r 25
       ```
     * If environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH` are
-      set to use log-based VOL, then this option is equivalent to the below one,
-      i.e. `-a netcdf4 -x log`.
+      set to use log-based VOL, then the execution will abort, as this option
+      is equivalent to the below one, i.e. `-a netcdf4 -x log`.
   + **-a netcdf4 -x log**
     * This option writes data using the NetCDF-4 library which calls the HDF5
       log-based VOL underneath.
