@@ -81,7 +81,7 @@ int e3sm_io_driver_nc4::create (std::string path, MPI_Comm comm, MPI_Info info, 
     CHECK_NCERR
 
     /* turn off fill mode for the entire file */
-    err = nc_set_fill(fid, NC_NOFILL, NULL); ERR
+    err = nc_set_fill(*fid, NC_NOFILL, NULL);
     CHECK_NCERR
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_OPEN)
