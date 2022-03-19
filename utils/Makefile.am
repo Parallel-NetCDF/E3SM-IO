@@ -6,7 +6,7 @@ AM_CPPFLAGS  = -I${top_srcdir}/src
 AM_CPPFLAGS += -I${top_srcdir}/src/drivers
 AM_CPPFLAGS += -I${top_srcdir}/src/cases
 
-bin_PROGRAMS = datstat
+bin_PROGRAMS = datstat dat2decom
 
 if ENABLE_ADIOS2
 if HAVE_CXX17
@@ -24,6 +24,9 @@ dat2nc_LDADD = -lpnetcdf
 pnetcdf_blob_replay_SOURCES = pnetcdf_blob_replay.c
 pnetcdf_blob_replay_LDADD = -lpnetcdf
 endif
+
+dat2decom_SOURCES = dat2decom.cpp 
+dat2decom_LDADD = ${top_srcdir}/src/drivers/libe3sm_io_drivers.a ${top_srcdir}/src/e3sm_io_profile.o
 
 datstat_SOURCES = datstat.cpp
 
