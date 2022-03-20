@@ -116,6 +116,7 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
     int wait (int fid);
     int put_att (int fid, int vid, std::string name, nc_type xtype, MPI_Offset size, const void *buf);
     int get_att (int fid, int vid, std::string name, void *buf);
+    int inq_att (int fid, int vid, std::string name, MPI_Offset *size);
     int put_varl (int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode);
     int put_vara (int fid,
                   int vid,

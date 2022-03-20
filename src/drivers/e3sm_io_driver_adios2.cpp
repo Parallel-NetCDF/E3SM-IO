@@ -692,6 +692,45 @@ err_out:;
     return err;
 }
 
+int e3sm_io_driver_adios2::inq_att (int fid, int vid, std::string name, MPI_Offset *size){
+    int err = 0;
+    adios2_error aerr;
+    adios2_file *fp = this->files[fid];
+    adios2_variable *did;
+    adios2_attribute *aid;
+    size_t asize;
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
+
+    if (vid == NC_GLOBAL) {
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_GET_ATT)
+        aid = adios2_inquire_attribute (fp->iop, name.c_str ());
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_GET_ATT)
+        CHECK_APTR (aid)
+    } else {
+        char vname[1024];
+        size_t tmp = 1024;
+
+        did  = fp->dids[vid];
+        aerr = adios2_variable_name (vname, &tmp, did);
+        CHECK_AERR
+
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_GET_ATT)
+        aid = adios2_inquire_variable_attribute (fp->iop, name.c_str (), vname, "/");
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_GET_ATT)
+        CHECK_APTR (aid)
+    }
+
+    aerr = adios2_attribute_size (&asize, aid);
+    CHECK_AERR
+   
+    *size = (MPI_Offset) asize;
+
+err_out:;
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
+    return err;
+}
+
 int e3sm_io_driver_adios2::put_varl (
     int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
     int err = 0;

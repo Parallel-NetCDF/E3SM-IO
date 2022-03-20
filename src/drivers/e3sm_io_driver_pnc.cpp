@@ -408,6 +408,16 @@ err_out:
     return err;
 }
 
+int e3sm_io_driver_pnc::inq_att (int fid, int vid, std::string name, MPI_Offset *size){
+    int err;
+
+    err = ncmpi_inq_attlen (fid, vid, name.c_str (), size);
+    CHECK_NCERR
+
+err_out:
+    return err;
+}
+
 int e3sm_io_driver_pnc::put_varl (
     int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
     int err = 0;

@@ -656,6 +656,43 @@ err_out:;
 	return err;
 }
 
+int e3sm_io_driver_hdf5::inq_att (int fid, int vid, std::string name, MPI_Offset *size){
+	int err = 0;
+	herr_t herr;
+	int esize;
+	hdf5_file *fp = this->files[fid];
+	hid_t asid = -1, aid = -1;
+	hid_t did;
+	hid_t tid;
+	hsize_t asize;
+
+	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
+
+	if (vid == NC_GLOBAL)
+		did = fp->id;
+	else
+		did = fp->dids[vid];
+
+	aid = H5Aopen (did, name.c_str (), H5P_DEFAULT);
+	CHECK_HID (aid)
+
+	asid = H5Aget_space (aid);
+	CHECK_HID (asid)
+	
+	H5Sget_simple_extent_dims (asid, &asize, NULL);
+	
+	*size = (MPI_Offset) asize;
+
+err_out:;
+	E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
+
+	if (asid >= 0) H5Sclose (asid);
+	if (aid >= 0) H5Aclose (aid);
+	if (tid >= 0) H5Tclose (tid);
+
+	return err;
+}
+
 int e3sm_io_driver_hdf5::put_varl (
 	int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
 	int err = 0;

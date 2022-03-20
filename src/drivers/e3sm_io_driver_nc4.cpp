@@ -413,6 +413,22 @@ err_out:
     return err;
 }
 
+int e3sm_io_driver_nc4::inq_att (int fid, int vid, std::string name, MPI_Offset *size){
+    int err;
+    size_t len;
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+
+    err = nc_inq_attlen (fid, vid, name.c_str (), &len);
+    CHECK_NCERR
+    *size = (MPI_Offset) len;
+
+err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
+    return err;
+}
+
+
 int e3sm_io_driver_nc4::put_varl (
     int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
     int err = 0;
