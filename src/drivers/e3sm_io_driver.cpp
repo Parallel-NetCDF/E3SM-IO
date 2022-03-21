@@ -88,15 +88,6 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
             goto done_check;
         }
 
-        // NetCDF4 ?
-        // NC4 is HDF5, so NC4 must be checked first
-#ifdef ENABLE_NETCDF4
-        if(e3sm_io_driver_nc4::compatible(std::string(path))) {
-            cfg->api = netcdf4;
-            goto done_check;
-        }
-#endif
-
         // HDF5 ?
 #ifdef ENABLE_HDF5
         offset = 512;
@@ -107,19 +98,36 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
         }
         if (rlen == 8) {  // It is HDF5, check if it is Log VOL
             hid_t fid = -1, gid = -1;
+            htri_t isnc;
 
             fid = H5Fopen (path, H5F_ACC_RDONLY, H5P_DEFAULT);
             if (fid < 0) { ERR_OUT ("HDF5 header detected, but not a HDF5 file"); }
 
-            gid = H5Gopen (fid, "_LOG", H5P_DEFAULT);
-            if (gid >= 0) {
-                cfg->api = hdf5_log;
-            } else {
-                cfg->api = hdf5;
+            // Check for NetCDF4
+            isnc = H5Aexists(fid, "_NCProperties");
+            
+            if(isnc == false){
+                gid = H5Gopen (fid, "_LOG", H5P_DEFAULT);
+                if (gid >= 0) {
+                    cfg->api = hdf5_log;
+                } else {
+                    cfg->api = hdf5;
+                }
             }
             if (gid >= 0) { H5Gclose (gid); }
             if (fid >= 0) { H5Fclose (fid); }
 
+            if (isnc == false) {
+                goto done_check;
+            }
+        }
+#endif
+
+        // NetCDF4 ?
+        // NC4 will try to open HDF5 files even if it is not nc4 file, check HDF5 files first
+#ifdef ENABLE_NETCDF4
+        if(e3sm_io_driver_nc4::compatible(std::string(path))) {
+            cfg->api = netcdf4;
             goto done_check;
         }
 #endif
