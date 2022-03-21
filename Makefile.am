@@ -43,7 +43,7 @@ ptest: $(check_PROGRAMS)
 	@echo "==========================================================="
 	@echo "    Parallel testing on 16 MPI processes"
 	@echo "==========================================================="
-	$(TESTS_ENVIRONMENT) \
+	@$(TESTS_ENVIRONMENT) \
 	$(srcdir)/test.sh 16 || exit 1
 
 clean-local:
