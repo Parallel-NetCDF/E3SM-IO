@@ -612,14 +612,18 @@ AC_ARG_WITH([adios2],
 ])
 AM_CONDITIONAL(ENABLE_ADIOS2, [test "x$have_adios2" = xyes])
 
-if test "x${have_pnc}" = xno && test "x${have_nc4}" = xno ; then
+if test "x${have_pnc}" = xno && test "x${have_nc4}" = xno && test "x${have_hdf5}" = xno  && test "x${have_adios2}" = xno ; then
    AC_MSG_ERROR([
    -----------------------------------------------------------------------
-    Either PnetCDF or NetCDF must be enabled to build E3SM_IO.
+    At least one API driver must be enabled.
     Use configure command-line option --with-pnetcdf=/path/to/implementation
-    to specify the location of PnetCDF installation. Disable PnetCDF support. 
+    to specify the location of PnetCDF installation. 
     Use configure command-line option --with-netcdf4=/path/to/implementation
-    to specify the location of NetCDF installation. Disable NetCDF 4 support.
+    to specify the location of NetCDF installation. 
+    Use configure command-line option --with-hdf5=/path/to/implementation
+    to specify the location of HDF5 installation.
+    Use configure command-line option --with-adios2=/path/to/implementation
+    to specify the location of ADIOS2 installation.
     Abort.
    -----------------------------------------------------------------------])
 fi
