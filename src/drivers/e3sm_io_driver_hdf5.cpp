@@ -538,7 +538,6 @@ int e3sm_io_driver_hdf5::wait (int fid) {
 
 	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
-#if 0
 	herr_t herr;
 	hdf5_file *fp = this->files[fid];
 #ifdef HDF5_HAVE_DWRITE_MULTI
@@ -550,7 +549,6 @@ int e3sm_io_driver_hdf5::wait (int fid) {
 	CHECK_HERR
 
 err_out:;
-#endif
 	E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 	return err;
 }
