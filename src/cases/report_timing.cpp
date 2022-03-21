@@ -138,9 +138,9 @@ int print_timing_WR(e3sm_io_config *cfg,
             }
         }
 
-        if (cfg->strategy == canonical && (cfg->api == netcdf4 || cfg->api == hdf5 || cfg->api == hdf5_md))
+        if (cfg->strategy == canonical && (cfg->api == netcdf4 || cfg->api == hdf5))
             wTime = post_time;
-        else if (cfg->api == pnetcdf || cfg->strategy == log)
+        else if (cfg->api == pnetcdf || cfg->strategy == log || cfg->api == hdf5_md)
             wTime = flush_time;
         else /* write happens at file close for hdf5 blob and adios blob */
             wTime = close_time;
