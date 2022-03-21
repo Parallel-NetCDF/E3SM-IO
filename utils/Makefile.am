@@ -26,7 +26,7 @@ pnetcdf_blob_replay_LDADD = -lpnetcdf
 endif
 
 dat2decom_SOURCES = dat2decom.cpp 
-dat2decom_LDADD = ${top_srcdir}/src/drivers/libe3sm_io_drivers.a ${top_srcdir}/src/e3sm_io_profile.o
+dat2decom_LDADD = ${top_builddir}/src/drivers/libe3sm_io_drivers.a ${top_builddir}/src/e3sm_io_profile.o
 
 datstat_SOURCES = datstat.cpp
 
