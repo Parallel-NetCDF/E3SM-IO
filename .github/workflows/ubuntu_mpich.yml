@@ -29,76 +29,84 @@ jobs:
             # mpi
             sudo apt-get install mpich
             # zlib
-            sudo apt-get install zlib1g-dev        
+            sudo apt-get install zlib1g-dev
         - name: Install PnetCDF
           run: |
             WORKDIR=$(pwd)
+            rm -rf pnetcdf-1.12.3.tar.gz pnetcdf-1.12.3
             wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
             tar -zxf pnetcdf-1.12.3.tar.gz
             cd pnetcdf-1.12.3
-            ./configure --prefix=${WORKDIR}/.local/pnc/1.12.2 --disable-fortran --disable-cxx
+            ./configure --prefix=${WORKDIR}/.local/pnc/1.12.3 \
+                        --disable-fortran \
+                        --disable-cxx
             make -j 4 install
-        - name: Build E3SM_IO PnetCDF
-          if: ${{ success() }}
-          run: |
-            WORKDIR=$(pwd)
-            autoreconf -i
-            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx 
-            make -s V=1 LIBTOOLFLAGS=--silent 
-        - name: Print log
-          if: ${{ failure() }}
-          run: |
-            WORKDIR=$(pwd)
-            cat ${WORKDIR}/config.log
-        - name: Test E3SM_IO PnetCDF
-          if: ${{ success() }}
-          run: |
-            WORKDIR=$(pwd)
-            make check
-            make ptest
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
-        - name: Print log
-          if: ${{ failure() }}
-          run: |
-            WORKDIR=$(pwd)
-            cat ${WORKDIR}/test.sh.log
         - name: Install HDF5
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
+            rm -rf hdf5-1.13.0.tar.gz hdf5-1.13.0
             wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz
             tar -zxf hdf5-1.13.0.tar.gz
             cd hdf5-1.13.0
-            ./configure --prefix=${WORKDIR}/.local/hdf5/1.13.0 --enable-hl --enable-parallel --enable-build-mode=production CC=mpicc
-            make -j 4 install
-        - name: Install log VOL
-          if: ${{ success() }}
-          run: |
-            WORKDIR=$(pwd)
-            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.1.0.tar.gz
-            tar -zxf logvol.1.1.0.tar.gz
-            cd vol-log-based-logvol.1.1.0
-            autoreconf -i
-            ./configure --prefix=${WORKDIR}/.local/logvol/master --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --enable-shared
+            ./configure --prefix=${WORKDIR}/.local/hdf5/1.13.0 \
+                        --enable-hl \
+                        --enable-parallel \
+                        --enable-build-mode=production \
+                        CC=mpicc
             make -j 4 install
         - name: Install ADIOS2
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
+            rm -rf v2.7.1.tar.gz ADIOS2-2.7.1 adios2_build
             wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz
             tar -zxf v2.7.1.tar.gz
             mkdir adios2_build
             cd adios2_build
-            cmake -DCMAKE_INSTALL_PREFIX=${WORKDIR}/.local/adios2/2.7.1 -DADIOS2_USE_MPI=ON -DADIOS2_USE_Fortran=OFF -DADIOS2_USE_Python=OFF -DADIOS2_USE_ZeroMQ=OFF -DADIOS2_USE_HDF5=OFF -DADIOS2_USE_SST=OFF -DADIOS2_USE_BZip2=OFF -DADIOS2_USE_ZFP=OFF -D-DADIOS2_USE_SZ=OFF -DADIOS2_USE_MGARD=OFF -DADIOS2_USE_PNG=OFF -DADIOS2_USE_Blosc=OFF -DADIOS2_BUILD_EXAMPLES=OFF -DBUILD_TESTING=OFF ../ADIOS2-2.7.1
-            make -j 2
-            make -j 2 install
-        - name: Build E3SM_IO all APIs
+            cmake -DCMAKE_INSTALL_PREFIX=${WORKDIR}/.local/adios2/2.7.1 \
+                  -DADIOS2_USE_MPI=ON \
+                  -DADIOS2_USE_Fortran=OFF \
+                  -DADIOS2_USE_Python=OFF \
+                  -DADIOS2_USE_ZeroMQ=OFF \
+                  -DADIOS2_USE_HDF5=OFF \
+                  -DADIOS2_USE_SST=OFF \
+                  -DADIOS2_USE_BZip2=OFF \
+                  -DADIOS2_USE_ZFP=OFF \
+                  -DADIOS2_USE_SZ=OFF \
+                  -DADIOS2_USE_MGARD=OFF \
+                  -DADIOS2_USE_PNG=OFF \
+                  -DADIOS2_USE_Blosc=OFF \
+                  -DADIOS2_BUILD_EXAMPLES=OFF \
+                  -DBUILD_TESTING=OFF \
+                  ../ADIOS2-2.7.1
+            make -j 4
+            make -j 4 install
+        - name: Install log VOL
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            rm -rf logvol.1.1.0.tar.gz vol-log-based-logvol.1.1.0
+            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.1.0.tar.gz
+            tar -zxf logvol.1.1.0.tar.gz
+            cd vol-log-based-logvol.1.1.0
+            autoreconf -i
+            ./configure --prefix=${WORKDIR}/.local/logvol/1.1.0 \
+                        --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0
+            make -j 4 install
+        - name: Build E3SM_IO with all APIs except NetCDF4
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
             autoreconf -i
-            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-logvol=${WORKDIR}/.local/logvol/master --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx 
-            make -s V=1 LIBTOOLFLAGS=--silent 
+            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
+                        --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
+                        --with-logvol=${WORKDIR}/.local/logvol/1.1.0 \
+                        --with-adios2=${WORKDIR}/.local/adios2/2.7.1 \
+                        CC=mpicc CXX=mpicxx \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 4
         - name: Print log all APIs
           if: ${{ failure() }}
           run: |
@@ -110,10 +118,9 @@ jobs:
             WORKDIR=$(pwd)
             make check
             make ptest
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.2 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-logvol=${WORKDIR}/.local/logvol/master --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments CC=mpicc CXX=mpicxx"
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
         - name: Print make check log
           run: |
             WORKDIR=$(pwd)
             cat ${WORKDIR}/test.sh.log
-
 
