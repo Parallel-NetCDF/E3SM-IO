@@ -292,7 +292,7 @@ int e3sm_io_driver_nc4::inq_var (int fid, std::string name, int *varid) {
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_INQ_VAR)
 
     err = nc_inq_varid (fid, name.c_str (), varid);
-    CHECK_NCERR
+    // inq_var is used to check whether a variable exist so error is expected
 
 err_out:
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_INQ_VAR)

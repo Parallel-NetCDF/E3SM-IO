@@ -257,8 +257,8 @@ int e3sm_io_driver_pnc::inq_var (int fid, std::string name, int *varid) {
     int err;
 
     err = ncmpi_inq_varid (fid, name.c_str (), varid);
-    CHECK_NCERR
-
+    // inq_var is used to check whether a variable exist so error is expected
+    
 err_out:
     return err;
 }

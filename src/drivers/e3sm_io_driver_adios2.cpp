@@ -424,7 +424,11 @@ int e3sm_io_driver_adios2::inq_var (int fid, std::string name, int *did) {
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_INQ_VAR)
     dp = adios2_inquire_variable (fp->iop, name.c_str ());
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_INQ_VAR)
-    CHECK_APTR (dp)
+    // inq_var is used to check whether a variable exist so error is expected
+    if (!dp) {
+        err = -1;
+        goto err_out;
+    }
 
     aerr = adios2_variable_ndims (&ndim, dp);
     CHECK_AERR
