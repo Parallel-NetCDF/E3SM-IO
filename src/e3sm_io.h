@@ -237,6 +237,7 @@ typedef struct e3sm_io_decom {
 #ifdef __cplusplus
 extern "C" {
 #endif
+int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom);
 #ifdef ENABLE_PNC
 extern int read_decomp_pnc(e3sm_io_config *cfg, e3sm_io_decom *decom);
 #endif
