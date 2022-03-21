@@ -41,11 +41,15 @@ if test "x${ENABLE_ADIOS2}" = x1 ; then
 fi
 
 if test "x${ENABLE_NETCDF4}" = x1 ; then
-   APIS+=("netcdf4 canonical")
-   export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${NETCDF4_LIB_PATH}:${LD_LIBRARY_PATH}
-   if test "x${ENABLE_LOGVOL}" = x1 ; then
-      APIS+=("netcdf4 log")
-   fi
+   echo "====================================================================="
+   echo "Warning: skip NetCDF-4 tests due to a bug in NetCDF-C 4.8.1 and prior"
+   echo "         See https://github.com/Unidata/netcdf-c/issues/2251"
+   echo "====================================================================="
+#   APIS+=("netcdf4 canonical")
+#   export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${NETCDF4_LIB_PATH}:${LD_LIBRARY_PATH}
+#   if test "x${ENABLE_LOGVOL}" = x1 ; then
+#      APIS+=("netcdf4 log")
+#   fi
 fi
 
 OUT_PATH="./test_output"
