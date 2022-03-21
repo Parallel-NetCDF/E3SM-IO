@@ -12,6 +12,10 @@
 text format) to a NetCDF file, which can be fed to `e3sm_io` benchmark to
 evaluate the I/O performance.
 
+## dat2decom
+**dat2decom** is similar to dat2nc except it supports other file format 
+other than NetCDF classic 64-bit data format.
+
 ### Convert the data decomposition file into NetCDF file
 The instructions below explain how to convert the data decomposition file into
 NetCDF file format.
@@ -126,6 +130,41 @@ NetCDF file format.
   available in folder `../datasets` with file named `g_case_cmpaso_16p.nc`.
 * The NetCDF file containing the 5 decompositions from a small I case is also
   available in folder `../datasets` with file named `i_case_f19_g16_16p.nc`.
+
+### Convert the data decomposition file into HDF5/NetCDF4/ADIOS file
+The instructions below explain how to convert the data decomposition file into
+NetCDF, HDF5, NetCDF4, or ADIOS file format.
+* A utility program, `dat2decomp.c`, is an alternative to dat2nc. Running
+  command `make` under to root folder should already build the executable.
+  + dat2decomp allows the user to specify their desired file format for the 
+    converted decomposition file.
+  + Use -a option to select the file format.
+    + pnetcdf - same as dat2nc
+    + hdf5 - store decomposition file in HDF5 format
+    + netcdf4 - store decomposition file in NetCDF 4 format
+    + adios - store decomposition file in ADIOS2 format
+  + 
+* The command to combine the three `.dat` files for the F case to a HDF5 file
+  for the F case as an example, is:
+  ```
+    % ./dat2decom -a hdf5 -i input_list.txt -o f_case_866x72_16p.nc
+  ```
+* Command-line options of `./dat2decom`:
+  ```
+    % ./dat2decom -h
+    Usage: ./dat2decom [-h|-v|-r|-l] -i input_file -o out_file
+       -h               Print help
+       -v               Verbose mode
+       -r               Include original decomposition map
+       -a api           The API used to write decomposition file (file format)
+              pnetcdf:     NetCDF classic 64-bit format (default)\n"
+		          netcdf4:     NetCDF 4 format\n"
+		          hdf5:        HDF5 format library\n"
+		          adios:       ADIOS2 BP3 format\n"
+       -l num           max number of characters per line in input file
+       -i input_file    list of decomposition file names
+       -o out_file      name of output NetCDF file
+  ```
 
 ---
 ## datstat
