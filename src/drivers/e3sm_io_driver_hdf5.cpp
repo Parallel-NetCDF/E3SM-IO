@@ -35,11 +35,14 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
 	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     // Register LOG VOL plugin
+#ifdef ENABLE_LOGVOL
 	if(cfg->strategy == log) {
     	this->log_vlid = H5VLregister_connector (&H5VL_log_g, H5P_DEFAULT);
     	CHECK_HID (this->log_vlid)
 	}
-	else{
+	else
+#endif
+	{
 		this->log_vlid = -1;
 	}
 
