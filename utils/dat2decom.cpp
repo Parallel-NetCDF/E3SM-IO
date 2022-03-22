@@ -492,18 +492,18 @@ static void extract_file_names (const char *inList, int *num_decomp, char **infn
 
 static void usage (char *argv0) {
     const char *help =
-        "Usage: %s [-h|-v|-r|-l] -i input_file -o out_file\n"
-        "   -h               Print help\n"
-        "   -v               Verbose mode\n"
-        "   -r               Include original decomposition map\n"
-        "   -a api           The API used to write decomposition file (file format)\n"
-        "       pnetcdf:     NetCDF classic 64-bit format (default)\n"
-        "       netcdf4:     NetCDF 4 format\n"
-        "       hdf5:        HDF5 format library\n"
-        "       adios:       ADIOS2 BP3 format\n"
-        "   -l num           max number of characters per line in input file\n"
-        "   -i input_file    list of decomposition file names\n"
-        "   -o out_file      name of output netCDF file\n";
+   "Usage: ./dat2decom [-h|-v|-r|-l num] -a api -i input_file -o out_file\n"
+   "   [-h]            Print help\n"
+   "   [-v]            Verbose mode\n"
+   "   [-r]            Include original decomposition map\n"
+   "   [-l num]        max number of characters per line in input file\n"
+   "   -a api          output file format, api is one of the followings\n"
+   "      pnetcdf:     NetCDF classic 64-bit data format\n"
+   "      netcdf4:     NetCDF-4 (HDF5-based) format\n"
+   "      hdf5:        HDF5 format\n"
+   "      adios:       ADIOS2 BP3 format\n"
+   "   -i input_file   list of decomposition file names\n"
+   "   -o out_file     name of output NetCDF file\n";
     fprintf (stderr, help, argv0);
 }
 

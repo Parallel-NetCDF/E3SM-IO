@@ -1,6 +1,7 @@
 ## Utility Programs for E3SM-IO benchmark
 
 * [dat2nc](#dat2nc) -- converts multiple decomposition files into a NetCDF file
+* [dat2decom](#dat2decom) -- converts decomposition files into a HDF5/NetCDF4/BP file
 * [datstat](#datstat) -- displays statistics of decomposition files.
 * [pnetcdf_blob_replay](#pnetcdf_blob_replay) -- converts the subfiles produced
   by the `e3sm_io` benchmark when it ran with PnetCDF blob I/O strategy into a
@@ -11,10 +12,6 @@
 **dat2nc** is a utility program that converts a PIO decomposition file (in a
 text format) to a NetCDF file, which can be fed to `e3sm_io` benchmark to
 evaluate the I/O performance.
-
-## dat2decom
-**dat2decom** is similar to dat2nc except it supports other file format 
-other than NetCDF classic 64-bit data format.
 
 ### Convert the data decomposition file into NetCDF file
 The instructions below explain how to convert the data decomposition file into
@@ -131,6 +128,11 @@ NetCDF file format.
 * The NetCDF file containing the 5 decompositions from a small I case is also
   available in folder `../datasets` with file named `i_case_f19_g16_16p.nc`.
 
+## dat2decom
+**dat2decom** is generalized from [dat2nc](#dat2nc) that can convert the
+decomposition data files into HDF5, NetCDF4, or BP file format, in addition to
+the NetCDF classic 64-bit data format.
+
 ### Convert the data decomposition file into HDF5/NetCDF4/ADIOS file
 The instructions below explain how to convert the data decomposition file into
 NetCDF, HDF5, NetCDF4, or ADIOS file format.
@@ -152,18 +154,18 @@ NetCDF, HDF5, NetCDF4, or ADIOS file format.
 * Command-line options of `./dat2decom`:
   ```
     % ./dat2decom -h
-    Usage: ./dat2decom [-h|-v|-r|-l] -i input_file -o out_file
-       -h               Print help
-       -v               Verbose mode
-       -r               Include original decomposition map
-       -a api           The API used to write decomposition file (file format)
-              pnetcdf:     NetCDF classic 64-bit format (default)\n"
-		          netcdf4:     NetCDF 4 format\n"
-		          hdf5:        HDF5 format library\n"
-		          adios:       ADIOS2 BP3 format\n"
-       -l num           max number of characters per line in input file
-       -i input_file    list of decomposition file names
-       -o out_file      name of output NetCDF file
+    Usage: ./dat2decom [-h|-v|-r|-l num] -a api -i input_file -o out_file
+       [-h]            Print help
+       [-v]            Verbose mode
+       [-r]            Include original decomposition map
+       [-l num]        max number of characters per line in input file
+       -a api          output file format, api is one of the followings
+          pnetcdf:     NetCDF classic 64-bit data format
+          netcdf4:     NetCDF-4 (HDF5-based) format
+          hdf5:        HDF5 format
+          adios:       ADIOS2 BP3 format
+       -i input_file   list of decomposition file names
+       -o out_file     name of output NetCDF file
   ```
 
 ---
