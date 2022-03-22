@@ -153,6 +153,17 @@ jobs:
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 4
+        - name: Build E3SM_IO with NetCDF4 + PnetCDF only
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            autoreconf -i
+            ./configure --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 \
+                        --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
+                        CC=mpicc CXX=mpicxx \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 4
         - name: Build E3SM_IO with ADIOS only
           if: ${{ success() }}
           run: |
