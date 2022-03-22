@@ -10,11 +10,9 @@
 #include <config.h>
 #endif
 
+#include <mpi.h>
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
-#include <mpi.h>
-#include <netcdf.h>
-#include <netcdf_dispatch.h>
 #include <stdio.h>
 #include <stdlib.h>
 

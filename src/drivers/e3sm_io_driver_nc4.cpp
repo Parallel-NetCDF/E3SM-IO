@@ -12,10 +12,6 @@
 //
 #include <sys/stat.h>
 //
-#include <netcdf.h>
-#include <netcdf_dispatch.h>
-#include <netcdf_par.h>
-//
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 

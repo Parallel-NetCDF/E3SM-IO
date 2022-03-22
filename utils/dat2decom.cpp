@@ -15,12 +15,12 @@
 #include <errno.h>
 #include <libgen.h> /* basename() */
 #include <mpi.h>
-#include <pnetcdf.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h> /* getopt() */
 
+#include <e3sm_io.h>
 #include <e3sm_io_driver.hpp>
 #ifdef ENABLE_PNC
 #include <e3sm_io_driver_pnc.hpp>
