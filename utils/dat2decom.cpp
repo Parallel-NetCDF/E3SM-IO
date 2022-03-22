@@ -224,6 +224,8 @@ static int add_decomp (
     if (have_decom_dim) {
         /* if decomp_nprocs already exist, check if value matches */
         MPI_Offset decomp_nprocs;
+        err = driver->inq_dim (ncid, "decomp_nprocs", &dimid);
+        CHECK_ERR
         err = driver->inq_dimlen (ncid, dimid, &decomp_nprocs);
         CHECK_ERR
         if (decomp_nprocs != nprocs) {
