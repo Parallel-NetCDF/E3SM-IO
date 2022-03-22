@@ -8,13 +8,17 @@
   + m4 1.4.18
 * MPI C and C++ compilers
   + Configured with a std 11 C++ compiler (supporting constant initializer)
-* [PnetCDF 1.12.2](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz)
+* (Optional) [PnetCDF 1.12.2](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz)
 * (Optional) [HDF5 1.13.0](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz)
   + Configured with parallel I/O support (--enable-parallel is required)
 * (Optional) [HDF5 Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
   + Experimental software developed as part of the Datalib project
 * (Optional) [ADIOS 2.7.1](https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz)
   + Configured with parallel I/O support (-DADIOS2_USE_MPI=ON is required)
+* (Optional) [NetCDF-C 4.8.1](https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz)
+  + Configured with parallel HDF5 support (--enable-netcdf4)
+  + Note currently this option fails to run due to a [bug](https://github.com/Unidata/netcdf-c/issues/2251)
+    in NetCDF-C.
 
 ### Instructions for Building Dependent I/O Libraries
 * Build PnetCDF
@@ -28,20 +32,20 @@
     % tar -zxf pnetcdf-1.12.2.tar.gz
     % cd pnetcdf-1.12.2
     % ./configure --prefix=${HOME}/PnetCDF/1.12.2 CC=mpicc
-    % make -j 16 install
+    % make -j 4 install
     ```
 * (Optional) Build HDF5 with parallel I/O support
   + Download an HDF5 official released software.
   + Configure HDF5 with parallel I/O enabled.
   + Run `make install`
   + Example build commands are given below. This example will install
-    the HD5 library under the folder `${HOME}/HDF5/1.13.0`.
+    the HDF5 library under the folder `${HOME}/HDF5/1.13.0`.
     ```
     % wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz
     % tar -zxf hdf5-1_13_0.tar.gz
     % cd hdf5-1.13.0
     % ./configure --prefix=${HOME}/HDF5/1.13.0 --enable-parallel CC=mpicc
-    % make -j 16 install
+    % make -j 4 install
     ```
 * (Optional) Build HDF5 log-based VOL plugin.
   + Download the official released software.
@@ -54,7 +58,7 @@
     % tar -zxf logvol.1.1.0.tar.gz
     % cd vol-log-based-logvol.1.1.0
     % ./configure --prefix=${HOME}/Log_VOL/1.1.0 --with-hdf5=${HOME}/HDF5/1.13.0 --enable-shared CC=mpicc
-    % make -j 16 install
+    % make -j 4 install
     ```
 * (Optional) Build ADIOS with parallel I/O support
   + Download and extract the ADIOS source codes
@@ -68,13 +72,33 @@
     % mkdir ADIOS2_BUILD
     % cd ADIOS2_BUILD
     % cmake -DCMAKE_INSTALL_PREFIX=${HOME}/ADIOS2/2.7.1 -DADIOS2_USE_MPI=ON ../ADIOS2-2.7.1
-    % make -j 16 install
+    % make -j 4 install
+    ```
+* (Optional) Build NetCDF-C
+  + Download a NetCDF-C official released software.
+  + Configure NetCDF-C with parallel HDF5 I/O enabled.
+  + Run `make install`
+  + Example build commands are given below. This example will install
+    the NetCDF library under the folder `${HOME}/NetCDF/4.8.1`.
+    ```
+    % wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz
+    % tar -zxf v4.8.1.tar.gz
+    % cd netcdf-c-4.8.1
+    % ./configure --prefix=${HOME}/NetCDF/4.8.1 \
+                  CC=mpicc \
+                  CPPFLAGS=-I${HOME}/HDF5/1.13.0/include \
+                  LDFLAGS=-L${HOME}/HDF5/1.13.0/lib \
+                  LIBS=-lhdf5
+    % make -j 4 install
     ```
 
 ### Build E3SM-I/O benchmark
   + Clone this E3SM-I/O benchmark repository
   + Run command `autoreconf -i`
   + Configure the E3SM-I/O benchmark with MPI C and C++ compilers
+    + Add PnetCDF installation path (--with-pnetcdf=/path/to/implementation)
+      that contains the PnetCDF library. This is required when running the
+      benchmark with PnetCDF I/O methods.
     + Add HDF5 installation path (--with-hdf5=/path/to/implementation) that
       contains the HDF5 library. This is required when running the benchmark
       with HDF5 based I/O methods.
@@ -84,6 +108,9 @@
     + Add ADIOS installation path (--with-adios2=/path/to/implementation) to
       enable ADIOS API support. This is required when running the benchmark
       with command-line option `-a adios -x log`.
+    + Add NetCDF4 installation path (--with-netcdf4=/path/to/implementation)
+      that contains the NetCDF4 library. This is required when running the
+      benchmark with NetCDF4 I/O methods.
   + Run `make`
   + Example commands are given below.
     ```
@@ -105,8 +132,10 @@
   converted into a NetCDF file to be read in parallel as the input file by this
   benchmark program. For the F, G, and I cases, there are 3, 6, and 5 data
   decomposition text files, respectively.
-* See [utils/README](./utils) for instructions to run a utility program named
-  `dat2nc.c` to convert the decomposition map files.
+* See [utils/README](./utils) for instructions to run utility programs
+  + `dat2nc.c` to convert the decomposition map files to NetCDF CDF-5 files.
+  + `dat2decomp.c` is more general utility program that can convert the
+    decomposition map files to HDF5/NetCDF-4/BP files.
 
 ### Run command:
 * Example run commands using `mpiexec` and 16 MPI processes are given below.
