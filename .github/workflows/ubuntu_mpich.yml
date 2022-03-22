@@ -53,6 +53,12 @@ jobs:
                         --enable-hl \
                         --enable-parallel \
                         --enable-build-mode=production \
+                        --disable-doxygen-doc \
+                        --disable-doxygen-man \
+                        --disable-doxygen-html \
+                        --disable-hltools \
+                        --disable-tools \
+                        --disable-tests \
                         CC=mpicc
             make -j 4 install
         - name: Install NetCDF-C
