@@ -80,10 +80,12 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
         std::vector<int> ndims;
         std::vector<size_t> dsizes;
         std::vector<adios2_variable *> ddids;
+        std::map<std::string, int> dimmap;
         MPI_Offset recsize = 0;
         adios2_operator *op;
         MPI_Offset putsize = 0;
         MPI_Offset getsize = 0;
+        bool wr;
         int rank;
     } adios2_file;
     std::vector<adios2_file *> files;
