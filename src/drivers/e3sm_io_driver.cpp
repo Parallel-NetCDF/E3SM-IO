@@ -47,7 +47,9 @@
 #include <e3sm_io_driver_adios2.hpp>
 #endif
 
-e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
+e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
+                                    e3sm_io_config *cfg)
+{
     int err=0, fd;
     const char *cdf_signature="CDF", *path;
     char signature[8];
@@ -69,14 +71,6 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
             path = filename; /* no prefix */
         else
             path++;
-
-// ADIOS2?
-#ifdef ENABLE_ADIOS2
-        if(e3sm_io_driver_adios2::compatible(std::string(path))) {
-            cfg->api = adios;
-            goto done_check;
-        }
-#endif
 
         /* must include config.h on 32-bit machines, as AC_SYS_LARGEFILE is
          * called at the configure time and it defines _FILE_OFFSET_BITS to 64
@@ -139,6 +133,15 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
             goto done_check;
         }
 #endif
+
+// ADIOS2?
+#ifdef ENABLE_ADIOS2
+        if(e3sm_io_driver_adios2::compatible(std::string(path))) {
+            cfg->api = adios;
+            goto done_check;
+        }
+#endif
+
 
 done_check:
         if (cfg->rank == 0 && fd >= 0) { close (fd); }
