@@ -1078,7 +1078,7 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
 	fp->getsize += getsize;
 
 err_out:;
-	if (tid >= 0) H5Sclose (tid);
+	if (tid >= 0) H5Tclose (tid);
 	if (dsid >= 0) H5Sclose (dsid);
 	if (msid >= 0) H5Sclose (msid);
 	E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
@@ -1148,7 +1148,7 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
 	fp->getsize += getsize;
 
 err_out:;
-	if (tid >= 0) H5Sclose (tid);
+	if (tid >= 0) H5Tclose (tid);
 	if (dsid >= 0) H5Sclose (dsid);
 	if (msid >= 0) H5Sclose (msid);
 	E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
