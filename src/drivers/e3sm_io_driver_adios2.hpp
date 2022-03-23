@@ -91,6 +91,7 @@ class e3sm_io_driver_adios2 : public e3sm_io_driver {
     std::vector<adios2_file *> files;
 
    public:
+    static bool compatible (std::string path);
     e3sm_io_driver_adios2 (e3sm_io_config *cfg);
     ~e3sm_io_driver_adios2 ();
     int create (std::string path, MPI_Comm comm, MPI_Info info, int *fid);

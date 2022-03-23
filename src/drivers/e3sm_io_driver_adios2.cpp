@@ -103,6 +103,38 @@ err_out:;
     return err;
 }
 
+bool e3sm_io_driver_adios2::compatible (std::string path) {
+    int err = 0;
+    adios2_error aerr;
+    adios2_adios *adp = NULL;
+    adios2_io *iop    = NULL;
+    adios2_engine *ep = NULL;
+    adios2_bool result;
+    bool ret = false;
+
+    adp = adios2_init (MPI_COMM_SELF, "");
+    CHECK_APTR (adp)
+
+    iop = adios2_declare_io (adp, "e3sm_check");
+    CHECK_APTR (iop)
+
+    aerr = adios2_set_engine (iop, "BP3");
+    CHECK_AERR
+
+    ep = adios2_open (iop, path.c_str(), adios2_mode_read);
+    if (ep) { 
+        ret = true; 
+        adios2_close (ep);
+    }
+
+    adios2_remove_io (&result, adp, "e3sm_check");
+    adios2_finalize (adp);
+
+err_out:;
+    return ret;
+}
+
+
 e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {}
 
 e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {}

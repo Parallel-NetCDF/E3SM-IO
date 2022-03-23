@@ -70,6 +70,14 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
         else
             path++;
 
+// ADIOS2?
+#ifdef ENABLE_ADIOS2
+        if(e3sm_io_driver_adios2::compatible(std::string(path))) {
+            cfg->api = adios;
+            goto done_check;
+        }
+#endif
+
         /* must include config.h on 32-bit machines, as AC_SYS_LARGEFILE is
          * called at the configure time and it defines _FILE_OFFSET_BITS to 64
          * if large file feature is supported.
@@ -130,31 +138,6 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, e3sm_io_config *cfg) {
             cfg->api = netcdf4;
             goto done_check;
         }
-#endif
-
-// ADIOS2?
-#ifdef ENABLE_ADIOS
-        adios2_error aerr;
-        adios2_adios *adp = NULL;
-        adios2_io *iop    = NULL;
-        adios2_engine *ep = NULL;
-        adios2_bool result;
-
-        adp = adios2_init (cfg->io_comm, "");
-        CHECK_APTR (adp)
-
-        iop = adios2_declare_io (adp, "e3sm_check");
-        CHECK_APTR (iop)
-
-        aerr = adios2_set_engine (fp->iop, "BP3");
-        CHECK_AERR
-
-        ep = adios2_open (iop, path, adios2_mode_read);
-        if (ep) { cfg->api = adios; }
-
-        adios2_close (ep);
-        adios2_remove_io (&result, adp, "e3sm_check");
-        adios2_finalize (adp);
 #endif
 
 done_check:
