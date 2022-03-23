@@ -667,7 +667,6 @@ int e3sm_io_driver_hdf5::inq_att (int fid, int vid, std::string name, MPI_Offset
 	hdf5_file *fp = this->files[fid];
 	hid_t asid = -1, aid = -1;
 	hid_t did;
-	hid_t tid;
 	hsize_t asize;
 
 	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
@@ -692,7 +691,6 @@ err_out:;
 
 	if (asid >= 0) H5Sclose (asid);
 	if (aid >= 0) H5Aclose (aid);
-	if (tid >= 0) H5Tclose (tid);
 
 	return err;
 }
