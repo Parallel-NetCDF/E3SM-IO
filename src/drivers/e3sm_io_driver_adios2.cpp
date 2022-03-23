@@ -555,10 +555,10 @@ int e3sm_io_driver_adios2::redef (int fid) {
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_CLOSE)
-    aerr = adios2_close (fp->ep);
+    // aerr = adios2_close (fp->ep);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_CLOSE)
-    CHECK_AERR
-    fp->ep = NULL;
+    // CHECK_AERR
+    // fp->ep = NULL;
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
