@@ -12,6 +12,7 @@
 //
 #include <cstdlib>
 #include <cstring>
+#include <iostream>
 //
 #include <dirent.h>
 #include <sys/stat.h>
@@ -121,7 +122,9 @@ bool e3sm_io_driver_adios2::compatible (std::string path) {
     aerr = adios2_set_engine (iop, "BP3");
     CHECK_AERR
 
+    std::cerr.setstate(std::ios_base::failbit);
     ep = adios2_open (iop, path.c_str(), adios2_mode_read);
+    std::cerr.clear();
     if (ep) { 
         ret = true; 
         adios2_close (ep);
