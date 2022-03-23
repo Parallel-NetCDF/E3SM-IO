@@ -438,15 +438,19 @@ int e3sm_io_driver_hdf5::inq_var (int fid, std::string name, int *did) {
 	int err		  = 0;
 	hdf5_file *fp = this->files[fid];
 	hid_t h5did;
+	htri_t exist;
 
 	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
-	h5did = H5Dopen2 (fp->id, name.c_str (), H5P_DEFAULT);
-	// inq_var is used to check whether a variable exist so error is expected
-	if (h5did < 0) {
+	// inq_var is used to check whether a variable exist
+	exist = H5Lexists(fp->id, name.c_str (), H5P_DEFAULT);
+	if (exist == false){
 		err = -1;
 		goto err_out;
 	}
+
+	h5did = H5Dopen2 (fp->id, name.c_str (), H5P_DEFAULT);
+	CHECK_HID(h5did)
 
 	*did = fp->dids.size ();
 	fp->dids.push_back (h5did);
