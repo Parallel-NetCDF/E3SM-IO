@@ -121,14 +121,6 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 	int dims_int[4];
 	int *raw_offsets_int = NULL;
 
-	/* set MPI-IO hints: decomposition variables are usually small and enabling
-	 * collective buffering read can be expensive. Doing collendent reads is
-	 * often much faster. An example is when using Lustre on Cori at NERSC.
-	 */
-	MPI_Info_create (&info);
-	MPI_Info_set (info, "romio_cb_read", "disable");
-	MPI_Info_set (info, "romio_no_coll_rw", "false");
-
 	MPI_Comm_rank (cfg->io_comm, &rank);
 	MPI_Comm_size (cfg->io_comm, &nprocs);
 
@@ -156,12 +148,19 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 	decom_cfg.io_stride		 = 1;
 	decom_cfg.sub_comm		 = MPI_COMM_NULL;
 	decom_cfg.rank			 = rank;
+	decom->num_decomp = 0;
 
 	// Set up driver
 	driver = e3sm_io_get_driver (cfg->cfg_path, &decom_cfg);
 	CHECK_PTR (driver)
 
-	decom->num_decomp = 0;
+	/* set MPI-IO hints: decomposition variables are usually small and enabling
+	 * collective buffering read can be expensive. Doing collendent reads is
+	 * often much faster. An example is when using Lustre on Cori at NERSC.
+	 */
+	MPI_Info_create (&info);
+	MPI_Info_set (info, "romio_cb_read", "disable");
+	MPI_Info_set (info, "romio_no_coll_rw", "false");
 
 	/* open input file that contains I/O decomposition information */
 	err = driver->open (cfg->cfg_path, cfg->io_comm, info, &ncid);
