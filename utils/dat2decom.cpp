@@ -284,10 +284,12 @@ static int add_decomp (
     CHECK_ERR
 
     maxlen = minlen = 0;
+    /*
     err				= driver->put_att (ncid, varid[2], "max", NC_INT, 1, &maxlen);
     CHECK_ERR
     err = driver->put_att (ncid, varid[2], "min", NC_INT, 1, &minlen);
     CHECK_ERR
+    */
 
     if (raw_decom) {
         /* define dimension total_raw_nreqs for this decomposition */
