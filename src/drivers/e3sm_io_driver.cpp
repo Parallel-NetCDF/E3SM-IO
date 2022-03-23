@@ -77,7 +77,9 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
          * if large file feature is supported.
          */
         if ((fd = open(path, O_RDONLY, 00400)) == -1) { /* open for read */
-            ERR_OUT ("Cannot open file.")
+            char msg[128];
+            sprintf(msg, "Cannot open file \"%s\"", path);
+            ERR_OUT(msg)
         }
 
         /* get first 8 bytes of file */
