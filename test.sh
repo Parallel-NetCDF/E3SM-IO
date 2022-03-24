@@ -7,8 +7,8 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-DECOMREPLAY="utils/decomreplay"
-DECOMS=()
+DECOMP_REPLAY="utils/decomp_copy"
+DECOMPS=()
 
 VERBOSE=0
 EXEC="src/e3sm_io"
@@ -38,13 +38,13 @@ if test "x${ENABLE_HDF5}" = x1 ; then
    # if test "x${HDF5_HAVE_DWRITE_MULTI}" = x1 ; then
    #    APIS+=("hdf5_md canonical")
    # fi
-   DECOMS+=("hdf5 h5")
+   DECOMPS+=("hdf5 h5")
 fi
 
 if test "x${ENABLE_ADIOS2}" = x1 ; then
    APIS+=("adios blob")
    export LD_LIBRARY_PATH=${ADIOS2_LIB_PATH}:${LD_LIBRARY_PATH}
-   DECOMS+=("bp bp")
+   DECOMPS+=("bp bp")
 fi
 
 if test "x${ENABLE_NETCDF4}" = x1 ; then
@@ -60,7 +60,7 @@ if test "x${ENABLE_NETCDF4}" = x1 ; then
    if test "x${ENABLE_LOGVOL}" = x1 ; then
       APIS+=("netcdf4 log")
    fi
-   DECOMS+=("netcdf4 nc4")
+   DECOMPS+=("netcdf4 nc4")
 fi
 
 OUT_PATH="./test_output"
@@ -69,7 +69,7 @@ mkdir -p ${OUT_PATH}
 # Convert decomposition files
 unset HDF5_PLUGIN_PATH
 unset HDF5_VOL_CONNECTOR
-for DECOM in "${DECOMS[@]}" ; do
+for DECOM in "${DECOMPS[@]}" ; do
     dc=($DECOM)
     api=${dc[0]}
     for CONFIG in "${CONFIGS[@]}" ; do
@@ -79,7 +79,7 @@ for DECOM in "${DECOMS[@]}" ; do
            if test $VERBOSE = 1 ; then echo "$OUT_FILE already exist"; fi
         else
            if test $VERBOSE = 1 ; then echo "Convert $IN_FILE into $OUT_FILE"; fi
-           CMD="${DECOMREPLAY} -a ${api} -i ${IN_FILE} -o ${OUT_FILE}"
+           CMD="${DECOMP_REPLAY} -a ${api} -i ${IN_FILE} -o ${OUT_FILE}"
            if test $VERBOSE = 1 ; then echo "CMD=$CMD"; fi
            $CMD
            if test "x${api}" = xbp ; then

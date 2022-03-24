@@ -402,7 +402,7 @@ err_out:;
 
 static void usage (char *argv0) {
     const char *help =
-    "Usage: ./decomreplay [-h|-v] -a fmt -i input_file -o out_file\n"
+    "Usage: %s [-h|-v] -a fmt -i input_file -o out_file\n"
     "   [-h]            Print help\n"
     "   [-v]            verbose mode\n"
     "   -a fmt          output file format, fmt is one of the followings\n"
@@ -426,7 +426,7 @@ int main (int argc, char **argv) {
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
     MPI_Comm_size (MPI_COMM_WORLD, &np);
 
-    if (np > 1) { ERR_OUT ("decomreplay is sequential, run with only 1 processes") }
+    if (np > 1) { ERR_OUT ("decomp_copy is sequential, run with only 1 process") }
 
     cmd_line[0] = '\0';
     for (i = 0; i < argc; i++) {

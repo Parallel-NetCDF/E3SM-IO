@@ -2,7 +2,7 @@
 
 * [dat2nc](#dat2nc) -- converts multiple decomposition files into a NetCDF file
 * [dat2decom](#dat2decom) -- converts decomposition files into a HDF5/NetCDF4/BP file
-* [decomreplay](#decomreplay) -- converts decomposition files to a different file format
+* [decomp_copy](#decomp_copy) -- converts decomposition files to a different file format
 * [datstat](#datstat) -- displays statistics of decomposition files.
 * [pnetcdf_blob_replay](#pnetcdf_blob_replay) -- converts the subfiles produced
   by the `e3sm_io` benchmark when it ran with PnetCDF blob I/O strategy into a
@@ -166,20 +166,20 @@ format.
   ```
 ---
 
-## decomreplay
-**decomreplay** is a utility program that converts a decomposition file already
+## decomp_copy
+**decomp_copy** is a utility program that copies a decomposition file already
 in the NetCDF CDF5, HDF5, NetCDF4, or ADIOS BP format to a different format.
 * Note that `e3sm_io` must be configured with the API options enabled for the
   input and output file formats. For instance, to convert a NetCDF CDF5 file to
   an HDF5 file, `e3sm_io` must be configured with `--with-pnetcdf` and
   `--with-hdf5`. An example command is given below.
   ```
-    % ./decomreplay -a hdf5 -i f_case_866x72_16p.nc -o f_case_866x72_16p.h5
+    % ./decomp_copy -a hdf5 -i f_case_866x72_16p.nc -o f_case_866x72_16p.h5
   ```
-* Command-line options of `./decomreplay`:
+* Command-line options of `./decomp_copy`:
   ```
-    % ./decomreplay -h
-    Usage: ./decomreplay [-h|-v] -a fmt -i input_file -o out_file
+    % ./decomp_copy -h
+    Usage: ./decomp_copy [-h|-v] -a fmt -i input_file -o out_file
        [-h]            Print help
        [-v]            verbose mode
        -a fmt          output file format, fmt is one of the followings
