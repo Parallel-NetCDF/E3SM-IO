@@ -418,15 +418,24 @@ static void usage (char *argv0) {
 /*----< main() >------------------------------------------------------------*/
 int main (int argc, char **argv) {
     char cmd_line[4096];
-    int i, rank, np, num_decomp = 0, err = 0;
+    int i, rank, nprocs, num_decomp = 0, err = 0;
     e3sm_io_config cfg;
     e3sm_io_decom decom;
+    MPI_Comm comm = MPI_COMM_WORLD;
 
     MPI_Init (&argc, &argv);
     MPI_Comm_rank (MPI_COMM_WORLD, &rank);
-    MPI_Comm_size (MPI_COMM_WORLD, &np);
+    MPI_Comm_size (MPI_COMM_WORLD, &nprocs);
 
-    if (np > 1) { ERR_OUT ("decomp_copy is sequential, run with only 1 process") }
+    if (nprocs > 1) {
+        nprocs = 1;
+        comm = MPI_COMM_SELF;
+        if (rank == 0)
+            printf("Warning: %s is for sequential run. Run on 1 process now.\n",
+                   argv[0]);
+        else
+            goto err_out;
+    }
 
     cmd_line[0] = '\0';
     for (i = 0; i < argc; i++) {
@@ -435,9 +444,9 @@ int main (int argc, char **argv) {
     }
 
     // Set up default config
-    cfg.io_comm        = MPI_COMM_WORLD;
+    cfg.io_comm        = comm;
     cfg.info           = MPI_INFO_NULL;
-    cfg.np             = np;
+    cfg.np             = nprocs;
     cfg.num_iotasks    = cfg.np;
     cfg.num_group      = 1;
     cfg.out_path[0]    = '\0';

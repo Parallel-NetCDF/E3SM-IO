@@ -61,8 +61,6 @@ static int add_decomp (
     MPI_Offset k, gsize, *dims, start, count, raw_start, raw_count;
     int *dims_C;
 
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
-
     fd = fopen (infname, "r");
     if (fd == NULL) {
         printf ("Error: fail to open file %s(%s)\n", infname, strerror (errno));
@@ -512,15 +510,29 @@ static void usage (char *argv0) {
 /*----< main() >------------------------------------------------------------*/
 int main (int argc, char **argv) {
     char *inList = NULL, *infname[MAX_NFILES], *outfname = NULL, cmd_line[4096];
-    int i, rank, ncid, num_decomp = 0, dimid, err = 0;
+    int i, rank, nprocs, ncid, num_decomp = 0, dimid, err = 0;
     bool have_decom_dim = false;
     MPI_Info info;
     e3sm_io_api api = pnetcdf;
     e3sm_io_driver *driver = NULL;
     e3sm_io_config cfg;
+    MPI_Comm comm = MPI_COMM_WORLD;
 
-    MPI_Init (&argc, &argv);
-    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(comm, &rank);
+    MPI_Comm_size(comm, &nprocs);
+
+    for (i = 0; i < MAX_NFILES; i++) infname[i] = NULL;
+
+    if (nprocs > 1) {
+        nprocs = 1;
+        comm = MPI_COMM_SELF;
+        if (rank == 0)
+            printf("Warning: %s is for sequential run. Run on 1 process now.\n",
+                   argv[0]);
+        else
+            goto err_out;
+    }
 
     cmd_line[0] = '\0';
     for (i = 0; i < argc; i++) {
@@ -528,7 +540,6 @@ int main (int argc, char **argv) {
         strcat (cmd_line, " ");
     }
 
-    for (i = 0; i < MAX_NFILES; i++) infname[i] = NULL;
     line_sz   = LINE_SIZE;
     verbose   = 0;
     raw_decom = 0;
@@ -616,9 +627,9 @@ int main (int argc, char **argv) {
     }
 
     // Set up dummy config for the driver
-    cfg.io_comm        = MPI_COMM_WORLD;
+    cfg.io_comm        = comm;
     cfg.info           = MPI_INFO_NULL;
-    cfg.num_iotasks    = cfg.np;
+    cfg.num_iotasks    = 1;
     cfg.num_group      = 1;
     cfg.out_path[0]    = '\0';
     cfg.in_path[0]     = '\0';
@@ -650,7 +661,7 @@ int main (int argc, char **argv) {
     CHECK_MPIERR
 
     /* create a new NC file */
-    err = driver->create (outfname, MPI_COMM_WORLD, info, &ncid);
+    err = driver->create (outfname, comm, info, &ncid);
     CHECK_ERR
     err = MPI_Info_free (&info);
     CHECK_MPIERR
@@ -677,8 +688,8 @@ err_out:
     if (driver) { delete driver; }
     for (i = 0; i < MAX_NFILES; i++)
         if (infname[i] != NULL) free (infname[i]);
-    free (outfname);
-    free (inList);
+    if (outfname != NULL) free (outfname);
+    if (inList != NULL) free (inList);
 
     MPI_Finalize ();
     return err;
