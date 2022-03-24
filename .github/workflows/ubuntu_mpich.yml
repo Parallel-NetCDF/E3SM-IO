@@ -206,7 +206,6 @@ jobs:
             make ptest
             make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
         - name: Print make check log
-          if: ${{ failure() }}
           run: |
             WORKDIR=$(pwd)
             cat ${WORKDIR}/test.sh.log
