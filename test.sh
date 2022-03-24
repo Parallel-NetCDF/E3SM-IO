@@ -24,7 +24,7 @@ CONFIGS=("f_case_866x72_16p" "g_case_cmpaso_16p" "i_case_f19_g16_16p")
 APIS=()
 if test "x${ENABLE_PNC}" = x1 ; then
    APIS+=("pnetcdf canonical" "pnetcdf blob")
-   export LD_LIBRARY_PATH=${PNC_LIB_PATH}:${LD_LIBRARY_PATH}
+   export LD_LIBRARY_PATH=${PNETCDF_LIB_PATH}:${LD_LIBRARY_PATH}
 fi
 
 if test "x${ENABLE_HDF5}" = x1 ; then

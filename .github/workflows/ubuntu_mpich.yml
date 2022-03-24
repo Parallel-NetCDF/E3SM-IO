@@ -198,15 +198,20 @@ jobs:
           run: |
             WORKDIR=$(pwd)
             cat ${WORKDIR}/config.log
-        - name: Test E3SM_IO all APIs
+        - name: Test E3SM_IO all APIs -- sequential runs
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
             make check
+            cat ${WORKDIR}/test.sh.log
+            cat ${WORKDIR}/utils/*.log
+        - name: Test E3SM_IO all APIs -- parallel runs
+          if: ${{ success() }}
+          run: |
             make ptest
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
-        - name: Print make check log
+        - name: Test make distcheck
+          if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            cat ${WORKDIR}/test.sh.log
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
 

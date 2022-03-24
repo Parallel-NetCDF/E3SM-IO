@@ -321,6 +321,7 @@ AC_ARG_WITH([pnetcdf],
             -----------------------------------------------------------------------])
             have_pnc=no
       fi
+      AC_SUBST(PNETCDF_LIB_PATH, [$pnc_lib])
    fi
 ])
 AM_CONDITIONAL(ENABLE_PNC, [test "x$have_pnc" = xyes])
