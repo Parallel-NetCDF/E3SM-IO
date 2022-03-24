@@ -30,22 +30,6 @@
 #define MAX_NFILES 6
 #define LINE_SIZE  4692802
 
-static int line_sz, raw_decom;
-
-struct off_len {
-	int off;
-	int len;
-};
-
-/*----< compare() >---------------------------------------------------------*/
-/* This subroutine is used in qsort() */
-static int compare (const void *p1, const void *p2) {
-	int i = ((struct off_len *)p1)->off;
-	int j = ((struct off_len *)p2)->off;
-	if (i > j) return (1);
-	if (i < j) return (-1);
-	return 0;
-}
 
 /*----< replay_decomp() >-------------------------------------------------*/
 /* Read I/O decomposition file, cfg->cfg_path. The contents of the file are,
@@ -122,427 +106,422 @@ static int compare (const void *p1, const void *p2) {
  */
 
 int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
-	int err = 0;
-	int i;
-	int fidi, fido;		   // Fid for in and out file
-	int dimndi, dimndo;	   // dimid for num decomp
-	int dimnpi, dimnpo;	   // dimid for num processes
-	int dimnri, dimnro;	   // dimid for num reqs
-	int dimnrri, dimnrro;  // dimid for num raw reqs
-	int ndims;
-	int varnri, varnro;
-	int varnrri, varnrro;
-	int varoffi, varoffo;
-	int varroffi, varroffo;
-	int varleni, varleno;
-	std::vector<int> dims;
-	int max_nreqs, min_nreqs;
-	int max_len, min_len;
-	int *buf	  = NULL;
-	bool have_raw = false;
-	e3sm_io_config cfg_in;	// Dummy cfg for read decom
-	e3sm_io_driver *din	 = NULL;
-	e3sm_io_driver *dout = NULL;
-	MPI_Offset num_decomp;		 // # decom maps
-	MPI_Offset decomp_nprocs;	 // # procs sharing the decom
-	MPI_Offset total_nreqs;		 // Di total_nreqs
-	MPI_Offset total_raw_nreqs;	 // Di total_raw_nreqs
-	MPI_Offset att_len;			 // size of str_att
-	std::string str_att;
-	std::string name;
+    int err = 0;
+    int i;
+    int fidi, fido;        // Fid for in and out file
+    int dimndi, dimndo;    // dimid for num decomp
+    int dimnpi, dimnpo;    // dimid for num processes
+    int dimnri, dimnro;    // dimid for num reqs
+    int dimnrri, dimnrro;  // dimid for num raw reqs
+    int ndims;
+    int varnri, varnro;
+    int varnrri, varnrro;
+    int varoffi, varoffo;
+    int varroffi, varroffo;
+    int varleni, varleno;
+    std::vector<int> dims;
+    int max_nreqs, min_nreqs;
+    int max_len, min_len;
+    int *buf = NULL;
+    bool have_raw = false;
+    e3sm_io_config cfg_in;    // Dummy cfg for read decom
+    e3sm_io_driver *din = NULL;
+    e3sm_io_driver *dout = NULL;
+    MPI_Offset num_decomp;         // # decom maps
+    MPI_Offset decomp_nprocs;     // # procs sharing the decom
+    MPI_Offset total_nreqs;         // Di total_nreqs
+    MPI_Offset total_raw_nreqs;     // Di total_raw_nreqs
+    MPI_Offset att_len;             // size of str_att
+    std::string str_att;
+    std::string name;
 
-	// Set up dummy config for the driver
-	cfg_in.io_comm		  = MPI_COMM_SELF;
-	cfg_in.info			  = MPI_INFO_NULL;
-	cfg_in.num_iotasks	  = cfg_in.np;
-	cfg_in.num_group	  = 1;
-	cfg_in.out_path[0]	  = '\0';
-	cfg_in.in_path[0]	  = '\0';
-	cfg_in.cfg_path[0]	  = '\0';
-	cfg_in.hx			  = -1;
-	cfg_in.wr			  = 0;
-	cfg_in.rd			  = 0;
-	cfg_in.nvars		  = 0;
-	cfg_in.strategy		  = undef_io;
-	cfg_in.api			  = undef_api;
-	cfg_in.chunksize	  = 0;
-	cfg_in.filter		  = none;
-	cfg_in.verbose		  = 0;
-	cfg_in.keep_outfile	  = 0;
-	cfg_in.profiling	  = 0;
-	cfg_in.two_buf		  = 0;
-	cfg_in.non_contig_buf = 0;
-	cfg_in.io_stride	  = 1;
-	cfg_in.sub_comm		  = MPI_COMM_NULL;
-	cfg_in.rank			  = cfg->rank;
+    // Set up dummy config for the driver
+    cfg_in.io_comm        = MPI_COMM_SELF;
+    cfg_in.info           = MPI_INFO_NULL;
+    cfg_in.num_iotasks    = cfg_in.np;
+    cfg_in.num_group      = 1;
+    cfg_in.out_path[0]    = '\0';
+    cfg_in.in_path[0]     = '\0';
+    cfg_in.cfg_path[0]    = '\0';
+    cfg_in.hx             = -1;
+    cfg_in.wr             = 0;
+    cfg_in.rd             = 0;
+    cfg_in.nvars          = 0;
+    cfg_in.strategy       = undef_io;
+    cfg_in.api            = undef_api;
+    cfg_in.chunksize      = 0;
+    cfg_in.filter         = none;
+    cfg_in.verbose        = 0;
+    cfg_in.keep_outfile   = 0;
+    cfg_in.profiling      = 0;
+    cfg_in.two_buf        = 0;
+    cfg_in.non_contig_buf = 0;
+    cfg_in.io_stride      = 1;
+    cfg_in.sub_comm       = MPI_COMM_NULL;
+    cfg_in.rank           = cfg->rank;
 
-	// Set up driver
-	din = e3sm_io_get_driver (cfg->in_path, &cfg_in);
-	CHECK_PTR (din)
-	dout = e3sm_io_get_driver (NULL, cfg);
-	CHECK_PTR (dout)
+    // Set up driver
+    din = e3sm_io_get_driver (cfg->in_path, &cfg_in);
+    CHECK_PTR (din)
+    dout = e3sm_io_get_driver (NULL, cfg);
+    CHECK_PTR (dout)
 
-	/* open input file that contains I/O decomposition information */
-	err = din->open (cfg->in_path, cfg->io_comm, cfg->info, &fidi);
-	CHECK_ERR
-	err = dout->create (cfg->out_path, cfg->io_comm, cfg->info, &fido);
-	CHECK_ERR
+    /* open input file that contains I/O decomposition information */
+    err = din->open (cfg->in_path, cfg->io_comm, cfg->info, &fidi);
+    CHECK_ERR
+    err = dout->create (cfg->out_path, cfg->io_comm, cfg->info, &fido);
+    CHECK_ERR
 
-	// command_line
-	err = din->inq_att (fidi, NC_GLOBAL, "command_line", &att_len);
-	CHECK_ERR
-	str_att.resize (att_len + 1);
-	err = din->get_att (fidi, NC_GLOBAL, "command_line", str_att.data ());
-	CHECK_ERR
-	err = dout->put_att (fido, NC_GLOBAL, "command_line", NC_CHAR, att_len, str_att.data ());
-	CHECK_ERR
+    // command_line
+    err = din->inq_att (fidi, NC_GLOBAL, "command_line", &att_len);
+    CHECK_ERR
+    str_att.resize (att_len + 1);
+    err = din->get_att (fidi, NC_GLOBAL, "command_line", str_att.data ());
+    CHECK_ERR
+    err = dout->put_att (fido, NC_GLOBAL, "command_line", NC_CHAR, att_len, str_att.data ());
+    CHECK_ERR
 
-	// num_decomp
-	err = din->inq_dim (fidi, "num_decomp", &dimndi);
-	CHECK_ERR
-	err = din->inq_dimlen (fidi, dimndi, &num_decomp);
-	CHECK_ERR
-	err = dout->def_dim (fido, "num_decomp", num_decomp, &dimndo);
-	CHECK_ERR
+    // num_decomp
+    err = din->inq_dim (fidi, "num_decomp", &dimndi);
+    CHECK_ERR
+    err = din->inq_dimlen (fidi, dimndi, &num_decomp);
+    CHECK_ERR
+    err = dout->def_dim (fido, "num_decomp", num_decomp, &dimndo);
+    CHECK_ERR
 
-	// decomp_nprocs
-	err = din->inq_dim (fidi, "decomp_nprocs", &dimnpi);
-	CHECK_ERR
-	err = din->inq_dimlen (fidi, dimndi, &decomp_nprocs);
-	CHECK_ERR
-	err = dout->def_dim (fido, "decomp_nprocs", decomp_nprocs, &dimnpo);
-	CHECK_ERR
+    // decomp_nprocs
+    err = din->inq_dim (fidi, "decomp_nprocs", &dimnpi);
+    CHECK_ERR
+    err = din->inq_dimlen (fidi, dimndi, &decomp_nprocs);
+    CHECK_ERR
+    err = dout->def_dim (fido, "decomp_nprocs", decomp_nprocs, &dimnpo);
+    CHECK_ERR
 
-	for (i = 1; i <= num_decomp; i++) {
-		// Di.total_nreqs
-		name = "D" + std::to_string (i) + ".total_nreqs";
-		err	 = din->inq_dim (fidi, name, &dimnri);
-		CHECK_ERR
-		err = din->inq_dimlen (fidi, dimnri, &total_nreqs);
-		CHECK_ERR
-		err = dout->def_dim (fido, name, total_nreqs, &dimnro);
-		CHECK_ERR
+    for (i = 1; i <= num_decomp; i++) {
+        // Di.total_nreqs
+        name = "D" + std::to_string (i) + ".total_nreqs";
+        err = din->inq_dim (fidi, name, &dimnri);
+        CHECK_ERR
+        err = din->inq_dimlen (fidi, dimnri, &total_nreqs);
+        CHECK_ERR
+        err = dout->def_dim (fido, name, total_nreqs, &dimnro);
+        CHECK_ERR
 
-		// Di.total_raw_nreqs
-		name = "D" + std::to_string (i) + ".total_raw_nreqs";
-		err	 = din->inq_dim (fidi, name, &dimnrri);
-		if (err >= 0) {
-			have_raw = true;
-			err		 = din->inq_dimlen (fidi, dimnrri, &total_raw_nreqs);
-			CHECK_ERR
-			err = dout->def_dim (fido, name, total_raw_nreqs, &dimnrro);
-			CHECK_ERR
-		} else {
-			total_raw_nreqs = 0;
-		}
+        // Di.total_raw_nreqs
+        name = "D" + std::to_string (i) + ".total_raw_nreqs";
+        err = din->inq_dim (fidi, name, &dimnrri);
+        if (err >= 0) {
+            have_raw = true;
+            err = din->inq_dimlen (fidi, dimnrri, &total_raw_nreqs);
+            CHECK_ERR
+            err = dout->def_dim (fido, name, total_raw_nreqs, &dimnrro);
+            CHECK_ERR
+        } else {
+            total_raw_nreqs = 0;
+        }
 
-		// Di.ndims
-		name = "D" + std::to_string (i) + ".ndims";
-		err	 = din->get_att (fidi, NC_GLOBAL, name, &ndims);
-		CHECK_ERR
-		err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, 1, &ndims);
-		CHECK_ERR
+        // Di.ndims
+        name = "D" + std::to_string (i) + ".ndims";
+        err = din->get_att (fidi, NC_GLOBAL, name, &ndims);
+        CHECK_ERR
+        err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, 1, &ndims);
+        CHECK_ERR
 
-		dims.resize (ndims);
-		// Di.dims
-		name = "D" + std::to_string (i) + ".dims";
-		err	 = din->get_att (fidi, NC_GLOBAL, name, dims.data ());
-		CHECK_ERR
-		err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, ndims, dims.data ());
-		CHECK_ERR
+        dims.resize (ndims);
+        // Di.dims
+        name = "D" + std::to_string (i) + ".dims";
+        err = din->get_att (fidi, NC_GLOBAL, name, dims.data ());
+        CHECK_ERR
+        err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, ndims, dims.data ());
+        CHECK_ERR
 
-		// Di.max_nreqs
-		name = "D" + std::to_string (i) + ".max_nreqs";
-		err	 = din->get_att (fidi, NC_GLOBAL, name, &max_nreqs);
-		CHECK_ERR
-		err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, 1, &max_nreqs);
-		CHECK_ERR
+        // Di.max_nreqs
+        name = "D" + std::to_string (i) + ".max_nreqs";
+        err = din->get_att (fidi, NC_GLOBAL, name, &max_nreqs);
+        CHECK_ERR
+        err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, 1, &max_nreqs);
+        CHECK_ERR
 
-		// Di.min_nreqs
-		name = "D" + std::to_string (i) + ".min_nreqs";
-		err	 = din->get_att (fidi, NC_GLOBAL, name, &min_nreqs);
-		CHECK_ERR
-		err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, 1, &min_nreqs);
-		CHECK_ERR
+        // Di.min_nreqs
+        name = "D" + std::to_string (i) + ".min_nreqs";
+        err = din->get_att (fidi, NC_GLOBAL, name, &min_nreqs);
+        CHECK_ERR
+        err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, 1, &min_nreqs);
+        CHECK_ERR
 
-		// Di.nreqs
-		name = "D" + std::to_string (i) + ".nreqs";
-		err	 = din->inq_var (fidi, name, &varnri);
-		CHECK_ERR
-		err = dout->def_var (fido, name, NC_INT, 1, &dimnpo, &varnro);
-		CHECK_ERR
+        // Di.nreqs
+        name = "D" + std::to_string (i) + ".nreqs";
+        err = din->inq_var (fidi, name, &varnri);
+        CHECK_ERR
+        err = dout->def_var (fido, name, NC_INT, 1, &dimnpo, &varnro);
+        CHECK_ERR
 
-		// Di.nreqs:description
-		err = din->inq_att (fidi, varnri, "description", &att_len);
-		CHECK_ERR
-		str_att.resize (att_len + 1);
-		err = din->get_att (fidi, varnri, "description", str_att.data ());
-		CHECK_ERR
-		err = dout->put_att (fido, varnro, "description", NC_CHAR, att_len, str_att.data ());
-		CHECK_ERR
+        // Di.nreqs:description
+        err = din->inq_att (fidi, varnri, "description", &att_len);
+        CHECK_ERR
+        str_att.resize (att_len + 1);
+        err = din->get_att (fidi, varnri, "description", str_att.data ());
+        CHECK_ERR
+        err = dout->put_att (fido, varnro, "description", NC_CHAR, att_len, str_att.data ());
+        CHECK_ERR
 
-		if (have_raw) {
-			// Di.raw_nreqs
-			name = "D" + std::to_string (i) + ".raw_nreqs";
-			err	 = din->inq_var (fidi, name, &varnrri);
-			CHECK_ERR
-			err = dout->def_var (fido, name, NC_INT, 1, &dimnpo, &varnrro);
-			CHECK_ERR
+        if (have_raw) {
+            // Di.raw_nreqs
+            name = "D" + std::to_string (i) + ".raw_nreqs";
+            err = din->inq_var (fidi, name, &varnrri);
+            CHECK_ERR
+            err = dout->def_var (fido, name, NC_INT, 1, &dimnpo, &varnrro);
+            CHECK_ERR
 
-			// Di.raw_nreqs:description
-			err = din->inq_att (fidi, varnrri, "description", &att_len);
-			CHECK_ERR
-			str_att.resize (att_len + 1);
-			err = din->get_att (fidi, varnrri, "description", str_att.data ());
-			CHECK_ERR
-			err = dout->put_att (fido, varnrro, "description", NC_CHAR, att_len, str_att.data ());
-			CHECK_ERR
-		}
+            // Di.raw_nreqs:description
+            err = din->inq_att (fidi, varnrri, "description", &att_len);
+            CHECK_ERR
+            str_att.resize (att_len + 1);
+            err = din->get_att (fidi, varnrri, "description", str_att.data ());
+            CHECK_ERR
+            err = dout->put_att (fido, varnrro, "description", NC_CHAR, att_len, str_att.data ());
+            CHECK_ERR
+        }
 
-		// Di.offsets
-		name = "D" + std::to_string (i) + ".offsets";
-		err	 = din->inq_var (fidi, name, &varoffi);
-		CHECK_ERR
-		err = dout->def_var (fido, name, NC_INT, 1, &dimnro, &varoffo);
-		CHECK_ERR
+        // Di.offsets
+        name = "D" + std::to_string (i) + ".offsets";
+        err = din->inq_var (fidi, name, &varoffi);
+        CHECK_ERR
+        err = dout->def_var (fido, name, NC_INT, 1, &dimnro, &varoffo);
+        CHECK_ERR
 
-		// Di.offsets:description
-		err = din->inq_att (fidi, varoffi, "description", &att_len);
-		CHECK_ERR
-		str_att.resize (att_len + 1);
-		err = din->get_att (fidi, varoffi, "description", str_att.data ());
-		CHECK_ERR
-		err = dout->put_att (fido, varoffo, "description", NC_CHAR, att_len, str_att.data ());
-		CHECK_ERR
+        // Di.offsets:description
+        err = din->inq_att (fidi, varoffi, "description", &att_len);
+        CHECK_ERR
+        str_att.resize (att_len + 1);
+        err = din->get_att (fidi, varoffi, "description", str_att.data ());
+        CHECK_ERR
+        err = dout->put_att (fido, varoffo, "description", NC_CHAR, att_len, str_att.data ());
+        CHECK_ERR
 
-		if (have_raw) {
-			// Di.raw_offsets
-			name = "D" + std::to_string (i) + ".raw_offsets";
-			err	 = din->inq_var (fidi, name, &varroffi);
-			CHECK_ERR
-			err = dout->def_var (fido, name, NC_INT, 1, &dimnrro, &varroffo);
-			CHECK_ERR
+        if (have_raw) {
+            // Di.raw_offsets
+            name = "D" + std::to_string (i) + ".raw_offsets";
+            err = din->inq_var (fidi, name, &varroffi);
+            CHECK_ERR
+            err = dout->def_var (fido, name, NC_INT, 1, &dimnrro, &varroffo);
+            CHECK_ERR
 
-			// Di.raw_offsets:description
-			err = din->inq_att (fidi, varroffi, "description", &att_len);
-			CHECK_ERR
-			str_att.resize (att_len + 1);
-			err = din->get_att (fidi, varroffi, "description", str_att.data ());
-			CHECK_ERR
-			err = dout->put_att (fido, varroffo, "description", NC_CHAR, att_len, str_att.data ());
-			CHECK_ERR
-		}
+            // Di.raw_offsets:description
+            err = din->inq_att (fidi, varroffi, "description", &att_len);
+            CHECK_ERR
+            str_att.resize (att_len + 1);
+            err = din->get_att (fidi, varroffi, "description", str_att.data ());
+            CHECK_ERR
+            err = dout->put_att (fido, varroffo, "description", NC_CHAR, att_len, str_att.data ());
+            CHECK_ERR
+        }
 
-		// Di.lengths
-		name = "D" + std::to_string (i) + ".lengths";
-		err	 = din->inq_var (fidi, name, &varleni);
-		CHECK_ERR
-		err = dout->def_var (fido, name, NC_INT, 1, &dimnro, &varleno);
-		CHECK_ERR
+        // Di.lengths
+        name = "D" + std::to_string (i) + ".lengths";
+        err = din->inq_var (fidi, name, &varleni);
+        CHECK_ERR
+        err = dout->def_var (fido, name, NC_INT, 1, &dimnro, &varleno);
+        CHECK_ERR
 
-		// Di.lengths:description
-		err = din->inq_att (fidi, varleni, "description", &att_len);
-		CHECK_ERR
-		str_att.resize (att_len + 1);
-		err = din->get_att (fidi, varleni, "description", str_att.data ());
-		CHECK_ERR
-		err = dout->put_att (fido, varleno, "description", NC_CHAR, att_len, str_att.data ());
-		CHECK_ERR
+        // Di.lengths:description
+        err = din->inq_att (fidi, varleni, "description", &att_len);
+        CHECK_ERR
+        str_att.resize (att_len + 1);
+        err = din->get_att (fidi, varleni, "description", str_att.data ());
+        CHECK_ERR
+        err = dout->put_att (fido, varleno, "description", NC_CHAR, att_len, str_att.data ());
+        CHECK_ERR
 
-		// Di.lengths:max
-		err = din->get_att (fidi, varleni, "max", &max_len);
-		CHECK_ERR
-		err = dout->put_att (fido, varleno, "max", NC_INT, 1, &max_len);
-		CHECK_ERR
+        // Di.lengths:max
+        err = din->get_att (fidi, varleni, "max", &max_len);
+        CHECK_ERR
+        err = dout->put_att (fido, varleno, "max", NC_INT, 1, &max_len);
+        CHECK_ERR
 
-		// Di.lengths:min
-		err = din->get_att (fidi, varleni, "min", &min_len);
-		CHECK_ERR
-		err = dout->put_att (fido, varleno, "min", NC_INT, 1, &min_len);
-		CHECK_ERR
+        // Di.lengths:min
+        err = din->get_att (fidi, varleni, "min", &min_len);
+        CHECK_ERR
+        err = dout->put_att (fido, varleno, "min", NC_INT, 1, &min_len);
+        CHECK_ERR
 
-		err = dout->enddef (fido);
-		CHECK_ERR
+        err = dout->enddef (fido);
+        CHECK_ERR
 
-		buf = (int *)malloc (std::max (total_nreqs, std::max (total_raw_nreqs, num_decomp)) *
-							 sizeof (int));
-		CHECK_PTR (buf)
+        buf = (int *)malloc (std::max (total_nreqs, std::max (total_raw_nreqs, num_decomp)) *
+                             sizeof (int));
+        CHECK_PTR (buf)
 
-		err = din->get_vara (fidi, varnri, MPI_INT, NULL, NULL, buf, coll);
-		CHECK_ERR
-		err = dout->put_vara (fido, varnro, MPI_INT, NULL, NULL, buf, coll);
-		CHECK_ERR
+        err = din->get_vara (fidi, varnri, MPI_INT, NULL, NULL, buf, coll);
+        CHECK_ERR
+        err = dout->put_vara (fido, varnro, MPI_INT, NULL, NULL, buf, coll);
+        CHECK_ERR
 
-		if (have_raw) {
-			err = din->get_vara (fidi, varnrri, MPI_INT, NULL, NULL, buf, coll);
-			CHECK_ERR
-			err = dout->put_vara (fido, varnrro, MPI_INT, NULL, NULL, buf, coll);
-			CHECK_ERR
-		}
+        if (have_raw) {
+            err = din->get_vara (fidi, varnrri, MPI_INT, NULL, NULL, buf, coll);
+            CHECK_ERR
+            err = dout->put_vara (fido, varnrro, MPI_INT, NULL, NULL, buf, coll);
+            CHECK_ERR
+        }
 
-		err = din->get_vara (fidi, varoffi, MPI_INT, NULL, NULL, buf, coll);
-		CHECK_ERR
-		err = dout->put_vara (fido, varoffo, MPI_INT, NULL, NULL, buf, coll);
-		CHECK_ERR
+        err = din->get_vara (fidi, varoffi, MPI_INT, NULL, NULL, buf, coll);
+        CHECK_ERR
+        err = dout->put_vara (fido, varoffo, MPI_INT, NULL, NULL, buf, coll);
+        CHECK_ERR
 
-		if (have_raw) {
-			err = din->get_vara (fidi, varroffi, MPI_INT, NULL, NULL, buf, coll);
-			CHECK_ERR
-			err = dout->put_vara (fido, varroffo, MPI_INT, NULL, NULL, buf, coll);
-			CHECK_ERR
-		}
+        if (have_raw) {
+            err = din->get_vara (fidi, varroffi, MPI_INT, NULL, NULL, buf, coll);
+            CHECK_ERR
+            err = dout->put_vara (fido, varroffo, MPI_INT, NULL, NULL, buf, coll);
+            CHECK_ERR
+        }
 
-		err = din->get_vara (fidi, varleni, MPI_INT, NULL, NULL, buf, coll);
-		CHECK_ERR
-		err = dout->put_vara (fido, varleno, MPI_INT, NULL, NULL, buf, coll);
-		CHECK_ERR
+        err = din->get_vara (fidi, varleni, MPI_INT, NULL, NULL, buf, coll);
+        CHECK_ERR
+        err = dout->put_vara (fido, varleno, MPI_INT, NULL, NULL, buf, coll);
+        CHECK_ERR
 
-		free (buf);
-		buf = NULL;
+        free (buf);
+        buf = NULL;
 
-		err = dout->redef (fido);
-		CHECK_ERR
-	}
+        err = dout->redef (fido);
+        CHECK_ERR
+    }
 
-	err = din->close (fidi);
-	CHECK_ERR
-	err = dout->close (fido);
-	CHECK_ERR
+    err = din->close (fidi);
+    CHECK_ERR
+    err = dout->close (fido);
+    CHECK_ERR
 
 err_out:;
-	if (din) { delete din; }
-	if (dout) { delete dout; }
-	if (buf) { free (buf); }
-	return err;
+    if (din) { delete din; }
+    if (dout) { delete dout; }
+    if (buf) { free (buf); }
+    return err;
 }
 
 static void usage (char *argv0) {
-	const char *help =
-		"Usage: ./decomreplay [-h|-v|-r|-l num] -a api -i input_file -o out_file\n"
-		"   [-h]            Print help\n"
-		"   [-v]            cfg.verbose mode\n"
-		"   [-r]            Include original decomposition map\n"
-		"   [-l num]        max number of characters per line in input file\n"
-		"   -a api          output file format, api is one of the followings\n"
-		"      pnetcdf:     NetCDF classic 64-bit data format\n"
-		"      netcdf4:     NetCDF-4 (HDF5-based) format\n"
-		"      hdf5:        HDF5 format\n"
-		"      adios:       ADIOS2 BP3 format\n"
-		"   -i input_file   name of intput file\n";
-	"   -o out_file     name of output file\n";
-	fprintf (stderr, help, argv0);
+    const char *help =
+    "Usage: ./decomreplay [-h|-v] -a fmt -i input_file -o out_file\n"
+    "   [-h]            Print help\n"
+    "   [-v]            verbose mode\n"
+    "   -a fmt          output file format, fmt is one of the followings\n"
+    "      cdf5:        NetCDF classic 64-bit data format\n"
+    "      netcdf4:     NetCDF-4 (HDF5-based) format\n"
+    "      hdf5:        HDF5 format\n"
+    "      bp:          ADIOS2 BP format\n"
+    "   -i input_file   intput file name\n"
+    "   -o out_file     output file name\n";
+    fprintf (stderr, help, argv0);
 }
 
 /*----< main() >------------------------------------------------------------*/
 int main (int argc, char **argv) {
-	char cmd_line[4096];
-	int i, rank, np, ncid, num_decomp = 0, dimid, err = 0;
-	bool have_decom_dim = false;
-	MPI_Info info;
-	e3sm_io_config cfg;
-	e3sm_io_decom decom;
+    char cmd_line[4096];
+    int i, rank, np, num_decomp = 0, err = 0;
+    e3sm_io_config cfg;
+    e3sm_io_decom decom;
 
-	MPI_Init (&argc, &argv);
-	MPI_Comm_rank (MPI_COMM_WORLD, &rank);
-	MPI_Comm_size (MPI_COMM_WORLD, &np);
+    MPI_Init (&argc, &argv);
+    MPI_Comm_rank (MPI_COMM_WORLD, &rank);
+    MPI_Comm_size (MPI_COMM_WORLD, &np);
 
-	if (np > 1) { ERR_OUT ("decomreplay is sequential, run with only 1 processes") }
+    if (np > 1) { ERR_OUT ("decomreplay is sequential, run with only 1 processes") }
 
-	cmd_line[0] = '\0';
-	for (i = 0; i < argc; i++) {
-		strcat (cmd_line, argv[i]);
-		strcat (cmd_line, " ");
-	}
+    cmd_line[0] = '\0';
+    for (i = 0; i < argc; i++) {
+        strcat (cmd_line, argv[i]);
+        strcat (cmd_line, " ");
+    }
 
-	// Set up default config
-	cfg.io_comm		   = MPI_COMM_WORLD;
-	cfg.info		   = MPI_INFO_NULL;
-	cfg.np			   = np;
-	cfg.num_iotasks	   = cfg.np;
-	cfg.num_group	   = 1;
-	cfg.out_path[0]	   = '\0';
-	cfg.in_path[0]	   = '\0';
-	cfg.cfg_path[0]	   = '\0';
-	cfg.hx			   = -1;
-	cfg.wr			   = 0;
-	cfg.rd			   = 0;
-	cfg.nvars		   = 0;
-	cfg.strategy	   = undef_io;
-	cfg.api			   = undef_api;
-	cfg.chunksize	   = 0;
-	cfg.filter		   = none;
-	cfg.verbose		   = 0;
-	cfg.keep_outfile   = 0;
-	cfg.profiling	   = 0;
-	cfg.two_buf		   = 0;
-	cfg.non_contig_buf = 0;
-	cfg.io_stride	   = 1;
-	cfg.sub_comm	   = MPI_COMM_NULL;
-	cfg.rank		   = rank;
-	raw_decom		   = 0;
+    // Set up default config
+    cfg.io_comm        = MPI_COMM_WORLD;
+    cfg.info           = MPI_INFO_NULL;
+    cfg.np             = np;
+    cfg.num_iotasks    = cfg.np;
+    cfg.num_group      = 1;
+    cfg.out_path[0]    = '\0';
+    cfg.in_path[0]     = '\0';
+    cfg.cfg_path[0]    = '\0';
+    cfg.hx             = -1;
+    cfg.wr             = 0;
+    cfg.rd             = 0;
+    cfg.nvars          = 0;
+    cfg.strategy       = undef_io;
+    cfg.api            = undef_api;
+    cfg.chunksize      = 0;
+    cfg.filter         = none;
+    cfg.verbose        = 0;
+    cfg.keep_outfile   = 0;
+    cfg.profiling      = 0;
+    cfg.two_buf        = 0;
+    cfg.non_contig_buf = 0;
+    cfg.io_stride      = 1;
+    cfg.sub_comm       = MPI_COMM_NULL;
+    cfg.rank           = rank;
 
-	/* get command-line arguments */
-	while ((i = getopt (argc, argv, "hvo:i:a:")) != EOF) {
-		switch (i) {
-			case 'a':;
-				if (std::string (optarg) == "pnetcdf") {
-					cfg.api = pnetcdf;
-				} else if (std::string (optarg) == "hdf5") {
-					cfg.api = hdf5;
-				} else if (std::string (optarg) == "adios") {
-					cfg.api = adios;
-				} else if (std::string (optarg) == "netcdf4") {
-					cfg.api = netcdf4;
-				} else {
-					cfg.api = undef_api;
-				}
-				break;
-			case 'v':
-				cfg.verbose = 1;
-				break;
-			case 'o':
-				strncpy (cfg.out_path, optarg, sizeof (cfg.out_path));
-				break;
-			case 'i':
-				strncpy (cfg.in_path, optarg, sizeof (cfg.in_path));
-				break;
-			case 'h':
-			default:
-				if (rank == 0) usage (argv[0]);
-				err = -1;
-				goto err_out;
-		}
-	}
+    /* get command-line arguments */
+    while ((i = getopt (argc, argv, "hvo:i:a:")) != EOF) {
+        switch (i) {
+            case 'a':;
+                if (std::string (optarg) == "cdf5") {
+                    cfg.api = pnetcdf;
+                } else if (std::string (optarg) == "hdf5") {
+                    cfg.api = hdf5;
+                } else if (std::string (optarg) == "bp") {
+                    cfg.api = adios;
+                } else if (std::string (optarg) == "netcdf4") {
+                    cfg.api = netcdf4;
+                } else {
+                    cfg.api = undef_api;
+                }
+                break;
+            case 'v':
+                cfg.verbose = 1;
+                break;
+            case 'o':
+                strncpy (cfg.out_path, optarg, sizeof (cfg.out_path));
+                break;
+            case 'i':
+                strncpy (cfg.in_path, optarg, sizeof (cfg.in_path));
+                break;
+            case 'h':
+            default:
+                if (rank == 0) usage (argv[0]);
+                err = -1;
+                goto err_out;
+        }
+    }
 
-	if (cfg.in_path == "") { /* input file name is mandatory */
-		if (rank == 0) {
-			printf ("input file is missing\n");
-			usage (argv[0]);
-		}
-		err = -1;
-		goto err_out;
-	}
-	if (cfg.out_path == "") { /* output file name is mandatory */
-		if (rank == 0) {
-			printf ("output file is missing\n");
-			usage (argv[0]);
-		}
-		err = -1;
-		goto err_out;
-	}
+    if (cfg.in_path[0] == '\0') { /* input file name is mandatory */
+        if (rank == 0) {
+            printf ("input file is missing\n");
+            usage (argv[0]);
+        }
+        err = -1;
+        goto err_out;
+    }
+    if (cfg.out_path[0] == '\0') { /* output file name is mandatory */
+        if (rank == 0) {
+            printf ("output file is missing\n");
+            usage (argv[0]);
+        }
+        err = -1;
+        goto err_out;
+    }
 
-	if (cfg.verbose && rank == 0) {
-		printf ("input  file: %s\n", cfg.in_path);
-		printf ("output file: %s\n", cfg.out_path);
-		printf ("Number of decomposition files: %d\n", num_decomp);
-	}
+    if (cfg.verbose && rank == 0) {
+        printf ("input  file: %s\n", cfg.in_path);
+        printf ("output file: %s\n", cfg.out_path);
+        printf ("Number of decomposition files: %d\n", num_decomp);
+    }
 
-	/* replay request information from decomposition file */
-	err = replay_decomp (&cfg, &decom);
-	CHECK_ERR
+    /* replay request information from decomposition file */
+    err = replay_decomp (&cfg, &decom);
+    CHECK_ERR
 
 err_out:
 
-	MPI_Finalize ();
-	return err;
+    MPI_Finalize ();
+    return err;
 }
