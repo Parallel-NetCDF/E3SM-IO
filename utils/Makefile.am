@@ -39,8 +39,14 @@ datstat_SOURCES = datstat.cpp
 bpstat_SOURCES = bpstat.cpp
 bpstat_LDADD = -lstdc++fs
 
+BUILT_SOURCES = list_f_case.txt
+
+list_f_case.txt:
+	ls -1 $(top_srcdir)/datasets/piodecomp16tasks*.dat > $@
+
 AM_TESTS_ENVIRONMENT  = export TESTPROGRAMS="$(TESTPROGRAMS)";
 AM_TESTS_ENVIRONMENT += export top_srcdir="$(top_srcdir)";
+AM_TESTS_ENVIRONMENT += export builddir="$(builddir)";
 AM_TESTS_ENVIRONMENT += export SED="$(SED)";
 
 ALL_LIBRARY_PATH = .
@@ -77,3 +83,4 @@ SH_LOG_COMPILER =
 
 EXTRA_DIST = wrap_runs.sh
 
+DISTCLEANFILES = list_f_case.txt
