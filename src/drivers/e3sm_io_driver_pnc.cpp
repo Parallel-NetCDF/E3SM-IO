@@ -308,6 +308,10 @@ int e3sm_io_driver_pnc::inq_dim (int fid, std::string name, int *dimid) {
     MPI_Offset size;
 
     err = ncmpi_inq_dimid (fid, name.c_str (), dimid);
+    if (err == NC_EBADDIM){
+        err = -1;
+        goto err_out;
+    }
     CHECK_NCERR
 
     if (cfg->chunksize == 0) return err;
