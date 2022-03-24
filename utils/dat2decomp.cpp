@@ -96,7 +96,7 @@ static int add_decomp (
     nprocs = atoi (strtok (NULL, " "));
     strtok (NULL, " "); /* token "ndims" */
     ndims = atoi (strtok (NULL, " "));
-    dims  = (MPI_Offset *)malloc (ndims * sizeof (MPI_Offset));
+    dims = (MPI_Offset *)malloc (ndims * sizeof (MPI_Offset));
 
     /* get dimension sizes
      * Note the dimensions are in Fortran order in the decomposition file
@@ -494,7 +494,7 @@ static void extract_file_names (const char *inList, int *num_decomp, char **infn
 
 static void usage (char *argv0) {
     const char *help =
-    "Usage: ./dat2decom [-h|-v|-r|-l num] -a fmt -i input_file -o out_file\n"
+    "Usage: %s [-h|-v|-r|-l num] -a fmt -i input_file -o out_file\n"
     "  [-h]           Print help\n"
     "  [-v]           Verbose mode\n"
     "  [-r]           Include original decomposition map\n"

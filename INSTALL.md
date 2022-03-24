@@ -135,7 +135,7 @@
 * See [utils/README](./utils) for instructions to run utility programs
   + `dat2nc.c` to convert the decomposition map files to NetCDF CDF-5 files.
   + `dat2decomp.c` is more general utility program that can convert the
-    decomposition map files to HDF5/NetCDF-4/BP files.
+    decomposition map files in text format to an HDF5/NetCDF-4/BP file.
 
 ### Run command:
 * Example run commands using `mpiexec` and 16 MPI processes are given below.

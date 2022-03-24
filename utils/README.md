@@ -1,12 +1,15 @@
 ## Utility Programs for E3SM-IO benchmark
 
-* [dat2nc](#dat2nc) -- converts multiple decomposition files into a NetCDF file
-* [dat2decom](#dat2decom) -- converts decomposition files into a HDF5/NetCDF4/BP file
-* [decomp_copy](#decomp_copy) -- converts decomposition files to a different file format
+* [dat2nc](#dat2nc) -- converts multiple decomposition files in text format
+  into a NetCDF CDF5 file
+* [dat2decomp](#dat2decomp) -- converts decomposition map files in text format
+  into an HDF5/NetCDF4/BP file
+* [decomp_copy](#decomp_copy) -- copies a decomposition file in
+  CDF5/HDF5/NetCDF4/BP format to a different file format.
 * [datstat](#datstat) -- displays statistics of decomposition files.
 * [pnetcdf_blob_replay](#pnetcdf_blob_replay) -- converts the subfiles produced
-  by the `e3sm_io` benchmark when it ran with PnetCDF blob I/O strategy into a
-  regular NetCDF file.
+  by the `e3sm_io` running with PnetCDF blob I/O strategy into a regular NetCDF
+  CDF5 file.
 
 ---
 ## dat2nc
@@ -127,8 +130,8 @@ data decomposition file into NetCDF file format.
   available in folder `../datasets` with file named `i_case_f19_g16_16p.nc`.
 ---
 
-## dat2decom
-**dat2decom** is generalized from [dat2nc](#dat2nc) that can convert the
+## dat2decomp
+**dat2decomp** is generalized from [dat2nc](#dat2nc) that can convert the
 decomposition data files into HDF5, NetCDF4, or BP file format, in addition to
 the NetCDF classic 64-bit data format.  The instructions below explain how to
 convert the data decomposition file into NetCDF, HDF5, NetCDF4, or ADIOS file
@@ -146,12 +149,12 @@ format.
 * The command to combine the three `.dat` files for the F case to a HDF5 file
   for the F case as an example, is:
   ```
-    % ./dat2decom -a hdf5 -i input_list.txt -o f_case_866x72_16p.nc
+    % ./dat2decomp -a hdf5 -i input_list.txt -o f_case_866x72_16p.nc
   ```
-* Command-line options of `./dat2decom`:
+* Command-line options of `./dat2decomp`:
   ```
-    % ./dat2decom -h
-    Usage: ./dat2decom [-h|-v|-r|-l num] -a fmt -i input_file -o out_file
+    % ./dat2decomp -h
+    Usage: ./dat2decomp [-h|-v|-r|-l num] -a fmt -i input_file -o out_file
       [-h]           Print help
       [-v]           Verbose mode
       [-r]           Include original decomposition map
