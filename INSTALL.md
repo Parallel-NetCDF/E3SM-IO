@@ -133,9 +133,12 @@
   benchmark program. For the F, G, and I cases, there are 3, 6, and 5 data
   decomposition text files, respectively.
 * See [utils/README](./utils) for instructions to run utility programs
-  + `dat2nc.c` to convert the decomposition map files to NetCDF CDF-5 files.
-  + `dat2decomp.c` is more general utility program that can convert the
-    decomposition map files in text format to an HDF5/NetCDF-4/BP file.
+  + `dat2nc` converts the decomposition map .dat files to NetCDF CDF-5 files.
+  + `dat2decomp` is more general utility program that can convert the
+    decomposition map .dat files in text format to a CDF5/HDF5/NetCDF-4/BP
+    file.
+  + `decomp_copy` copies and converts a decomposition map file in an
+    HDF5/NetCDF-4/BP format to a different format.
 
 ### Run command:
 * Example run commands using `mpiexec` and 16 MPI processes are given below.
@@ -168,8 +171,8 @@
        [-r num] Number of time records/steps written in F case h1 file and I
                 case h0 file (default: 1)
        [-y num] Data flush frequency. (1: flush every time step, the default,
-		and -1: flush once for all time steps. (No effect on ADIOS
-		and HDF5 blob I/O options, which always flushes at file close).
+                and -1: flush once for all time steps. (No effect on ADIOS
+                and HDF5 blob I/O options, which always flushes at file close).
        [-s num] Stride interval of ranks for selecting MPI processes to perform
                 I/O tasks (default: 1, i.e. all MPI processes).\n\
        [-g num] Number of subfiles, used by ADIOS I/O only (default: 1).
@@ -184,8 +187,8 @@
        [-x strategy] I/O strategy
            canonical: Store variables in the canonical layout (default).
            log:       Store variables in the log-based storage layout.
-	   blob:      Pack and store all data written locally in a contiguous
-	              block (blob), ignoring variable's canonical order.
+           blob:      Pack and store all data written locally in a contiguous
+                      block (blob), ignoring variable's canonical order.
        FILE: Name of input file storing data decomposition maps
   ```
 * Both F and I cases create two history files, referred to as 'h0' and 'h1'

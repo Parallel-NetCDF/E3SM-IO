@@ -410,7 +410,7 @@ static void usage (char *argv0) {
     "      netcdf4:     NetCDF-4 (HDF5-based) format\n"
     "      hdf5:        HDF5 format\n"
     "      bp:          ADIOS2 BP format\n"
-    "   -i input_file   intput file name\n"
+    "   -i input_file   input file name\n"
     "   -o out_file     output file name\n";
     fprintf (stderr, help, argv0);
 }

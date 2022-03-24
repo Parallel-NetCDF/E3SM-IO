@@ -528,11 +528,11 @@ void print_info (MPI_Info *info_used) {
 /*----< usage() >------------------------------------------------------------*/
 static void usage (char *argv0) {
     char *help =
-        "Usage: %s [OPTION]... FILE\n"
-        "    [-h] Print help\n"
-        "    [-v] Verbose mode\n"
-        "    [-i file] Base name of input subfiles\n"
-        "    [-o file] Output file name\n";
+    "Usage: %s [OPTION]... FILE\n"
+    "    [-h] Print help\n"
+    "    [-v] Verbose mode\n"
+    "    -i file  Base name of input subfiles\n"
+    "    -o file  Output file name\n";
     fprintf (stderr, help, argv0);
 }
 

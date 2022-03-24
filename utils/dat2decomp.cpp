@@ -502,7 +502,8 @@ static void usage (char *argv0) {
     "     netcdf4:    NetCDF-4 (HDF5-based) format\n"
     "     hdf5:       HDF5 format\n"
     "     bp:         ADIOS2 BP format\n"
-    "  -i input_file  input file containing a list of decomposition .dat file\n"
+    "  -i input_file  input file containing a list of decomposition\n"
+    "                 map .dat files\n"
     "  -o out_file    output file name\n";
     fprintf (stderr, help, argv0);
 }
