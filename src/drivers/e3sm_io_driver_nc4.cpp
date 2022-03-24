@@ -452,7 +452,8 @@ int e3sm_io_driver_nc4::put_vara (int fid,
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_PUT_VAR)
 
-    nc_inq_vartype (fid, vid, &xtype);
+    err = nc_inq_vartype (fid, vid, &xtype);
+    CHECK_NCERR
     err = e3sm_io_xlen_nc_type (xtype, &xesize);
     CHECK_ERR
     err = nc_inq_varndims (fid, vid, &ndim);
@@ -723,7 +724,8 @@ int e3sm_io_driver_nc4::get_vara (int fid,
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_GET_VAR)
 
-    nc_inq_vartype (fid, vid, &xtype);
+    err = nc_inq_vartype (fid, vid, &xtype);
+    CHECK_NCERR
     err = e3sm_io_xlen_nc_type (xtype, &xesize);
     CHECK_ERR
     err = nc_inq_varndims (fid, vid, &ndim);
