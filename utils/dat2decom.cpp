@@ -124,7 +124,7 @@ static int add_decomp (
     map = (char *)calloc (gsize, 1);
 
     /* nreqs[i] is the number of elements accessed by process i */
-    nreqs	  = (int *)calloc (nprocs, sizeof (int));
+    nreqs     = (int *)calloc (nprocs, sizeof (int));
     raw_nreqs = (int *)calloc (nprocs, sizeof (int));
 
     /* decomposition data format:
@@ -149,12 +149,12 @@ static int add_decomp (
         }
 
         decomp_rank = atoi (strtok (buf, " ")); /* rank ID */
-        while (rank < decomp_rank)				/* this rank has no request */
+        while (rank < decomp_rank)              /* this rank has no request */
             nreqs[rank++] = 0;
 
         nreqs[rank] = atoi (strtok (NULL, " ")); /* number of requests */
-        if (nreqs[rank] == 0)					 /* this rank has zero request */
-            continue;							 /* loop of rank */
+        if (nreqs[rank] == 0)                    /* this rank has zero request */
+            continue;                            /* loop of rank */
 
         /* Record number of raw offsets before it is merged */
         raw_nreqs[rank] = nreqs[rank];
@@ -169,7 +169,7 @@ static int add_decomp (
 
         /* construct the offset list */
         off[0] = atoi (strtok (buf, " "));
-        j	   = 1;
+        j = 1;
         while (off[0] == 0) { /* skip leading 0 values, if there is any */
             off[0] = atoi (strtok (NULL, " "));
             j++;
@@ -179,7 +179,7 @@ static int add_decomp (
         for (; j < nreqs[rank]; j++) {
             off[k] = atoi (strtok (NULL, " "));
             if (off[k] == 0) continue; /* skip 0 values */
-            off[k]--;				   /* offset is 1 based */
+            off[k]--;                  /* offset is 1 based */
             k++;
         }
 
@@ -199,7 +199,7 @@ static int add_decomp (
 
     /* find total, max, and min nreqs amount all processes */
     total_nreqs = max_nreqs = min_nreqs = nreqs[0];
-    total_raw_nreqs						= raw_nreqs[0];
+    total_raw_nreqs = raw_nreqs[0];
     for (i = 1; i < nprocs; i++) {
         total_nreqs += nreqs[i];
         total_raw_nreqs += raw_nreqs[i];
@@ -285,7 +285,7 @@ static int add_decomp (
 
     maxlen = minlen = 0;
     /*
-    err				= driver->put_att (ncid, varid[2], "max", NC_INT, 1, &maxlen);
+    err = driver->put_att (ncid, varid[2], "max", NC_INT, 1, &maxlen);
     CHECK_ERR
     err = driver->put_att (ncid, varid[2], "min", NC_INT, 1, &minlen);
     CHECK_ERR
@@ -341,7 +341,7 @@ static int add_decomp (
     }
 
     /* read the offsets again into allocated array off */
-    start	  = 0;
+    start = 0;
     raw_start = 0;
     rewind (fd);
     fgets (buf, LINE_SIZE, fd);
@@ -361,20 +361,20 @@ static int add_decomp (
         }
 
         decomp_rank = atoi (strtok (buf, " ")); /* rank ID */
-        while (rank < decomp_rank)				/* this rank has no request */
+        while (rank < decomp_rank)                /* this rank has no request */
             rank++;
 
         nreqs[rank] = atoi (strtok (NULL, " ")); /* number of requests */
-        if (nreqs[rank] == 0)					 /* this rank has zero request */
-            continue;							 /* loop of rank */
+        if (nreqs[rank] == 0)                     /* this rank has zero request */
+            continue;                             /* loop of rank */
 
-        off		= (int *)malloc (nreqs[rank] * sizeof (int));
-        len		= (int *)malloc (nreqs[rank] * sizeof (int));
+        off = (int *)malloc (nreqs[rank] * sizeof (int));
+        len = (int *)malloc (nreqs[rank] * sizeof (int));
         raw_off = (int *)malloc (raw_nreqs[rank] * sizeof (int));
         fgets (buf, LINE_SIZE, fd);
-        i	   = 0;
+        i = 0;
         off[0] = raw_off[i++] = atoi (strtok (buf, " "));
-        j					  = 1;
+        j = 1;
         while (off[0] == 0) {
             off[0] = raw_off[i++] = atoi (strtok (NULL, " "));
             j++;
@@ -384,7 +384,7 @@ static int add_decomp (
         for (; j < nreqs[rank]; j++) {
             off[k] = raw_off[i++] = atoi (strtok (NULL, " "));
             if (off[k] == 0) continue; /* skip 0 values */
-            off[k]--;				   /* offset is 1 based */
+            off[k]--;                   /* offset is 1 based */
             k++;
         }
 
@@ -392,8 +392,8 @@ static int add_decomp (
         qsort ((void *)off, k, sizeof (int), intcompare);
 
         ncontig = 1;
-        prev	= 0;
-        len[0]	= 1;
+        prev    = 0;
+        len[0]  = 1;
         for (j = 1; j < k; j++) {
             /* break contiguity at dimension boundaries or noncontiguous */
             if (off[j] % dims[0] == 0 || off[j] > off[j - 1] + 1) ncontig++;
@@ -415,7 +415,7 @@ static int add_decomp (
 
         /* write/append to variables offsets and lengths */
         count = ncontig;
-        err	  = driver->put_vara (ncid, varid[1], MPI_INT, &start, &count, off, coll);
+        err = driver->put_vara (ncid, varid[1], MPI_INT, &start, &count, off, coll);
         CHECK_ERR
         err = driver->put_vara (ncid, varid[2], MPI_INT, &start, &count, len, coll);
         CHECK_ERR
@@ -467,7 +467,7 @@ static void extract_file_names (const char *inList, int *num_decomp, char **infn
     num_files = 0;
     while (fgets (line, 1024, fd)) {
         if (strlen (line) == 0) continue; /* skip empty lines */
-        if (line[0] == '#') continue;	  /* skip comment line(start with #) */
+        if (line[0] == '#') continue;      /* skip comment line(start with #) */
         num_files++;
     }
 
@@ -477,7 +477,7 @@ static void extract_file_names (const char *inList, int *num_decomp, char **infn
     while (fgets (line, 1024, fd)) {
         char *tail;
         if (strlen (line) == 0) continue; /* skip empty lines */
-        if (line[0] == '#') continue;	  /* skip comment line(start with #) */
+        if (line[0] == '#') continue;      /* skip comment line(start with #) */
         /* remove blanks at tail. Note fgets stores newline to the buffer */
         tail = line + strlen (line) - 1;
         while (*tail == ' ' || *tail == '\t' || *tail == '\n') tail--;
@@ -494,18 +494,18 @@ static void extract_file_names (const char *inList, int *num_decomp, char **infn
 
 static void usage (char *argv0) {
     const char *help =
-   "Usage: ./dat2decom [-h|-v|-r|-l num] -a api -i input_file -o out_file\n"
-   "   [-h]            Print help\n"
-   "   [-v]            Verbose mode\n"
-   "   [-r]            Include original decomposition map\n"
-   "   [-l num]        max number of characters per line in input file\n"
-   "   -a api          output file format, api is one of the followings\n"
-   "      pnetcdf:     NetCDF classic 64-bit data format\n"
-   "      netcdf4:     NetCDF-4 (HDF5-based) format\n"
-   "      hdf5:        HDF5 format\n"
-   "      adios:       ADIOS2 BP3 format\n"
-   "   -i input_file   list of decomposition file names\n"
-   "   -o out_file     name of output NetCDF file\n";
+    "Usage: ./dat2decom [-h|-v|-r|-l num] -a fmt -i input_file -o out_file\n"
+    "  [-h]           Print help\n"
+    "  [-v]           Verbose mode\n"
+    "  [-r]           Include original decomposition map\n"
+    "  [-l num]       max number of characters per line in input file\n"
+    "  -a fmt         output file format, fmt is one of the followings\n"
+    "     cdf5:       NetCDF classic 64-bit data format\n"
+    "     netcdf4:    NetCDF-4 (HDF5-based) format\n"
+    "     hdf5:       HDF5 format\n"
+    "     bp:         ADIOS2 BP format\n"
+    "  -i input_file  input file containing a list of decomposition .dat file\n"
+    "  -o out_file    output file name\n";
     fprintf (stderr, help, argv0);
 }
 
@@ -515,7 +515,7 @@ int main (int argc, char **argv) {
     int i, rank, ncid, num_decomp = 0, dimid, err = 0;
     bool have_decom_dim = false;
     MPI_Info info;
-    e3sm_io_api api		   = pnetcdf;
+    e3sm_io_api api = pnetcdf;
     e3sm_io_driver *driver = NULL;
     e3sm_io_config cfg;
 
@@ -529,19 +529,19 @@ int main (int argc, char **argv) {
     }
 
     for (i = 0; i < MAX_NFILES; i++) infname[i] = NULL;
-    line_sz	  = LINE_SIZE;
-    verbose	  = 0;
+    line_sz   = LINE_SIZE;
+    verbose   = 0;
     raw_decom = 0;
 
     /* get command-line arguments */
     while ((i = getopt (argc, argv, "hvro:l:i:a:")) != EOF) {
         switch (i) {
             case 'a':;
-                if (std::string (optarg) == "pnetcdf") {
+                if (std::string (optarg) == "cdf5") {
                     api = pnetcdf;
                 } else if (std::string (optarg) == "hdf5") {
                     api = hdf5;
-                } else if (std::string (optarg) == "adios") {
+                } else if (std::string (optarg) == "bp") {
                     api = adios;
                 } else if (std::string (optarg) == "netcdf4") {
                     api = netcdf4;
@@ -616,29 +616,29 @@ int main (int argc, char **argv) {
     }
 
     // Set up dummy config for the driver
-    cfg.io_comm		   = MPI_COMM_WORLD;
-    cfg.info		   = MPI_INFO_NULL;
-    cfg.num_iotasks	   = cfg.np;
-    cfg.num_group	   = 1;
-    cfg.out_path[0]	   = '\0';
-    cfg.in_path[0]	   = '\0';
-    cfg.cfg_path[0]	   = '\0';
-    cfg.hx			   = -1;
-    cfg.wr			   = 0;
-    cfg.rd			   = 0;
-    cfg.nvars		   = 0;
-    cfg.strategy	   = undef_io;
-    cfg.api			   = api;
-    cfg.chunksize	   = 0;
-    cfg.filter		   = none;
-    cfg.verbose		   = 0;
+    cfg.io_comm        = MPI_COMM_WORLD;
+    cfg.info           = MPI_INFO_NULL;
+    cfg.num_iotasks    = cfg.np;
+    cfg.num_group      = 1;
+    cfg.out_path[0]    = '\0';
+    cfg.in_path[0]     = '\0';
+    cfg.cfg_path[0]    = '\0';
+    cfg.hx             = -1;
+    cfg.wr             = 0;
+    cfg.rd             = 0;
+    cfg.nvars          = 0;
+    cfg.strategy       = undef_io;
+    cfg.api            = api;
+    cfg.chunksize      = 0;
+    cfg.filter         = none;
+    cfg.verbose        = 0;
     cfg.keep_outfile   = 0;
-    cfg.profiling	   = 0;
-    cfg.two_buf		   = 0;
+    cfg.profiling      = 0;
+    cfg.two_buf        = 0;
     cfg.non_contig_buf = 0;
-    cfg.io_stride	   = 1;
-    cfg.sub_comm	   = MPI_COMM_NULL;
-    cfg.rank		   = rank;
+    cfg.io_stride      = 1;
+    cfg.sub_comm       = MPI_COMM_NULL;
+    cfg.rank           = rank;
 
     // Initialize driver
     driver = e3sm_io_get_driver (NULL, &cfg);
