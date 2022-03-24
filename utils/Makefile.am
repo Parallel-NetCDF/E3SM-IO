@@ -6,7 +6,7 @@ AM_CPPFLAGS  = -I${top_srcdir}/src
 AM_CPPFLAGS += -I${top_srcdir}/src/drivers
 AM_CPPFLAGS += -I${top_srcdir}/src/cases
 
-bin_PROGRAMS = datstat dat2decom
+bin_PROGRAMS = datstat dat2decom decomreplay
 
 if ENABLE_ADIOS2
 if HAVE_CXX17
@@ -27,6 +27,9 @@ endif
 
 dat2decom_SOURCES = dat2decom.cpp 
 dat2decom_LDADD = ${top_builddir}/src/drivers/libe3sm_io_drivers.a ${top_builddir}/src/e3sm_io_profile.o
+
+decomreplay_SOURCES = decomreplay.cpp 
+decomreplay_LDADD = ${top_builddir}/src/drivers/libe3sm_io_drivers.a ${top_builddir}/src/e3sm_io_profile.o
 
 datstat_SOURCES = datstat.cpp
 
