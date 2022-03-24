@@ -127,6 +127,7 @@ NetCDF file format.
   available in folder `../datasets` with file named `g_case_cmpaso_16p.nc`.
 * The NetCDF file containing the 5 decompositions from a small I case is also
   available in folder `../datasets` with file named `i_case_f19_g16_16p.nc`.
+---
 
 ## dat2decom
 **dat2decom** is generalized from [dat2nc](#dat2nc) that can convert the
@@ -167,8 +168,47 @@ NetCDF, HDF5, NetCDF4, or ADIOS file format.
        -i input_file   list of decomposition file names
        -o out_file     name of output NetCDF file
   ```
-
 ---
+
+## decomreplay
+**decomreplay** converts the binary decomposition data files between supported formats.
+### Convert the NetCDF/HDF5/NetCDF4/ADIOS decomposition file into NetCDF/HDF5/NetCDF4/ADIOS file
+The instructions below explain how to convert the data decomposition file already 
+in binary form into NetCDF, HDF5, NetCDF4, or ADIOS file format.
+* A utility program, `decomreplay.c`, functions similar to dat2decom. It takes the converted
+  decomposition file in binary form instead of the text files. It can be used to convert the 
+  file format of decomposition files between supported file formats.
+  + decomreplay allows the user to specify their desired file format for the 
+    converted decomposition file.
+  + Use -a option to select the file format.
+    + pnetcdf - same as dat2nc
+    + hdf5 - store decomposition file in HDF5 format
+    + netcdf4 - store decomposition file in NetCDF 4 format
+    + adios - store decomposition file in ADIOS2 format
+  + 
+* The command to combine the three `.dat` files for the F case to a HDF5 file
+  for the F case as an example, is:
+  ```
+    % ./decomreplay -a hdf5 -i f_case_866x72_16p.nc -o f_case_866x72_16p.h5
+  ```
+* Command-line options of `./decomreplay`:
+  ```
+    % ./decomreplay -h
+    Usage: ./dat2decom [-h|-v|-r|-l num] -a api -i input_file -o out_file
+       [-h]            Print help
+       [-v]            Verbose mode
+       [-r]            Include original decomposition map
+       [-l num]        max number of characters per line in input file
+       -a api          output file format, api is one of the followings
+          pnetcdf:     NetCDF classic 64-bit data format
+          netcdf4:     NetCDF-4 (HDF5-based) format
+          hdf5:        HDF5 format
+          adios:       ADIOS2 BP3 format
+       -i input_file   name of input decomposition file 
+       -o out_file     name of output decomposition file 
+  ```
+---
+
 ## datstat
 **datstat** reads a decomposition file in its original text format and report
 statistics of the decomposition.
