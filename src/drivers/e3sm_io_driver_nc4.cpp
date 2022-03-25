@@ -73,7 +73,7 @@ int e3sm_io_driver_nc4::create (std::string path, MPI_Comm comm, MPI_Info info, 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_OPEN)
 
-    err = nc_create_par (path.c_str (), NC_CLOBBER | NC_NETCDF4, comm, info, fid);
+    err = nc_create_par (path.c_str (), NC_CLOBBER | NC_NETCDF4 | NC_NODIMSCALE_ATTACH, comm, info, fid);
     CHECK_NCERR
 
     /* turn off fill mode for the entire file */

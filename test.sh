@@ -48,13 +48,6 @@ if test "x${ENABLE_ADIOS2}" = x1 ; then
 fi
 
 if test "x${ENABLE_NETCDF4}" = x1 ; then
-   if test "x$#" = x0 ; then :; else
-      echo "==================================================================="
-      echo "Warning: skip NetCDF-4 parallel tests due to a bug in NetCDF-C"
-      echo "         version 4.8.1 and prior. See bug issue"
-      echo "         https://github.com/Unidata/netcdf-c/issues/2251"
-      echo "==================================================================="
-   fi
    APIS+=("netcdf4 canonical")
    export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${NETCDF4_LIB_PATH}:${LD_LIBRARY_PATH}
    if test "x${ENABLE_LOGVOL}" = x1 ; then
@@ -107,7 +100,6 @@ for API in "${APIS[@]}" ; do
            IN_FILE="${srcdir}/${IN_FILE}.nc"
            OUT_FILE+=".nc"
         elif test "x${ap[0]}" = xnetcdf4 ; then
-           if test "x$#" = x0 ; then :; else continue; fi
            OUT_FILE+=".nc4"
            if test "x${ap[1]}" = xlog ; then
               # This option requires the two VOL environment variables to be set.

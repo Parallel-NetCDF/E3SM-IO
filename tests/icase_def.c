@@ -93,23 +93,31 @@ err = nc_def_dim(ncid, "levdcmp", 15, &dimids[18]); ERR
 err = nc_def_dim(ncid, "levtrc", 10, &dimids[19]); ERR
 err = nc_def_dim(ncid, "hist_interval", 2, &dimids[20]); ERR
 
+#ifdef DIM_SCALE
 err = nc_def_var(ncid, "levgrnd", NC_FLOAT, 1, dimids, &varid); ERR
 err = nc_put_att(ncid, varid, "long_name", NC_CHAR, 22, "coordinate soil levels"); ERR
 err = nc_put_att(ncid, varid, "units", NC_CHAR, 1, "m"); ERR
+#endif
 
+#ifdef DIM_SCALE
 err = nc_def_var(ncid, "levlak", NC_FLOAT, 1, dimids, &varid); ERR
 err = nc_put_att(ncid, varid, "long_name", NC_CHAR, 22, "coordinate lake levels"); ERR
 err = nc_put_att(ncid, varid, "units", NC_CHAR, 1, "m"); ERR
+#endif
 
+#ifdef DIM_SCALE
 err = nc_def_var(ncid, "levdcmp", NC_FLOAT, 1, dimids, &varid); ERR
 err = nc_put_att(ncid, varid, "long_name", NC_CHAR, 22, "coordinate soil levels"); ERR
 err = nc_put_att(ncid, varid, "units", NC_CHAR, 1, "m"); ERR
+#endif
 
+#ifdef DIM_SCALE
 err = nc_def_var(ncid, "time", NC_FLOAT, 1, dimids, &varid); ERR
 err = nc_put_att(ncid, varid, "long_name", NC_CHAR, 4, "time"); ERR
 err = nc_put_att(ncid, varid, "units", NC_CHAR, 30, "days since 0001-01-01 00:00:00"); ERR
 err = nc_put_att(ncid, varid, "calendar", NC_CHAR, 6, "noleap"); ERR
 err = nc_put_att(ncid, varid, "bounds", NC_CHAR, 11, "time_bounds"); ERR
+#endif
 
 err = nc_def_var(ncid, "mcdate", NC_INT, 1, dimids, &varid); ERR
 err = nc_put_att(ncid, varid, "long_name", NC_CHAR, 23, "current date (YYYYMMDD)"); ERR
@@ -134,17 +142,21 @@ err = nc_def_var(ncid, "date_written", NC_CHAR, 2, dimids, &varid); ERR
 
 err = nc_def_var(ncid, "time_written", NC_CHAR, 2, dimids, &varid); ERR
 
+#ifdef DIM_SCALE
 err = nc_def_var(ncid, "lon", NC_FLOAT, 1, dimids, &varid); ERR
 err = nc_put_att(ncid, varid, "long_name", NC_CHAR, 20, "coordinate longitude"); ERR
 err = nc_put_att(ncid, varid, "units", NC_CHAR, 12, "degrees_east"); ERR
 err = nc_put_att(ncid, varid, "_FillValue", NC_FLOAT, 1, buf); ERR
 err = nc_put_att(ncid, varid, "missing_value", NC_FLOAT, 1, buf); ERR
+#endif
 
+#ifdef DIM_SCALE
 err = nc_def_var(ncid, "lat", NC_FLOAT, 1, dimids, &varid); ERR
 err = nc_put_att(ncid, varid, "long_name", NC_CHAR, 19, "coordinate latitude"); ERR
 err = nc_put_att(ncid, varid, "units", NC_CHAR, 13, "degrees_north"); ERR
 err = nc_put_att(ncid, varid, "_FillValue", NC_FLOAT, 1, buf); ERR
 err = nc_put_att(ncid, varid, "missing_value", NC_FLOAT, 1, buf); ERR
+#endif
 
 err = nc_def_var(ncid, "area", NC_FLOAT, 2, dimids, &varid); ERR
 err = nc_put_att(ncid, varid, "long_name", NC_CHAR, 15, "grid cell areas"); ERR
