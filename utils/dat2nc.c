@@ -506,13 +506,14 @@ void extract_file_names(const char  *inList,
 
 static void usage(char *argv0) {
     char *help =
-        "Usage: %s [-h|-v|-r|-l] -i input_file -o out_file\n"
-        "   -h               Print help\n"
-        "   -v               Verbose mode\n"
-        "   -r               Include original decomposition map\n"
-        "   -l num           max number of characters per line in input file\n"
-        "   -i input_file    list of decomposition file names\n"
-        "   -o out_file      name of output netCDF file\n";
+    "Usage: %s [-h|-v|-r|-l] -i input_file -o out_file\n"
+    "  -h             Print help\n"
+    "  -v             Verbose mode\n"
+    "  -r             Include original decomposition map\n"
+    "  -l num         max number of characters per line in input file\n"
+    "  -i input_file  a text file containing a list of decomposition\n"
+    "                 map .dat file names\n"
+    "  -o out_file    name of output netCDF file\n";
     fprintf(stderr, help, argv0);
 }
 

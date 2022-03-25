@@ -93,10 +93,10 @@ inline size_t adios2_type_size (adios2_type type) {
 
 static void usage (char *argv0) {
     char *help =(char*)
-        "Usage: %s [OPTION]... FILE \n"
-        "       -v               Verbose mode\n"
-        "       -h               Print help\n"
-        "       FILE             Name of BP file to analysis\n";
+    "Usage: %s [OPTION]... FILE \n"
+    "       -v    Verbose mode\n"
+    "       -h    Print help\n"
+    "       FILE  Name of BP file to be analyzed\n";
     fprintf (stderr, help, argv0);
 }
 
@@ -317,6 +317,7 @@ int main (int argc, char *argv[]) {
             case 'h':
             default:
                 usage (argv[0]);
+                MPI_Finalize();
                 return 1;
         }
     }

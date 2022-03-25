@@ -19,8 +19,8 @@
 
 #ifdef ENABLE_NETCDF4
 #include <netcdf.h>
+#include <netcdf_par.h>
 #endif
-
 #ifdef ENABLE_PNC
 #include <pnetcdf.h>
 #endif
@@ -58,6 +58,8 @@
 
 #define NC_NOERR        0   /**< No Error */
 #define NC_GLOBAL 	-1
+#define NC_UNLIMITED 0L
+#define _FillValue      "_FillValue"
 
 typedef int nc_type;
 #endif
@@ -237,6 +239,7 @@ typedef struct e3sm_io_decom {
 #ifdef __cplusplus
 extern "C" {
 #endif
+int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom);
 #ifdef ENABLE_PNC
 extern int read_decomp_pnc(e3sm_io_config *cfg, e3sm_io_decom *decom);
 #endif

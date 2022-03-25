@@ -18,6 +18,7 @@ H_SRCS          = e3sm_io.h \
 
 e3sm_io_SOURCES = e3sm_io.c \
                   e3sm_io_core.cpp \
+                  read_decomp.cpp \
                   calc_metadata.c
 
 e3sm_io_SOURCES += $(H_SRCS) \
@@ -29,13 +30,6 @@ e3sm_io_LDADD = cases/libe3sm_io_cases.a \
 
 if ENABLE_LOGVOL
 e3sm_io_LDADD += -lH5VL_log
-endif
-
-if ENABLE_PNC
-e3sm_io_SOURCES += read_decomp_pnc.c 
-endif
-if ENABLE_NETCDF4
-e3sm_io_SOURCES += read_decomp_nc4.c 
 endif
 
 $(M4_SRCS:.m4=.cpp): Makefile e3sm_io_profile_timers.m4

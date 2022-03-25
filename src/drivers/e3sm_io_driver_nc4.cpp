@@ -12,10 +12,6 @@
 //
 #include <sys/stat.h>
 //
-#include <netcdf.h>
-#include <netcdf_dispatch.h>
-#include <netcdf_par.h>
-//
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 
@@ -292,7 +288,7 @@ int e3sm_io_driver_nc4::inq_var (int fid, std::string name, int *varid) {
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_INQ_VAR)
 
     err = nc_inq_varid (fid, name.c_str (), varid);
-    CHECK_NCERR
+    // inq_var is used to check whether a variable exist so error is expected
 
 err_out:
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_INQ_VAR)
@@ -413,6 +409,22 @@ err_out:
     return err;
 }
 
+int e3sm_io_driver_nc4::inq_att (int fid, int vid, std::string name, MPI_Offset *size){
+    int err;
+    size_t len;
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
+
+    err = nc_inq_attlen (fid, vid, name.c_str (), &len);
+    CHECK_NCERR
+    *size = (MPI_Offset) len;
+
+err_out:
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
+    return err;
+}
+
+
 int e3sm_io_driver_nc4::put_varl (
     int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
     int err = 0;
@@ -440,7 +452,8 @@ int e3sm_io_driver_nc4::put_vara (int fid,
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_PUT_VAR)
 
-    nc_inq_vartype (fid, vid, &xtype);
+    err = nc_inq_vartype (fid, vid, &xtype);
+    CHECK_NCERR
     err = e3sm_io_xlen_nc_type (xtype, &xesize);
     CHECK_ERR
     err = nc_inq_varndims (fid, vid, &ndim);
@@ -711,7 +724,8 @@ int e3sm_io_driver_nc4::get_vara (int fid,
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_GET_VAR)
 
-    nc_inq_vartype (fid, vid, &xtype);
+    err = nc_inq_vartype (fid, vid, &xtype);
+    CHECK_NCERR
     err = e3sm_io_xlen_nc_type (xtype, &xesize);
     CHECK_ERR
     err = nc_inq_varndims (fid, vid, &ndim);

@@ -438,11 +438,19 @@ int e3sm_io_driver_hdf5::inq_var (int fid, std::string name, int *did) {
 	int err		  = 0;
 	hdf5_file *fp = this->files[fid];
 	hid_t h5did;
+	htri_t exist;
 
 	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
+	// inq_var is used to check whether a variable exist
+	exist = H5Lexists(fp->id, name.c_str (), H5P_DEFAULT);
+	if (exist == false){
+		err = -1;
+		goto err_out;
+	}
+
 	h5did = H5Dopen2 (fp->id, name.c_str (), H5P_DEFAULT);
-	CHECK_HID (h5did)
+	CHECK_HID(h5did)
 
 	*did = fp->dids.size ();
 	fp->dids.push_back (h5did);
@@ -652,6 +660,41 @@ err_out:;
 	if (asid >= 0) H5Sclose (asid);
 	if (aid >= 0) H5Aclose (aid);
 	if (tid >= 0) H5Tclose (tid);
+
+	return err;
+}
+
+int e3sm_io_driver_hdf5::inq_att (int fid, int vid, std::string name, MPI_Offset *size){
+	int err = 0;
+	herr_t herr;
+	int esize;
+	hdf5_file *fp = this->files[fid];
+	hid_t asid = -1, aid = -1;
+	hid_t did;
+	hsize_t asize;
+
+	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
+
+	if (vid == NC_GLOBAL)
+		did = fp->id;
+	else
+		did = fp->dids[vid];
+
+	aid = H5Aopen (did, name.c_str (), H5P_DEFAULT);
+	CHECK_HID (aid)
+
+	asid = H5Aget_space (aid);
+	CHECK_HID (asid)
+	
+	H5Sget_simple_extent_dims (asid, &asize, NULL);
+	
+	*size = (MPI_Offset) asize;
+
+err_out:;
+	E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
+
+	if (asid >= 0) H5Sclose (asid);
+	if (aid >= 0) H5Aclose (aid);
 
 	return err;
 }
@@ -1039,7 +1082,7 @@ int e3sm_io_driver_hdf5::get_vara (int fid,
 	fp->getsize += getsize;
 
 err_out:;
-	if (tid >= 0) H5Sclose (tid);
+	if (tid >= 0) H5Tclose (tid);
 	if (dsid >= 0) H5Sclose (dsid);
 	if (msid >= 0) H5Sclose (msid);
 	E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
@@ -1109,7 +1152,7 @@ int e3sm_io_driver_hdf5::get_vars (int fid,
 	fp->getsize += getsize;
 
 err_out:;
-	if (tid >= 0) H5Sclose (tid);
+	if (tid >= 0) H5Tclose (tid);
 	if (dsid >= 0) H5Sclose (dsid);
 	if (msid >= 0) H5Sclose (msid);
 	E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)

@@ -448,6 +448,15 @@ int e3sm_io_driver_h5blob::get_att(int          fid,
                                buf);
 }
 
+int e3sm_io_driver_h5blob::inq_att (int fid, int vid, std::string name, MPI_Offset *size){
+    int err=0;
+    
+    ERR_OUT ("HDF5 blob does not support inq_att")
+
+err_out:;
+	return err;
+}
+
 int e3sm_io_driver_h5blob::put_varl (
     int fid, int vid, MPI_Datatype itype, void *buf, e3sm_io_op_mode mode) {
     int err = 0;

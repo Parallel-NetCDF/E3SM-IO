@@ -87,8 +87,13 @@ err_out:
 int e3sm_io_driver_pnc::open (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err;
     MPI_Offset size;
+    MPI_Offset put_buffer_size_limit;
 
     err = ncmpi_open (comm, path.c_str (), NC_64BIT_DATA, info, fid);
+    CHECK_NCERR
+
+    put_buffer_size_limit = 10485760;
+    err = ncmpi_buffer_attach (*fid, put_buffer_size_limit);
     CHECK_NCERR
 
     err = ncmpi_inq_get_size(*fid, &size); CHECK_NCERR
@@ -252,8 +257,8 @@ int e3sm_io_driver_pnc::inq_var (int fid, std::string name, int *varid) {
     int err;
 
     err = ncmpi_inq_varid (fid, name.c_str (), varid);
-    CHECK_NCERR
-
+    // inq_var is used to check whether a variable exist so error is expected
+    
 err_out:
     return err;
 }
@@ -303,6 +308,10 @@ int e3sm_io_driver_pnc::inq_dim (int fid, std::string name, int *dimid) {
     MPI_Offset size;
 
     err = ncmpi_inq_dimid (fid, name.c_str (), dimid);
+    if (err == NC_EBADDIM){
+        err = -1;
+        goto err_out;
+    }
     CHECK_NCERR
 
     if (cfg->chunksize == 0) return err;
@@ -402,6 +411,16 @@ int e3sm_io_driver_pnc::get_att (int fid, int vid, std::string name, void *buf) 
     int err;
 
     err = ncmpi_get_att (fid, vid, name.c_str (), buf);
+    CHECK_NCERR
+
+err_out:
+    return err;
+}
+
+int e3sm_io_driver_pnc::inq_att (int fid, int vid, std::string name, MPI_Offset *size){
+    int err;
+
+    err = ncmpi_inq_attlen (fid, vid, name.c_str (), size);
     CHECK_NCERR
 
 err_out:

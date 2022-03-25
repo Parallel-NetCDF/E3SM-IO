@@ -12,10 +12,209 @@
 #endif
 //
 #include <string>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+//
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 //
 #include "e3sm_io.h"
 #include "e3sm_io_driver.hpp"
 #include "e3sm_io_err.h"
+
+#ifdef ENABLE_HDF5
+#include <hdf5.h>
+#include <e3sm_io_driver_hdf5.hpp>
+#include <e3sm_io_driver_h5blob.hpp>
+#ifdef ENABLE_LOGVOL
+#include <e3sm_io_driver_hdf5_log.hpp>
+#endif
+#endif
+
+#ifdef ENABLE_PNC
+#include <e3sm_io_driver_pnc.hpp>
+#endif
+
+#ifdef ENABLE_NETCDF4
+#include <e3sm_io_driver_nc4.hpp>
+#endif
+
+#ifdef ENABLE_ADIOS2
+#include <adios2_c.h>
+
+#include <e3sm_io_driver_adios2.hpp>
+#endif
+
+e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
+                                    e3sm_io_config *cfg)
+{
+    int err=0, fd;
+    const char *cdf_signature="CDF", *path;
+    char signature[8];
+    ssize_t rlen;
+    e3sm_io_driver *driver = NULL;
+#ifdef ENABLE_HDF5
+    const char *hdf5_signature = "\211HDF\r\n\032\n";
+    off_t offset;
+#endif
+
+    /* root checks the file format and broadcasts the finding */
+    if (filename && cfg->rank == 0) {
+        /* remove the file system type prefix name if there is any.  For
+         * example, when filename = "lustre:/home/foo/testfile.nc", remove
+         * "lustre:" to make path = "/home/foo/testfile.nc" in open() below
+         */
+        path = strchr (filename, ':');
+        if (path == NULL)
+            path = filename; /* no prefix */
+        else
+            path++;
+
+        /* must include config.h on 32-bit machines, as AC_SYS_LARGEFILE is
+         * called at the configure time and it defines _FILE_OFFSET_BITS to 64
+         * if large file feature is supported.
+         */
+        if ((fd = open(path, O_RDONLY, 00400)) == -1) { /* open for read */
+            char msg[128];
+            sprintf(msg, "Cannot open file \"%s\"", path);
+            ERR_OUT(msg)
+        }
+
+        /* get first 8 bytes of file */
+        rlen = read (fd, signature, 8);
+        if (rlen != 8) { ERR_OUT ("Cannot read file.") }
+
+        // PnetCDF ?
+        if (memcmp (signature, cdf_signature, 3) == 0) {
+            cfg->api = pnetcdf;
+            goto done_check;
+        }
+
+        // HDF5 ?
+#ifdef ENABLE_HDF5
+        offset = 512;
+        while (rlen == 8 && memcmp (signature, hdf5_signature, 8)) {
+            lseek (fd, offset, SEEK_SET);
+            offset <<= 1;
+            rlen = read (fd, signature, 8);
+        }
+        if (rlen == 8) {  // It is HDF5, check if it is Log VOL
+            hid_t fid = -1;
+            htri_t isnc, islog;
+
+            fid = H5Fopen (path, H5F_ACC_RDONLY, H5P_DEFAULT);
+            if (fid < 0) { ERR_OUT ("HDF5 header detected, but not a HDF5 file"); }
+
+            // Check for NetCDF4
+            isnc = H5Aexists(fid, "_NCProperties");
+            
+            if(isnc == false){
+                islog = H5Lexists(fid, "_LOG", H5P_DEFAULT);
+                if (islog == true) {
+                    cfg->api = hdf5_log;
+                } else {
+                    cfg->api = hdf5;
+                }
+            }
+            if (fid >= 0) { H5Fclose (fid); }
+
+            if (isnc == false) {
+                goto done_check;
+            }
+        }
+#endif
+
+        // NetCDF4 ?
+        // NC4 will try to open HDF5 files even if it is not nc4 file, check HDF5 files first
+#ifdef ENABLE_NETCDF4
+        if(e3sm_io_driver_nc4::compatible(std::string(path))) {
+            cfg->api = netcdf4;
+            goto done_check;
+        }
+#endif
+
+// ADIOS2?
+#ifdef ENABLE_ADIOS2
+        if(e3sm_io_driver_adios2::compatible(std::string(path))) {
+            cfg->api = adios;
+            goto done_check;
+        }
+#endif
+
+
+done_check:
+        if (cfg->rank == 0 && fd >= 0) { close (fd); }
+    }
+    if (filename) {
+        err = MPI_Bcast (&(cfg->api), 1, MPI_INT, 0, cfg->io_comm);
+        CHECK_MPIERR
+    }
+
+    /* For read tests, the read driver is determined by the format of input
+     * file. However, if the input file is an HDF5 in canonical layout, the
+     * read driver will be selected based on command-line option -a, because
+     * the file can be read either by the official release of HDF5 library or
+     * the develop branch that implements the multi-dataset APIs, not yet in
+     * the official release.
+     */
+    switch (cfg->api) {
+#ifdef ENABLE_PNC
+        case pnetcdf:
+            driver = new e3sm_io_driver_pnc (cfg);
+            break;
+#endif
+#ifdef ENABLE_NETCDF4
+        case netcdf4:
+            driver = new e3sm_io_driver_nc4 (cfg);
+            break;
+#endif
+        case hdf5:
+#ifdef ENABLE_HDF5
+            if (cfg->strategy == blob)
+                driver = new e3sm_io_driver_h5blob (cfg);
+            else
+                driver = new e3sm_io_driver_hdf5 (cfg);
+#else
+            ERR_OUT ("HDF5 support was not enabled in this build")
+#endif
+            break;
+        case hdf5_md:
+            ERR_OUT("HDF5 does not support multi-dataset APIs")
+            break;
+        case hdf5_log:
+#ifdef ENABLE_HDF5
+#ifdef ENABLE_LOGVOL
+            driver = new e3sm_io_driver_hdf5_log (cfg);
+#else
+            ERR_OUT ("Log VOL support was not enabled in this build")
+#endif
+#else
+            ERR_OUT ("HDF5 support was not enabled in this build")
+#endif
+            break;
+        case adios:
+#ifdef ENABLE_ADIOS2
+            driver = new e3sm_io_driver_adios2 (cfg);
+#else
+            ERR_OUT ("ADIOS2 support was not enabled in this build")
+#endif
+            break;
+        default:
+            ERR_OUT ("I/O API is not set")
+            break;
+    }
+
+err_out:;
+    if (err) {
+        if (driver) {
+            delete driver;
+            driver = NULL;
+        }
+    }
+    return driver;
+}
 
 /*----< e3sm_io_xlen_nc_type() >---------------------------------------------*/
 int e3sm_io_xlen_nc_type (nc_type xtype, int *size) {

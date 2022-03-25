@@ -53,7 +53,31 @@ jobs:
                         --enable-hl \
                         --enable-parallel \
                         --enable-build-mode=production \
+                        --disable-doxygen-doc \
+                        --disable-doxygen-man \
+                        --disable-doxygen-html \
+                        --disable-hltools \
+                        --disable-tools \
+                        --disable-tests \
                         CC=mpicc
+            make -j 4 install
+        - name: Install NetCDF-C
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            rm -rf v4.8.1.tar.gz netcdf-c-4.8.1
+            wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz
+            tar -zxf v4.8.1.tar.gz
+            cd netcdf-c-4.8.1
+            ./configure --prefix=${WORKDIR}/.local/netcdf/4.8.1 \
+                        --disable-dap \
+                        --disable-nczarr \
+                        --disable-nczarr-filters \
+                        --disable-filter-testing \
+                        CC=mpicc \
+                        CPPFLAGS="-I${WORKDIR}/.local/hdf5/1.13.0/include" \
+                        LDFLAGS="-L${WORKDIR}/.local/hdf5/1.13.0/lib" \
+                        LIBS="-lhdf5"
             make -j 4 install
         - name: Install ADIOS2
           if: ${{ success() }}
@@ -94,13 +118,79 @@ jobs:
             ./configure --prefix=${WORKDIR}/.local/logvol/1.1.0 \
                         --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0
             make -j 4 install
-        - name: Build E3SM_IO with all APIs except NetCDF4
+        - name: Build E3SM_IO with PnetCDF only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
             autoreconf -i
             ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
+                        CC=mpicc CXX=mpicxx \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 4
+            make check
+            cat test.sh.log utils/*.log
+            make -s distclean
+        - name: Build E3SM_IO with PnetCDf + HDF5 only
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
                         --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
+                        CC=mpicc CXX=mpicxx \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 4
+            make check
+            cat test.sh.log utils/*.log
+            make -s distclean
+        - name: Build E3SM_IO with PnetCDf + HDF5 log-based VOL only
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
+                        --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
+                        --with-logvol=${WORKDIR}/.local/logvol/1.1.0 \
+                        CC=mpicc CXX=mpicxx \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 4
+            make check
+            cat test.sh.log utils/*.log
+            make -s distclean
+        - name: Build E3SM_IO with PnetCDf + NetCDF4 only
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
+                        --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 \
+                        CC=mpicc CXX=mpicxx \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 4
+            make check
+            cat test.sh.log utils/*.log
+            make -s distclean
+        - name: Build E3SM_IO with PnetCDF + ADIOS only
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
+                        --with-adios2=${WORKDIR}/.local/adios2/2.7.1 \
+                        CC=mpicc CXX=mpicxx \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 4
+            make check
+            cat test.sh.log utils/*.log
+            make -s distclean
+        - name: Build and test E3SM_IO with all APIs
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
+                        --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
+                        --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 \
                         --with-logvol=${WORKDIR}/.local/logvol/1.1.0 \
                         --with-adios2=${WORKDIR}/.local/adios2/2.7.1 \
                         CC=mpicc CXX=mpicxx \
@@ -110,17 +200,15 @@ jobs:
         - name: Print log all APIs
           if: ${{ failure() }}
           run: |
-            WORKDIR=$(pwd)
-            cat ${WORKDIR}/config.log
-        - name: Test E3SM_IO all APIs
+            cat config.log
+        - name: Test E3SM_IO all APIs -- parallel runs
+          if: ${{ success() }}
+          run: |
+            make ptest
+        - name: Test make distcheck
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            make check
-            make ptest
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
-        - name: Print make check log
-          run: |
-            WORKDIR=$(pwd)
-            cat ${WORKDIR}/test.sh.log
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 --with-logvol=${WORKDIR}/.local/logvol/1.1.0 --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distclean
 
