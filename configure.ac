@@ -433,6 +433,7 @@ AC_ARG_WITH([netcdf4],
    if test "x$netcdf4_config" != x ; then
       netcdf4_cflags=`$netcdf4_config --cflags`
       netcdf4_lflags=`$netcdf4_config --libs`
+      netcdf4_version=`$netcdf4_config --version | cut -d' ' -f2 | cut -d'-' -f1`
    else
       netcdf4_cflags="-I$netcdf4_inc"
       netcdf4_lflags="-L$netcdf4_lib"
@@ -453,17 +454,48 @@ AC_ARG_WITH([netcdf4],
          LDFLAGS="$LDFLAGS $netcdf4_lflags"
       fi
    fi
-   AC_CHECK_HEADER([netcdf.h], [have_netcdf4=yes], [have_netcdf4=no])
+   AC_CHECK_HEADERS([netcdf.h netcdf_meta.h], [have_netcdf4=yes], [have_netcdf4=no])
    if test "x$have_netcdf4" = xno ; then
       AC_MSG_WARN([
       -----------------------------------------------------------------------
-      Missing NetCDF-header files 'netcdf4_c.h' required to build E3SM_IO. Use
-      configure command-line option --with-netcdf4=/path/to/implementation
-      to specify the location of NetCDF installation. Disable NetCDF 4 support.
+      Missing NetCDF-header files 'netcdf.h' or 'netcdf_meta.h' which are
+      required to build E3SM_IO. Use configure command-line option
+      --with-netcdf4=/path/to/implementation to specify the location of
+      NetCDF-4 installation. Disable NetCDF-4 support.
       -----------------------------------------------------------------------])
    fi
 
-   AC_MSG_CHECKING([if NetCDF $netcdf_version is configured with parallel I/O enabled])
+   if test "x$have_netcdf4" = xyes ; then
+      AC_MSG_CHECKING([NetCDF-C version])
+      if test "x$netcdf4_version" = x ; then
+         nc_version_major=`${EGREP} NC_VERSION_MAJOR $netcdf4_inc/netcdf_meta.h| head -1 | cut -d' ' -f3`
+         nc_version_minor=`${EGREP} NC_VERSION_MINOR $netcdf4_inc/netcdf_meta.h| head -1 | cut -d' ' -f3`
+         nc_version_patch=`${EGREP} NC_VERSION_PATCH $netcdf4_inc/netcdf_meta.h| head -1 | cut -d' ' -f3`
+         netcdf4_version="${nc_version_major}.${nc_version_minor}.${nc_version_patch}"
+      fi
+      AC_MSG_RESULT([$netcdf4_version])
+
+      dnl Check if NetCDF version is 4.9.0 or later
+      AC_MSG_CHECKING([whether NetCDF-C version is 4.9.0 or later])
+      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <netcdf_meta.h>
+#define VER_NUM (NC_VERSION_MAJOR*1000000 + NC_VERSION_MINOR*1000 + NC_VERSION_PATCH)
+#if (VER_NUM < 4009000)
+#error NetCDF version is older than 4.9.0
+#endif
+      ]])], [netcdf_ge_4_9_0=yes], [netcdf_ge_4_9_0=no])
+      AC_MSG_RESULT([$netcdf_ge_4_9_0])
+
+      if test "x${netcdf_ge_4_9_0}" = xno; then
+         AC_MSG_ERROR([
+         ------------------------------------------------------------
+         Supplied NetCDF-4 version is $netcdf4_version, but 4.9.0 or later
+         is required. Abort.
+         ------------------------------------------------------------])
+      fi
+   fi
+
+   AC_MSG_CHECKING([if NetCDF-4 is configured with parallel I/O enabled])
    if test "x$netcdf4_config" != x ; then
       netcdf4_has_par=`$netcdf4_config --has-parallel4`
    else

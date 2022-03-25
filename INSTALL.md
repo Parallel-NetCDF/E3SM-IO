@@ -15,7 +15,7 @@
   + Experimental software developed as part of the Datalib project
 * (Optional) [ADIOS 2.7.1](https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz)
   + Configured with parallel I/O support (cmake with `-DADIOS2_USE_MPI=ON` is required)
-* (Optional) [NetCDF-C 4.8.1](https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz)
+* (Optional) [NetCDF-C 4.9.0](https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz)
   + Configured with parallel HDF5 support (i.e. `--enable-netcdf4`)
   + Note currently this option fails to run due to a
     [bug](https://github.com/Unidata/netcdf-c/issues/2251) in NetCDF-C.
@@ -79,12 +79,12 @@
   + Configure NetCDF-C with parallel HDF5 I/O enabled.
   + Run `make install`
   + Example build commands are given below. This example will install
-    the NetCDF library under the folder `${HOME}/NetCDF/4.8.1`.
+    the NetCDF library under the folder `${HOME}/NetCDF/4.9.0`.
     ```
-    % wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz
-    % tar -zxf v4.8.1.tar.gz
-    % cd netcdf-c-4.8.1
-    % ./configure --prefix=${HOME}/NetCDF/4.8.1 \
+    % wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
+    % tar -zxf v4.9.0.tar.gz
+    % cd netcdf-c-4.9.0
+    % ./configure --prefix=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc \
                   CPPFLAGS=-I${HOME}/HDF5/1.13.0/include \
                   LDFLAGS=-L${HOME}/HDF5/1.13.0/lib \
@@ -121,6 +121,7 @@
                   --with-hdf5=${HOME}/HDF5/1.13.0 \
                   --with-logvol=${HOME}/Log_VOL/1.1.0 \
                   --with-adios2=${HOME}/ADIOS2/2.7.1 \
+                  --with-netcdf4=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc CXX=mpicxx
     % make
     ```
@@ -208,13 +209,13 @@
 
 ### Current supported APIs (option `-a`) and I/O strategies (option `-x`)
   + Table below lists the supported combinations.
-     |           | pnetcdf | hdf5 | hdf5_log | netcdf4 | adios |
-     |-----------|:-------:|:----:|:--------:|:-------:|:-----:|
-     | canonical | yes     | yes  | no       | yes     | no    |
-     | log       | no      | yes  | yes      | yes*    | no    |
-     | blob      | yes     | yes  | no       | no      | yes   |
+     |           | pnetcdf | hdf5 | hdf5_log | netcdf4* | adios |
+     |-----------|:-------:|:----:|:--------:|:--------:|:-----:|
+     | canonical | yes     | yes  | no       | yes      | no    |
+     | log       | no      | yes  | yes      | yes      | no    |
+     | blob      | yes     | yes  | no       | no       | yes   |
      
-     `*` Requires setting of 2 VOL environment variables. See description below.
+     `*` NetCDF-C version 4.9.0 or newer is required.
 
   + **-a pnetcdf -x canonical**
     * A single NetCDF file in the classic CDF5 format will be created. All
