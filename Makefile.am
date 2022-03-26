@@ -25,6 +25,7 @@ endif
 if ENABLE_LOGVOL
    TESTS_ENVIRONMENT += export ENABLE_LOGVOL=1;
    TESTS_ENVIRONMENT += export LOGVOL_LIB_PATH="@LOGVOL_LIB_PATH@";
+   TESTS_ENVIRONMENT += export H5LDUMP="@H5LDUMP@";
 endif
 
 TESTS = test.sh
@@ -40,7 +41,7 @@ EXTRA_DIST =   test.sh \
                AUTHORS \
                slurm.knl
 
-ptest: $(check_PROGRAMS)
+ptest: src/e3sm_io
 	@echo "==========================================================="
 	@echo "    Parallel testing on 16 MPI processes"
 	@echo "==========================================================="

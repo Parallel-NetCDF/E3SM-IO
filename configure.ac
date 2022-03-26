@@ -330,7 +330,7 @@ AM_CONDITIONAL(ENABLE_PNC, [test "x$have_pnc" = xyes])
 have_hdf5=no
 have_multi_dset=no
 AC_ARG_WITH([hdf5],
-   [AS_HELP_STRING([--with-hdf5@<:@=INC,LIB | =DIR@:>@], 
+   [AS_HELP_STRING([--with-hdf5@<:@=INC,LIB | =DIR@:>@],
                    [Enable HDF5 feature and provide the HDF5 installation path(s):
     --with-hdf5=INC,LIB for include and lib paths separated by a comma.
     --with-hdf5=DIR for the path containing include/ and lib/ subdirectories.
@@ -420,7 +420,7 @@ AC_ARG_WITH([netcdf4],
         if test -n "$withval"; then
           netcdf4_inc="$withval/include"
           netcdf4_lib="$withval/lib"
-          netcdf4_bindir="$NETCDF4_INSTALL/bin"
+          netcdf4_bindir="$withval/bin"
         fi
         ;;
    esac
@@ -506,7 +506,7 @@ AC_ARG_WITH([netcdf4],
       AC_MSG_WARN([
       ------------------------------------------------------------
       NetCDF was not built with parallel NetCDF 4 support.
-      Disable NetCDF4. 
+      Disable NetCDF4.
       ------------------------------------------------------------])
       have_netcdf4 = no
    elif test "x$netcdf4_lib" != x ; then
@@ -535,11 +535,13 @@ AC_ARG_WITH([logvol],
      *,*)
         logvol_inc="`echo $withval |cut -f1 -d,`"
         logvol_lib="`echo $withval |cut -f2 -d, -s`"
+        logvol_bindir="$logvol_inc/../bin"
         ;;
      *)
         if test -n "$withval"; then
           logvol_inc="$withval/include"
           logvol_lib="$withval/lib"
+          logvol_bindir="$withval/bin"
         fi
         ;;
    esac
@@ -570,6 +572,15 @@ AC_ARG_WITH([logvol],
    fi
    if test "x$have_logvol" = xyes ; then
       AC_SUBST(LOGVOL_LIB_PATH, [$logvol_lib])
+   fi
+   if test "x$logvol_bindir" != x ; then
+      AC_PATH_PROG([h5ldump],[h5ldump],,[$logvol_bindir])
+   else
+      dnl Check h5ldump under $PATH
+      AC_PATH_PROG([h5ldump],[h5ldump])
+   fi
+   if test "x$h5ldump" != x ; then
+      AC_SUBST(H5LDUMP, [$h5ldump])
    fi
 ])
 AM_CONDITIONAL(ENABLE_LOGVOL, [test "x$have_logvol" = xyes])
@@ -650,9 +661,9 @@ if test "x${have_pnc}" = xno && test "x${have_nc4}" = xno && test "x${have_hdf5}
    -----------------------------------------------------------------------
     At least one API driver must be enabled.
     Use configure command-line option --with-pnetcdf=/path/to/implementation
-    to specify the location of PnetCDF installation. 
+    to specify the location of PnetCDF installation.
     Use configure command-line option --with-netcdf4=/path/to/implementation
-    to specify the location of NetCDF installation. 
+    to specify the location of NetCDF installation.
     Use configure command-line option --with-hdf5=/path/to/implementation
     to specify the location of HDF5 installation.
     Use configure command-line option --with-adios2=/path/to/implementation
