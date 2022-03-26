@@ -201,6 +201,7 @@ jobs:
           if: ${{ failure() }}
           run: |
             cat config.log
+            cat test.sh.log utils/*.log
         - name: Test E3SM_IO all APIs -- parallel runs
           if: ${{ success() }}
           run: |
