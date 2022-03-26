@@ -111,9 +111,10 @@ typedef struct {
     int nvars;        /* number of climate variables */
     int nrecs;        /* number of time records */
     int ffreq;        /* I/O flush frequency */
+    int num_attrs;    /* number of attributes */
     int num_flushes;  /* number of flush called */
-    int num_decomp_vars;
-    int nvars_D[MAX_NUM_DECOMP];
+    int num_decomp_vars;         /* no. climate variables decomposed */
+    int nvars_D[MAX_NUM_DECOMP]; /* no. climate variables per decomposition */
     MPI_Offset metadata_WR;
     MPI_Offset amount_WR;
     MPI_Offset amount_RD;

@@ -166,6 +166,12 @@ int main (int argc, char **argv) {
         cfg.I_case_h0.nvars_D[i] = 0;
         cfg.I_case_h1.nvars_D[i] = 0;
 
+        cfg.G_case.num_attrs     = 0;
+        cfg.F_case_h0.num_attrs  = 0;
+        cfg.F_case_h1.num_attrs  = 0;
+        cfg.I_case_h0.num_attrs  = 0;
+        cfg.I_case_h1.num_attrs  = 0;
+
         decom.blocklens[i]   = NULL;
         decom.disps[i]       = NULL;
         decom.raw_offsets[i] = NULL;
