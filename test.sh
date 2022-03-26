@@ -85,6 +85,7 @@ for DECOM in "${DECOMPS[@]}" ; do
         fi
     done
 done
+if test $VERBOSE = 1 ; then echo ""; fi
 
 for API in "${APIS[@]}" ; do
     ap=($API)
@@ -97,10 +98,10 @@ for API in "${APIS[@]}" ; do
         IN_FILE=datasets/${CONFIG}
         OUT_FILE="${TESTOUTDIR}/${ap[0]}_${ap[1]}_${CONFIG}"
         if test "x${ap[0]}" = xpnetcdf ; then
-           IN_FILE="${srcdir}/${IN_FILE}.nc"
-           OUT_FILE+=".nc"
+           FILE_EXT="nc"
+           IN_FILE="${srcdir}/${IN_FILE}.${FILE_EXT}"
         elif test "x${ap[0]}" = xnetcdf4 ; then
-           OUT_FILE+=".nc4"
+           FILE_EXT="nc4"
            if test "x${ap[1]}" = xlog ; then
               # This option requires the two VOL environment variables to be set.
               export HDF5_PLUGIN_PATH="$LOGVOL_LIB_PATH"
@@ -108,22 +109,51 @@ for API in "${APIS[@]}" ; do
               # Decomposition file must be read with native VOL, use nc file
               IN_FILE="${srcdir}/${IN_FILE}.nc"
            else
-              IN_FILE+=".nc4"
+              IN_FILE+=".${FILE_EXT}"
            fi
         elif test "x${ap[0]}" = xhdf5 || test "x${ap[0]}" = xhdf5_log ; then
-           IN_FILE+=".h5"
-           OUT_FILE+=".h5"
+           FILE_EXT="h5"
+           IN_FILE+=".${FILE_EXT}"
         elif test "x${ap[0]}" = xadios ; then
-           IN_FILE+=".bp"
-           OUT_FILE+=".bp"
+           FILE_EXT="bp"
+           IN_FILE+=".${FILE_EXT}"
         fi
 
-        CMD="${RUN} ${EXEC} -k -a ${ap[0]} -f -1 -r 2 -x ${ap[1]} -y 2 -o ${OUT_FILE} ${IN_FILE}"
-        if test $VERBOSE = 1 ; then echo "${CMD}"; fi
+        # construct real output file names
+        OUT_FILE="${OUT_FILE_BASE}.${FILE_EXT}"
+        if test $CONFIG = f_case_866x72_16p ; then
+           REAL_OUT_FILE="${OUT_FILE_BASE}_h0.${FILE_EXT} ${OUT_FILE_BASE}_h1.${FILE_EXT}"
+        elif test $CONFIG = g_case_cmpaso_16p ; then
+           REAL_OUT_FILE="${OUT_FILE_BASE}.${FILE_EXT}"
+        elif test $CONFIG = i_case_f19_g16_16p ; then
+           REAL_OUT_FILE="${OUT_FILE_BASE}_h0.${FILE_EXT} ${OUT_FILE_BASE}_h1.${FILE_EXT}"
+        fi
+
+        CMD="${RUN} ${EXEC} -k -a ${ap[0]} -r 2 -x ${ap[1]} -y 2 -o ${OUT_FILE} ${IN_FILE}"
+        echo "${CMD}"
         ${CMD}
 
+        # for log strategy, check if the output files are log-based VOL files
+        if test "x${ap[1]}" = xlog ; then
+           unset HDF5_VOL_CONNECTOR
+           unset HDF5_PLUGIN_PATH
+
+           for f in $REAL_OUT_FILE
+           do
+             echo "$H5LDUMP -k $f"
+             FILE_KIND=`$H5LDUMP -k $f`
+             if test "x${FILE_KIND}" != xHDF5-LogVOL ; then
+                echo "Error: Output file $f is not Log VOL, but ${FILE_KIND}"
+                exit 1
+             else
+                echo "Success: Output file $f is ${FILE_KIND}"
+                echo ""
+             fi
+           done
+        fi
+
         # delete the output files/folder
-        rm -rf ${TESTOUTDIR}/${ap[0]}_${ap[1]}_${CONFIG}*
+        rm -rf ${REAL_OUT_FILE}*
     done
 done
 
