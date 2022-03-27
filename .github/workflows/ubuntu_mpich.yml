@@ -110,12 +110,12 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf logvol.1.1.0.tar.gz vol-log-based-logvol.1.1.0
-            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.1.0.tar.gz
-            tar -zxf logvol.1.1.0.tar.gz
-            cd vol-log-based-logvol.1.1.0
+            rm -rf logvol.1.2.0.tar.gz vol-log-based-logvol.1.2.0
+            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.2.0.tar.gz
+            tar -zxf logvol.1.2.0.tar.gz
+            cd vol-log-based-logvol.1.2.0
             autoreconf -i
-            ./configure --prefix=${WORKDIR}/.local/logvol/1.1.0 \
+            ./configure --prefix=${WORKDIR}/.local/logvol/1.2.0 \
                         --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0
             make -j 4 install
         - name: Build E3SM_IO with PnetCDF only
@@ -150,7 +150,7 @@ jobs:
             WORKDIR=$(pwd)
             ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
                         --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
-                        --with-logvol=${WORKDIR}/.local/logvol/1.1.0 \
+                        --with-logvol=${WORKDIR}/.local/logvol/1.2.0 \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -191,7 +191,7 @@ jobs:
             ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
                         --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
                         --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 \
-                        --with-logvol=${WORKDIR}/.local/logvol/1.1.0 \
+                        --with-logvol=${WORKDIR}/.local/logvol/1.2.0 \
                         --with-adios2=${WORKDIR}/.local/adios2/2.7.1 \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
@@ -210,6 +210,6 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 --with-logvol=${WORKDIR}/.local/logvol/1.1.0 --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 --with-logvol=${WORKDIR}/.local/logvol/1.2.0 --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
             make distclean
 
