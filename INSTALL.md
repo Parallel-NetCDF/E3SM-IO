@@ -54,10 +54,10 @@
     + Compile with zlib library to enable metadata compression (--enable-zlib)
   + Example commands are given below.
     ```
-    % wget https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.1.0.tar.gz
-    % tar -zxf logvol.1.1.0.tar.gz
-    % cd vol-log-based-logvol.1.1.0
-    % ./configure --prefix=${HOME}/Log_VOL/1.1.0 --with-hdf5=${HOME}/HDF5/1.13.0 --enable-shared CC=mpicc
+    % wget https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.2.0.tar.gz
+    % tar -zxf logvol.1.2.0.tar.gz
+    % cd vol-log-based-logvol.1.2.0
+    % ./configure --prefix=${HOME}/Log_VOL/1.2.0 --with-hdf5=${HOME}/HDF5/1.13.0 --enable-shared CC=mpicc
     % make -j 4 install
     ```
 * Build ADIOS with parallel I/O support
@@ -119,7 +119,7 @@
     % autoreconf -i
     % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.2 \
                   --with-hdf5=${HOME}/HDF5/1.13.0 \
-                  --with-logvol=${HOME}/Log_VOL/1.1.0 \
+                  --with-logvol=${HOME}/Log_VOL/1.2.0 \
                   --with-adios2=${HOME}/ADIOS2/2.7.1 \
                   --with-netcdf4=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc CXX=mpicxx
