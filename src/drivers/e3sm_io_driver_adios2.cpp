@@ -134,7 +134,7 @@ bool e3sm_io_driver_adios2::compatible (std::string path) {
     adios2_finalize (adp);
 
 err_out:;
-    return ret;
+    return (err == -1) ? false : ret;
 }
 
 
@@ -593,6 +593,7 @@ int e3sm_io_driver_adios2::enddef (int fid) {
     return err;
 }
 int e3sm_io_driver_adios2::redef (int fid) {
+#if 0
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
@@ -608,6 +609,9 @@ int e3sm_io_driver_adios2::redef (int fid) {
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
+#else
+    return 0;
+#endif
 }
 int e3sm_io_driver_adios2::wait (int fid) {
     int err = 0;

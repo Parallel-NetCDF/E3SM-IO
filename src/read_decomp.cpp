@@ -112,8 +112,8 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 	int err, rank, nprocs, ncid, varid, proc_start, proc_count;
 	int i, j, k, nreqs, *all_nreqs, *all_raw_nreqs, dimids[3], id;
 	int has_raw_decom;
-	size_t num, decomp_nprocs, total_nreqs;
-	MPI_Offset mpi_num, mpi_decomp_nprocs, mpi_total_nreqs, start, count;
+	size_t num, decomp_nprocs;
+	MPI_Offset mpi_num, mpi_decomp_nprocs, start, count;
 	MPI_Info info = MPI_INFO_NULL;
 	struct off_len *myreqs;
 	e3sm_io_config decom_cfg;  // Dummy cfg for read decom
@@ -195,7 +195,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 	 */
 	proc_count = decomp_nprocs / nprocs;
 	proc_start = rank * proc_count;
-	if (rank < decomp_nprocs % nprocs) {
+	if (rank < (int)decomp_nprocs % nprocs) {
 		proc_start += rank;
 		proc_count++;
 	} else
@@ -216,9 +216,6 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 		sprintf (name, "D%d.total_nreqs", id + 1);
 		err = driver->inq_dim (ncid, name, &dimids[1]);
 		CHECK_ERR
-		err = driver->inq_dimlen (ncid, dimids[1], &mpi_total_nreqs);
-		CHECK_ERR
-		total_nreqs = (size_t)mpi_total_nreqs;
 
 		/* ndims: number of decomposition dimensions, not variable dimensions
 		 * In E3SM, decomposition is along the lowest dimensions of 2D, 3D,
