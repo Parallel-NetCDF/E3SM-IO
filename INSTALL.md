@@ -8,7 +8,7 @@
   + m4 1.4.18
 * MPI C and C++ compilers
   + Configured with a std 11 C++ compiler (supporting constant initializer)
-* (Optional) [PnetCDF 1.12.2](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz)
+* (Optional) [PnetCDF 1.12.3](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz)
 * (Optional) [HDF5 1.13.0](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz)
   + Configured with parallel I/O support (configured with `--enable-parallel` is required)
 * (Optional) [HDF5 Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
@@ -26,12 +26,12 @@
   + Configure PnetCDF with MPI C compiler
   + Run `make install`
   + Example build commands are given below. This example will install
-    the PnetCDF library under folder `${HOME}/PnetCDF/1.12.2`.
+    the PnetCDF library under folder `${HOME}/PnetCDF/1.12.3`.
     ```
-    % wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz
-    % tar -zxf pnetcdf-1.12.2.tar.gz
-    % cd pnetcdf-1.12.2
-    % ./configure --prefix=${HOME}/PnetCDF/1.12.2 CC=mpicc
+    % wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
+    % tar -zxf pnetcdf-1.12.3.tar.gz
+    % cd pnetcdf-1.12.3
+    % ./configure --prefix=${HOME}/PnetCDF/1.12.3 CC=mpicc
     % make -j 4 install
     ```
 * Build HDF5 with parallel I/O support
@@ -117,7 +117,7 @@
     % git clone https://github.com/Parallel-NetCDF/E3SM-IO.git
     % cd E3SM-IO
     % autoreconf -i
-    % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.2 \
+    % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.3 \
                   --with-hdf5=${HOME}/HDF5/1.13.0 \
                   --with-logvol=${HOME}/Log_VOL/1.2.0 \
                   --with-adios2=${HOME}/ADIOS2/2.7.1 \
