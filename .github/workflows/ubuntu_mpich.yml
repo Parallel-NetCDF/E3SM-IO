@@ -65,11 +65,11 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf v4.8.1.tar.gz netcdf-c-4.8.1
-            wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz
-            tar -zxf v4.8.1.tar.gz
-            cd netcdf-c-4.8.1
-            ./configure --prefix=${WORKDIR}/.local/netcdf/4.8.1 \
+            rm -rf v4.9.0.tar.gz netcdf-c-4.9.0
+            wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
+            tar -zxf v4.9.0.tar.gz
+            cd netcdf-c-4.9.0
+            ./configure --prefix=${WORKDIR}/.local/netcdf/4.9.0 \
                         --disable-dap \
                         --disable-nczarr \
                         --disable-nczarr-filters \
@@ -163,7 +163,7 @@ jobs:
           run: |
             WORKDIR=$(pwd)
             ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
-                        --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 \
+                        --with-netcdf4=${WORKDIR}/.local/netcdf/4.9.0 \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -190,7 +190,7 @@ jobs:
             WORKDIR=$(pwd)
             ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
                         --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
-                        --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 \
+                        --with-netcdf4=${WORKDIR}/.local/netcdf/4.9.0 \
                         --with-logvol=${WORKDIR}/.local/logvol/1.2.0 \
                         --with-adios2=${WORKDIR}/.local/adios2/2.7.1 \
                         CC=mpicc CXX=mpicxx \
@@ -210,6 +210,6 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 --with-logvol=${WORKDIR}/.local/logvol/1.2.0 --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-netcdf4=${WORKDIR}/.local/netcdf/4.9.0 --with-logvol=${WORKDIR}/.local/logvol/1.2.0 --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
             make distclean
 
