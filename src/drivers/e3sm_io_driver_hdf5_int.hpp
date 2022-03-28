@@ -21,7 +21,7 @@
 
 #define CHECK_HERR                                                    \
     {                                                                 \
-        if (herr != 0) {                                              \
+        if (herr < 0) {                                              \
             printf ("Error at line %d in %s:\n", __LINE__, __FILE__); \
             H5Eprint1 (stdout);                                       \
             DEBUG_ABORT;                                              \
