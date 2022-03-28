@@ -33,19 +33,20 @@ jobs:
         - name: Install PnetCDF
           run: |
             WORKDIR=$(pwd)
-            rm -rf pnetcdf-1.12.3.tar.gz pnetcdf-1.12.3
+            rm -rf pnetcdf-1.12.3.tar.gz pnetcdf-1.12.3 qout
             wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
             tar -zxf pnetcdf-1.12.3.tar.gz
             cd pnetcdf-1.12.3
             ./configure --prefix=${WORKDIR}/.local/pnc/1.12.3 \
                         --disable-fortran \
                         --disable-cxx
-            make -j 4 install
+            make -j 4 install > qout 2>&1
+            cd ..
         - name: Install HDF5
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf hdf5-1.13.0.tar.gz hdf5-1.13.0
+            rm -rf hdf5-1.13.0.tar.gz hdf5-1.13.0 qout
             wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz
             tar -zxf hdf5-1.13.0.tar.gz
             cd hdf5-1.13.0
@@ -60,12 +61,13 @@ jobs:
                         --disable-tools \
                         --disable-tests \
                         CC=mpicc
-            make -j 4 install
+            make -j 4 install > qout 2>&1
+            cd ..
         - name: Install NetCDF-C
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf v4.9.0.tar.gz netcdf-c-4.9.0
+            rm -rf v4.9.0.tar.gz netcdf-c-4.9.0 qout
             wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
             tar -zxf v4.9.0.tar.gz
             cd netcdf-c-4.9.0
@@ -78,12 +80,13 @@ jobs:
                         CPPFLAGS="-I${WORKDIR}/.local/hdf5/1.13.0/include" \
                         LDFLAGS="-L${WORKDIR}/.local/hdf5/1.13.0/lib" \
                         LIBS="-lhdf5"
-            make -j 4 install
+            make -j 4 install > qout 2>&1
+            cd ..
         - name: Install ADIOS2
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf v2.7.1.tar.gz ADIOS2-2.7.1 adios2_build
+            rm -rf v2.7.1.tar.gz ADIOS2-2.7.1 adios2_build qout
             wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz
             tar -zxf v2.7.1.tar.gz
             mkdir adios2_build
@@ -104,20 +107,21 @@ jobs:
                   -DADIOS2_BUILD_EXAMPLES=OFF \
                   -DBUILD_TESTING=OFF \
                   ../ADIOS2-2.7.1
-            make -j 4
-            make -j 4 install
+            make -j 4 install > qout 2>&1
+            cd ..
         - name: Install log VOL
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf logvol.1.2.0.tar.gz vol-log-based-logvol.1.2.0
+            rm -rf logvol.1.2.0.tar.gz vol-log-based-logvol.1.2.0 qout
             wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.2.0.tar.gz
             tar -zxf logvol.1.2.0.tar.gz
             cd vol-log-based-logvol.1.2.0
             autoreconf -i
             ./configure --prefix=${WORKDIR}/.local/logvol/1.2.0 \
                         --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0
-            make -j 4 install
+            make -j 4 install > qout 2>&1
+            cd ..
         - name: Build E3SM_IO with PnetCDF only
           if: ${{ success() }}
           run: |
