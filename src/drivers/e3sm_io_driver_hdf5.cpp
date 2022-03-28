@@ -652,7 +652,8 @@ int e3sm_io_driver_hdf5::get_att (int fid, int vid, std::string name, void *buf)
 
 	asid = H5Aget_space (aid);
 	CHECK_HID (asid)
-	H5Sget_simple_extent_dims (asid, &asize, NULL);
+	herr = H5Sget_simple_extent_dims (asid, &asize, NULL);
+	CHECK_HERR
 	esize = H5Tget_size (tid);
 	fp->getsize += asize * esize;
 
@@ -667,7 +668,6 @@ err_out:;
 int e3sm_io_driver_hdf5::inq_att (int fid, int vid, std::string name, MPI_Offset *size){
 	int err = 0;
 	herr_t herr;
-	int esize;
 	hdf5_file *fp = this->files[fid];
 	hid_t asid = -1, aid = -1;
 	hid_t did;
@@ -686,7 +686,8 @@ int e3sm_io_driver_hdf5::inq_att (int fid, int vid, std::string name, MPI_Offset
 	asid = H5Aget_space (aid);
 	CHECK_HID (asid)
 	
-	H5Sget_simple_extent_dims (asid, &asize, NULL);
+	herr = H5Sget_simple_extent_dims (asid, &asize, NULL);
+	CHECK_HERR
 	
 	*size = (MPI_Offset) asize;
 
