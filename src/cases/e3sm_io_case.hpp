@@ -109,6 +109,7 @@ class e3sm_io_case {
         int def_var_decomp(e3sm_io_config &cfg,
                            e3sm_io_decom  &decom,
                            e3sm_io_driver &driver,
+                           case_meta      *cmeta,
                            int ncid,
                            int dim_time,
                            int dim_nblobs,
@@ -221,56 +222,45 @@ int scorpio_write_var(e3sm_io_driver &driver,
     CHECK_ERR                                                                 \
     if (cfg.api == adios) dnames[*dimid] = name;                              \
 }
-#define INCR_NUM_ATTRS {                                                      \
-    if (cfg.run_case == F) {                                                  \
-        if (cfg.hist == h0) cfg.F_case_h0.num_attrs++;                        \
-        else                cfg.F_case_h1.num_attrs++;                        \
-    } else if (cfg.run_case == I) {                                           \
-        if (cfg.hist == h0) cfg.I_case_h0.num_attrs++;                        \
-        else                cfg.I_case_h1.num_attrs++;                        \
-    } else if (cfg.run_case == G) {                                           \
-        cfg.G_case.num_attrs++;                                               \
-    }                                                                         \
-}
 #define PUT_GATTR_TXT(name, buf) {                                            \
     err = driver.put_att(ncid, NC_GLOBAL, prefix+name, NC_CHAR, strlen(buf),  \
                          buf);                                                \
     CHECK_ERR                                                                 \
-    INCR_NUM_ATTRS                                                            \
+    cmeta->num_attrs++;                                                       \
 }
 #define PUT_GATTR_INT(name, val) {                                            \
     int buf = val;                                                            \
     err = driver.put_att(ncid, NC_GLOBAL, prefix+name, NC_INT, 1, &buf);      \
     CHECK_ERR                                                                 \
-    INCR_NUM_ATTRS                                                            \
+    cmeta->num_attrs++;                                                       \
 }
 #define PUT_GATTR_DBL(name, val) {                                            \
     double buf = val;                                                         \
     err = driver.put_att(ncid, NC_GLOBAL, prefix+name, NC_DOUBLE, 1, &buf);   \
     CHECK_ERR                                                                 \
-    INCR_NUM_ATTRS                                                            \
+    cmeta->num_attrs++;                                                       \
 }
 #define PUT_ATTR_TXT(name, buf) {                                             \
     err = driver.put_att(ncid, varp->vid, name, NC_CHAR, strlen(buf), buf);   \
     CHECK_VAR_ERR(varp->vid)                                                  \
-    INCR_NUM_ATTRS                                                            \
+    cmeta->num_attrs++;                                                       \
 }
 #define PUT_ATTR_INT1(name, val) {                                            \
     int buf = val;                                                            \
     err = driver.put_att(ncid, varp->vid, name, NC_INT, 1, &buf);             \
     CHECK_VAR_ERR(varp->vid)                                                  \
-    INCR_NUM_ATTRS                                                            \
+    cmeta->num_attrs++;                                                       \
 }
 #define PUT_ATTR_INT(name, num, buf) {                                        \
     err = driver.put_att(ncid, varp->vid, name, NC_INT, num, buf);            \
     CHECK_VAR_ERR(varp->vid)                                                  \
-    INCR_NUM_ATTRS                                                            \
+    cmeta->num_attrs++;                                                       \
 }
 #define PUT_ATTR_FLT1(name, val) {                                            \
     float buf = val;                                                          \
     err = driver.put_att(ncid, varp->vid, name, NC_FLOAT, 1, &buf);           \
     CHECK_VAR_ERR(varp->vid)                                                  \
-    INCR_NUM_ATTRS                                                            \
+    cmeta->num_attrs++;                                                       \
 }
 #define PUT_ATTR_DBL1(name, val) {                                            \
     double buf = val;                                                         \
@@ -291,12 +281,12 @@ int scorpio_write_var(e3sm_io_driver &driver,
         err = driver.put_att(ncid,varp->vid,_FillValue,varp->xType, 1, &buf); \
     }                                                                         \
     CHECK_VAR_ERR(varp->vid)                                                  \
-    INCR_NUM_ATTRS                                                            \
+    cmeta->num_attrs++;                                                       \
 }
 #define PUT_ATTR_INT64(name, num, buf) {                                      \
     err = driver.put_att(ncid, varp->vid, name, NC_INT64, num, buf);          \
     CHECK_VAR_ERR(varp->vid)                                                  \
-    INCR_NUM_ATTRS                                                            \
+    cmeta->num_attrs++;                                                       \
 }
 #define DEF_VAR(name, xtype, ndims, dimids, itype, decomid) {                 \
     /* ndims and dimids are canonical dimensions */                           \

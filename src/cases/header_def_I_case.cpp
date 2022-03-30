@@ -25,6 +25,7 @@ static
 int add_gattrs(e3sm_io_config &cfg,
                e3sm_io_decom  &decom,
                e3sm_io_driver &driver,
+               case_meta      *cmeta,
                int             ncid)
 {
     std::string prefix("");
@@ -102,9 +103,19 @@ int e3sm_io_case::def_I_case(e3sm_io_config   &cfg,
     float fillv = 1.e+36f, missv = 1.e+36f;
     std::map<int, std::string> dnames;
     var_meta *varp;
+    case_meta *cmeta;
+
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) cmeta = &cfg.F_case_h0;
+        else                cmeta = &cfg.F_case_h1;
+    } else if (cfg.run_case == I) {
+        if (cfg.hist == h0) cmeta = &cfg.I_case_h0;
+        else                cmeta = &cfg.I_case_h1;
+    } else if (cfg.run_case == G)
+        cmeta = &cfg.G_case;
 
     /* add global attributes */
-    err = add_gattrs(cfg, decom, driver, ncid);
+    err = add_gattrs(cfg, decom, driver, cmeta, ncid);
     CHECK_ERR
 
     /* define dimensions */
@@ -207,8 +218,8 @@ int e3sm_io_case::def_I_case(e3sm_io_config   &cfg,
         else
             nvars_decomp = NVARS_DECOMP * decom.num_decomp;
 
-        err = def_var_decomp(cfg, decom, driver, ncid, dim_time, dim_nblobs,
-                             dim_max_nreqs, g_dimids);
+        err = def_var_decomp(cfg, decom, driver, cmeta, ncid, dim_time,
+                             dim_nblobs, dim_max_nreqs, g_dimids);
         CHECK_ERR
     }
 

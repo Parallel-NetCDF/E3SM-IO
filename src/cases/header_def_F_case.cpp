@@ -25,6 +25,7 @@ static
 int add_gattrs(e3sm_io_config &cfg,
                e3sm_io_decom  &decom,
                e3sm_io_driver &driver,
+               case_meta      *cmeta,
                int             ncid)
 {
     std::string prefix("");
@@ -79,6 +80,7 @@ err_out:
 int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
                                  e3sm_io_decom  &decom,
                                  e3sm_io_driver &driver,
+                                 case_meta      *cmeta,
                                  int ncid,
                                  int dim_time,
                                  int dim_nblobs,
@@ -87,29 +89,25 @@ int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
 {
     char name[512];
     int i, j, err=0, dimids[2];
+    var_meta *varp;
 
     if (cfg.api == adios ) {
         for (j=0; j<decom.num_decomp; j++) {
             int ival, piodims[MAX_NUM_DECOMP];
+
+            varp = vars + j;
             sprintf (name, "/__pio__/decomp/%d", (j + 512));
             err = driver.def_local_var(ncid, name, NC_INT64, 1,
-                                       decom.raw_nreqs+j, &vars[j].vid);
+                                       decom.raw_nreqs+j, &varp->vid);
             CHECK_ERR
 
             for (i=0; i<decom.ndims[j]; i++)
                 piodims[i] = (int)decom.dims[j][i];
 
-            err = driver.put_att(ncid, vars[j].vid, "dimlen", NC_INT,
-                                 decom.ndims[j], piodims);
-            CHECK_ERR
-            err = driver.put_att(ncid, vars[j].vid, "ndims", NC_INT, 1,
-                                 decom.ndims+j);
-            CHECK_ERR
-
+            PUT_ATTR_INT("dimlen", decom.ndims[j], piodims)
+            PUT_ATTR_INT("ndims", 1, decom.ndims+j)
             ival = 6;
-            err = driver.put_att(ncid, vars[j].vid, "piotype", NC_INT, 1,
-                                 &ival);
-            CHECK_ERR
+            PUT_ATTR_INT("piotype", 1, &ival)
         }
         err = driver.def_local_var(ncid, "/__pio__/info/nproc", NC_INT, 0,
                                    NULL, &vars[j].vid);
@@ -117,7 +115,7 @@ int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
     }
     else {
         std::map<int, std::string> dnames;
-        var_meta *varp = vars - 1;
+        varp = vars - 1;
 
         for (i=0; i<decom.num_decomp; i++) {
             dimids[0] = dim_nblobs;
@@ -172,9 +170,19 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
     float fillv = 1.e+20f, missv = 1.e+20f;
     std::map<int, std::string> dnames;
     var_meta *varp;
+    case_meta *cmeta;
+
+    if (cfg.run_case == F) {
+        if (cfg.hist == h0) cmeta = &cfg.F_case_h0;
+        else                cmeta = &cfg.F_case_h1;
+    } else if (cfg.run_case == I) {
+        if (cfg.hist == h0) cmeta = &cfg.I_case_h0;
+        else                cmeta = &cfg.I_case_h1;
+    } else if (cfg.run_case == G)
+        cmeta = &cfg.G_case;
 
     /* add global attributes */
-    err = add_gattrs(cfg, decom, driver, ncid);
+    err = add_gattrs(cfg, decom, driver, cmeta, ncid);
     CHECK_ERR
 
     /* define dimensions */
@@ -234,8 +242,8 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
         else
             nvars_decomp = NVARS_DECOMP * decom.num_decomp;
 
-        err = def_var_decomp(cfg, decom, driver, ncid, dim_time, dim_nblobs,
-                             dim_max_nreqs, g_dimids);
+        err = def_var_decomp(cfg, decom, driver, cmeta, ncid, dim_time,
+                             dim_nblobs, dim_max_nreqs, g_dimids);
         CHECK_ERR
     }
 
