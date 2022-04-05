@@ -135,6 +135,40 @@ int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
             PUT_ATTR_TXT("global_dims", name)
 #endif
 
+            /* For PnetCDF blob I/O, it uses variable-centric blob layout
+             * strategy where there are are nprocs (or nblobs) blobs in the
+             * file space occupied by each variable. Thus, given N variables
+             * defined and each is partitioned among nprocs processes, there
+             * will be N*nprocs blobs in the NetCDF file. A blob contains all
+             * of a process's write requests to a variable.
+             *
+             * For HDF5 blob I/O, it uses process-centric blob layout strategy
+             * where there are nprocs blobs in the entire file. A blob contains
+             * all of a process's write requests to all variables.
+             */
+
+            /* For PnetCDF blob I/O, the starting file offset of a variable's
+             * blob is calculated by
+             *     variable's begin + D*.blob_start * variable's type size.
+             * A variable's begin and type are stored in the NetCDF file
+             * header.
+             *
+             * For HDF5 blob I/O, the calculation is more complicated, because
+             * the write amount of a process to a variable can be different
+             * from another process. The starting offset of a variable in a
+             * blob is calculated by
+             * 1. calculating the file starting offset of the blob. This
+             *    requires to sum up the sizes of all blobs before it.
+             * 2. calculating the starting offset of a variable inside the
+             *    blob. This requires to to sum up the write amounts to all
+             *    variables defined before it.
+             * A less complicated approach is to additionally save the offsets
+             * of all variables inside all blobs. This requires additional
+             * N*nprocs integers. This is not implemented yet.
+             *
+             * Note NC_INT64 type is used here, but it can be NC_INT because
+             * none of E3SM variables is larger than 4B elements.
+             */
             sprintf(name, "D%d.blob_start", i+1);
             DEF_VAR(name, NC_INT64, 1, dimids, MPI_INT, -1)
             PUT_ATTR_TXT("description", "Starting array indices of individual blobs stored in a variable")
@@ -143,6 +177,19 @@ int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
             DEF_VAR(name, NC_INT64, 1, dimids, MPI_LONG_LONG, -1)
             PUT_ATTR_TXT("description", "Number of contiguous array elements in individual blobs stored in a variable")
 
+            /* For PnetCDF blob I/O, the file offset of a write request to a
+             * variable inside a blob is calculated by
+             *     the variable blob's file offset calculated above +
+             *     D*.offsets[blob_id][request_number] * variable's type size
+             * A variable's begin and type are stored in NetCDF file header.
+             *
+             * For HDF5 blob I/O, the calculation is similar, i.e.
+             *     the variable's file offset calculated above +
+             *     D*.offsets[blob_id][request_number] * variable's type size
+             *
+             * Note NC_INT type is used here because none of E3SM variables is
+             * larger than 4B elements. In general, it can be NC_INT64.
+             */
             sprintf(name, "D%d.offsets", i+1);
             DEF_VAR(name, NC_INT, 2, dimids, MPI_INT, -1)
             PUT_ATTR_TXT("description", "Starting indices of flattened canonical noncontiguous requests of individual blobs")
