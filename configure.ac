@@ -77,12 +77,13 @@ AC_ARG_WITH(mpi,
    MPI_INSTALL=${withval}
    ]
 )
-if test "x$MPI_INSTALL" = x ; then
-   TESTMPIRUN=mpiexec
-else
-   TESTMPIRUN=$MPI_INSTALL/bin/mpiexec
+if test "x$TESTMPIRUN" = x ; then
+   if test "x$MPI_INSTALL" = x ; then
+      TESTMPIRUN=mpiexec
+   else
+      TESTMPIRUN=$MPI_INSTALL/bin/mpiexec
+   fi
 fi
-AC_SUBST(TESTMPIRUN, [$TESTMPIRUN])
 
 AC_ARG_VAR(MPICC,  [MPI C compiler, @<:@default: CC@:>@])
 AC_ARG_VAR(MPICXX, [MPI C++ compiler, @<:@default: CXX@:>@])
@@ -634,9 +635,12 @@ if test "x${TESTMPIRUN}" = x ; then
    dnl if TESTMPIRUN has not been set by users, then
    dnl set default to "mpiexec -n NP"
    UD_MPI_PATH_PROGS([TESTMPIRUN], [mpiexec mpirun srun])
-   if test "x${TESTMPIRUN}" != x ; then
-      TESTMPIRUN="$TESTMPIRUN -n NP"
-   fi
+fi
+
+AC_ARG_VAR(TESTOUTDIR, [Output file directory for "make check" and "make ptest", @<:@default: ./test_output@:>@])
+if test "x${TESTOUTDIR}" = x ; then
+   dnl set default to current directory
+   TESTOUTDIR=./test_output
 fi
 
 # Enable C++ 17 if available

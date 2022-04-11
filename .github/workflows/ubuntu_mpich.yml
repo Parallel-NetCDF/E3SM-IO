@@ -197,7 +197,7 @@ jobs:
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 4
-        - name: Print log all APIs
+        - name: Print config.log
           if: ${{ failure() }}
           run: |
             cat config.log

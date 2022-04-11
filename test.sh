@@ -63,8 +63,7 @@ if test "x${ENABLE_NETCDF4}" = x1 ; then
    DECOMPS+=("netcdf4 nc4")
 fi
 
-OUT_PATH="./test_output"
-mkdir -p ${OUT_PATH}
+mkdir -p ${TESTOUTDIR}
 
 # Convert decomposition files
 unset HDF5_PLUGIN_PATH
@@ -103,7 +102,7 @@ for API in "${APIS[@]}" ; do
 
     for CONFIG in "${CONFIGS[@]}" ; do
         IN_FILE=datasets/${CONFIG}
-        OUT_FILE="${OUT_PATH}/${ap[0]}_${ap[1]}_${CONFIG}"
+        OUT_FILE="${TESTOUTDIR}/${ap[0]}_${ap[1]}_${CONFIG}"
         if test "x${ap[0]}" = xpnetcdf ; then
            IN_FILE="${srcdir}/${IN_FILE}.nc"
            OUT_FILE+=".nc"
@@ -130,6 +129,9 @@ for API in "${APIS[@]}" ; do
         CMD="${RUN} ${EXEC} -k -a ${ap[0]} -f -1 -r 2 -x ${ap[1]} -y 2 -o ${OUT_FILE} ${IN_FILE}"
         if test $VERBOSE = 1 ; then echo "${CMD}"; fi
         ${CMD}
+
+        # delete the output files/folder
+        rm -rf ${TESTOUTDIR}/${ap[0]}_${ap[1]}_${CONFIG}*
     done
 done
 
