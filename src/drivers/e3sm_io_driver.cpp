@@ -47,6 +47,41 @@
 #include <e3sm_io_driver_adios2.hpp>
 #endif
 
+/* File system types recognized by ROMIO in MPICH 4.0.0 */
+static const char* fstypes[] = {"ufs", "nfs", "xfs", "pvfs2", "gpfs", "panfs", "lustre", "daos", "testfs", "ime", "quobyte", NULL};
+
+/* Return a pointer to filename by removing the file system type prefix name if
+ * there is any.  For example, when filename = "lustre:/home/foo/testfile.nc",
+ * remove "lustre:" to return a pointer to "/home/foo/testfile.nc", so the name
+ * can be used in POSIX open() calls.
+ */
+char* remove_file_system_type_prefix(const char *filename)
+{
+    char *prefix, *colon, *ret_filename;
+
+    if (filename == NULL) return NULL;
+
+    ret_filename = (char*)filename;
+    prefix = strdup(filename);
+
+    colon = strchr(prefix, ':');
+    if (colon != NULL) { /* there is a prefix end with : */
+        int i=0;
+        *colon = '\0';
+        /* check if prefix is one of recognized file system types */
+        while (fstypes[i] != NULL) {
+            if (!strcmp(prefix, fstypes[i])) { /* found */
+                ret_filename += colon - prefix + 1;
+                break;
+            }
+            i++;
+        }
+    }
+    free(prefix);
+
+    return ret_filename;
+}
+
 e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
                                     e3sm_io_config *cfg)
 {
@@ -62,15 +97,12 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
 
     /* root checks the file format and broadcasts the finding */
     if (filename && cfg->rank == 0) {
-        /* remove the file system type prefix name if there is any.  For
-         * example, when filename = "lustre:/home/foo/testfile.nc", remove
-         * "lustre:" to make path = "/home/foo/testfile.nc" in open() below
+        /* remove the file system type prefix name if there is any.  For example,
+         * when filename = "lustre:/home/foo/testfile.nc", remove "lustre:" to make
+         * path pointing to "/home/foo/testfile.nc", so it can be used in POSIX
+         * open() below
          */
-        path = strchr (filename, ':');
-        if (path == NULL)
-            path = filename; /* no prefix */
-        else
-            path++;
+        path = remove_file_system_type_prefix(filename);
 
         /* must include config.h on 32-bit machines, as AC_SYS_LARGEFILE is
          * called at the configure time and it defines _FILE_OFFSET_BITS to 64
