@@ -434,7 +434,6 @@ AC_ARG_WITH([netcdf4],
    if test "x$netcdf4_config" != x ; then
       netcdf4_cflags=`$netcdf4_config --cflags`
       netcdf4_lflags=`$netcdf4_config --libs`
-      netcdf4_version=`$netcdf4_config --version | cut -d' ' -f2 | cut -d'-' -f1`
    else
       netcdf4_cflags="-I$netcdf4_inc"
       netcdf4_lflags="-L$netcdf4_lib"
@@ -467,51 +466,44 @@ AC_ARG_WITH([netcdf4],
    fi
 
    if test "x$have_netcdf4" = xyes ; then
-      AC_MSG_CHECKING([NetCDF-C version])
-      if test "x$netcdf4_version" = x ; then
-         nc_version_major=`${EGREP} NC_VERSION_MAJOR $netcdf4_inc/netcdf_meta.h| head -1 | cut -d' ' -f3`
-         nc_version_minor=`${EGREP} NC_VERSION_MINOR $netcdf4_inc/netcdf_meta.h| head -1 | cut -d' ' -f3`
-         nc_version_patch=`${EGREP} NC_VERSION_PATCH $netcdf4_inc/netcdf_meta.h| head -1 | cut -d' ' -f3`
-         netcdf4_version="${nc_version_major}.${nc_version_minor}.${nc_version_patch}"
+      if test "x$netcdf4_config" != x ; then
+         netcdf4_version=`$netcdf4_config --version | cut -d' ' -f2 | cut -d'-' -f1`
+      else
+         AC_COMPUTE_INT([netcdf4_major], [NC_VERSION_MAJOR], [[#include <netcdf_meta.h>]])
+         AC_COMPUTE_INT([netcdf4_minor], [NC_VERSION_MINOR], [[#include <netcdf_meta.h>]])
+         AC_COMPUTE_INT([netcdf4_patch], [NC_VERSION_PATCH], [[#include <netcdf_meta.h>]])
+         netcdf4_version=${netcdf4_major}.${netcdf4_minor}.${netcdf4_patch}
       fi
-      AC_MSG_RESULT([$netcdf4_version])
+      AC_MSG_CHECKING([NetCDF-C version])
+      AC_MSG_RESULT([${netcdf4_version}])
 
-      dnl Check if NetCDF version is 4.9.0 or later
-      AC_MSG_CHECKING([whether NetCDF-C version is 4.9.0 or later])
-      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include <netcdf_meta.h>
-#define VER_NUM (NC_VERSION_MAJOR*1000000 + NC_VERSION_MINOR*1000 + NC_VERSION_PATCH)
-#if (VER_NUM < 4009000)
-#error NetCDF version is older than 4.9.0
-#endif
-      ]])], [netcdf_ge_4_9_0=yes], [netcdf_ge_4_9_0=no])
-      AC_MSG_RESULT([$netcdf_ge_4_9_0])
-
-      if test "x${netcdf_ge_4_9_0}" = xno; then
-         AC_MSG_ERROR([
+      AC_CHECK_DECLS([NC_NODIMSCALE_ATTACH], [], [], [#include <netcdf.h>])
+      if test "x${ac_cv_have_decl_NC_NODIMSCALE_ATTACH}" = xno ; then
+         AC_MSG_WARN([
          ------------------------------------------------------------
-         Supplied NetCDF-4 version is $netcdf4_version, but 4.9.0 or later
-         is required. Abort.
+         This version of NetCDF-C library, $netcdf4_version, does not
+         include the option to disable HDF5 dimension sale feature.
+         F and I cases may failes with error of 'NetCDF: HDF error'
          ------------------------------------------------------------])
       fi
-   fi
 
-   AC_MSG_CHECKING([if NetCDF-4 is configured with parallel I/O enabled])
-   if test "x$netcdf4_config" != x ; then
-      netcdf4_has_par=`$netcdf4_config --has-parallel4`
-   else
-      AC_CHECK_HEADERS([netcdf_par.h], [netcdf4_has_par=yes], [netcdf4_has_par=no], [[#include <netcdf.h>]])
-   fi
-   AC_MSG_RESULT($netcdf4_has_par)
-   if test "x${netcdf4_has_par}" != xyes; then
-      AC_MSG_WARN([
-      ------------------------------------------------------------
-      NetCDF was not built with parallel NetCDF 4 support.
-      Disable NetCDF4.
-      ------------------------------------------------------------])
-      have_netcdf4 = no
-   elif test "x$netcdf4_lib" != x ; then
-      AC_SUBST(NETCDF4_LIB_PATH, [$netcdf4_lib])
+      AC_MSG_CHECKING([if NetCDF-C $netcdf4_version is configured with parallel I/O enabled])
+      if test "x$netcdf4_config" != x ; then
+         netcdf4_has_par=`$netcdf4_config --has-parallel4`
+      else
+         AC_CHECK_HEADERS([netcdf_par.h], [netcdf4_has_par=yes], [netcdf4_has_par=no], [[#include <netcdf.h>]])
+      fi
+      AC_MSG_RESULT($netcdf4_has_par)
+      if test "x${netcdf4_has_par}" != xyes; then
+         AC_MSG_WARN([
+         ------------------------------------------------------------
+         This NetCDF-C library was not built with parallel NetCDF4
+         support. Disable NetCDF4.
+         ------------------------------------------------------------])
+         have_netcdf4 = no
+      elif test "x$netcdf4_lib" != x ; then
+         AC_SUBST(NETCDF4_LIB_PATH, [$netcdf4_lib])
+      fi
    fi
 ])
 AM_CONDITIONAL(ENABLE_NETCDF4, [test "x$have_netcdf4" = xyes])
