@@ -33,23 +33,28 @@ jobs:
         - name: Install PnetCDF
           run: |
             WORKDIR=$(pwd)
-            rm -rf pnetcdf-1.12.3.tar.gz pnetcdf-1.12.3
-            wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
-            tar -zxf pnetcdf-1.12.3.tar.gz
-            cd pnetcdf-1.12.3
-            ./configure --prefix=${WORKDIR}/.local/pnc/1.12.3 \
+            VERSION=1.12.3
+            rm -rf pnetcdf-${VERSION}.tar.gz pnetcdf-${VERSION}
+            wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-${VERSION}.tar.gz
+            tar -zxf pnetcdf-${VERSION}.tar.gz
+            cd pnetcdf-${VERSION}
+            ./configure --prefix=${WORKDIR}/PnetCDF \
+                        --silent \
                         --disable-fortran \
                         --disable-cxx
-            make -j 4 install
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install
+            cd ..
         - name: Install HDF5
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf hdf5-1.13.0.tar.gz hdf5-1.13.0
-            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz
-            tar -zxf hdf5-1.13.0.tar.gz
-            cd hdf5-1.13.0
-            ./configure --prefix=${WORKDIR}/.local/hdf5/1.13.0 \
+            VERSION=1.13.0
+            rm -rf hdf5-${VERSION}.tar.gz hdf5-${VERSION}
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${VERSION}/src/hdf5-${VERSION}.tar.gz
+            tar -zxf hdf5-${VERSION}.tar.gz
+            cd hdf5-${VERSION}
+            ./configure --prefix=${WORKDIR}/HDF5 \
+                        --silent \
                         --enable-hl \
                         --enable-parallel \
                         --enable-build-mode=production \
@@ -60,35 +65,45 @@ jobs:
                         --disable-tools \
                         --disable-tests \
                         CC=mpicc
-            make -j 4 install
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install
+            cd ..
         - name: Install NetCDF-C
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf v4.8.1.tar.gz netcdf-c-4.8.1
-            wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz
-            tar -zxf v4.8.1.tar.gz
-            cd netcdf-c-4.8.1
-            ./configure --prefix=${WORKDIR}/.local/netcdf/4.8.1 \
+            # VERSION=4.9.0
+            # rm -rf v${VERSION}.tar.gz netcdf-c-${VERSION}
+            # wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v${VERSION}.tar.gz
+            # tar -zxf v${VERSION}.tar.gz
+            # cd netcdf-c-${VERSION}
+            # TODO: Always use an official release. E3SM-IO requires NetCDF-C 4.9.0 or later.
+            rm -rf netcdf-c
+            git clone -q https://github.com/Unidata/netcdf-c.git
+            cd netcdf-c
+            autoreconf -i
+            ./configure --prefix=${WORKDIR}/NetCDF \
+                        --silent \
                         --disable-dap \
                         --disable-nczarr \
                         --disable-nczarr-filters \
                         --disable-filter-testing \
                         CC=mpicc \
-                        CPPFLAGS="-I${WORKDIR}/.local/hdf5/1.13.0/include" \
-                        LDFLAGS="-L${WORKDIR}/.local/hdf5/1.13.0/lib" \
+                        CPPFLAGS="-I${WORKDIR}/HDF5/include" \
+                        LDFLAGS="-L${WORKDIR}/HDF5/lib" \
                         LIBS="-lhdf5"
-            make -j 4 install
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install
+            cd ..
         - name: Install ADIOS2
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf v2.7.1.tar.gz ADIOS2-2.7.1 adios2_build
-            wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz
-            tar -zxf v2.7.1.tar.gz
+            VERSION=2.7.1
+            rm -rf v${VERSION}.tar.gz ADIOS2-${VERSION} adios2_build
+            wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v${VERSION}.tar.gz
+            tar -zxf v${VERSION}.tar.gz
             mkdir adios2_build
             cd adios2_build
-            cmake -DCMAKE_INSTALL_PREFIX=${WORKDIR}/.local/adios2/2.7.1 \
+            cmake -DCMAKE_INSTALL_PREFIX=${WORKDIR}/ADIOS \
                   -DADIOS2_USE_MPI=ON \
                   -DADIOS2_USE_Fortran=OFF \
                   -DADIOS2_USE_Python=OFF \
@@ -103,27 +118,31 @@ jobs:
                   -DADIOS2_USE_Blosc=OFF \
                   -DADIOS2_BUILD_EXAMPLES=OFF \
                   -DBUILD_TESTING=OFF \
-                  ../ADIOS2-2.7.1
-            make -j 4
-            make -j 4 install
+                  ../ADIOS2-${VERSION}
+            make -j 8
+            make -j 8 install
+            cd ..
         - name: Install log VOL
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            rm -rf logvol.1.1.0.tar.gz vol-log-based-logvol.1.1.0
-            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.1.0.tar.gz
-            tar -zxf logvol.1.1.0.tar.gz
-            cd vol-log-based-logvol.1.1.0
+            VERSION=1.2.0
+            rm -rf logvol.${VERSION}.tar.gz vol-log-based-logvol.${VERSION}
+            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.${VERSION}.tar.gz
+            tar -zxf logvol.${VERSION}.tar.gz
+            cd vol-log-based-logvol.${VERSION}
             autoreconf -i
-            ./configure --prefix=${WORKDIR}/.local/logvol/1.1.0 \
-                        --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0
-            make -j 4 install
+            ./configure --prefix=${WORKDIR}/LOGVOL \
+                        --silent \
+                        --with-hdf5=${WORKDIR}/HDF5
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install
+            cd ..
         - name: Build E3SM_IO with PnetCDF only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
             autoreconf -i
-            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
+            ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -135,8 +154,8 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
-                        --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
+            ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
+                        --with-hdf5=${WORKDIR}/HDF5 \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -148,9 +167,9 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
-                        --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
-                        --with-logvol=${WORKDIR}/.local/logvol/1.1.0 \
+            ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
+                        --with-hdf5=${WORKDIR}/HDF5 \
+                        --with-logvol=${WORKDIR}/LOGVOL \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -162,8 +181,8 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
-                        --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 \
+            ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
+                        --with-netcdf4=${WORKDIR}/NetCDF \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -175,8 +194,8 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
-                        --with-adios2=${WORKDIR}/.local/adios2/2.7.1 \
+            ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
+                        --with-adios2=${WORKDIR}/ADIOS \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -188,11 +207,11 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            ./configure --with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 \
-                        --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 \
-                        --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 \
-                        --with-logvol=${WORKDIR}/.local/logvol/1.1.0 \
-                        --with-adios2=${WORKDIR}/.local/adios2/2.7.1 \
+            ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
+                        --with-hdf5=${WORKDIR}/HDF5 \
+                        --with-netcdf4=${WORKDIR}/NetCDF \
+                        --with-logvol=${WORKDIR}/LOGVOL \
+                        --with-adios2=${WORKDIR}/ADIOS \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -209,6 +228,6 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/.local/pnc/1.12.3 --with-hdf5=${WORKDIR}/.local/hdf5/1.13.0 --with-netcdf4=${WORKDIR}/.local/netcdf/4.8.1 --with-logvol=${WORKDIR}/.local/logvol/1.1.0 --with-adios2=${WORKDIR}/.local/adios2/2.7.1 CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/PnetCDF --with-hdf5=${WORKDIR}/HDF5 --with-netcdf4=${WORKDIR}/NetCDF --with-logvol=${WORKDIR}/LOGVOL --with-adios2=${WORKDIR}/ADIOS CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
             make distclean
 
