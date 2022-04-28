@@ -26,8 +26,10 @@ jobs:
           run: |
             sudo apt-get update
             sudo apt-get install automake autoconf libtool libtool-bin m4
-            # mpi
-            sudo apt-get install mpich
+            # mpich
+            # sudo apt-get install mpich
+            # OpenMPI
+            sudo apt-get install openmpi-bin
             # zlib
             sudo apt-get install zlib1g-dev
         - name: Install PnetCDF
@@ -209,7 +211,8 @@ jobs:
                         --with-adios2=${WORKDIR}/ADIOS    \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
-                        CXXFLAGS=-fno-var-tracking-assignments
+                        CXXFLAGS=-fno-var-tracking-assignments \
+                        TESTMPIRUN="mpiexec --oversubscribe"
             make -j 8
             make check
             cat test.sh.log utils/*.log
