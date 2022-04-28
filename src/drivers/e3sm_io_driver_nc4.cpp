@@ -256,13 +256,11 @@ int e3sm_io_driver_nc4::def_var (
     err = nc_inq_unlimdim (fid, &udimid);
     CHECK_NCERR
 
-    if (ndim) {
-		if (dimids[0] == udimid) {
-            dlen[0] = 1;
-            err = nc_def_var_chunking(fid, *varid, NC_CHUNKED, dlen);
-            CHECK_ERR
-		}
-	}
+    if (ndim && dimids[0] == udimid) {
+        dlen[0] = 1;
+        err = nc_def_var_chunking(fid, *varid, NC_CHUNKED, dlen);
+        CHECK_ERR
+    }
 
 err_out:
     if(dlen) { free(dlen); }
@@ -460,96 +458,64 @@ int e3sm_io_driver_nc4::put_vara (int fid,
 
     if (start) {
         if (count) {
-            switch (itype) {
-                case MPI_CHAR:;
-                    err = nc_put_vara_text (fid, vid, (size_t *)start, (size_t *)count,
-                                            (const char *)buf);
-                    break;
-                case MPI_INT:;
-                    err = nc_put_vara_int (fid, vid, (size_t *)start, (size_t *)count,
-                                           (const int *)buf);
-                    break;
-                case MPI_UNSIGNED:;
-                    err = nc_put_vara_uint (fid, vid, (size_t *)start, (size_t *)count,
-                                            (const unsigned int *)buf);
-                    break;
-                case MPI_LONG_LONG:;
-                    err = nc_put_vara_longlong (fid, vid, (size_t *)start, (size_t *)count,
-                                                (const long long *)buf);
-                    break;
-                case MPI_UNSIGNED_LONG_LONG:;
-                    err = nc_put_vara_ulonglong (fid, vid, (size_t *)start, (size_t *)count,
-                                                 (const unsigned long long *)buf);
-                    break;
-                case MPI_FLOAT:;
-                    err = nc_put_vara_float (fid, vid, (size_t *)start, (size_t *)count,
-                                             (const float *)buf);
-                    break;
-                case MPI_DOUBLE:;
-                    err = nc_put_vara_double (fid, vid, (size_t *)start, (size_t *)count,
-                                              (const double *)buf);
-                    break;
-                default:
-                    ERR_OUT ("Uknown type")
-            }
+            if (itype == MPI_CHAR)
+                err = nc_put_vara_text (fid, vid, (size_t *)start, (size_t *)count, (const char *)buf);
+            else if (itype == MPI_INT)
+                err = nc_put_vara_int (fid, vid, (size_t *)start, (size_t *)count, (const int *)buf);
+            else if (itype == MPI_UNSIGNED)
+                err = nc_put_vara_uint (fid, vid, (size_t *)start, (size_t *)count, (const unsigned int *)buf);
+            else if (itype == MPI_LONG_LONG)
+                err = nc_put_vara_longlong (fid, vid, (size_t *)start, (size_t *)count, (const long long *)buf);
+            else if (itype == MPI_UNSIGNED_LONG_LONG)
+                err = nc_put_vara_ulonglong (fid, vid, (size_t *)start, (size_t *)count, (const unsigned long long *)buf);
+            else if (itype == MPI_FLOAT)
+                err = nc_put_vara_float (fid, vid, (size_t *)start, (size_t *)count, (const float *)buf);
+            else if (itype == MPI_DOUBLE)
+                err = nc_put_vara_double (fid, vid, (size_t *)start, (size_t *)count, (const double *)buf);
+            else
+                ERR_OUT ("Uknown type")
+
             bsize = xesize;
             for (i = 0; i < ndim; i++) { bsize *= count[i]; }
             this->amount_WR += bsize;
         } else {
-            switch (itype) {
-                case MPI_CHAR:;
-                    err = nc_put_var1_text (fid, vid, (size_t *)start, (const char *)buf);
-                    break;
-                case MPI_INT:;
-                    err = nc_put_var1_int (fid, vid, (size_t *)start, (const int *)buf);
-                    break;
-                case MPI_UNSIGNED:;
-                    err = nc_put_var1_uint (fid, vid, (size_t *)start, (const unsigned int *)buf);
-                    break;
-                case MPI_LONG_LONG:;
-                    err = nc_put_var1_longlong (fid, vid, (size_t *)start, (const long long *)buf);
-                    break;
-                case MPI_UNSIGNED_LONG_LONG:;
-                    err = nc_put_var1_ulonglong (fid, vid, (size_t *)start,
-                                                 (const unsigned long long *)buf);
-                    break;
-                case MPI_FLOAT:;
-                    err = nc_put_var1_float (fid, vid, (size_t *)start, (const float *)buf);
-                    break;
-                case MPI_DOUBLE:;
-                    err = nc_put_var1_double (fid, vid, (size_t *)start, (const double *)buf);
-                    break;
-                default:
-                    ERR_OUT ("Uknown type")
-            }
+            if (itype == MPI_CHAR)
+                err = nc_put_var1_text (fid, vid, (size_t *)start, (const char *)buf);
+            else if (itype == MPI_INT)
+                err = nc_put_var1_int (fid, vid, (size_t *)start, (const int *)buf);
+            else if (itype == MPI_UNSIGNED)
+                err = nc_put_var1_uint (fid, vid, (size_t *)start, (const unsigned int *)buf);
+            else if (itype == MPI_LONG_LONG)
+                err = nc_put_var1_longlong (fid, vid, (size_t *)start, (const long long *)buf);
+            else if (itype == MPI_UNSIGNED_LONG_LONG)
+                err = nc_put_var1_ulonglong (fid, vid, (size_t *)start, (const unsigned long long *)buf);
+            else if (itype == MPI_FLOAT)
+                err = nc_put_var1_float (fid, vid, (size_t *)start, (const float *)buf);
+            else if (itype == MPI_DOUBLE)
+                err = nc_put_var1_double (fid, vid, (size_t *)start, (const double *)buf);
+            else
+                ERR_OUT ("Uknown type")
+
             this->amount_WR += xesize;
         }
     } else {
-        switch (itype) {
-            case MPI_CHAR:;
-                err = nc_put_var_text (fid, vid, (const char *)buf);
-                break;
-            case MPI_INT:;
-                err = nc_put_var_int (fid, vid, (const int *)buf);
-                break;
-            case MPI_UNSIGNED:;
-                err = nc_put_var_uint (fid, vid, (const unsigned int *)buf);
-                break;
-            case MPI_LONG_LONG:;
-                err = nc_put_var_longlong (fid, vid, (const long long *)buf);
-                break;
-            case MPI_UNSIGNED_LONG_LONG:;
-                err = nc_put_var_ulonglong (fid, vid, (const unsigned long long *)buf);
-                break;
-            case MPI_FLOAT:;
-                err = nc_put_var_float (fid, vid, (const float *)buf);
-                break;
-            case MPI_DOUBLE:;
-                err = nc_put_var_double (fid, vid, (const double *)buf);
-                break;
-            default:
-                ERR_OUT ("Uknown type")
-        }
+        if (itype == MPI_CHAR)
+            err = nc_put_var_text (fid, vid, (const char *)buf);
+        else if (itype == MPI_INT)
+            err = nc_put_var_int (fid, vid, (const int *)buf);
+        else if (itype == MPI_UNSIGNED)
+            err = nc_put_var_uint (fid, vid, (const unsigned int *)buf);
+        else if (itype == MPI_LONG_LONG)
+            err = nc_put_var_longlong (fid, vid, (const long long *)buf);
+        else if (itype == MPI_UNSIGNED_LONG_LONG)
+            err = nc_put_var_ulonglong (fid, vid, (const unsigned long long *)buf);
+        else if (itype == MPI_FLOAT)
+            err = nc_put_var_float (fid, vid, (const float *)buf);
+        else if (itype == MPI_DOUBLE)
+            err = nc_put_var_double (fid, vid, (const double *)buf);
+        else
+            ERR_OUT ("Uknown type")
+
         this->amount_WR += var_size[{fid, vid}];
     }
     CHECK_NCERR
@@ -583,38 +549,23 @@ int e3sm_io_driver_nc4::put_vars (int fid,
     CHECK_PTR (ncstride)
     for (i = 0; i < ndim; i++) { ncstride[i] = (ptrdiff_t) (stride[i]); }
 
-    switch (itype) {
-        case MPI_CHAR:;
-            err = nc_put_vars_text (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                    (const char *)buf);
-            break;
-        case MPI_INT:;
-            err = nc_put_vars_int (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                   (const int *)buf);
-            break;
-        case MPI_UNSIGNED:;
-            err = nc_put_vars_uint (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                    (const unsigned int *)buf);
-            break;
-        case MPI_LONG_LONG:;
-            err = nc_put_vars_longlong (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                        (const long long *)buf);
-            break;
-        case MPI_UNSIGNED_LONG_LONG:;
-            err = nc_put_vars_ulonglong (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                         (const unsigned long long *)buf);
-            break;
-        case MPI_FLOAT:;
-            err = nc_put_vars_float (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                     (const float *)buf);
-            break;
-        case MPI_DOUBLE:;
-            err = nc_put_vars_double (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                      (const double *)buf);
-            break;
-        default:
-            ERR_OUT ("Uknown type")
-    }
+    if (itype == MPI_CHAR)
+        err = nc_put_vars_text (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const char *)buf);
+    else if (itype == MPI_INT)
+        err = nc_put_vars_int (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const int *)buf);
+    else if (itype == MPI_UNSIGNED)
+        err = nc_put_vars_uint (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const unsigned int *)buf);
+    else if (itype == MPI_LONG_LONG)
+        err = nc_put_vars_longlong (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const long long *)buf);
+    else if (itype == MPI_UNSIGNED_LONG_LONG)
+        err = nc_put_vars_ulonglong (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const unsigned long long *)buf);
+    else if (itype == MPI_FLOAT)
+        err = nc_put_vars_float (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const float *)buf);
+    else if (itype == MPI_DOUBLE)
+        err = nc_put_vars_double (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const double *)buf);
+    else
+        ERR_OUT ("Uknown type")
+
     CHECK_NCERR
 
     nc_inq_vartype (fid, vid, &xtype);
@@ -662,38 +613,24 @@ int e3sm_io_driver_nc4::put_varn (int fid,
     for (i = 0; i < nreq; i++) {
         bsize = 1;
         for (j = 0; j < ndim; j++) { bsize *= counts[i][j]; }
-        switch (itype) {
-            case MPI_CHAR:;
-                err = nc_put_vara_text (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                        (const char *)bufp);
-                break;
-            case MPI_INT:;
-                err = nc_put_vara_int (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                       (const int *)bufp);
-                break;
-            case MPI_UNSIGNED:;
-                err = nc_put_vara_uint (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                        (const unsigned int *)bufp);
-                break;
-            case MPI_LONG_LONG:;
-                err = nc_put_vara_longlong (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                            (const long long *)bufp);
-                break;
-            case MPI_UNSIGNED_LONG_LONG:;
-                err = nc_put_vara_ulonglong (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                             (const unsigned long long *)bufp);
-                break;
-            case MPI_FLOAT:;
-                err = nc_put_vara_float (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                         (const float *)bufp);
-                break;
-            case MPI_DOUBLE:;
-                err = nc_put_vara_double (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                          (const double *)bufp);
-                break;
-            default:
-                ERR_OUT ("Uknown type")
-        }
+
+        if (itype == MPI_CHAR)
+            err = nc_put_vara_text (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (const char *)bufp);
+        else if (itype == MPI_INT)
+            err = nc_put_vara_int (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (const int *)bufp);
+        else if (itype == MPI_UNSIGNED)
+            err = nc_put_vara_uint (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (const unsigned int *)bufp);
+        else if (itype == MPI_LONG_LONG)
+            err = nc_put_vara_longlong (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (const long long *)bufp);
+        else if (itype == MPI_UNSIGNED_LONG_LONG)
+            err = nc_put_vara_ulonglong (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (const unsigned long long *)bufp);
+        else if (itype == MPI_FLOAT)
+            err = nc_put_vara_float (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (const float *)bufp);
+        else if (itype == MPI_DOUBLE)
+            err = nc_put_vara_double (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (const double *)bufp);
+        else
+            ERR_OUT ("Uknown type")
+
         CHECK_NCERR
         bufp += bsize * esize;
 
@@ -732,95 +669,64 @@ int e3sm_io_driver_nc4::get_vara (int fid,
 
     if (start) {
         if (count) {
-            switch (itype) {
-                case MPI_CHAR:;
-                    err =
-                        nc_get_vara_text (fid, vid, (size_t *)start, (size_t *)count, (char *)buf);
-                    break;
-                case MPI_INT:;
-                    err = nc_get_vara_int (fid, vid, (size_t *)start, (size_t *)count, (int *)buf);
-                    break;
-                case MPI_UNSIGNED:;
-                    err = nc_get_vara_uint (fid, vid, (size_t *)start, (size_t *)count,
-                                            (unsigned int *)buf);
-                    break;
-                case MPI_LONG_LONG:;
-                    err = nc_get_vara_longlong (fid, vid, (size_t *)start, (size_t *)count,
-                                                (long long *)buf);
-                    break;
-                case MPI_UNSIGNED_LONG_LONG:;
-                    err = nc_get_vara_ulonglong (fid, vid, (size_t *)start, (size_t *)count,
-                                                 (unsigned long long *)buf);
-                    break;
-                case MPI_FLOAT:;
-                    err = nc_get_vara_float (fid, vid, (size_t *)start, (size_t *)count,
-                                             (float *)buf);
-                    break;
-                case MPI_DOUBLE:;
-                    err = nc_get_vara_double (fid, vid, (size_t *)start, (size_t *)count,
-                                              (double *)buf);
-                    break;
-                default:
-                    ERR_OUT ("Uknown type")
-            }
+            if (itype == MPI_CHAR)
+                err = nc_get_vara_text (fid, vid, (size_t *)start, (size_t *)count, (char *)buf);
+            else if (itype == MPI_INT)
+                err = nc_get_vara_int (fid, vid, (size_t *)start, (size_t *)count, (int *)buf);
+            else if (itype == MPI_UNSIGNED)
+                err = nc_get_vara_uint (fid, vid, (size_t *)start, (size_t *)count, (unsigned int *)buf);
+            else if (itype == MPI_LONG_LONG)
+                err = nc_get_vara_longlong (fid, vid, (size_t *)start, (size_t *)count, (long long *)buf);
+            else if (itype == MPI_UNSIGNED_LONG_LONG)
+                err = nc_get_vara_ulonglong (fid, vid, (size_t *)start, (size_t *)count, (unsigned long long *)buf);
+            else if (itype == MPI_FLOAT)
+                err = nc_get_vara_float (fid, vid, (size_t *)start, (size_t *)count, (float *)buf);
+            else if (itype == MPI_DOUBLE)
+                err = nc_get_vara_double (fid, vid, (size_t *)start, (size_t *)count, (double *)buf);
+            else
+                ERR_OUT ("Uknown type")
+
             bsize = xesize;
             for (i = 0; i < ndim; i++) { bsize *= count[i]; }
             this->amount_RD += bsize;
         } else {
-            switch (itype) {
-                case MPI_CHAR:;
-                    err = nc_get_var1_text (fid, vid, (size_t *)start, (char *)buf);
-                    break;
-                case MPI_INT:;
-                    err = nc_get_var1_int (fid, vid, (size_t *)start, (int *)buf);
-                    break;
-                case MPI_UNSIGNED:;
-                    err = nc_get_var1_uint (fid, vid, (size_t *)start, (unsigned int *)buf);
-                    break;
-                case MPI_LONG_LONG:;
-                    err = nc_get_var1_longlong (fid, vid, (size_t *)start, (long long *)buf);
-                    break;
-                case MPI_UNSIGNED_LONG_LONG:;
-                    err = nc_get_var1_ulonglong (fid, vid, (size_t *)start,
-                                                 (unsigned long long *)buf);
-                    break;
-                case MPI_FLOAT:;
-                    err = nc_get_var1_float (fid, vid, (size_t *)start, (float *)buf);
-                    break;
-                case MPI_DOUBLE:;
-                    err = nc_get_var1_double (fid, vid, (size_t *)start, (double *)buf);
-                    break;
-                default:
-                    ERR_OUT ("Uknown type")
-            }
+            if (itype == MPI_CHAR)
+                err = nc_get_var1_text (fid, vid, (size_t *)start, (char *)buf);
+            else if (itype == MPI_INT)
+                err = nc_get_var1_int (fid, vid, (size_t *)start, (int *)buf);
+            else if (itype == MPI_UNSIGNED)
+                err = nc_get_var1_uint (fid, vid, (size_t *)start, (unsigned int *)buf);
+            else if (itype == MPI_LONG_LONG)
+                err = nc_get_var1_longlong (fid, vid, (size_t *)start, (long long *)buf);
+            else if (itype == MPI_UNSIGNED_LONG_LONG)
+                err = nc_get_var1_ulonglong (fid, vid, (size_t *)start, (unsigned long long *)buf);
+            else if (itype == MPI_FLOAT)
+                err = nc_get_var1_float (fid, vid, (size_t *)start, (float *)buf);
+            else if (itype == MPI_DOUBLE)
+                err = nc_get_var1_double (fid, vid, (size_t *)start, (double *)buf);
+            else
+                ERR_OUT ("Uknown type")
+
             this->amount_RD += xesize;
         }
     } else {
-        switch (itype) {
-            case MPI_CHAR:;
-                err = nc_get_var_text (fid, vid, (char *)buf);
-                break;
-            case MPI_INT:;
-                err = nc_get_var_int (fid, vid, (int *)buf);
-                break;
-            case MPI_UNSIGNED:;
-                err = nc_get_var_uint (fid, vid, (unsigned int *)buf);
-                break;
-            case MPI_LONG_LONG:;
-                err = nc_get_var_longlong (fid, vid, (long long *)buf);
-                break;
-            case MPI_UNSIGNED_LONG_LONG:;
-                err = nc_get_var_ulonglong (fid, vid, (unsigned long long *)buf);
-                break;
-            case MPI_FLOAT:;
-                err = nc_get_var_float (fid, vid, (float *)buf);
-                break;
-            case MPI_DOUBLE:;
-                err = nc_get_var_double (fid, vid, (double *)buf);
-                break;
-            default:
-                ERR_OUT ("Uknown type")
-        }
+        if (itype == MPI_CHAR)
+            err = nc_get_var_text (fid, vid, (char *)buf);
+        else if (itype == MPI_INT)
+            err = nc_get_var_int (fid, vid, (int *)buf);
+        else if (itype == MPI_UNSIGNED)
+            err = nc_get_var_uint (fid, vid, (unsigned int *)buf);
+        else if (itype == MPI_LONG_LONG)
+            err = nc_get_var_longlong (fid, vid, (long long *)buf);
+        else if (itype == MPI_UNSIGNED_LONG_LONG)
+            err = nc_get_var_ulonglong (fid, vid, (unsigned long long *)buf);
+        else if (itype == MPI_FLOAT)
+            err = nc_get_var_float (fid, vid, (float *)buf);
+        else if (itype == MPI_DOUBLE)
+            err = nc_get_var_double (fid, vid, (double *)buf);
+        else
+            ERR_OUT ("Uknown type")
+
         this->amount_RD += var_size[{fid, vid}];
     }
     CHECK_NCERR
@@ -854,38 +760,23 @@ int e3sm_io_driver_nc4::get_vars (int fid,
     CHECK_PTR (ncstride)
     for (i = 0; i < ndim; i++) { ncstride[i] = (ptrdiff_t) (stride[i]); }
 
-    switch (itype) {
-        case MPI_CHAR:;
-            err = nc_get_vars_text (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                    (char *)buf);
-            break;
-        case MPI_INT:;
-            err =
-                nc_get_vars_int (fid, vid, (size_t *)start, (size_t *)count, ncstride, (int *)buf);
-            break;
-        case MPI_UNSIGNED:;
-            err = nc_get_vars_uint (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                    (unsigned int *)buf);
-            break;
-        case MPI_LONG_LONG:;
-            err = nc_get_vars_longlong (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                        (long long *)buf);
-            break;
-        case MPI_UNSIGNED_LONG_LONG:;
-            err = nc_get_vars_ulonglong (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                         (unsigned long long *)buf);
-            break;
-        case MPI_FLOAT:;
-            err = nc_get_vars_float (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                     (float *)buf);
-            break;
-        case MPI_DOUBLE:;
-            err = nc_get_vars_double (fid, vid, (size_t *)start, (size_t *)count, ncstride,
-                                      (double *)buf);
-            break;
-        default:
-            ERR_OUT ("Uknown type")
-    }
+    if (itype == MPI_CHAR)
+        err = nc_get_vars_text (fid, vid, (size_t *)start, (size_t *)count, ncstride, (char *)buf);
+    else if (itype == MPI_INT)
+        err = nc_get_vars_int (fid, vid, (size_t *)start, (size_t *)count, ncstride, (int *)buf);
+    else if (itype == MPI_UNSIGNED)
+        err = nc_get_vars_uint (fid, vid, (size_t *)start, (size_t *)count, ncstride, (unsigned int *)buf);
+    else if (itype == MPI_LONG_LONG)
+        err = nc_get_vars_longlong (fid, vid, (size_t *)start, (size_t *)count, ncstride, (long long *)buf);
+    else if (itype == MPI_UNSIGNED_LONG_LONG)
+        err = nc_get_vars_ulonglong (fid, vid, (size_t *)start, (size_t *)count, ncstride, (unsigned long long *)buf);
+    else if (itype == MPI_FLOAT)
+        err = nc_get_vars_float (fid, vid, (size_t *)start, (size_t *)count, ncstride, (float *)buf);
+    else if (itype == MPI_DOUBLE)
+        err = nc_get_vars_double (fid, vid, (size_t *)start, (size_t *)count, ncstride, (double *)buf);
+    else
+        ERR_OUT ("Uknown type")
+
     CHECK_NCERR
 
     nc_inq_vartype (fid, vid, &xtype);
@@ -933,38 +824,24 @@ int e3sm_io_driver_nc4::get_varn (int fid,
     for (i = 0; i < nreq; i++) {
         bsize = 1;
         for (j = 0; j < ndim; j++) { bsize *= counts[i][j]; }
-        switch (itype) {
-            case MPI_CHAR:;
-                err = nc_get_vara_text (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                        (char *)bufp);
-                break;
-            case MPI_INT:;
-                err = nc_get_vara_int (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                       (int *)bufp);
-                break;
-            case MPI_UNSIGNED:;
-                err = nc_get_vara_uint (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                        (unsigned int *)bufp);
-                break;
-            case MPI_LONG_LONG:;
-                err = nc_get_vara_longlong (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                            (long long *)bufp);
-                break;
-            case MPI_UNSIGNED_LONG_LONG:;
-                err = nc_get_vara_ulonglong (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                             (unsigned long long *)bufp);
-                break;
-            case MPI_FLOAT:;
-                err = nc_get_vara_float (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                         (float *)bufp);
-                break;
-            case MPI_DOUBLE:;
-                err = nc_get_vara_double (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]),
-                                          (double *)bufp);
-                break;
-            default:
-                ERR_OUT ("Uknown type")
-        }
+
+        if (itype == MPI_CHAR)
+            err = nc_get_vara_text (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (char *)bufp);
+        else if (itype == MPI_INT)
+            err = nc_get_vara_int (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (int *)bufp);
+        else if (itype == MPI_UNSIGNED)
+            err = nc_get_vara_uint (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (unsigned int *)bufp);
+        else if (itype == MPI_LONG_LONG)
+            err = nc_get_vara_longlong (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (long long *)bufp);
+        else if (itype == MPI_UNSIGNED_LONG_LONG)
+            err = nc_get_vara_ulonglong (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (unsigned long long *)bufp);
+        else if (itype == MPI_FLOAT)
+            err = nc_get_vara_float (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (float *)bufp);
+        else if (itype == MPI_DOUBLE)
+            err = nc_get_vara_double (fid, vid, (size_t *)(starts[i]), (size_t *)(counts[i]), (double *)bufp);
+        else
+            ERR_OUT ("Uknown type")
+
         CHECK_NCERR
         bufp += bsize * esize;
 

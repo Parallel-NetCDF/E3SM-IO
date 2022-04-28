@@ -42,7 +42,10 @@ inline adios2_type mpi_type_to_adios2_type (MPI_Datatype type) {
         return adios2_type_uint8_t;
     }
 
-    printf ("Error at line %d in %s: Unknown type %d\n", __LINE__, __FILE__, type);
+    int name_len;
+    char type_name[MPI_MAX_OBJECT_NAME];
+    MPI_Type_get_name(type, type_name, &name_len);
+    printf ("Error at line %d in %s: Unknown MPI Datatype %s\n", __LINE__, __FILE__, type_name);
     DEBUG_ABORT
 
     return adios2_type_unknown;
