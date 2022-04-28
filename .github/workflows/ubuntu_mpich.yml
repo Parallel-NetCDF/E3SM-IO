@@ -136,7 +136,7 @@ jobs:
                         --with-hdf5=${WORKDIR}/HDF5
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             cd ..
-        - name: Build E3SM_IO with PnetCDF only
+        - name: Build and check E3SM_IO with PnetCDF only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
@@ -145,11 +145,11 @@ jobs:
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
-            make -j 4
+            make -j 8
             make check
             cat test.sh.log utils/*.log
             make -s distclean
-        - name: Build E3SM_IO with HDF5 only
+        - name: Build and check E3SM_IO with HDF5 only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
@@ -157,11 +157,11 @@ jobs:
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
-            make -j 4
+            make -j 8
             make check
             cat test.sh.log utils/*.log
             make -s distclean
-        - name: Build E3SM_IO with HDF5 log-based VOL only
+        - name: Build and check E3SM_IO with HDF5 log-based VOL only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
@@ -170,11 +170,11 @@ jobs:
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
-            make -j 4
+            make -j 8
             make check
             cat test.sh.log utils/*.log
             make -s distclean
-        - name: Build E3SM_IO with NetCDF4 only
+        - name: Build and check E3SM_IO with NetCDF4 only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
@@ -182,11 +182,11 @@ jobs:
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
-            make -j 4
+            make -j 8
             make check
             cat test.sh.log utils/*.log
             make -s distclean
-        - name: Build E3SM_IO with ADIOS only
+        - name: Build and check E3SM_IO with ADIOS only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
@@ -194,11 +194,11 @@ jobs:
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
-            make -j 4
+            make -j 8
             make check
             cat test.sh.log utils/*.log
             make -s distclean
-        - name: Build and test E3SM_IO with all APIs
+        - name: Build and check E3SM_IO with all APIs
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
@@ -210,12 +210,13 @@ jobs:
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
-            make -j 4
+            make -j 8
+            make check
+            cat test.sh.log utils/*.log
         - name: Print config.log
           if: ${{ failure() }}
           run: |
             cat config.log
-            cat test.sh.log utils/*.log
         - name: Test E3SM_IO all APIs -- parallel runs
           if: ${{ success() }}
           run: |
