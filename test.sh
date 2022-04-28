@@ -58,34 +58,34 @@ fi
 
 mkdir -p ${TESTOUTDIR}
 
-# Convert decomposition files
-unset HDF5_PLUGIN_PATH
-unset HDF5_VOL_CONNECTOR
-for DECOM in "${DECOMPS[@]}" ; do
-    dc=($DECOM)
-    api=${dc[0]}
-    for CONFIG in "${CONFIGS[@]}" ; do
-        IN_FILE=$srcdir/datasets/${CONFIG}.nc
-        OUT_FILE=datasets/${CONFIG}.${dc[1]}
-        if test -e $OUT_FILE ; then
-           if test $VERBOSE = 1 ; then echo "$OUT_FILE already exist"; fi
-        else
-           if test $VERBOSE = 1 ; then echo "Convert $IN_FILE into $OUT_FILE"; fi
-           CMD="${DECOMP_REPLAY} -a ${api} -i ${IN_FILE} -o ${OUT_FILE}"
-           if test $VERBOSE = 1 ; then echo "CMD=$CMD"; fi
-           $CMD
-           if test "x${api}" = xbp ; then
-              CMD="mv -f ${OUT_FILE}.dir/${CONFIG}.${dc[1]}.0 ${OUT_FILE}"
-              if test $VERBOSE = 1 ; then echo "CMD=$CMD"; fi
-              $CMD
-              CMD="rm -rf ${OUT_FILE}.dir"
-              if test $VERBOSE = 1 ; then echo "CMD=$CMD"; fi
-              $CMD
-           fi
-        fi
-    done
-done
-if test $VERBOSE = 1 ; then echo ""; fi
+# Convert decomposition files from CDF5 format to others
+# unset HDF5_PLUGIN_PATH
+# unset HDF5_VOL_CONNECTOR
+# for DECOM in "${DECOMPS[@]}" ; do
+#     dc=($DECOM)
+#     api=${dc[0]}
+#     for CONFIG in "${CONFIGS[@]}" ; do
+#         IN_FILE=$srcdir/datasets/${CONFIG}.nc
+#         OUT_FILE=datasets/${CONFIG}.${dc[1]}
+#         if test -e $OUT_FILE ; then
+#            if test $VERBOSE = 1 ; then echo "$OUT_FILE already exist"; fi
+#         else
+#            if test $VERBOSE = 1 ; then echo "Convert $IN_FILE into $OUT_FILE"; fi
+#            CMD="${DECOMP_REPLAY} -a ${api} -i ${IN_FILE} -o ${OUT_FILE}"
+#            if test $VERBOSE = 1 ; then echo "CMD=$CMD"; fi
+#            $CMD
+#            if test "x${api}" = xbp ; then
+#               CMD="mv -f ${OUT_FILE}.dir/${CONFIG}.${dc[1]}.0 ${OUT_FILE}"
+#               if test $VERBOSE = 1 ; then echo "CMD=$CMD"; fi
+#               $CMD
+#               CMD="rm -rf ${OUT_FILE}.dir"
+#               if test $VERBOSE = 1 ; then echo "CMD=$CMD"; fi
+#               $CMD
+#            fi
+#         fi
+#     done
+# done
+# if test $VERBOSE = 1 ; then echo ""; fi
 
 for API in "${APIS[@]}" ; do
     ap=($API)
