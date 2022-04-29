@@ -95,11 +95,11 @@ for API in "${APIS[@]}" ; do
     unset HDF5_VOL_CONNECTOR
 
     for CONFIG in "${CONFIGS[@]}" ; do
-        IN_FILE=datasets/${CONFIG}
-        OUT_FILE="${TESTOUTDIR}/${ap[0]}_${ap[1]}_${CONFIG}"
+        IN_FILE="${srcdir}/datasets/${CONFIG}"
+        OUT_FILE_BASE="${TESTOUTDIR}/${ap[0]}_${ap[1]}_${CONFIG}"
         if test "x${ap[0]}" = xpnetcdf ; then
            FILE_EXT="nc"
-           IN_FILE="${srcdir}/${IN_FILE}.${FILE_EXT}"
+           IN_FILE+=".${FILE_EXT}"
         elif test "x${ap[0]}" = xnetcdf4 ; then
            FILE_EXT="nc4"
            if test "x${ap[1]}" = xlog ; then
@@ -107,7 +107,7 @@ for API in "${APIS[@]}" ; do
               export HDF5_PLUGIN_PATH="$LOGVOL_LIB_PATH"
               export HDF5_VOL_CONNECTOR="LOG under_vol=0;under_info={}"
               # Decomposition file must be read with native VOL, use nc file
-              IN_FILE="${srcdir}/${IN_FILE}.nc"
+              IN_FILE+=".nc"
            else
               IN_FILE+=".${FILE_EXT}"
            fi
