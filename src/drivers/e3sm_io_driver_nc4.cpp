@@ -68,12 +68,17 @@ e3sm_io_driver_nc4::e3sm_io_driver_nc4 (e3sm_io_config *cfg) : e3sm_io_driver (c
 e3sm_io_driver_nc4::~e3sm_io_driver_nc4 () {}
 
 int e3sm_io_driver_nc4::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
-    int err;
+    int err, cmode;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_OPEN)
 
-    err = nc_create_par (path.c_str (), NC_CLOBBER | NC_NETCDF4, comm, info, fid);
+    cmode = NC_CLOBBER | NC_NETCDF4;
+#if defined HAVE_DECL_NC_NODIMSCALE_ATTACH && HAVE_DECL_NC_NODIMSCALE_ATTACH
+    cmode |= NC_NODIMSCALE_ATTACH;
+#endif
+
+    err = nc_create_par (path.c_str (), cmode, comm, info, fid);
     CHECK_NCERR
 
     /* turn off fill mode for the entire file */

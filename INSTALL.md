@@ -8,14 +8,14 @@
   + m4 1.4.18
 * MPI C and C++ compilers
   + Configured with a std 11 C++ compiler (supporting constant initializer)
-* (Optional) [PnetCDF 1.12.2](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz)
+* (Optional) [PnetCDF 1.12.3](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz)
 * (Optional) [HDF5 1.13.0](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz)
   + Configured with parallel I/O support (configured with `--enable-parallel` is required)
 * (Optional) [HDF5 Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
   + Experimental software developed as part of the Datalib project
 * (Optional) [ADIOS 2.7.1](https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz)
   + Configured with parallel I/O support (cmake with `-DADIOS2_USE_MPI=ON` is required)
-* (Optional) [NetCDF-C 4.8.1](https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz)
+* (Optional) [NetCDF-C 4.9.0](https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz)
   + Configured with parallel HDF5 support (i.e. `--enable-netcdf4`)
   + Note currently this option fails to run due to a
     [bug](https://github.com/Unidata/netcdf-c/issues/2251) in NetCDF-C.
@@ -26,12 +26,12 @@
   + Configure PnetCDF with MPI C compiler
   + Run `make install`
   + Example build commands are given below. This example will install
-    the PnetCDF library under folder `${HOME}/PnetCDF/1.12.2`.
+    the PnetCDF library under folder `${HOME}/PnetCDF/1.12.3`.
     ```
-    % wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.2.tar.gz
-    % tar -zxf pnetcdf-1.12.2.tar.gz
-    % cd pnetcdf-1.12.2
-    % ./configure --prefix=${HOME}/PnetCDF/1.12.2 CC=mpicc
+    % wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
+    % tar -zxf pnetcdf-1.12.3.tar.gz
+    % cd pnetcdf-1.12.3
+    % ./configure --prefix=${HOME}/PnetCDF/1.12.3 CC=mpicc
     % make -j 4 install
     ```
 * Build HDF5 with parallel I/O support
@@ -54,10 +54,10 @@
     + Compile with zlib library to enable metadata compression (--enable-zlib)
   + Example commands are given below.
     ```
-    % wget https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.1.0.tar.gz
-    % tar -zxf logvol.1.1.0.tar.gz
-    % cd vol-log-based-logvol.1.1.0
-    % ./configure --prefix=${HOME}/Log_VOL/1.1.0 --with-hdf5=${HOME}/HDF5/1.13.0 --enable-shared CC=mpicc
+    % wget https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.2.0.tar.gz
+    % tar -zxf logvol.1.2.0.tar.gz
+    % cd vol-log-based-logvol.1.2.0
+    % ./configure --prefix=${HOME}/Log_VOL/1.2.0 --with-hdf5=${HOME}/HDF5/1.13.0 --enable-shared CC=mpicc
     % make -j 4 install
     ```
 * Build ADIOS with parallel I/O support
@@ -79,12 +79,12 @@
   + Configure NetCDF-C with parallel HDF5 I/O enabled.
   + Run `make install`
   + Example build commands are given below. This example will install
-    the NetCDF library under the folder `${HOME}/NetCDF/4.8.1`.
+    the NetCDF library under the folder `${HOME}/NetCDF/4.9.0`.
     ```
-    % wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.8.1.tar.gz
-    % tar -zxf v4.8.1.tar.gz
-    % cd netcdf-c-4.8.1
-    % ./configure --prefix=${HOME}/NetCDF/4.8.1 \
+    % wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
+    % tar -zxf v4.9.0.tar.gz
+    % cd netcdf-c-4.9.0
+    % ./configure --prefix=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc \
                   CPPFLAGS=-I${HOME}/HDF5/1.13.0/include \
                   LDFLAGS=-L${HOME}/HDF5/1.13.0/lib \
@@ -117,10 +117,11 @@
     % git clone https://github.com/Parallel-NetCDF/E3SM-IO.git
     % cd E3SM-IO
     % autoreconf -i
-    % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.2 \
+    % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.3 \
                   --with-hdf5=${HOME}/HDF5/1.13.0 \
-                  --with-logvol=${HOME}/Log_VOL/1.1.0 \
+                  --with-logvol=${HOME}/Log_VOL/1.2.0 \
                   --with-adios2=${HOME}/ADIOS2/2.7.1 \
+                  --with-netcdf4=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc CXX=mpicxx
     % make
     ```
@@ -208,13 +209,13 @@
 
 ### Current supported APIs (option `-a`) and I/O strategies (option `-x`)
   + Table below lists the supported combinations.
-     |           | pnetcdf | hdf5 | hdf5_log | netcdf4 | adios |
-     |-----------|:-------:|:----:|:--------:|:-------:|:-----:|
-     | canonical | yes     | yes  | no       | yes     | no    |
-     | log       | no      | yes  | yes      | yes*    | no    |
-     | blob      | yes     | yes  | no       | no      | yes   |
+     |           | pnetcdf | hdf5 | hdf5_log | netcdf4* | adios |
+     |-----------|:-------:|:----:|:--------:|:--------:|:-----:|
+     | canonical | yes     | yes  | no       | yes      | no    |
+     | log       | no      | yes  | yes      | yes      | no    |
+     | blob      | yes     | yes  | no       | no       | yes   |
      
-     `*` Requires setting of 2 VOL environment variables. See description below.
+     `*` NetCDF-C version 4.9.0 or newer is required.
 
   + **-a pnetcdf -x canonical**
     * A single NetCDF file in the classic CDF5 format will be created. All

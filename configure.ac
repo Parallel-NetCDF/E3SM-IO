@@ -331,7 +331,7 @@ AM_CONDITIONAL(ENABLE_PNC, [test "x$have_pnc" = xyes])
 have_hdf5=no
 have_multi_dset=no
 AC_ARG_WITH([hdf5],
-   [AS_HELP_STRING([--with-hdf5@<:@=INC,LIB | =DIR@:>@], 
+   [AS_HELP_STRING([--with-hdf5@<:@=INC,LIB | =DIR@:>@],
                    [Enable HDF5 feature and provide the HDF5 installation path(s):
     --with-hdf5=INC,LIB for include and lib paths separated by a comma.
     --with-hdf5=DIR for the path containing include/ and lib/ subdirectories.
@@ -421,7 +421,7 @@ AC_ARG_WITH([netcdf4],
         if test -n "$withval"; then
           netcdf4_inc="$withval/include"
           netcdf4_lib="$withval/lib"
-          netcdf4_bindir="$NETCDF4_INSTALL/bin"
+          netcdf4_bindir="$withval/bin"
         fi
         ;;
    esac
@@ -454,32 +454,56 @@ AC_ARG_WITH([netcdf4],
          LDFLAGS="$LDFLAGS $netcdf4_lflags"
       fi
    fi
-   AC_CHECK_HEADER([netcdf.h], [have_netcdf4=yes], [have_netcdf4=no])
+   AC_CHECK_HEADERS([netcdf.h netcdf_meta.h], [have_netcdf4=yes], [have_netcdf4=no])
    if test "x$have_netcdf4" = xno ; then
       AC_MSG_WARN([
       -----------------------------------------------------------------------
-      Missing NetCDF-header files 'netcdf4_c.h' required to build E3SM_IO. Use
-      configure command-line option --with-netcdf4=/path/to/implementation
-      to specify the location of NetCDF installation. Disable NetCDF 4 support.
+      Missing NetCDF-header files 'netcdf.h' or 'netcdf_meta.h' which are
+      required to build E3SM_IO. Use configure command-line option
+      --with-netcdf4=/path/to/implementation to specify the location of
+      NetCDF-4 installation. Disable NetCDF-4 support.
       -----------------------------------------------------------------------])
    fi
 
-   AC_MSG_CHECKING([if NetCDF $netcdf_version is configured with parallel I/O enabled])
-   if test "x$netcdf4_config" != x ; then
-      netcdf4_has_par=`$netcdf4_config --has-parallel4`
-   else
-      AC_CHECK_HEADERS([netcdf_par.h], [netcdf4_has_par=yes], [netcdf4_has_par=no], [[#include <netcdf.h>]])
-   fi
-   AC_MSG_RESULT($netcdf4_has_par)
-   if test "x${netcdf4_has_par}" != xyes; then
-      AC_MSG_WARN([
-      ------------------------------------------------------------
-      NetCDF was not built with parallel NetCDF 4 support.
-      Disable NetCDF4. 
-      ------------------------------------------------------------])
-      have_netcdf4 = no
-   elif test "x$netcdf4_lib" != x ; then
-      AC_SUBST(NETCDF4_LIB_PATH, [$netcdf4_lib])
+   if test "x$have_netcdf4" = xyes ; then
+      if test "x$netcdf4_config" != x ; then
+         netcdf4_version=`$netcdf4_config --version | cut -d' ' -f2 | cut -d'-' -f1`
+      else
+         AC_COMPUTE_INT([netcdf4_major], [NC_VERSION_MAJOR], [[#include <netcdf_meta.h>]])
+         AC_COMPUTE_INT([netcdf4_minor], [NC_VERSION_MINOR], [[#include <netcdf_meta.h>]])
+         AC_COMPUTE_INT([netcdf4_patch], [NC_VERSION_PATCH], [[#include <netcdf_meta.h>]])
+         netcdf4_version=${netcdf4_major}.${netcdf4_minor}.${netcdf4_patch}
+      fi
+      AC_MSG_CHECKING([NetCDF-C version])
+      AC_MSG_RESULT([${netcdf4_version}])
+
+      AC_CHECK_DECLS([NC_NODIMSCALE_ATTACH], [], [], [#include <netcdf.h>])
+      if test "x${ac_cv_have_decl_NC_NODIMSCALE_ATTACH}" = xno ; then
+         AC_MSG_WARN([
+         ------------------------------------------------------------
+         This version of NetCDF-C library, $netcdf4_version, does not
+         include the option to disable HDF5 dimension sale feature.
+         F and I cases may failes with error of 'NetCDF: HDF error'
+         ------------------------------------------------------------])
+      fi
+
+      AC_MSG_CHECKING([if NetCDF-C $netcdf4_version is configured with parallel I/O enabled])
+      if test "x$netcdf4_config" != x ; then
+         netcdf4_has_par=`$netcdf4_config --has-parallel4`
+      else
+         AC_CHECK_HEADERS([netcdf_par.h], [netcdf4_has_par=yes], [netcdf4_has_par=no], [[#include <netcdf.h>]])
+      fi
+      AC_MSG_RESULT($netcdf4_has_par)
+      if test "x${netcdf4_has_par}" != xyes; then
+         AC_MSG_WARN([
+         ------------------------------------------------------------
+         This NetCDF-C library was not built with parallel NetCDF4
+         support. Disable NetCDF4.
+         ------------------------------------------------------------])
+         have_netcdf4 = no
+      elif test "x$netcdf4_lib" != x ; then
+         AC_SUBST(NETCDF4_LIB_PATH, [$netcdf4_lib])
+      fi
    fi
 ])
 AM_CONDITIONAL(ENABLE_NETCDF4, [test "x$have_netcdf4" = xyes])
@@ -504,11 +528,13 @@ AC_ARG_WITH([logvol],
      *,*)
         logvol_inc="`echo $withval |cut -f1 -d,`"
         logvol_lib="`echo $withval |cut -f2 -d, -s`"
+        logvol_bindir="$logvol_inc/../bin"
         ;;
      *)
         if test -n "$withval"; then
           logvol_inc="$withval/include"
           logvol_lib="$withval/lib"
+          logvol_bindir="$withval/bin"
         fi
         ;;
    esac
@@ -539,6 +565,15 @@ AC_ARG_WITH([logvol],
    fi
    if test "x$have_logvol" = xyes ; then
       AC_SUBST(LOGVOL_LIB_PATH, [$logvol_lib])
+   fi
+   if test "x$logvol_bindir" != x ; then
+      AC_PATH_PROG([h5ldump],[h5ldump],,[$logvol_bindir])
+   else
+      dnl Check h5ldump under $PATH
+      AC_PATH_PROG([h5ldump],[h5ldump])
+   fi
+   if test "x$h5ldump" != x ; then
+      AC_SUBST(H5LDUMP, [$h5ldump])
    fi
 ])
 AM_CONDITIONAL(ENABLE_LOGVOL, [test "x$have_logvol" = xyes])
@@ -619,9 +654,9 @@ if test "x${have_pnc}" = xno && test "x${have_nc4}" = xno && test "x${have_hdf5}
    -----------------------------------------------------------------------
     At least one API driver must be enabled.
     Use configure command-line option --with-pnetcdf=/path/to/implementation
-    to specify the location of PnetCDF installation. 
+    to specify the location of PnetCDF installation.
     Use configure command-line option --with-netcdf4=/path/to/implementation
-    to specify the location of NetCDF installation. 
+    to specify the location of NetCDF installation.
     Use configure command-line option --with-hdf5=/path/to/implementation
     to specify the location of HDF5 installation.
     Use configure command-line option --with-adios2=/path/to/implementation

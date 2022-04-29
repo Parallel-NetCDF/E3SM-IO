@@ -23,10 +23,16 @@ static void def(int ncid);
 
 int main(int argc, char *argv[])
 {
-   int err=NC_NOERR, ncid;
+   int err=NC_NOERR, ncid, cmode;
 
    MPI_Init(&argc, &argv);
-   err = nc_create_par("testfile.nc", NC_NETCDF4|NC_CLOBBER, MPI_COMM_WORLD, MPI_INFO_NULL, &ncid); ERR
+
+   cmode = NC_CLOBBER | NC_NETCDF4;
+#ifdef NC_NODIMSCALE_ATTACH
+   cmode |= NC_NODIMSCALE_ATTACH
+#endif
+
+   err = nc_create_par("testfile.nc", cmode, MPI_COMM_WORLD, MPI_INFO_NULL, &ncid); ERR
    err = nc_set_fill(ncid, NC_NOFILL, NULL); ERR
 
    /* define global attributes, dimensions, variables */
