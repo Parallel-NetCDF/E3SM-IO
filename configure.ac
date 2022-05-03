@@ -564,6 +564,14 @@ AC_ARG_WITH([logvol],
       -----------------------------------------------------------------------])
    fi
 
+   LIBS_BAK=${LIBS}
+   LIBS="$LIBS -lH5VL_log"
+   AC_CHECK_FUNC([H5Pset_buffered], [have_h5pset_buffered=yes], [have_h5pset_buffered=no])
+   if test "x$have_h5pset_buffered" = xyes ; then
+      AC_DEFINE([LOGVOL_HAVE_H5PSET_BUFFERED], [1], [Whether log-based VOL have H5Pset_buffered])
+   fi
+   LIBS=${LIBS_BAK}
+
    have_h5sblock=no
    AC_RUN_IFELSE([AC_LANG_PROGRAM([
    #include <hdf5.h>

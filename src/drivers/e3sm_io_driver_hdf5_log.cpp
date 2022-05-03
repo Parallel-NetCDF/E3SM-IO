@@ -50,6 +50,16 @@ e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io
 	this->dxplid_indep_nb = H5Pcreate (H5P_DATASET_XFER);
 	CHECK_HID (this->dxplid_indep_nb)
 
+#ifdef LOGVOL_HAVE_H5PSET_BUFFERED
+    herr = H5Pset_buffered (this->dxplid_coll, true);
+    CHECK_HERR
+    herr = H5Pset_buffered (this->dxplid_indep, true);
+    CHECK_HERR
+    herr = H5Pset_buffered (this->dxplid_coll_nb, false);
+    CHECK_HERR
+    herr = H5Pset_buffered (this->dxplid_indep_nb, false);
+    CHECK_HERR
+#else
     herr = H5Pset_nonblocking (this->dxplid_coll, H5VL_LOG_REQ_BLOCKING);
     CHECK_HERR
     herr = H5Pset_nonblocking (this->dxplid_indep, H5VL_LOG_REQ_BLOCKING);
@@ -58,7 +68,7 @@ e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io
     CHECK_HERR
     herr = H5Pset_nonblocking (this->dxplid_indep_nb, H5VL_LOG_REQ_NONBLOCKING);
     CHECK_HERR
-
+#endif
     env = getenv ("E3SM_IO_HDF5_USE_LOGVOL_WRITEN");
     if (env) {
         if (std::string (env) == "0") { this->use_logvol_varn = false; }
