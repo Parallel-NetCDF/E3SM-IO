@@ -28,6 +28,10 @@
 #include <e3sm_io_driver_hdf5_log.hpp>
 #include <e3sm_io_profile.hpp>
 
+#ifndef HDF5_HAVE_H5SBLOCK
+#define H5S_BLOCK H5S_CONTIG
+#endif
+
 e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io_driver_hdf5 (cfg) {
     int err     = 0;
     herr_t herr = 0;
@@ -306,7 +310,7 @@ int e3sm_io_driver_hdf5_log::put_vara (int fid,
     h5_itype = mpi_type_to_hdf5_type (itype);
 
     // Call H5Dwrite
-    herr = H5Dwrite (did, h5_itype, H5S_CONTIG, dsid, dxplid, buf);
+    herr = H5Dwrite (did, h5_itype, H5S_BLOCK, dsid, dxplid, buf);
     CHECK_HERR
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
@@ -405,7 +409,7 @@ int e3sm_io_driver_hdf5_log::put_vars (int fid,
     h5_itype = mpi_type_to_hdf5_type (itype);
 
     // Call H5Dwrite
-    herr = H5Dwrite (did, h5_itype, H5S_CONTIG, dsid, dxplid, buf);
+    herr = H5Dwrite (did, h5_itype, H5S_BLOCK, dsid, dxplid, buf);
     CHECK_HERR
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
@@ -541,7 +545,7 @@ int e3sm_io_driver_hdf5_log::put_varn (int fid,
 
                 E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
 
-                herr = H5Dwrite (did, mtype, H5S_CONTIG, dsid, dxplid, bufp);
+                herr = H5Dwrite (did, mtype, H5S_BLOCK, dsid, dxplid, bufp);
                 CHECK_HERR
 
                 E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
@@ -584,7 +588,7 @@ int e3sm_io_driver_hdf5_log::get_vara (int fid,
     hdf5_file *fp = this->files[fid];
     int i;
     int ndim   = -1;
-    hid_t dsid = -1, H5S_CONTIG = -1;
+    hid_t dsid = -1;
     hid_t did, h5_itype;
     hid_t dxplid;
     hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK];
@@ -650,7 +654,7 @@ int e3sm_io_driver_hdf5_log::get_vara (int fid,
     h5_itype = mpi_type_to_hdf5_type (itype);
 
     // Call H5Dread
-    herr = H5Dread (did, h5_itype, H5S_CONTIG, dsid, dxplid, buf);
+    herr = H5Dread (did, h5_itype, H5S_BLOCK, dsid, dxplid, buf);
     CHECK_HERR
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
@@ -680,7 +684,7 @@ int e3sm_io_driver_hdf5_log::get_vars (int fid,
     hdf5_file *fp = this->files[fid];
     int i;
     int ndim   = -1;
-    hid_t dsid = -1, H5S_CONTIG = -1;
+    hid_t dsid = -1;
     hid_t did, h5_itype;
     hid_t dxplid;
     hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK], hblock[E3SM_IO_DRIVER_MAX_RANK],
@@ -734,7 +738,7 @@ int e3sm_io_driver_hdf5_log::get_vars (int fid,
     h5_itype = mpi_type_to_hdf5_type (itype);
 
     // Call H5Dread
-    herr = H5Dread (did, h5_itype, H5S_CONTIG, dsid, dxplid, buf);
+    herr = H5Dread (did, h5_itype, H5S_BLOCK, dsid, dxplid, buf);
     CHECK_HERR
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
@@ -851,7 +855,7 @@ int e3sm_io_driver_hdf5_log::get_varn (int fid,
                 CHECK_HERR
 
                 E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
-                herr = H5Dread (did, mtype, H5S_CONTIG, dsid, dxplid, bufp);
+                herr = H5Dread (did, mtype, H5S_BLOCK, dsid, dxplid, bufp);
                 CHECK_HERR
                 E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
 

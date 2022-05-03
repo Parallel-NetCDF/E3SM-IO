@@ -563,6 +563,19 @@ AC_ARG_WITH([logvol],
       to specify the location of logvol installation. Abort.
       -----------------------------------------------------------------------])
    fi
+
+   have_h5sblock=no
+   AC_RUN_IFELSE([AC_LANG_PROGRAM([
+   #include <hdf5.h>
+   ],[
+   #ifndef H5S_BLOCK
+   exit(1);
+   #endif
+   ])], [have_h5sblock=yes])
+   if test "x$have_h5sblock" = xyes ; then
+      AC_DEFINE([HDF5_HAVE_H5SBLOCK], [1], [Whether HDF5 have H5S_BLOCK])
+   fi
+
    if test "x$have_logvol" = xyes ; then
       AC_SUBST(LOGVOL_LIB_PATH, [$logvol_lib])
    fi
