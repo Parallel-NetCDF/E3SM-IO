@@ -44,7 +44,8 @@ jobs:
                         --silent \
                         --disable-fortran \
                         --disable-cxx
-            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
             cd ..
         - name: Install HDF5
           if: ${{ success() }}
@@ -68,13 +69,14 @@ jobs:
                         --disable-tests \
                         CC=mpicc
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
             cd ..
         - name: Install NetCDF-C
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
             # VERSION=4.9.0
-            # rm -rf v${VERSION}.tar.gz netcdf-c-${VERSION} qout
+            # rm -rf v${VERSION}.tar.gz netcdf-c-${VERSION}
             # wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v${VERSION}.tar.gz
             # tar -zxf v${VERSION}.tar.gz
             # cd netcdf-c-${VERSION}
@@ -94,6 +96,7 @@ jobs:
                         LDFLAGS="-L${WORKDIR}/HDF5/lib" \
                         LIBS="-lhdf5"
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
             cd ..
         - name: Install ADIOS2
           if: ${{ success() }}
@@ -122,6 +125,7 @@ jobs:
                   -DBUILD_TESTING=OFF \
                   ../ADIOS2-${VERSION}
             make -j 8 install > qout 2>&1
+            make clean >> qout 2>&1
             cd ..
         - name: Install log VOL
           if: ${{ success() }}
@@ -137,6 +141,7 @@ jobs:
                         --silent \
                         --with-hdf5=${WORKDIR}/HDF5
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
             cd ..
         - name: Build and check E3SM_IO with PnetCDF only
           if: ${{ success() }}
@@ -149,24 +154,30 @@ jobs:
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
             make check
+        - name: Dump log files if E3SM_IO with PnetCDF-only test failed
+          if: ${{ failure() }}
+          run: |
             cat test.sh.log utils/*.log
-            make -s distclean
         - name: Build and check E3SM_IO with HDF5 only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
+            make -s distclean
             ./configure --with-hdf5=${WORKDIR}/HDF5 \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
             make check
+        - name: Dump log files if E3SM_IO with HDF5-only test failed
+          if: ${{ failure() }}
+          run: |
             cat test.sh.log utils/*.log
-            make -s distclean
         - name: Build and check E3SM_IO with HDF5 log-based VOL only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
+            make -s distclean
             ./configure --with-hdf5=${WORKDIR}/HDF5 \
                         --with-logvol=${WORKDIR}/LOGVOL \
                         CC=mpicc CXX=mpicxx \
@@ -174,36 +185,45 @@ jobs:
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
             make check
+        - name: Dump log files if E3SM_IO with HDF5 log-based VOL test failed
+          if: ${{ failure() }}
+          run: |
             cat test.sh.log utils/*.log
-            make -s distclean
         - name: Build and check E3SM_IO with NetCDF4 only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
+            make -s distclean
             ./configure --with-netcdf4=${WORKDIR}/NetCDF \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
             make check
+        - name: Dump log files if E3SM_IO with NetCDF4-only test failed
+          if: ${{ failure() }}
+          run: |
             cat test.sh.log utils/*.log
-            make -s distclean
         - name: Build and check E3SM_IO with ADIOS only
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
+            make -s distclean
             ./configure --with-adios2=${WORKDIR}/ADIOS \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
             make check
+        - name: Dump log files if E3SM_IO with ADIOS-only test failed
+          if: ${{ failure() }}
+          run: |
             cat test.sh.log utils/*.log
-            make -s distclean
         - name: Build and check E3SM_IO with all APIs
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
+            make -s distclean
             ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
                         --with-hdf5=${WORKDIR}/HDF5       \
                         --with-netcdf4=${WORKDIR}/NetCDF  \
@@ -215,10 +235,10 @@ jobs:
                         TESTMPIRUN="mpiexec --oversubscribe"
             make -j 8
             make check
-            cat test.sh.log utils/*.log
-        - name: Print config.log
+        - name: Dump log files if E3SM_IO test failed
           if: ${{ failure() }}
           run: |
+            cat test.sh.log utils/*.log
             cat config.log
         - name: Test E3SM_IO all APIs -- parallel runs
           if: ${{ success() }}
