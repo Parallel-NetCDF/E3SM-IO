@@ -584,6 +584,20 @@ AC_ARG_WITH([logvol],
    fi
    LIBS=${LIBS_BAK}
 
+   dnl Check if logvol version is 1.3.0 or later
+   AC_MSG_CHECKING([whether logvol version is 1.3.0 or later])
+   AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+   #include <H5VL_log.h>
+   #if (H5VL_LOG_VERSION_MAJOR*1000000 + H5VL_LOG_VERSION_MINOR*1000 + H5VL_LOG_VERSION_PATCH < 1003000)
+   #error logvol version is older than 1.3.0
+   #endif
+   ]])], [logvol_ge_1_3_0=yes], [logvol_ge_1_3_0=no])
+   AC_MSG_RESULT([$logvol_ge_1_3_0])
+
+   if test x$logvol_ge_1_3_0 = xyes; then
+         AC_DEFINE([LOGVOL_GE_1003000], [1], [whether logvol version is 1.3.0 or later])
+   fi
+
    if test "x$have_logvol" = xyes ; then
       AC_SUBST(LOGVOL_LIB_PATH, [$logvol_lib])
    fi
