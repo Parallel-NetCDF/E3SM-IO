@@ -392,6 +392,18 @@ AC_ARG_WITH([hdf5],
       fi
    fi
    if test "x$have_hdf5" = xyes ; then
+      # Check whether HDF5 supprots H5S_BLOCK
+      have_h5sblock=no
+      AC_RUN_IFELSE([AC_LANG_PROGRAM([
+      #include <hdf5.h>
+      ],[
+      #ifndef H5S_BLOCK
+      exit(1);
+      #endif
+      ])], [have_h5sblock=yes])
+      if test "x$have_h5sblock" = xyes ; then
+         AC_DEFINE([HDF5_HAVE_H5SBLOCK], [1], [Whether HDF5 have H5S_BLOCK])
+      fi
       AC_SEARCH_LIBS([H5Dwrite_multi], [hdf5], [have_multi_dset=yes], [have_multi_dset=no])
       AC_SUBST(HDF5_LIB_PATH, [$hdf5_lib])
    fi
@@ -571,18 +583,6 @@ AC_ARG_WITH([logvol],
       AC_DEFINE([LOGVOL_HAVE_H5PSET_BUFFERED], [1], [Whether log-based VOL have H5Pset_buffered])
    fi
    LIBS=${LIBS_BAK}
-
-   have_h5sblock=no
-   AC_RUN_IFELSE([AC_LANG_PROGRAM([
-   #include <hdf5.h>
-   ],[
-   #ifndef H5S_BLOCK
-   exit(1);
-   #endif
-   ])], [have_h5sblock=yes])
-   if test "x$have_h5sblock" = xyes ; then
-      AC_DEFINE([HDF5_HAVE_H5SBLOCK], [1], [Whether HDF5 have H5S_BLOCK])
-   fi
 
    if test "x$have_logvol" = xyes ; then
       AC_SUBST(LOGVOL_LIB_PATH, [$logvol_lib])
