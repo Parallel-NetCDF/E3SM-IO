@@ -28,7 +28,7 @@
 #include <e3sm_io_driver_hdf5_log.hpp>
 #include <e3sm_io_profile.hpp>
 
-#ifndef HDF5_HAVE_H5SBLOCK
+#if not defined HDF5_HAVE_H5SBLOCK || not defined LOGVOL_GE_1003000
 #define H5S_BLOCK H5S_CONTIG
 #endif
 
