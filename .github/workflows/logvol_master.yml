@@ -1,0 +1,105 @@
+name: Ubuntu
+
+on:
+  push:
+    branches: master
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '**.jpg'
+      - '**.png'
+  pull_request:
+    branches: master
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '**.jpg'
+      - '**.png'
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      timeout-minutes: 60
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set up dependencies
+          run: |
+            sudo apt-get update
+            sudo apt-get install automake autoconf libtool libtool-bin m4
+            # mpich
+            # sudo apt-get install mpich
+            # OpenMPI
+            sudo apt-get install openmpi-bin
+            # zlib
+            sudo apt-get install zlib1g-dev
+        - name: Install HDF5
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            mkdir -p HDF5
+            cd HDF5
+            VERSION=1.13.0
+            rm -rf hdf5-${VERSION}.tar.gz hdf5-${VERSION}
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${VERSION}/src/hdf5-${VERSION}.tar.gz
+            tar -zxf hdf5-${VERSION}.tar.gz
+            cd hdf5-${VERSION}
+            ./configure --prefix=${WORKDIR}/HDF5 \
+                        --silent \
+                        --enable-hl \
+                        --enable-parallel \
+                        --enable-build-mode=production \
+                        --disable-doxygen-doc \
+                        --disable-doxygen-man \
+                        --disable-doxygen-html \
+                        --disable-hltools \
+                        --disable-tools \
+                        --disable-tests \
+                        CC=mpicc
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
+            cd ../..
+        - name: Install log VOL from its master branch
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            mkdir -p LOG_VOL
+            cd LOG_VOL
+            rm -rf vol-log-based
+            git clone -q https://github.com/DataLib-ECP/vol-log-based.git
+            cd vol-log-based
+            autoreconf -i
+            ./configure --prefix=${WORKDIR}/LOGVOL \
+                        --silent \
+                        --with-hdf5=${WORKDIR}/HDF5
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
+            cd ../..
+        - name: Build and check E3SM_IO with HDF5 log-based VOL only
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            autoreconf -i
+            ./configure --with-hdf5=${WORKDIR}/HDF5 \
+                        --with-logvol=${WORKDIR}/LOGVOL \
+                        CC=mpicc CXX=mpicxx \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments \
+                        TESTMPIRUN="mpiexec --oversubscribe"
+            make -j 8
+            make check
+        - name: Dump log files if E3SM_IO with HDF5 log-based VOL test failed
+          if: ${{ failure() }}
+          run: |
+            cat test.sh.log utils/*.log
+            cat config.log
+        - name: Test E3SM_IO -- parallel runs
+          if: ${{ success() }}
+          run: |
+            make ptest
+        - name: Test make distcheck
+          if: ${{ success() }}
+          run: |
+            WORKDIR=$(pwd)
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-hdf5=${WORKDIR}/HDF5 --with-logvol=${WORKDIR}/LOGVOL CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distclean
+
