@@ -29,7 +29,7 @@ implemented in this benchmark.
 ### Compile and Run Instructions for E3SM-IO
 * See [INSTALL.md](./INSTALL.md)
 * Current build status:
-  [![Ubuntu](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_mpich.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_mpich.yml)
+  [![Ubuntu](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
 
 ### Performance Results on Cori at NERSC
 Below shows the performance in execution times collected in September 2021 for
