@@ -768,6 +768,14 @@ if test "x$have_adios2" = xyes ; then
     AC_DEFINE([ENABLE_ADIOS2], [1], [Build ADIOS2 benchmark])
 fi
 
+AC_ARG_ENABLE([utilities],
+    [AS_HELP_STRING([--disable-utilities],
+                    [skip building utility programs
+                     @<:@default: enabled@:>@])],
+    [build_utils=${enableval}], [build_utils=yes]
+)
+AM_CONDITIONAL(BUILD_UTILS, [test "x$build_utils" = xyes])
+
 AC_CONFIG_FILES(  Makefile \
                   src/Makefile \
                   src/drivers/Makefile \
@@ -789,6 +797,7 @@ echo \
               HDF5 log-based VOL          - ${have_logvol}
               HDF5 multi-dataset          - ${have_multi_dset}
               ADIOS-2                     - ${have_adios2}
+              Build utility programs      - ${build_utils}
 
    Compilers: MPICC    = ${MPICC}
               MPICXX   = ${MPICXX}"

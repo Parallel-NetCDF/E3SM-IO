@@ -1,4 +1,9 @@
-SUBDIRS = src utils datasets
+SUBDIRS = src datasets
+DIST_SUBDIRS = src datasets utils
+
+if BUILD_UTILS
+   SUBDIRS += utils
+endif
 
 TESTS_ENVIRONMENT  = export srcdir="$(srcdir)";
 TESTS_ENVIRONMENT += export TESTMPIRUN="$(TESTMPIRUN)";
