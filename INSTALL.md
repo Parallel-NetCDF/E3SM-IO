@@ -272,7 +272,7 @@
       subfile names, which have the numerical IDs appended as the suffix.
     * The HDF5 subfiles cannot be understood by the traditional HDF5 software.
       A utility tool program will be developed in the future to convert the
-      subfiles into a single regular HDF5 filet.
+      subfiles into a single regular HDF5 file.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.h5 -k -o blob_F_out.h5 -a hdf5 -x blob -r 25
