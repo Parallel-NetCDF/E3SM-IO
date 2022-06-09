@@ -929,16 +929,16 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
 	herr_t herr;
 	hdf5_file *fp = this->files[fid];
 	int i, j;
-	hsize_t esize, rsize, rsize_old = 0;
+	hsize_t esize, rsize, rsize_all;
 	int ndim;
 	hid_t dsid = -1, msid = -1;
 	hid_t mtype;
-	char *bufp = (char *)buf;
 	hid_t did;
 	hid_t dxplid;
 	hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
 	hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
 	hid_t tid = -1;
+        H5S_seloper_t op;
 
 	E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -956,40 +956,35 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
 
 	dxplid = this->dxplid_indep;
 
-	// Call H5Dwrite
+        // set filespace
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+	rsize_all = 0;
+        op = H5S_SELECT_SET;
 	for (i = 0; i < nreq; i++) {
 		rsize = 1;
 		for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
+		if (rsize == 0) continue;
 
-		if (rsize) {
-			for (j = 0; j < ndim; j++) {
-				start[j] = (hsize_t)starts[i][j];
-				block[j] = (hsize_t)counts[i][j];
-			}
-
-			// Recreate only when size mismatch
-			if (rsize != rsize_old) {
-				if (msid >= 0) H5Sclose (msid);
-				msid = H5Screate_simple (1, &rsize, &rsize);
-				CHECK_HID (msid)
-
-				rsize_old = rsize;
-			}
-
-			E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
-			herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, start, NULL, one, block);
-			CHECK_HERR
-
-			E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
-
-			herr = H5Dwrite (did, mtype, msid, dsid, dxplid, bufp);
-			CHECK_HERR
-
-			E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
-
-			bufp += rsize * esize;
+                rsize_all += rsize;
+		for (j = 0; j < ndim; j++) {
+			start[j] = (hsize_t)starts[i][j];
+			block[j] = (hsize_t)counts[i][j];
 		}
+
+		herr = H5Sselect_hyperslab (dsid, op, start, NULL, one, block);
+		CHECK_HERR
+                op = H5S_SELECT_OR;
 	}
+	E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+
+	// Call H5Dwrite
+        if (rsize_all > 0) {
+                msid = H5Screate_simple (1, &rsize_all, NULL);
+                CHECK_HID (msid)
+                herr = H5Dwrite (did, mtype, msid, dsid, dxplid, buf);
+                CHECK_HERR
+        }
+	E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
 	tid	  = H5Dget_type (did);
 	tsize = H5Tget_size (tid);
