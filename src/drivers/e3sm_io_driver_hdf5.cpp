@@ -972,11 +972,23 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
         CHECK_HERR
         op = H5S_SELECT_OR;
     }
+
+    // create memory space
+    if (rsize_all > 0) {
+        msid = H5Screate_simple (1, &rsize_all, NULL);
+        CHECK_HID (msid)
+    }
+    else {
+      /* create a zero-sized memory space */
+       msid = H5Screate(H5S_NULL);
+       CHECK_HID (msid)
+       /* set the selection of dataset's file space to zero size */
+       herr = H5Sselect_none (dsid);
+       CHECK_ERR
+    }
     E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
 
     // Call H5Dwrite (collective write, one per variable)
-    msid = H5Screate_simple (1, &rsize_all, NULL);
-    CHECK_HID (msid)
     herr = H5Dwrite (did, mtype, msid, dsid, this->dxplid_coll, buf);
     CHECK_HERR
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
