@@ -31,6 +31,7 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
     int err = 0;
     int i;
     char *env;
+    herr_t herr = 0;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
@@ -46,12 +47,11 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
         this->log_vlid = -1;
     }
 
-    /*
-    herr_t herr = 0;
     this->dxplid_coll = H5Pcreate (H5P_DATASET_XFER);
     CHECK_HID (this->dxplid_coll)
     herr = H5Pset_dxpl_mpio (this->dxplid_coll, H5FD_MPIO_COLLECTIVE);
     CHECK_HERR
+    /*
     this->dxplid_coll_nb = H5Pcreate (H5P_DATASET_XFER);
     CHECK_HID (this->dxplid_coll_nb)
     herr = H5Pset_dxpl_mpio (this->dxplid_coll_nb, H5FD_MPIO_COLLECTIVE);
@@ -104,14 +104,14 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
         if (std::string (env) == "1") { this->collective_flush = true; }
     }
 
-err_out:;
+err_out:
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     if (err < 0) { throw "HDF5 driver init fail"; }
 }
 e3sm_io_driver_hdf5::~e3sm_io_driver_hdf5 () {
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
-    // if (dxplid_coll >= 0) H5Pclose (dxplid_coll);
+    if (dxplid_coll >= 0) H5Pclose (dxplid_coll);
     if (dxplid_indep >= 0) H5Pclose (dxplid_indep);
     // if (dxplid_coll_nb >= 0) H5Pclose (dxplid_coll_nb);
     // if (dxplid_indep_nb >= 0) H5Pclose (dxplid_indep_nb);
@@ -934,7 +934,6 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
     hid_t dsid = -1, msid = -1;
     hid_t mtype;
     hid_t did;
-    hid_t dxplid;
     hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
     hid_t tid = -1;
@@ -953,8 +952,6 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
 
     ndim = H5Sget_simple_extent_dims (dsid, dims, mdims);
     CHECK_HID (ndim)
-
-    dxplid = this->dxplid_indep;
 
     // set filespace
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
@@ -975,15 +972,25 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
         CHECK_HERR
         op = H5S_SELECT_OR;
     }
-    E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
 
-    // Call H5Dwrite
+    // create memory space
     if (rsize_all > 0) {
         msid = H5Screate_simple (1, &rsize_all, NULL);
         CHECK_HID (msid)
-        herr = H5Dwrite (did, mtype, msid, dsid, dxplid, buf);
-        CHECK_HERR
     }
+    else {
+      /* create a zero-sized memory space */
+       msid = H5Screate(H5S_NULL);
+       CHECK_HID (msid)
+       /* set the selection of dataset's file space to zero size */
+       herr = H5Sselect_none (dsid);
+       CHECK_ERR
+    }
+    E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+
+    // Call H5Dwrite (collective write, one per variable)
+    herr = H5Dwrite (did, mtype, msid, dsid, this->dxplid_coll, buf);
+    CHECK_HERR
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
 
     tid   = H5Dget_type (did);
