@@ -111,8 +111,14 @@ err_out:
 e3sm_io_driver_hdf5::~e3sm_io_driver_hdf5 () {
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
-    if (dxplid_coll >= 0) H5Pclose (dxplid_coll);
-    if (dxplid_indep >= 0) H5Pclose (dxplid_indep);
+    if (this->dxplid_coll >= 0) {
+        H5Pclose (this->dxplid_coll);
+        this->dxplid_coll = -1;
+    }
+    if (this->dxplid_indep >= 0) {
+        H5Pclose (this->dxplid_indep);
+        this->dxplid_indep = -1;
+    }
     // if (dxplid_coll_nb >= 0) H5Pclose (dxplid_coll_nb);
     // if (dxplid_indep_nb >= 0) H5Pclose (dxplid_indep_nb);
     // if (dxplid_nb >= 0) H5Pclose (dxplid_nb);

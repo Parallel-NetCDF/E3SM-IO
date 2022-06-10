@@ -85,10 +85,19 @@ err_out:;
 e3sm_io_driver_hdf5_log::~e3sm_io_driver_hdf5_log () {
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
-    if (dxplid_coll >= 0) H5Pclose (dxplid_coll);
+    if (dxplid_coll >= 0) {
+        H5Pclose (dxplid_coll);
+        dxplid_coll = -1;
+    }
     //if (dxplid_indep >= 0) H5Pclose (dxplid_indep);
-    if (dxplid_coll_nb >= 0) H5Pclose (dxplid_coll_nb);
-    if (dxplid_indep_nb >= 0) H5Pclose (dxplid_indep_nb);
+    if (dxplid_coll_nb >= 0) {
+        H5Pclose (dxplid_coll_nb);
+        dxplid_coll_nb = -1;
+    }
+    if (dxplid_indep_nb >= 0) {
+        H5Pclose (dxplid_indep_nb);
+        dxplid_indep_nb = -1;
+    }
 
     // if (dxplid_nb >= 0) H5Pclose (dxplid_nb);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
