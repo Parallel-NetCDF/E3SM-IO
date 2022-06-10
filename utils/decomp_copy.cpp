@@ -192,7 +192,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     // decomp_nprocs
     err = din->inq_dim (fidi, "decomp_nprocs", &dimnpi);
     CHECK_ERR
-    err = din->inq_dimlen (fidi, dimndi, &decomp_nprocs);
+    err = din->inq_dimlen (fidi, dimnpi, &decomp_nprocs);
     CHECK_ERR
     err = dout->def_dim (fido, "decomp_nprocs", decomp_nprocs, &dimnpo);
     CHECK_ERR
