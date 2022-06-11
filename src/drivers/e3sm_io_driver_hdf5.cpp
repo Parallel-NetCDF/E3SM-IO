@@ -366,9 +366,12 @@ int e3sm_io_driver_hdf5::def_var (
     dcplid = H5Pcreate (H5P_DATASET_CREATE);
     CHECK_HID (dcplid)
 
-    H5Pset_fill_value (dcplid, 0, NULL);
-    H5Pset_fill_time (dcplid, H5D_FILL_TIME_NEVER);
-    H5Pset_alloc_time (dcplid, H5D_ALLOC_TIME_DEFAULT);
+    herr = H5Pset_fill_value (dcplid, 0, NULL);
+    CHECK_HERR
+    herr = H5Pset_fill_time (dcplid, H5D_FILL_TIME_NEVER);
+    CHECK_HERR
+    herr = H5Pset_alloc_time (dcplid, H5D_ALLOC_TIME_DEFAULT);
+    CHECK_HERR
 
     h5_xtype = e3sm_io_type_nc2hdf5 (xtype);
 
@@ -469,7 +472,7 @@ err_out:;
 
 int e3sm_io_driver_hdf5::inq_var_name (int fid, int vid, char *name) {
     name[0] = '\0';
-    printf ("inq_var_name is not yet implementaed\n");
+    printf ("inq_var_name is not yet implemented\n");
     return -1;
 }
 
@@ -691,10 +694,10 @@ int e3sm_io_driver_hdf5::inq_att (int fid, int vid, std::string name, MPI_Offset
 
     asid = H5Aget_space (aid);
     CHECK_HID (asid)
-    
+
     herr = H5Sget_simple_extent_dims (asid, &asize, NULL);
     CHECK_HERR
-    
+
     *size = (MPI_Offset) asize;
 
 err_out:;
@@ -809,7 +812,7 @@ int e3sm_io_driver_hdf5::put_vara (int fid,
     /*
 }
 // #ifdef HDF5_HAVE_DWRITE_MULTI
-else {  // Otherwier, queue request in driver
+else {  // Otherwise, queue request in driver
     herr = fp->register_multidataset (buf, did, dsid, msid, h5_itype, 1);
     CHECK_HERR
     // Prevent freeing of dsid and msid, they will be freed after flush
@@ -930,83 +933,116 @@ int e3sm_io_driver_hdf5::put_varn_expand (int fid,
                                           MPI_Offset **counts,
                                           void *buf,
                                           e3sm_io_op_mode mode) {
-    int err = 0;
-    size_t tsize, putsize;
+    int i, j, err = 0, ndim, union_filespaces = 1;
+    size_t tsize;
     herr_t herr;
-    hdf5_file *fp = this->files[fid];
-    int i, j;
-    hsize_t esize, rsize, rsize_all;
-    int ndim;
-    hid_t dsid = -1, msid = -1;
-    hid_t mtype;
-    hid_t did;
+    hid_t dsid = -1, msid = -1, mtype, did, tid = -1;
     hsize_t start[E3SM_IO_DRIVER_MAX_RANK], block[E3SM_IO_DRIVER_MAX_RANK];
-    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK], mdims[E3SM_IO_DRIVER_MAX_RANK];
-    hid_t tid = -1;
-    H5S_seloper_t op;
+    hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
+    hsize_t rsize, rsize_all = 0;
+    hdf5_file *fp = this->files[fid];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     did = fp->dids[vid];
-
     mtype = mpi_type_to_hdf5_type (itype);
-    esize = (hsize_t)H5Tget_size (mtype);
-    if (esize <= 0) { ERR_OUT ("Unknown memory type") }
 
     dsid = H5Dget_space (did);
     CHECK_HID (dsid)
 
-    ndim = H5Sget_simple_extent_dims (dsid, dims, mdims);
+    ndim = H5Sget_simple_extent_dims (dsid, dims, NULL);
     CHECK_HID (ndim)
 
-    // set filespace
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
-    rsize_all = 0;
-    op = H5S_SELECT_SET;
-    for (i = 0; i < nreq; i++) {
-        rsize = 1;
-        for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
-        if (rsize == 0) continue;
+    if (union_filespaces) {
+        H5S_seloper_t op = H5S_SELECT_SET;
 
-        rsize_all += rsize;
-        for (j = 0; j < ndim; j++) {
-            start[j] = (hsize_t)starts[i][j];
-            block[j] = (hsize_t)counts[i][j];
+        // set filespace
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+        for (i = 0; i < nreq; i++) {
+            rsize = 1;
+            for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
+            if (rsize == 0) continue;
+            rsize_all += rsize;
+
+            /* type cast from MPI_Offset to hsize_t */
+            for (j = 0; j < ndim; j++) {
+                start[j] = (hsize_t)starts[i][j];
+                block[j] = (hsize_t)counts[i][j];
+            }
+
+            /* union all nreq hyperslabs */
+            herr = H5Sselect_hyperslab (dsid, op, start, NULL, this->one, block);
+            CHECK_HERR
+            op = H5S_SELECT_OR;
         }
 
-        herr = H5Sselect_hyperslab (dsid, op, start, NULL, one, block);
-        CHECK_HERR
-        op = H5S_SELECT_OR;
-    }
+        // create memory space
+        if (rsize_all > 0) {
+            msid = H5Screate_simple (1, &rsize_all, NULL);
+            CHECK_HID (msid)
+        }
+        else { /* this process has nothing to write, but must participate the
+                * collective write call */
+          /* create a zero-sized memory space */
+           msid = H5Screate(H5S_NULL);
+           CHECK_HID (msid)
+           /* set the selection of dataset's file space to zero size */
+           herr = H5Sselect_none (dsid);
+           CHECK_ERR
+        }
+        E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
 
-    // create memory space
-    if (rsize_all > 0) {
-        msid = H5Screate_simple (1, &rsize_all, NULL);
-        CHECK_HID (msid)
+        /* collective write, one per variable */
+        herr = H5Dwrite (did, mtype, msid, dsid, this->dxplid_coll, buf);
+        CHECK_HERR
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
     }
     else {
-      /* create a zero-sized memory space */
-       msid = H5Screate(H5S_NULL);
-       CHECK_HID (msid)
-       /* set the selection of dataset's file space to zero size */
-       herr = H5Sselect_none (dsid);
-       CHECK_ERR
-    }
-    E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+        char *bufp = (char *)buf;
+        hsize_t rsize_old = 0;
+        hsize_t esize = (hsize_t)H5Tget_size (mtype);
+        if (esize <= 0) { ERR_OUT ("Unknown memory type") }
 
-    // Call H5Dwrite (collective write, one per variable)
-    herr = H5Dwrite (did, mtype, msid, dsid, this->dxplid_coll, buf);
-    CHECK_HERR
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
+        // select filespace, set memspace, and independent write
+        for (i = 0; i < nreq; i++) {
+            rsize = 1;
+            for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
+            if (rsize == 0) continue;
+            rsize_all += rsize;
+
+            /* type cast from MPI_Offset to hsize_t */
+            for (j = 0; j < ndim; j++) {
+                start[j] = (hsize_t)starts[i][j];
+                block[j] = (hsize_t)counts[i][j];
+            }
+
+            // Recreate only when size mismatch
+            if (rsize != rsize_old) {
+                if (msid >= 0) H5Sclose (msid);
+                msid = H5Screate_simple (1, &rsize, &rsize);
+                CHECK_HID (msid)
+                rsize_old = rsize;
+            }
+
+            E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+            herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, start, NULL, this->one, block);
+            CHECK_HERR
+
+            E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+
+            /* independent write, as nreq can be different among processes */
+            herr = H5Dwrite (did, mtype, msid, dsid, this->dxplid_indep, bufp);
+            CHECK_HERR
+
+            E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
+
+            bufp += rsize * esize;
+        }
+    }
 
     tid   = H5Dget_type (did);
     tsize = H5Tget_size (tid);
-
-    for (j = 0; j < nreq; j++) {
-        putsize = tsize;
-        for (i = 0; i < ndim; i++) putsize *= counts[j][i];
-        this->amount_WR += putsize;
-    }
+    this->amount_WR += tsize * rsize_all;
 
 err_out:;
     if (tid >= 0) H5Tclose (tid);
