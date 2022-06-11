@@ -288,16 +288,17 @@ int scorpio_write_var(e3sm_io_driver &driver,
     CHECK_VAR_ERR(varp->vid)                                                  \
     cmeta->num_attrs++;                                                       \
 }
-#define DEF_VAR(name, xtype, ndims, dimids, itype, decomid) {                 \
-    /* ndims and dimids are canonical dimensions */                           \
+#define DEF_VAR(name, xtype, nDims, dimids, itype, decomid) {                 \
+    /* nDims and dimids are canonical dimensions */                           \
     int _i, *_dimids = dimids;                                                \
     varp++;                                                                   \
+    varp->ndims     = nDims;   /* number of dimensions */                     \
     varp->iType     = itype;   /* internal data type of write buffer */       \
     varp->xType     = xtype;   /* external data type of variable in file */   \
     varp->decomp_id = decomid; /* decomposition map ID */                     \
-    varp->isRecVar  = (ndims != 0 && *_dimids == dim_time);                   \
+    varp->isRecVar  = (nDims != 0 && *_dimids == dim_time);                   \
     /* calculate variable size */                                             \
-    for (varp->vlen=1, _i=0; _i<ndims; _i++) {                                \
+    for (varp->vlen=1, _i=0; _i<nDims; _i++) {                                \
         err = driver.inq_dimlen(ncid, _dimids[_i], &varp->dims[_i]);          \
         CHECK_ERR                                                             \
         if (_i == 0 && varp->isRecVar) varp->dims[_i] = 1;                    \
@@ -306,7 +307,7 @@ int scorpio_write_var(e3sm_io_driver &driver,
     /* define a new variable */                                               \
     if (cfg.api == adios) {                                                   \
         err = scorpio_define_var(cfg, decom, driver, dnames, decomid, ncid,   \
-                                 name, xtype, ndims, dimids, varp);           \
+                                 name, xtype, nDims, dimids, varp);           \
         if (decomid >= 0) varp->vlen = decom.raw_nreqs[decomid];              \
     } else if (cfg.strategy == blob && decomid >= 0) {                        \
         /* use blob dimensions to define blob variables */                    \
@@ -322,10 +323,10 @@ int scorpio_write_var(e3sm_io_driver &driver,
         /* save the canonical dimensions as attributes */                     \
         ival = decomid + 1;                                                   \
         PUT_ATTR_INT("decomposition_ID", 1, &ival)                            \
-        PUT_ATTR_INT("global_dimids", ndims, dimids)                          \
+        PUT_ATTR_INT("global_dimids", nDims, dimids)                          \
         varp->vlen = decom.count[decomid];                                    \
     } else { /* cfg.strategy == canonical or log or decomid == -1 */          \
-        err = driver.def_var(ncid, name, xtype, ndims, dimids, &varp->vid);   \
+        err = driver.def_var(ncid, name, xtype, nDims, dimids, &varp->vid);   \
         if (decomid >= 0) varp->vlen = decom.count[decomid];                  \
     }                                                                         \
     if (err != 0) {                                                           \
