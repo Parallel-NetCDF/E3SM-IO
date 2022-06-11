@@ -26,8 +26,8 @@ int print_timing_WR(e3sm_io_config *cfg,
                     case_meta      *cmeta)
 {
     int i, ndecomp;
-    MPI_Offset off_msg[3], sum_off[3], max_off[2];
-    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs;
+    MPI_Offset off_msg[3], sum_off[3];
+    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs, min_nreqs;
     MPI_Offset vlen, sum_decomp_varlen;
     double pre_time, open_time, def_time, post_time, flush_time, close_time;
     double end2end_time, wTime;
@@ -62,9 +62,8 @@ int print_timing_WR(e3sm_io_config *cfg,
     sum_amount_WR     = sum_off[1];
     sum_decomp_varlen = sum_off[2];
 
-    off_msg[0] = cmeta->my_nreqs;
-    MPI_Reduce(off_msg, max_off, 1, MPI_OFFSET, MPI_MAX, 0, comm);
-    max_nreqs = max_off[0];
+    MPI_Reduce(&cmeta->my_nreqs, &max_nreqs, 1, MPI_OFFSET, MPI_MAX, 0, comm);
+    MPI_Reduce(&cmeta->my_nreqs, &min_nreqs, 1, MPI_OFFSET, MPI_MIN, 0, comm);
 
     double dbl_tmp[7], max_dbl[7];
     dbl_tmp[0] = cmeta->pre_time;
@@ -186,6 +185,7 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("Total no. attributes               = %6d\n", cmeta->num_attrs);
         printf("Total no. noncontiguous requests   = %6lld\n", sum_nreqs);
         printf("Max   no. noncontiguous requests   = %6lld\n", max_nreqs);
+        printf("Min   no. noncontiguous requests   = %6lld\n", min_nreqs);
         printf("Write no. records (time dim)       = %6d\n", cmeta->nrecs);
         printf("I/O flush frequency                = %6d\n", cmeta->ffreq);
         printf("No. I/O flush calls                = %6d\n", cmeta->num_flushes);
