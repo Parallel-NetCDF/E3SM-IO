@@ -353,34 +353,29 @@
       ```
 
 ### Example input and run script files
-* Three small-size decomposition NetCDF files are available for testing. They
-  are generated from runs of E3SM using 16 MPI processes.
-  + For F case
-    + `datasets/f_case_866x72_16p.nc` in NetCDF classic CDF-5 format
-    + `datasets/f_case_866x72_16p.h5` in HDF5 format
-    + `datasets/f_case_866x72_16p.nc4` in NetCDF4 format
-    + `datasets/f_case_866x72_16p.bp` in ADIOS BP format
-  + For G case
-    + `datasets/g_case_cmpaso_16p.nc` in NetCDF classic CDF-5 format
-    + `datasets/g_case_cmpaso_16p.h5` in HDF5 format
-    + `datasets/g_case_cmpaso_16p.nc4` in NetCDF4 format
-    + `datasets/g_case_cmpaso_16p.bp` in ADIOS BP format
-  + For I case
-    + `datasets/i_case_f19_g16_16p.nc` in NetCDF classic CDF-5 format
-    + `datasets/i_case_f19_g16_16p.h5` in HDF5 format
-    + `datasets/i_case_f19_g16_16p.nc4` in NetCDF4 format
-    + `datasets/i_case_f19_g16_16p.bp` in ADIOS BP format
-* A median-size decomposition file is also available that are produced from a
-  512-process run.
-  + `datasets/f_case_48602x72_512p.nc` for F case
+* Three small-size decomposition map files are available for testing. They
+  are generated from E3SM runs on 16 MPI processes.
+  + F case uses 3 decomposition maps.
+    + File `datasets/f_case_866x72_16p.nc` is in NetCDF classic CDF-5 format
+    + File `datasets/f_case_866x72_16p.h5` is in HDF5 format
+    + File `datasets/f_case_866x72_16p.nc4` is in NetCDF4 format
+    + File `datasets/f_case_866x72_16p.bp` is in ADIOS BP format
+  + G case uses 6 decomposition maps.
+    + File `datasets/g_case_cmpaso_16p.nc` is in NetCDF classic CDF-5 format
+    + File `datasets/g_case_cmpaso_16p.h5` is in HDF5 format
+    + File `datasets/g_case_cmpaso_16p.nc4` is in NetCDF4 format
+    + File `datasets/g_case_cmpaso_16p.bp` is in ADIOS BP format
+  + I case uses 5 decomposition maps.
+    + File `datasets/i_case_f19_g16_16p.nc` is in NetCDF classic CDF-5 format
+    + File `datasets/i_case_f19_g16_16p.h5` is in HDF5 format
+    + File `datasets/i_case_f19_g16_16p.nc4` is in NetCDF4 format
+    + File `datasets/i_case_f19_g16_16p.bp` is in ADIOS BP format
+* File `datasets/f_case_48602x72_512p.nc` contains 3 decomposition maps for a
+  median-size F case produced from a 512-process run.
 * Three large decomposition files are available upon request.
   + `piodecomp21600tasks_F_case.nc` (266 MB) for F case produced from 21600 processes.
   + `GMPAS-NYF_T62_oRRS18to6v3_9600p.nc` (303 MB) for G case produced from 9600 processes.
   + `i_case_1344p.nc` (12 MB)for I case produced from 1344 processes.
-
-from high-resolution simulations of
-  F and G cases running on 21632 and 9600 MPI processes respectively are
-  available upon request.
 * An example batch script file for running a job on Cori @NERSC with 8 KNL
   nodes, 64 MPI processes per node, is provided in [slurm.knl](./slurm.knl).
 
