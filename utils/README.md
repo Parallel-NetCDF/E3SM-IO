@@ -7,6 +7,7 @@
 * [decomp_copy](#decomp_copy) -- copies a decomposition map file in
   CDF5/HDF5/NetCDF4/BP format to a new file in a different file format.
 * [datstat](#datstat) -- displays statistics of a decomposition map .dat file.
+* [bpstat](#bpstat) -- displays the size of attributes and variables in an ADIOS2 BP3 file.
 * [pnetcdf_blob_replay](#pnetcdf_blob_replay) -- converts the subfiles produced
   by the `e3sm_io` running with PnetCDF blob I/O strategy into a regular NetCDF
   CDF5 file.
@@ -231,22 +232,22 @@ report some statistics of the decomposition.
 ---
 
 ## bpstat
-**bpstat** counts the size of attributes and variables in an ADIOS2 BP3 file.
-If the target file is a sub-file, user should specify the directory name
-without the .dir extension.
+**bpstat** counts and displays the size of attributes and variables in an
+ADIOS2 BP3 file. If the input path name is a folder containing sub-files, the
+path name should be without the .dir extension.
 
-* Command-line options of `datstat`:
+* Command-line options of `bpstat`:
   ```
-  % ./datstat -h
-  Usage: ./datstat [OPTION]...
+  % ./bpstat -h
+  Usage: ./bpstat [OPTION]...
          -v    Verbose mode
          -h    Print help
-         FILE  Name of BP file to be analyzed
+         path  Name of BP file or folder to be analyzed
   ```
 
 * Example run:
   ```
-  % ./datstat -d ./f_case_h0.bp
+  % ./bpstat ./f_case_h0.bp
   Num subfiles: 1
   Num variables: 1203
   Total variable size: 17115880
