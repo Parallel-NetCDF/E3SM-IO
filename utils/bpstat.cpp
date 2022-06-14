@@ -20,7 +20,6 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
 #include <map>
 #include <string>
 #include <vector>
@@ -28,7 +27,16 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
-//
+#include <sys/types.h>
+
+#ifdef HAVE_FTS_H
+#include <fts.h>
+#elif defined(HAVE_FILESYSTEM)
+#include <filesystem>
+#else
+#error Neither fts.h nor filesystem.hpp is found.
+#endif
+
 #include <adios2.h>
 #include <adios2_c.h>
 #include <mpi.h>
@@ -96,7 +104,7 @@ static void usage (char *argv0) {
     "Usage: %s [OPTION]... FILE \n"
     "       -v    Verbose mode\n"
     "       -h    Print help\n"
-    "       FILE  Name of BP file to be analyzed\n";
+    "       path  Name of BP file or folder to be analyzed\n";
     fprintf (stderr, help, argv0);
 }
 
@@ -269,8 +277,44 @@ err_out:;
 }
 
 inline int get_n_sbufiles (config &cfg, std::string inpath) {
-    int ret = -1;
-    int fno;
+    int fno, ret = -1;
+
+#ifdef HAVE_FTS_H
+    FTS *ftsp;
+    FTSENT *p, *chp;
+    int fts_options = FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR;
+    char *ext, *input_dir;
+
+    /* check if inpath is a regular file */
+    struct stat path_stat;
+    stat(inpath.c_str(), &path_stat);
+    if (S_ISREG(path_stat.st_mode)) return 0;
+
+    input_dir = (char*) malloc(inpath.length() + 5);
+    sprintf(input_dir, "%s.dir", inpath.c_str());
+
+    if ((ftsp = fts_open(&input_dir, fts_options, NULL)) == NULL) {
+        printf("Error in %s line %d: fts_open fails folder %s\n",__FILE__,__LINE__,input_dir);
+        free(input_dir);
+        return -1;
+    }
+    chp = fts_children(ftsp, 0);
+    if (chp == NULL) { /* no files to traverse */
+        printf("Error in %s line %d: fts_open fails no file in %s\n",__FILE__,__LINE__,input_dir);
+        free(input_dir);
+        return -1;
+    }
+    while ((p = fts_read(ftsp)) != NULL) {
+        if (p->fts_info == FTS_F) { /* a file */
+            if (cfg.verbose) printf("Iterating subfile %s\n", p->fts_path);
+            ext = strrchr(p->fts_path, '.');
+            fno = atoi(ext + 1) + 1;
+            ret = (fno > ret) ? fno : ret;
+        }
+    }
+    free(input_dir);
+    return ret;
+#else
     std::filesystem::path fname, subfname;
 
     if (std::filesystem::is_directory (inpath + ".dir")) {
@@ -292,6 +336,7 @@ inline int get_n_sbufiles (config &cfg, std::string inpath) {
     }
 
     return ret;
+#endif
 }
 
 int main (int argc, char *argv[]) {
@@ -338,9 +383,15 @@ int main (int argc, char *argv[]) {
         }
     } else if (nsub > 0) {
         for (i = cfg.rank; i < nsub; i += cfg.np) {
-            err = bpstat_core (inpath + ".dir/" +
-                                   std::filesystem::path (inpath).filename ().string () + "." +
-                                   std::to_string (i),
+#ifdef HAVE_FTS_H
+            std::string subfilename = inpath.substr(inpath.find_last_of("/\\") + 1);
+#else
+            std::string subfilename = std::filesystem::path (inpath).filename ().string ();
+#endif
+            err = bpstat_core (inpath + ".dir/"
+                                      + subfilename
+                                      + "."
+                                      + std::to_string (i),
                                cfg, stat);
             if (err != 0) { nerrs++; }
         }

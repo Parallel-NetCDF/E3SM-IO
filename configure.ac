@@ -214,6 +214,16 @@ AC_LANG_POP(C++)
 
 AC_PROG_RANLIB
 
+AC_HEADER_STAT
+AC_HEADER_STDC
+AC_CHECK_HEADERS([fts.h])
+
+# Force to use MPICXX to check C++ header
+saved_CC=$CC
+CC=$MPICXX
+AC_CHECK_HEADERS_ONCE([filesystem])
+CC=$saved_CC
+
 AC_CHECK_DECL([access], [], [], [[#include <unistd.h>]])
 if test "x$ac_cv_have_decl_access" = xyes ; then
    AC_CHECK_FUNCS([access])
