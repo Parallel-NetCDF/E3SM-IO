@@ -766,6 +766,15 @@ if test "x$have_adios2" = xyes ; then
     LIBS="$LIBS ${adios2_lflags}"
     fi
     AC_DEFINE([ENABLE_ADIOS2], [1], [Build ADIOS2 benchmark])
+
+    # Check if type adios2_varinfo is defined, introduced in 2.8.0.
+    # Use C++ compiler to check, due to ADIOSMacros.h included in adios2.h
+    # includes <string>, a C++ header
+    saved_CC=$CC
+    CC=$MPICXX
+    AC_CHECK_TYPES([adios2_varinfo], [], [], [[#include <adios2.h>
+                                               #include <adios2_c.h>]])
+    CC=$saved_CC
 fi
 
 AC_ARG_ENABLE([utilities],
