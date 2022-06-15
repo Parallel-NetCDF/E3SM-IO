@@ -72,16 +72,24 @@ inline size_t adios2_type_size (adios2_type type) {
     switch (type) {
         case adios2_type_int32_t:
             return 4;
-        case adios2_type_int64_t:
+        case adios2_type_uint32_t:
             return 4;
+        case adios2_type_int64_t:
+            return 8;
+        case adios2_type_uint64_t:
+            return 8;
         case adios2_type_float:
             return 4;
         case adios2_type_double:
             return 8;
-        case adios2_type_uint8_t:
-            return 1;
         case adios2_type_int8_t:
             return 1;
+        case adios2_type_uint8_t:
+            return 1;
+        case adios2_type_int16_t:
+            return 2;
+        case adios2_type_uint16_t:
+            return 2;
         case adios2_type_string:
             return 1;
         default:
@@ -102,7 +110,7 @@ static void usage (char *argv0) {
 
 int bpstat_core (std::string inpath, config &cfg, bpstat &stat) {
     int err = 0;
-    size_t i;
+    size_t i, ndim;
     adios2_error aerr;
     // size_t nstep;
     size_t nvar, natt;
@@ -156,19 +164,43 @@ int bpstat_core (std::string inpath, config &cfg, bpstat &stat) {
         CHECK_AERR
         esize = adios2_type_size (type);
 
-        // There is no ADIOS2 API for querying number of blocks
-        // Try until we got error
-        nelem = 0;
-        for (i = 0;; i++) {
-            stat.msize += 8 + 8; // Block offset and size
+        aerr = adios2_variable_ndims (&ndim, *vp);
+        CHECK_AERR
 
-            aerr = adios2_set_block_selection (*vp, i);
-            if (aerr != adios2_error_none) { break; }
+        if (ndim == 0) /* scalar */
+            nelem = 1;
+        else {
+#if HAVE_ADIOS2_VARINFO
+            size_t step=0;
+            adios2_varinfo *block_info = adios2_inquire_blockinfo(ep, *vp, step);
+            assert(block_info != NULL);
 
-            aerr = adios2_selection_size (&bsize, *vp);
-            if (aerr != adios2_error_none) { break; }
+            bsize = 0;
+            for (i=0; i<ndim; i++) /* calculate block size */
+                bsize *= block_info->BlocksInfo->Count[i];
+            if (cfg.verbose)
+                printf("var %s: nblocks=%zd block_size=%zd\n",name,block_info->nblocks,bsize);
 
-            nelem += bsize;
+            adios2_free_blockinfo(block_info);
+
+            stat.msize += block_info->nblocks * (8 + 8); // Block offset and size
+            nelem = bsize * block_info->nblocks;
+#else
+            // There is no ADIOS2 API for querying number of blocks
+            // Try until we got error
+            nelem = 0;
+            for (i = 0;; i++) {
+                stat.msize += 8 + 8; // Block offset and size
+
+                aerr = adios2_set_block_selection (*vp, i);
+                if (aerr != adios2_error_none) { break; }
+
+                aerr = adios2_selection_size (&bsize, *vp);
+                if (aerr != adios2_error_none) { break; }
+
+                nelem += bsize;
+            }
+#endif
         }
 
         stat.vsize += nelem * esize;
