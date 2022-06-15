@@ -8,6 +8,7 @@
 set -e
 
 DECOMP_REPLAY="utils/decomp_copy"
+BPSTAT="utils/bpstat"
 DECOMPS=()
 
 VERBOSE=0
@@ -121,17 +122,33 @@ for API in "${APIS[@]}" ; do
 
         # construct real output file names
         OUT_FILE="${OUT_FILE_BASE}.${FILE_EXT}"
-        if test $CONFIG = f_case_866x72_16p ; then
+        if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
            REAL_OUT_FILE="${OUT_FILE_BASE}_h0.${FILE_EXT} ${OUT_FILE_BASE}_h1.${FILE_EXT}"
+           if test "x${ap[0]}" = xadios ; then
+              REAL_OUT_FILE="${OUT_FILE}_h0.${FILE_EXT} ${OUT_FILE}_h1.${FILE_EXT}"
+           fi
         elif test $CONFIG = g_case_cmpaso_16p ; then
            REAL_OUT_FILE="${OUT_FILE_BASE}.${FILE_EXT}"
-        elif test $CONFIG = i_case_f19_g16_16p ; then
-           REAL_OUT_FILE="${OUT_FILE_BASE}_h0.${FILE_EXT} ${OUT_FILE_BASE}_h1.${FILE_EXT}"
         fi
 
         CMD="${RUN} ${EXEC} -k -a ${ap[0]} -r 2 -x ${ap[1]} -y 2 -o ${OUT_FILE} ${IN_FILE}"
         echo "${CMD}"
         ${CMD}
+
+        if test "x${ap[0]}" = xadios ; then
+           if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
+              CMD="${BPSTAT} ${OUT_FILE}_h0.${FILE_EXT}"
+              echo "${CMD}"
+              ${CMD}
+              CMD="${BPSTAT} ${OUT_FILE}_h1.${FILE_EXT}"
+              echo "${CMD}"
+              ${CMD}
+           elif test $CONFIG = g_case_cmpaso_16p ; then
+              CMD="${BPSTAT} ${OUT_FILE_BASE}.${FILE_EXT}"
+              echo "${CMD}"
+              ${CMD}
+           fi
+        fi
 
         # for log strategy, check if the output files are log-based VOL files
         if test "x${ap[1]}" = xlog ; then
