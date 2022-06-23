@@ -75,16 +75,16 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
-            # VERSION=4.9.0
-            # rm -rf v${VERSION}.tar.gz netcdf-c-${VERSION}
-            # wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v${VERSION}.tar.gz
-            # tar -zxf v${VERSION}.tar.gz
-            # cd netcdf-c-${VERSION}
+            VERSION=4.9.0
+            rm -rf v${VERSION}.tar.gz netcdf-c-${VERSION}
+            wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v${VERSION}.tar.gz
+            tar -zxf v${VERSION}.tar.gz
+            cd netcdf-c-${VERSION}
             # TODO: Always use an official release. E3SM-IO requires NetCDF-C 4.9.0 or later.
-            rm -rf netcdf-c
-            git clone -q https://github.com/Unidata/netcdf-c.git
-            cd netcdf-c
-            autoreconf -i
+            # rm -rf netcdf-c
+            # git clone -q https://github.com/Unidata/netcdf-c.git
+            # cd netcdf-c
+            # autoreconf -i
             ./configure --prefix=${WORKDIR}/NetCDF \
                         --silent \
                         --disable-dap \
