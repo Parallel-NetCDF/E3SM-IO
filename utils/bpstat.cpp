@@ -315,25 +315,26 @@ inline int get_n_sbufiles (config &cfg, std::string inpath) {
     FTS *ftsp;
     FTSENT *p, *chp;
     int fts_options = FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR;
-    char *ext, *input_dir;
+    char *ext, *input_dir[2];
 
     /* check if inpath is a regular file */
     struct stat path_stat;
     stat(inpath.c_str(), &path_stat);
     if (S_ISREG(path_stat.st_mode)) return 0;
 
-    input_dir = (char*) malloc(inpath.length() + 5);
-    sprintf(input_dir, "%s.dir", inpath.c_str());
+    input_dir[0] = (char*) malloc(inpath.length() + 5);
+    sprintf(input_dir[0], "%s.dir", inpath.c_str());
+    input_dir[1] = NULL;
 
-    if ((ftsp = fts_open(&input_dir, fts_options, NULL)) == NULL) {
-        printf("Error in %s line %d: fts_open fails folder %s\n",__FILE__,__LINE__,input_dir);
-        free(input_dir);
+    if ((ftsp = fts_open(input_dir, fts_options, NULL)) == NULL) {
+        printf("Error in %s line %d: fts_open fails folder %s\n",__FILE__,__LINE__,input_dir[0]);
+        free(input_dir[0]);
         return -1;
     }
     chp = fts_children(ftsp, 0);
     if (chp == NULL) { /* no files to traverse */
-        printf("Error in %s line %d: fts_open fails no file in %s\n",__FILE__,__LINE__,input_dir);
-        free(input_dir);
+        printf("Error in %s line %d: fts_open fails no file in %s\n",__FILE__,__LINE__,input_dir[0]);
+        free(input_dir[0]);
         return -1;
     }
     while ((p = fts_read(ftsp)) != NULL) {
@@ -344,7 +345,7 @@ inline int get_n_sbufiles (config &cfg, std::string inpath) {
             ret = (fno > ret) ? fno : ret;
         }
     }
-    free(input_dir);
+    free(input_dir[0]);
     return ret;
 #else
     std::filesystem::path fname, subfname;
