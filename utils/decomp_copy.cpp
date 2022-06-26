@@ -30,7 +30,6 @@
 #define MAX_NFILES 6
 #define LINE_SIZE  4692802
 
-
 /*----< replay_decomp() >-------------------------------------------------*/
 /* Read I/O decomposition file, cfg->cfg_path. The contents of the file are,
  * for example from 866x72_16p.nc
@@ -122,16 +121,16 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     std::vector<int> dims;
     int max_nreqs, min_nreqs;
     int max_len, min_len;
-    int *buf = NULL;
+    int *buf      = NULL;
     bool have_raw = false;
-    e3sm_io_config cfg_in;    // Dummy cfg for read decom
-    e3sm_io_driver *din = NULL;
+    e3sm_io_config cfg_in;  // Dummy cfg for read decom
+    e3sm_io_driver *din  = NULL;
     e3sm_io_driver *dout = NULL;
-    MPI_Offset num_decomp;         // # decom maps
-    MPI_Offset decomp_nprocs;     // # procs sharing the decom
-    MPI_Offset total_nreqs;         // Di total_nreqs
-    MPI_Offset total_raw_nreqs;     // Di total_raw_nreqs
-    MPI_Offset att_len;             // size of str_att
+    MPI_Offset num_decomp;       // # decom maps
+    MPI_Offset decomp_nprocs;    // # procs sharing the decom
+    MPI_Offset total_nreqs;      // Di total_nreqs
+    MPI_Offset total_raw_nreqs;  // Di total_raw_nreqs
+    MPI_Offset att_len;          // size of str_att
     std::vector<char> str_att;
     std::string name;
 
@@ -200,7 +199,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     for (i = 1; i <= num_decomp; i++) {
         // Di.total_nreqs
         name = "D" + std::to_string (i) + ".total_nreqs";
-        err = din->inq_dim (fidi, name, &dimnri);
+        err  = din->inq_dim (fidi, name, &dimnri);
         CHECK_ERR
         err = din->inq_dimlen (fidi, dimnri, &total_nreqs);
         CHECK_ERR
@@ -209,10 +208,10 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         // Di.total_raw_nreqs
         name = "D" + std::to_string (i) + ".total_raw_nreqs";
-        err = din->inq_dim (fidi, name, &dimnrri);
+        err  = din->inq_dim (fidi, name, &dimnrri);
         if (err >= 0) {
             have_raw = true;
-            err = din->inq_dimlen (fidi, dimnrri, &total_raw_nreqs);
+            err      = din->inq_dimlen (fidi, dimnrri, &total_raw_nreqs);
             CHECK_ERR
             err = dout->def_dim (fido, name, total_raw_nreqs, &dimnrro);
             CHECK_ERR
@@ -222,7 +221,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         // Di.ndims
         name = "D" + std::to_string (i) + ".ndims";
-        err = din->get_att (fidi, NC_GLOBAL, name, &ndims);
+        err  = din->get_att (fidi, NC_GLOBAL, name, &ndims);
         CHECK_ERR
         err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, 1, &ndims);
         CHECK_ERR
@@ -230,28 +229,28 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         dims.resize (ndims);
         // Di.dims
         name = "D" + std::to_string (i) + ".dims";
-        err = din->get_att (fidi, NC_GLOBAL, name, dims.data ());
+        err  = din->get_att (fidi, NC_GLOBAL, name, dims.data ());
         CHECK_ERR
         err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, ndims, dims.data ());
         CHECK_ERR
 
         // Di.max_nreqs
         name = "D" + std::to_string (i) + ".max_nreqs";
-        err = din->get_att (fidi, NC_GLOBAL, name, &max_nreqs);
+        err  = din->get_att (fidi, NC_GLOBAL, name, &max_nreqs);
         CHECK_ERR
         err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, 1, &max_nreqs);
         CHECK_ERR
 
         // Di.min_nreqs
         name = "D" + std::to_string (i) + ".min_nreqs";
-        err = din->get_att (fidi, NC_GLOBAL, name, &min_nreqs);
+        err  = din->get_att (fidi, NC_GLOBAL, name, &min_nreqs);
         CHECK_ERR
         err = dout->put_att (fido, NC_GLOBAL, name, NC_INT, 1, &min_nreqs);
         CHECK_ERR
 
         // Di.nreqs
         name = "D" + std::to_string (i) + ".nreqs";
-        err = din->inq_var (fidi, name, &varnri);
+        err  = din->inq_var (fidi, name, &varnri);
         CHECK_ERR
         err = dout->def_var (fido, name, NC_INT, 1, &dimnpo, &varnro);
         CHECK_ERR
@@ -268,7 +267,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         if (have_raw) {
             // Di.raw_nreqs
             name = "D" + std::to_string (i) + ".raw_nreqs";
-            err = din->inq_var (fidi, name, &varnrri);
+            err  = din->inq_var (fidi, name, &varnrri);
             CHECK_ERR
             err = dout->def_var (fido, name, NC_INT, 1, &dimnpo, &varnrro);
             CHECK_ERR
@@ -285,7 +284,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         // Di.offsets
         name = "D" + std::to_string (i) + ".offsets";
-        err = din->inq_var (fidi, name, &varoffi);
+        err  = din->inq_var (fidi, name, &varoffi);
         CHECK_ERR
         err = dout->def_var (fido, name, NC_INT, 1, &dimnro, &varoffo);
         CHECK_ERR
@@ -302,7 +301,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         if (have_raw) {
             // Di.raw_offsets
             name = "D" + std::to_string (i) + ".raw_offsets";
-            err = din->inq_var (fidi, name, &varroffi);
+            err  = din->inq_var (fidi, name, &varroffi);
             CHECK_ERR
             err = dout->def_var (fido, name, NC_INT, 1, &dimnrro, &varroffo);
             CHECK_ERR
@@ -319,7 +318,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         // Di.lengths
         name = "D" + std::to_string (i) + ".lengths";
-        err = din->inq_var (fidi, name, &varleni);
+        err  = din->inq_var (fidi, name, &varleni);
         CHECK_ERR
         err = dout->def_var (fido, name, NC_INT, 1, &dimnro, &varleno);
         CHECK_ERR
@@ -402,16 +401,16 @@ err_out:;
 
 static void usage (char *argv0) {
     const char *help =
-    "Usage: %s [-h|-v] -a fmt -i input_file -o out_file\n"
-    "   [-h]            Print help\n"
-    "   [-v]            verbose mode\n"
-    "   -a fmt          output file format, fmt is one of the followings\n"
-    "      cdf5:        NetCDF classic 64-bit data format\n"
-    "      netcdf4:     NetCDF-4 (HDF5-based) format\n"
-    "      hdf5:        HDF5 format\n"
-    "      bp:          ADIOS2 BP format\n"
-    "   -i input_file   input file name\n"
-    "   -o out_file     output file name\n";
+        "Usage: %s [-h|-v] -a fmt -i input_file -o out_file\n"
+        "   [-h]            Print help\n"
+        "   [-v]            verbose mode\n"
+        "   -a fmt          output file format, fmt is one of the followings\n"
+        "      cdf5:        NetCDF classic 64-bit data format\n"
+        "      netcdf4:     NetCDF-4 (HDF5-based) format\n"
+        "      hdf5:        HDF5 format\n"
+        "      bp:          ADIOS2 BP format\n"
+        "   -i input_file   input file name\n"
+        "   -o out_file     output file name\n";
     fprintf (stderr, help, argv0);
 }
 
@@ -429,10 +428,9 @@ int main (int argc, char **argv) {
 
     if (nprocs > 1) {
         nprocs = 1;
-        comm = MPI_COMM_SELF;
+        comm   = MPI_COMM_SELF;
         if (rank == 0)
-            printf("Warning: %s is for sequential run. Run on 1 process now.\n",
-                   argv[0]);
+            printf ("Warning: %s is for sequential run. Run on 1 process now.\n", argv[0]);
         else
             goto err_out;
     }
