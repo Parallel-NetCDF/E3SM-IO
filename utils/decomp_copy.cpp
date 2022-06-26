@@ -393,10 +393,10 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     CHECK_ERR
 
 err_out:;
-    if (din) { delete din; }
-    if (dout) { delete dout; }
-    if (buf) { free (buf); }
-    return err;
+	if (din) { delete din; }
+	if (dout) { delete dout; }
+	if (buf) { free (buf); }
+	return err;
 }
 
 static void usage (char *argv0) {
@@ -529,6 +529,6 @@ int main (int argc, char **argv) {
 
 err_out:
 
-    MPI_Finalize ();
-    return err;
+	MPI_Finalize ();
+	return err;
 }
