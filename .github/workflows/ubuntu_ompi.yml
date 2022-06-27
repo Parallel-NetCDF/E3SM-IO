@@ -240,6 +240,7 @@ jobs:
           run: |
             cat test.sh.log utils/*.log
             cat config.log
+            ls -r ./test_output
         - name: Test E3SM_IO all APIs -- parallel runs
           if: ${{ success() }}
           run: |
