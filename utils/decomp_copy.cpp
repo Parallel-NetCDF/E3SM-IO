@@ -132,7 +132,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     MPI_Offset total_nreqs;         // Di total_nreqs
     MPI_Offset total_raw_nreqs;     // Di total_raw_nreqs
     MPI_Offset att_len;             // size of str_att
-    std::vector<char> str_att;
+    std::string str_att;
     std::string name;
 
     // Set up dummy config for the driver
