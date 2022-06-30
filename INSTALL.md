@@ -22,7 +22,7 @@
   + Configured with parallel I/O support (configured with `--enable-parallel` is required)
 * (Optional) [HDF5 Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
   + Experimental software developed as part of the Datalib project
-* (Optional) [ADIOS 2.7.1](https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz)
+* (Optional) [ADIOS 2.8.1](https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.8.1.tar.gz)
   + Configured with parallel I/O support (cmake with `-DADIOS2_USE_MPI=ON` is required)
 * (Optional) [NetCDF-C 4.9.0](https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz)
   + Configured with parallel HDF5 support (i.e. `--enable-netcdf4`)
@@ -74,13 +74,13 @@
   + Configure ADIOS with MPI support enabled (-DADIOS2_USE_MPI=ON)
   + Run `make install`
   + Example build commands are given below. This example will install
-    the ADIOS2 library under the folder `${HOME}/ADIOS2/2.7.1`.
+    the ADIOS2 library under the folder `${HOME}/ADIOS2/2.8.1`.
     ```
-    % wget https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.7.1.tar.gz
-    % tar -zxf v2.7.1.tar.gz
+    % wget https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.8.1.tar.gz
+    % tar -zxf v2.8.1.tar.gz
     % mkdir ADIOS2_BUILD
     % cd ADIOS2_BUILD
-    % cmake -DCMAKE_INSTALL_PREFIX=${HOME}/ADIOS2/2.7.1 -DADIOS2_USE_MPI=ON ../ADIOS2-2.7.1
+    % cmake -DCMAKE_INSTALL_PREFIX=${HOME}/ADIOS2/2.8.1 -DADIOS2_USE_MPI=ON ../ADIOS2-2.8.1
     % make -j 4 install
     ```
 * Build NetCDF-C
@@ -129,7 +129,7 @@
     % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.3 \
                   --with-hdf5=${HOME}/HDF5/1.13.0 \
                   --with-logvol=${HOME}/Log_VOL/1.2.0 \
-                  --with-adios2=${HOME}/ADIOS2/2.7.1 \
+                  --with-adios2=${HOME}/ADIOS2/2.8.1 \
                   --with-netcdf4=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc CXX=mpicxx
     % make
