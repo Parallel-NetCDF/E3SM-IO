@@ -385,6 +385,13 @@ AC_ARG_WITH([hdf5],
       to specify the location of HDF5 installation. Abort.
       -----------------------------------------------------------------------])
    else
+      AC_MSG_CHECKING([HDF5 library version])
+      AC_COMPUTE_INT([hdf5_major], [H5_VERS_MAJOR],   [[#include <hdf5.h>]])
+      AC_COMPUTE_INT([hdf5_minor], [H5_VERS_MINOR],   [[#include <hdf5.h>]])
+      AC_COMPUTE_INT([hdf5_patch], [H5_VERS_RELEASE], [[#include <hdf5.h>]])
+      hdf5_version=${hdf5_major}.${hdf5_minor}.${hdf5_patch}
+      AC_MSG_RESULT([$hdf5_version])
+
       AC_MSG_CHECKING([whether HDF5 parallel I/O is enabled])
       AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
       #include <hdf5.h>
