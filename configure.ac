@@ -378,11 +378,11 @@ AC_ARG_WITH([hdf5],
 
    AC_CHECK_HEADER([hdf5.h], [have_hdf5=yes], [have_hdf5=no])
    if test "x$have_hdf5" = xno ; then
-      AC_MSG_WARN([
+      AC_MSG_ERROR([
       -----------------------------------------------------------------------
       Missing HDF5-header files 'hdf5.h' required to build E3SM_IO. Use
       configure command-line option --with-hdf5=/path/to/implementation
-      to specify the location of HDF5 installation. Disable HDF5 support.
+      to specify the location of HDF5 installation. Abort.
       -----------------------------------------------------------------------])
    else
       AC_MSG_CHECKING([whether HDF5 parallel I/O is enabled])
