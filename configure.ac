@@ -394,11 +394,12 @@ AC_ARG_WITH([hdf5],
       ]])], [hdf5_parallel_io=yes], [hdf5_parallel_io=no])
       AC_MSG_RESULT([$hdf5_parallel_io])
       if test "x$hdf5_parallel_io" = xno ; then
-          AC_MSG_WARN([
-          -----------------------------------------------------------------------
-              E3SM_IO requires parallel I/O feature enabled in HDF5. Disable HDF5 support.
-          -----------------------------------------------------------------------])
-          have_hdf5=no
+         AC_MSG_ERROR([
+         -----------------------------------------------------------------------
+         E3SM_IO requires parallel I/O feature enabled in HDF5. However, This
+         version of HDF5 library, $hdf5_version, is not configured to support
+         parallel I/O. Abort.
+         -----------------------------------------------------------------------])
       fi
    fi
    if test "x$have_hdf5" = xyes ; then
