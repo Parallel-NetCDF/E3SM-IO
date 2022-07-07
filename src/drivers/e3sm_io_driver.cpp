@@ -192,15 +192,19 @@ done_check:
      * the official release.
      */
     switch (cfg->api) {
-#ifdef ENABLE_PNC
         case pnetcdf:
+#ifdef ENABLE_PNC
             driver = new e3sm_io_driver_pnc (cfg);
             break;
+#else
+            ERR_OUT ("PnetCDF support was not enabled in this build")
 #endif
-#ifdef ENABLE_NETCDF4
         case netcdf4:
+#ifdef ENABLE_NETCDF4
             driver = new e3sm_io_driver_nc4 (cfg);
             break;
+#else
+            ERR_OUT ("NetCDF4 support was not enabled in this build")
 #endif
         case hdf5:
 #ifdef ENABLE_HDF5
@@ -213,26 +217,26 @@ done_check:
 #endif
             break;
         case hdf5_md:
-            ERR_OUT("HDF5 does not support multi-dataset APIs")
+#ifdef HDF5_HAVE_MULTI_DATASET_API
+            driver = new e3sm_io_driver_hdf5 (cfg);
             break;
+#else
+            ERR_OUT("HDF5 library is not built with support of multi-dataset APIs")
+#endif
         case hdf5_log:
-#ifdef ENABLE_HDF5
 #ifdef ENABLE_LOGVOL
             driver = new e3sm_io_driver_hdf5_log (cfg);
+            break;
 #else
             ERR_OUT ("Log VOL support was not enabled in this build")
 #endif
-#else
-            ERR_OUT ("HDF5 support was not enabled in this build")
-#endif
-            break;
         case adios:
 #ifdef ENABLE_ADIOS2
             driver = new e3sm_io_driver_adios2 (cfg);
+            break;
 #else
             ERR_OUT ("ADIOS2 support was not enabled in this build")
 #endif
-            break;
         default:
             ERR_OUT ("I/O API is not set")
             break;
