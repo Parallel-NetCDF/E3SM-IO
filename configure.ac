@@ -423,6 +423,13 @@ AC_ARG_WITH([hdf5],
          AC_DEFINE([HDF5_HAVE_H5SBLOCK], [1], [Whether HDF5 have H5S_BLOCK])
       fi
       AC_SEARCH_LIBS([H5Dwrite_multi], [hdf5], [have_multi_dset=yes], [have_multi_dset=no])
+      if test "x${have_multi_dset}" = xno ; then
+         AC_MSG_WARN([
+         ---------------------------------------------------------------
+         This version of HDF5 library, $hdf5_version, does not support
+         'multi-dataset' APIs. Disabling the 'hdf5_md' I/O method option.
+         ---------------------------------------------------------------])
+      fi
       AC_SUBST(HDF5_LIB_PATH, [$hdf5_lib])
    fi
 ])
