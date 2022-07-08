@@ -132,20 +132,20 @@ for API in "${APIS[@]}" ; do
         fi
 
         CMD="${RUN} ${EXEC} -k -a ${ap[0]} -r 2 -x ${ap[1]} -y 2 -o ${OUT_FILE} ${IN_FILE}"
-        echo "${CMD}"
+        echo "CMD = ${CMD}"
         ${CMD}
 
         if test "x${ap[0]}" = xadios ; then
            if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
               CMD="${BPSTAT} ${OUT_FILE}_h0.${FILE_EXT}"
-              echo "${CMD}"
+              echo "CMD = ${CMD}"
               ${CMD}
               CMD="${BPSTAT} ${OUT_FILE}_h1.${FILE_EXT}"
-              echo "${CMD}"
+              echo "CMD = ${CMD}"
               ${CMD}
            elif test $CONFIG = g_case_cmpaso_16p ; then
               CMD="${BPSTAT} ${OUT_FILE_BASE}.${FILE_EXT}"
-              echo "${CMD}"
+              echo "CMD = ${CMD}"
               ${CMD}
            fi
         fi
@@ -157,7 +157,7 @@ for API in "${APIS[@]}" ; do
 
            for f in $REAL_OUT_FILE
            do
-             echo "$H5LDUMP -k $f"
+             echo "CMD = $H5LDUMP -k $f"
              FILE_KIND=`$H5LDUMP -k $f`
              if test "x${FILE_KIND}" != xHDF5-LogVOL ; then
                 echo "Error: Output file $f is not Log VOL, but ${FILE_KIND}"
@@ -170,6 +170,7 @@ for API in "${APIS[@]}" ; do
         fi
 
         # delete the output files/folder
+        echo "CMD = rm -rf ${REAL_OUT_FILE}*"
         rm -rf ${REAL_OUT_FILE}*
     done
 done
