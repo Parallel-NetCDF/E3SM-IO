@@ -530,61 +530,6 @@ err_out:
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;
 }
-int e3sm_io_driver_nc4::put_vars (int fid,
-                                  int vid,
-                                  MPI_Datatype itype,
-                                  MPI_Offset *start,
-                                  MPI_Offset *count,
-                                  MPI_Offset *stride,
-                                  void *buf,
-                                  e3sm_io_op_mode mode) {
-    int err = NC_NOERR;
-    int i;
-    int ndim;                     // Variable #dim
-    ptrdiff_t *ncstride = NULL;     // Stride in int32
-    int esize;                     // Element size of variable type
-    nc_type xtype;                 // Type of the variable
-    
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_PUT_VAR)
-
-    err = nc_inq_varndims (fid, vid, &ndim);
-    CHECK_NCERR
-    ncstride = (ptrdiff_t *)malloc (sizeof (ptrdiff_t) * ndim);
-    CHECK_PTR (ncstride)
-    for (i = 0; i < ndim; i++) { ncstride[i] = (ptrdiff_t) (stride[i]); }
-
-    if (itype == MPI_CHAR)
-        err = nc_put_vars_text (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const char *)buf);
-    else if (itype == MPI_INT)
-        err = nc_put_vars_int (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const int *)buf);
-    else if (itype == MPI_UNSIGNED)
-        err = nc_put_vars_uint (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const unsigned int *)buf);
-    else if (itype == MPI_LONG_LONG)
-        err = nc_put_vars_longlong (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const long long *)buf);
-    else if (itype == MPI_UNSIGNED_LONG_LONG)
-        err = nc_put_vars_ulonglong (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const unsigned long long *)buf);
-    else if (itype == MPI_FLOAT)
-        err = nc_put_vars_float (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const float *)buf);
-    else if (itype == MPI_DOUBLE)
-        err = nc_put_vars_double (fid, vid, (size_t *)start, (size_t *)count, ncstride, (const double *)buf);
-    else
-        ERR_OUT ("Uknown type")
-
-    CHECK_NCERR
-
-    nc_inq_vartype (fid, vid, &xtype);
-    err = e3sm_io_xlen_nc_type (xtype, &esize);
-    CHECK_ERR
-    for (i = 0; i < ndim; i++) { esize *= count[i]; }
-    this->amount_WR += esize;
-
-err_out:
-    if (ncstride) { free (ncstride); }
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_PUT_VAR)
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
-    return err;
-}
 
 int e3sm_io_driver_nc4::put_varn (int fid,
                                   int vid,
@@ -737,61 +682,6 @@ int e3sm_io_driver_nc4::get_vara (int fid,
     CHECK_NCERR
 
 err_out:
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_GET_VAR)
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
-    return err;
-}
-int e3sm_io_driver_nc4::get_vars (int fid,
-                                  int vid,
-                                  MPI_Datatype itype,
-                                  MPI_Offset *start,
-                                  MPI_Offset *count,
-                                  MPI_Offset *stride,
-                                  void *buf,
-                                  e3sm_io_op_mode mode) {
-    int err = NC_NOERR;
-    int i;
-    int ndim;                     // Variable #dim
-    ptrdiff_t *ncstride = NULL;     // Stride in int32
-    int esize;                     // Element size of variable type
-    nc_type xtype;                 // Type of the variable
-
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_GET_VAR)
-
-    err = nc_inq_varndims (fid, vid, &ndim);
-    CHECK_NCERR
-    ncstride = (ptrdiff_t *)malloc (sizeof (ptrdiff_t) * ndim);
-    CHECK_PTR (ncstride)
-    for (i = 0; i < ndim; i++) { ncstride[i] = (ptrdiff_t) (stride[i]); }
-
-    if (itype == MPI_CHAR)
-        err = nc_get_vars_text (fid, vid, (size_t *)start, (size_t *)count, ncstride, (char *)buf);
-    else if (itype == MPI_INT)
-        err = nc_get_vars_int (fid, vid, (size_t *)start, (size_t *)count, ncstride, (int *)buf);
-    else if (itype == MPI_UNSIGNED)
-        err = nc_get_vars_uint (fid, vid, (size_t *)start, (size_t *)count, ncstride, (unsigned int *)buf);
-    else if (itype == MPI_LONG_LONG)
-        err = nc_get_vars_longlong (fid, vid, (size_t *)start, (size_t *)count, ncstride, (long long *)buf);
-    else if (itype == MPI_UNSIGNED_LONG_LONG)
-        err = nc_get_vars_ulonglong (fid, vid, (size_t *)start, (size_t *)count, ncstride, (unsigned long long *)buf);
-    else if (itype == MPI_FLOAT)
-        err = nc_get_vars_float (fid, vid, (size_t *)start, (size_t *)count, ncstride, (float *)buf);
-    else if (itype == MPI_DOUBLE)
-        err = nc_get_vars_double (fid, vid, (size_t *)start, (size_t *)count, ncstride, (double *)buf);
-    else
-        ERR_OUT ("Uknown type")
-
-    CHECK_NCERR
-
-    nc_inq_vartype (fid, vid, &xtype);
-    err = e3sm_io_xlen_nc_type (xtype, &esize);
-    CHECK_ERR
-    for (i = 0; i < ndim; i++) { esize *= count[i]; }
-    this->amount_RD += esize;
-
-err_out:
-    if (ncstride) { free (ncstride); }
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_GET_VAR)
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)
     return err;

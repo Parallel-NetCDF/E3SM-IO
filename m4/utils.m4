@@ -216,10 +216,6 @@ define(`PUT_VARA',`ifdef(`PNETCDF',`ncmpi_put_vara_$1_all',`nc_put_vara_$1')')dn
 dnl
 define(`GET_VARA',`ifdef(`PNETCDF',`ncmpi_get_vara_$1_all',`nc_get_vara_$1')')dnl
 dnl
-define(`PUT_VARS',`ifdef(`PNETCDF',`ncmpi_put_vars_$1_all',`nc_put_vars_$1')')dnl
-dnl
-define(`GET_VARS',`ifdef(`PNETCDF',`ncmpi_get_vars_$1_all',`nc_get_vars_$1')')dnl
-dnl
 define(`PUT_VARM',`ifdef(`PNETCDF',`ncmpi_put_varm_$1_all',`nc_put_varm_$1')')dnl
 dnl
 define(`GET_VARM',`ifdef(`PNETCDF',`ncmpi_get_varm_$1_all',`nc_get_varm_$1')')dnl
