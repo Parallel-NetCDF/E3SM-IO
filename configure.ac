@@ -432,15 +432,15 @@ AC_ARG_WITH([hdf5],
       if test "x${have_multi_dset}" = xno ; then
          AC_MSG_WARN([
          ---------------------------------------------------------------
-         This version of HDF5 library, $hdf5_version, does not support
-         'multi-dataset' APIs. The 'hdf5_md' I/O option is thus disabled.
+         This HDF5 $hdf5_version library does not support 'multi-dataset'
+         APIs. The 'hdf5_md' I/O option is thus disabled.
          ---------------------------------------------------------------])
       fi
       AC_SUBST(HDF5_LIB_PATH, [$hdf5_lib])
    fi
 ])
 AM_CONDITIONAL(ENABLE_HDF5, [test "x$have_hdf5" = xyes])
-AM_CONDITIONAL(HDF5_HAVE_DWRITE_MULTI, [test "x$have_multi_dset" = xyes])
+AM_CONDITIONAL(HDF5_HAVE_MULTI_DATASET_API, [test "x$have_multi_dset" = xyes])
 
 # Check for NETCDF4
 have_netcdf4=no
@@ -809,7 +809,7 @@ if test "x$have_hdf5" = xyes ; then
    fi
    AC_DEFINE([ENABLE_HDF5], [1], [Enable HDF5 I/O method])
    if test "x$have_multi_dset" = xyes ; then
-      AC_DEFINE([HDF5_HAVE_DWRITE_MULTI], [1], [HDF5 has multi-dataset I/O support])
+      AC_DEFINE([HDF5_HAVE_MULTI_DATASET_API], [1], [HDF5 has multi-dataset I/O support])
    fi
 fi
 

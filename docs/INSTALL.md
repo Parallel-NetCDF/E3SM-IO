@@ -195,6 +195,7 @@
            pnetcdf:   PnetCDF library (default)
            netcdf4:   NetCDF-4 library
            hdf5:      HDF5 library
+           hdf5_md:   HDF5 library using multi-dataset I/O APIs
            hdf5_log:  HDF5 library with Log-based VOL
            adios:     ADIOS library using BP3 format
        [-x strategy] I/O strategy
@@ -260,13 +261,25 @@
       mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o blob_F_out.nc -a pnetcdf -x blob -r 25
       ```
   + **-a hdf5 -x canonical**
-    * This option writes data using the HDF5 library.
+    * This option writes/reads data using HDF5 APIs `H5Dwrite`/`H5Dread`.
     * The data layout of datasets store in the output file is in a canonical
       order.
-    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH`.
+    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and
+      `HDF5_PLUGIN_PATH`.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.h5 -k -o can_F_out.h5 -a hdf5 -x canonical -r 25
+      ```
+  + **-a hdf5_md -x canonical**
+    * This option writes/reads data using HDF5 multi-dataset APIs
+      `H5Dwrite_multi`/`H5Dread_multi`.
+    * The data layout of datasets store in the output file is in a canonical
+      order.
+    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and
+      `HDF5_PLUGIN_PATH`.
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.h5 -k -o can_F_out.h5 -a hdf5_md -x canonical -r 25
       ```
   + **-a hdf5 -x blob**
     * This is the blob I/O implementation using HDF5 library. Different from
