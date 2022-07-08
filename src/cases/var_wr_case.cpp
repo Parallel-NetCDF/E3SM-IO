@@ -308,7 +308,6 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
 
     for (rec_no=0; rec_no<cmeta->nrecs; rec_no++) {
         if ((cfg.api == hdf5 && cfg.strategy != blob) || cfg.api == netcdf4) {
-printf("%s line %d: %s rec_no=%d cmeta->nrecs=%d\n",__func__,__LINE__,cmeta->outfile,rec_no,cmeta->nrecs);
             err = driver.expand_rec_size (ncid, rec_no + 1);
             CHECK_ERR
         }

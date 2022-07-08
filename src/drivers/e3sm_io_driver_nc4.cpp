@@ -182,10 +182,10 @@ int e3sm_io_driver_nc4::expand_rec_size (int fid, MPI_Offset size) {
     int err;
     int i, j;
     int ndim;                    // Var #ndims
-    int udimid;                  // Record dim ID
+    int udimid;                    // Record dim ID
     int nvar;                    // # variables
-    std::vector<int> dimids;     // Var dimids
-    std::vector<size_t> start;   // Starting coordinate to write in var
+    std::vector<int> dimids;    // Var dimids
+    std::vector<size_t> start;    // Starting coordinate to write in var
     char buf[16];                // Dummy buffer
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
@@ -217,11 +217,6 @@ int e3sm_io_driver_nc4::expand_rec_size (int fid, MPI_Offset size) {
                 err = nc_var_par_access (fid, i, NC_COLLECTIVE);
                 CHECK_NCERR
                 err = nc_put_var1 (fid, i, start.data (), buf);
-if (err != NC_NOERR) {
-char name[128];
-nc_inq_varname(fid, i, name);
-printf("%s -- nvar=%d size=%lld start=%zd var[%d] %s\n", __func__, nvar,size,start[0],i,name);
-}
                 CHECK_NCERR
                 err = nc_var_par_access (fid, i, NC_INDEPENDENT);
                 CHECK_NCERR
@@ -247,15 +242,6 @@ int e3sm_io_driver_nc4::def_var (
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_DEF_VAR)
 
-char *type_name;
-if (xtype == NC_CHAR) type_name=(char*)"NC_CHAR";
-else if (xtype == NC_INT) type_name=(char*)"NC_INT";
-else if (xtype == NC_FLOAT) type_name=(char*)"NC_FLOAT";
-else if (xtype == NC_DOUBLE) type_name=(char*)"NC_DOUBLE";
-else type_name=(char*)"UNKNOWN";
-
-printf("\nerr = nc_def_var(ncid, \"%s\", %s, %d, dimids, &varid); ERR\n",name.c_str(),type_name,ndim);
-printf("err = nc_def_var_fill(ncid, varid, 1, NULL); ERR\n");
     err = nc_def_var (fid, name.c_str (), xtype, ndim, dimids, varid);
     CHECK_NCERR
 
@@ -339,9 +325,6 @@ int e3sm_io_driver_nc4::def_dim (int fid, std::string name, MPI_Offset size, int
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_DEF_DIM)
-static int wkl=0;
-if (wkl==0)printf("\n");
-printf("err = nc_def_dim(ncid, \"%s\", %lld, &dimids[%d]); ERR\n",name.c_str(),size,wkl++);
 
     err = nc_def_dim (fid, name.c_str (), size, dimid);
     CHECK_NCERR
@@ -387,11 +370,7 @@ err_out:
 
 int e3sm_io_driver_nc4::enddef (int fid) {
     // NetCDF 4 enddef is automatic
-    int err;
-    err = nc_enddef(fid);
-    CHECK_NCERR
-err_out:
-    return err;
+    return 0;
 }
 
 int e3sm_io_driver_nc4::redef (int fid) {
@@ -407,24 +386,6 @@ int e3sm_io_driver_nc4::put_att (
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_PUT_ATT)
-
-char *varid=(char*)"varid", *type_name;
-if (vid == NC_GLOBAL) varid=(char*)"NC_GLOBAL";
-if (xtype == NC_CHAR) type_name=(char*)"NC_CHAR";
-else if (xtype == NC_INT) type_name=(char*)"NC_INT";
-else if (xtype == NC_FLOAT) type_name=(char*)"NC_FLOAT";
-else if (xtype == NC_DOUBLE) type_name=(char*)"NC_DOUBLE";
-else type_name=(char*)"UNKNOWN";
-
-if (xtype == NC_CHAR) {
-char attr[1024];
-strncpy(attr,(char*)buf,size); attr[size]='\0';
-printf("err = nc_put_att(ncid, %s, \"%s\", %s, %lld, \"%s\"); ERR\n",varid,name.c_str(),type_name,size,attr);
-}
-else {
-if (size > 1) fprintf(stderr,"----------ERROR var %s size = %lld\n",name.c_str(),size);
-printf("err = nc_put_att(ncid, %s, \"%s\", %s, %lld, buf); ERR\n",varid,name.c_str(),type_name,size);
-}
 
     err = nc_put_att (fid, vid, name.c_str (), xtype, size, buf);
     CHECK_NCERR
