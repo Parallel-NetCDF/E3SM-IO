@@ -121,14 +121,6 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
                   MPI_Offset *count,
                   void *buf,
                   e3sm_io_op_mode mode);
-    int put_vars (int fid,
-                  int vid,
-                  MPI_Datatype itype,
-                  MPI_Offset *start,
-                  MPI_Offset *count,
-                  MPI_Offset *stride,
-                  void *buf,
-                  e3sm_io_op_mode mode);
     int put_varn (int fid,
                   int vid,
                   MPI_Datatype itype,
@@ -142,14 +134,6 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
                   MPI_Datatype itype,
                   MPI_Offset *start,
                   MPI_Offset *count,
-                  void *buf,
-                  e3sm_io_op_mode mode);
-    int get_vars (int fid,
-                  int vid,
-                  MPI_Datatype itype,
-                  MPI_Offset *start,
-                  MPI_Offset *count,
-                  MPI_Offset *stride,
                   void *buf,
                   e3sm_io_op_mode mode);
     int get_varn (int fid,
