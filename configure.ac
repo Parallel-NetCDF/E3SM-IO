@@ -307,13 +307,12 @@ AC_ARG_WITH([pnetcdf],
 
    AC_CHECK_HEADER([pnetcdf.h], [have_pnc=yes], [have_pnc=no])
    if test "x$have_pnc" = xno ; then
-         AC_MSG_WARN([
+         AC_MSG_ERROR([
          -----------------------------------------------------------------------
          Missing PnetCDF-header files 'pnetcdf.h' required to build E3SM_IO. Use
          configure command-line option --with-pnetcdf=/path/to/implementation
-         to specify the location of PnetCDF installation. Disable PnetCDF support.
+         to specify the location of PnetCDF installation. Abort.
          -----------------------------------------------------------------------])
-         have_pnc=no
    else
       dnl Check if PnetCDF version is 1.10.0 or later
       AC_MSG_CHECKING([whether PnetCDF version is 1.10.0 or later])
@@ -326,11 +325,10 @@ AC_ARG_WITH([pnetcdf],
       AC_MSG_RESULT([$pnc_ge_1_10_0])
 
       if test x$pnc_ge_1_10_0 = xno; then
-            AC_MSG_ERROR([
-            -----------------------------------------------------------------------
-            PnetCDF version too old. Disable PnetCDF support.
-            -----------------------------------------------------------------------])
-            have_pnc=no
+         AC_MSG_ERROR([
+         -----------------------------------------------------------------------
+         PnetCDF version 1.10.0 and later is required. Abort.
+         -----------------------------------------------------------------------])
       fi
       AC_SUBST(PNETCDF_LIB_PATH, [$pnc_lib])
    fi
@@ -427,7 +425,7 @@ AC_ARG_WITH([hdf5],
          AC_MSG_WARN([
          ---------------------------------------------------------------
          This version of HDF5 library, $hdf5_version, does not support
-         'multi-dataset' APIs. Disabling the 'hdf5_md' I/O method option.
+         'multi-dataset' APIs. The 'hdf5_md' I/O option is thus disabled.
          ---------------------------------------------------------------])
       fi
       AC_SUBST(HDF5_LIB_PATH, [$hdf5_lib])
@@ -493,12 +491,12 @@ AC_ARG_WITH([netcdf4],
    fi
    AC_CHECK_HEADERS([netcdf.h netcdf_meta.h], [have_netcdf4=yes], [have_netcdf4=no])
    if test "x$have_netcdf4" = xno ; then
-      AC_MSG_WARN([
+      AC_MSG_ERROR([
       -----------------------------------------------------------------------
       Missing NetCDF-header files 'netcdf.h' or 'netcdf_meta.h' which are
       required to build E3SM_IO. Use configure command-line option
       --with-netcdf4=/path/to/implementation to specify the location of
-      NetCDF-4 installation. Disable NetCDF-4 support.
+      NetCDF-4 installation. Abort.
       -----------------------------------------------------------------------])
    fi
 
@@ -516,11 +514,13 @@ AC_ARG_WITH([netcdf4],
 
       AC_CHECK_DECLS([NC_NODIMSCALE_ATTACH], [], [], [#include <netcdf.h>])
       if test "x${ac_cv_have_decl_NC_NODIMSCALE_ATTACH}" = xno ; then
-         AC_MSG_WARN([
+         AC_MSG_ERROR([
          ------------------------------------------------------------
-         This version of NetCDF-C library, $netcdf4_version, does not
+         NetCDF-C library version 4.9.0 and later is required. The
+         supplied NetCDF-C library is $netcdf4_version, which does not
          include the option to disable HDF5 dimension sale feature.
-         F and I cases may failes with error of 'NetCDF: HDF error'
+         Without this option, F and I cases will faile with error of
+         'NetCDF: HDF error'. Abort
          ------------------------------------------------------------])
       fi
 
@@ -532,10 +532,10 @@ AC_ARG_WITH([netcdf4],
       fi
       AC_MSG_RESULT($netcdf4_has_par)
       if test "x${netcdf4_has_par}" != xyes; then
-         AC_MSG_WARN([
+         AC_MSG_ERROR([
          ------------------------------------------------------------
          This NetCDF-C library was not built with parallel NetCDF4
-         support. Disable NetCDF4.
+         support. Abort.
          ------------------------------------------------------------])
          have_netcdf4 = no
       elif test "x$netcdf4_lib" != x ; then
@@ -696,11 +696,11 @@ AC_ARG_WITH([adios2],
    fi
    AC_CHECK_HEADER([adios2_c.h], [have_adios2=yes], [have_adios2=no])
    if test "x$have_adios2" = xno ; then
-      AC_MSG_WARN([
+      AC_MSG_ERROR([
       -----------------------------------------------------------------------
       Missing ADIOS2-header files 'adios2_c.h' required to build E3SM_IO. Use
       configure command-line option --with-adios2=/path/to/implementation
-      to specify the location of ADIOS2 installation. Disable ADIOS2 support.
+      to specify the location of ADIOS2 installation. Abort.
       -----------------------------------------------------------------------])
    fi
    if test "x$have_adios2" = xyes ; then
