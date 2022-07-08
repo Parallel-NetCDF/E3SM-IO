@@ -1,4 +1,4 @@
-name: Ubuntu
+name: LogVOL-only
 
 on:
   push:
@@ -78,6 +78,7 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
+            rm -rf ./test_output
             autoreconf -i
             ./configure --with-hdf5=${WORKDIR}/HDF5 \
                         --with-logvol=${WORKDIR}/LOGVOL \

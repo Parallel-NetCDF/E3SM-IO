@@ -1,4 +1,4 @@
-name: Ubuntu
+name: OpenMPI
 
 on:
   push:
@@ -147,6 +147,7 @@ jobs:
           if: ${{ success() }}
           run: |
             WORKDIR=$(pwd)
+            rm -rf ./test_output
             autoreconf -i
             ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
                         CC=mpicc CXX=mpicxx \
