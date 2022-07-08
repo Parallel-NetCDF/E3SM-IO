@@ -19,12 +19,11 @@ H_SRCS = e3sm_io_driver.hpp
 if ENABLE_HDF5
 C_SRCS +=   e3sm_io_driver_hdf5.cpp \
             e3sm_io_driver_h5blob.cpp \
-            e3sm_io_driver_hdf5_agg.cpp \
+            e3sm_io_driver_hdf5_md.cpp \
             blob_ncmpio.c
 
 H_SRCS +=   e3sm_io_driver_hdf5.hpp \
             e3sm_io_driver_h5blob.hpp \
-            e3sm_io_driver_hdf5_int.hpp \
             blob_ncmpio.h
 endif
 

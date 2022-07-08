@@ -19,7 +19,7 @@
 
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
-#include <e3sm_io_driver_hdf5_int.hpp>
+#include <e3sm_io_driver_hdf5.hpp>
 #include <e3sm_io_driver_h5blob.hpp>
 
 e3sm_io_driver_h5blob::e3sm_io_driver_h5blob (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {

@@ -24,7 +24,6 @@
 #include <e3sm_io_err.h>
 
 #include <e3sm_io_driver_hdf5.hpp>
-#include <e3sm_io_driver_hdf5_int.hpp>
 #include <e3sm_io_driver_hdf5_log.hpp>
 #include <e3sm_io_profile.hpp>
 
@@ -363,7 +362,7 @@ int e3sm_io_driver_hdf5_log::put_vara (int fid,
             throw "Unrecognized mode";
     }
 
-    h5_itype = mpi_type_to_hdf5_type (itype);
+    h5_itype = e3sm_io_type_mpi2hdf5 (itype);
 
     // Call H5Dwrite
     herr = H5Dwrite (did, h5_itype, MSID_CONTIG, dsid, dxplid, buf);
@@ -413,7 +412,7 @@ int e3sm_io_driver_hdf5_log::put_varn (int fid,
 
     did = fp->dids[vid];
 
-    mtype = mpi_type_to_hdf5_type (itype);
+    mtype = e3sm_io_type_mpi2hdf5 (itype);
     esize = (hsize_t)H5Tget_size (mtype);
     if (esize <= 0) { ERR_OUT ("Unknown memory type") }
 
@@ -609,7 +608,7 @@ int e3sm_io_driver_hdf5_log::get_vara (int fid,
             throw "Unrecognized mode";
     }
 
-    h5_itype = mpi_type_to_hdf5_type (itype);
+    h5_itype = e3sm_io_type_mpi2hdf5 (itype);
 
     // Call H5Dread
     herr = H5Dread (did, h5_itype, MSID_CONTIG, dsid, dxplid, buf);
@@ -660,7 +659,7 @@ int e3sm_io_driver_hdf5_log::get_varn (int fid,
 
     did = fp->dids[vid];
 
-    mtype = mpi_type_to_hdf5_type (itype);
+    mtype = e3sm_io_type_mpi2hdf5 (itype);
     esize = (hsize_t)H5Tget_size (mtype);
     if (esize <= 0) { ERR_OUT ("Unknown memory type") }
 

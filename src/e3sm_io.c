@@ -112,6 +112,7 @@ static void usage (char *argv0) {
            pnetcdf:   PnetCDF library (default)\n\
            netcdf4:   NetCDF-4 library\n\
            hdf5:      HDF5 library\n\
+           hdf5_md:   HDF5 library using multi-dataset I/O APIs\n\
            hdf5_log:  HDF5 library with Log-based VOL\n\
            adios:     ADIOS library using BP3 format\n\
        [-x strategy] I/O strategy\n\
@@ -309,6 +310,9 @@ int main (int argc, char **argv) {
     cfg.I_case_h0.nrecs = nrecs;
     cfg.I_case_h1.nrecs = 1;  /* force only one record for I h1 case */
 
+#warning TODO: test HDF5 multi-dataset APIs for multiple time steps at a time.
+//    if (cfg.api == hdf5_md) ffreq = 1;
+
     cfg.F_case_h0.ffreq = ffreq;
     cfg.F_case_h1.ffreq = ffreq;
     cfg.G_case.ffreq    = ffreq;
@@ -353,7 +357,7 @@ int main (int argc, char **argv) {
                     break;
                 case log:;
                     if (!env || (strncmp (env, "LOG", 3) != 0)) {
-                        ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG\" (log-based VOL) for NetCDF 4 with log I/O strategy")    
+                        ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG\" (log-based VOL) for NetCDF 4 with log I/O strategy")
                     }
                     break;
                 default:;
@@ -364,7 +368,7 @@ int main (int argc, char **argv) {
 #endif
             break;
         case hdf5_md:;
-#ifdef HDF5_HAVE_DWRITE_MULTI
+#ifdef HDF5_HAVE_MULTI_DATASET_API
             if (cfg.strategy != canonical){
                 ERR_OUT ("HDF5 multi-dataset only support canonical strategy")
             }
@@ -378,12 +382,12 @@ int main (int argc, char **argv) {
                 case blob:;
                 case canonical:;
                     if (env && (strncmp (env, "LOG", 3) == 0)) {
-                        ERR_OUT ("The VOL set in HDF5_VOL_CONNECTOR (%s) is not compatible with HDF5 canonical I/O strategy")      
+                        ERR_OUT ("The VOL set in HDF5_VOL_CONNECTOR (%s) is not compatible with HDF5 canonical I/O strategy")
                     }
                     break;
                 case log:;
                     if (env && (strncmp (env, "LOG", 3) != 0)) {
-                        ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG\" (log-based VOL) for HDF5 with log I/O strategy")    
+                        ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG\" (log-based VOL) for HDF5 with log I/O strategy")
                     }
                     break;
                 default:;
@@ -399,7 +403,7 @@ int main (int argc, char **argv) {
                 ERR_OUT ("HDF5-logvol only support log strategy")
             }
             if (env && (strncmp (env, "LOG", 3) != 0)) {
-                ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG\" (log-based VOL) for HDF5-logvol with log I/O strategy")    
+                ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG\" (log-based VOL) for HDF5-logvol with log I/O strategy")
             }
 #else
             ERR_OUT ("Log-based VOL support was not enabled in this E3SM I/O build")

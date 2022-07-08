@@ -38,10 +38,9 @@ if test "x${ENABLE_HDF5}" = x1 ; then
          export LD_LIBRARY_PATH=${LOGVOL_LIB_PATH}:${LD_LIBRARY_PATH}
       fi
    fi
-   # hdf5_md not yet supported
-   # if test "x${HDF5_HAVE_DWRITE_MULTI}" = x1 ; then
-   #    APIS+=("hdf5_md canonical")
-   # fi
+   if test "x${HDF5_HAVE_MULTI_DATASET_API}" = x1 ; then
+      APIS+=("hdf5_md canonical")
+   fi
    DECOMPS+=("hdf5 h5")
 fi
 
@@ -115,7 +114,7 @@ for API in "${APIS[@]}" ; do
            else
               IN_FILE+=".${FILE_EXT}"
            fi
-        elif test "x${ap[0]}" = xhdf5 || test "x${ap[0]}" = xhdf5_log ; then
+        elif test "x${ap[0]:0:4}" = xhdf5 ; then # hdf5, hdf5_log, or hdf5_md
            FILE_EXT="h5"
            IN_FILE+=".${FILE_EXT}"
         elif test "x${ap[0]}" = xadios ; then
@@ -158,8 +157,7 @@ for API in "${APIS[@]}" ; do
            unset HDF5_VOL_CONNECTOR
            unset HDF5_PLUGIN_PATH
 
-           for f in $REAL_OUT_FILE
-           do
+           for f in ${REAL_OUT_FILE} ; do
              echo "CMD = $H5LDUMP -k $f"
              FILE_KIND=`$H5LDUMP -k $f`
              if test "x${FILE_KIND}" != xHDF5-LogVOL ; then
@@ -173,8 +171,13 @@ for API in "${APIS[@]}" ; do
         fi
 
         # delete the output files/folder
-        echo "CMD = rm -rf ${REAL_OUT_FILE}*"
-        rm -rf ${REAL_OUT_FILE}*
+        for f in ${REAL_OUT_FILE} ; do
+            CMD="rm -rf $f*"
+            echo "CMD = ${CMD}"
+            ${CMD}
+        done
+        echo ""
+        echo "================================================================"
     done
 done
 

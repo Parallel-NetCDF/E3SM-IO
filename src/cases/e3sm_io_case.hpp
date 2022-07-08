@@ -331,8 +331,7 @@ int scorpio_write_var(e3sm_io_driver &driver,
         if (decomid >= 0) varp->vlen = decom.count[decomid];                  \
     }                                                                         \
     if (err != 0) {                                                           \
-        printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__,       \
-               name);                                                         \
+        printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__,name); \
         goto err_out;                                                         \
     }                                                                         \
     /* increment I/O buffer sizes */                                          \
