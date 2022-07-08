@@ -36,7 +36,7 @@ jobs:
           run: |
             WORKDIR=$(pwd)
             VERSION=1.12.3
-            rm -rf pnetcdf-${VERSION}.tar.gz pnetcdf-${VERSION}
+            rm -rf pnetcdf-${VERSION}.tar.gz pnetcdf-${VERSION} PnetCDF
             wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-${VERSION}.tar.gz
             tar -zxf pnetcdf-${VERSION}.tar.gz
             cd pnetcdf-${VERSION}
@@ -52,7 +52,7 @@ jobs:
           run: |
             WORKDIR=$(pwd)
             VERSION=1.13.0
-            rm -rf hdf5-${VERSION}.tar.gz hdf5-${VERSION}
+            rm -rf hdf5-${VERSION}.tar.gz hdf5-${VERSION} HDF5
             wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${VERSION}/src/hdf5-${VERSION}.tar.gz
             tar -zxf hdf5-${VERSION}.tar.gz
             cd hdf5-${VERSION}
@@ -76,7 +76,7 @@ jobs:
           run: |
             WORKDIR=$(pwd)
             VERSION=4.9.0
-            rm -rf v${VERSION}.tar.gz netcdf-c-${VERSION}
+            rm -rf v${VERSION}.tar.gz netcdf-c-${VERSION} NetCDF
             wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v${VERSION}.tar.gz
             tar -zxf v${VERSION}.tar.gz
             cd netcdf-c-${VERSION}
@@ -103,7 +103,7 @@ jobs:
           run: |
             WORKDIR=$(pwd)
             VERSION=2.8.1
-            rm -rf v${VERSION}.tar.gz ADIOS2-${VERSION} adios2_build
+            rm -rf v${VERSION}.tar.gz ADIOS2-${VERSION} adios2_build ADIOS
             wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v${VERSION}.tar.gz
             tar -zxf v${VERSION}.tar.gz
             mkdir adios2_build
@@ -132,7 +132,7 @@ jobs:
           run: |
             WORKDIR=$(pwd)
             VERSION=1.2.0
-            rm -rf logvol.${VERSION}.tar.gz vol-log-based-logvol.${VERSION}
+            rm -rf logvol.${VERSION}.tar.gz vol-log-based-logvol.${VERSION} LOGVOL
             wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.${VERSION}.tar.gz
             tar -zxf logvol.${VERSION}.tar.gz
             cd vol-log-based-logvol.${VERSION}
