@@ -8,7 +8,7 @@
 set -e
 
 DECOMP_REPLAY="utils/decomp_copy"
-BPSTAT="utils/bpstat"
+# BPSTAT="utils/bpstat"
 DECOMPS=()
 
 VERBOSE=0
@@ -135,7 +135,7 @@ for API in "${APIS[@]}" ; do
         echo "CMD = ${CMD}"
         ${CMD}
 
-        if test "x${ap[0]}" = xadios ; then
+        if test "x$BPSTAT" != x && test "x${ap[0]}" = xadios ; then
            if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
               CMD="${BPSTAT} ${OUT_FILE}_h0.${FILE_EXT}"
               echo "CMD = ${CMD}"
