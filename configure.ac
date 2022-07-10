@@ -462,8 +462,8 @@ AC_ARG_WITH([netcdf4],
       AC_PATH_PROG([netcdf4_config],[nc-config])
    fi
    if test "x$netcdf4_config" != x ; then
-      netcdf4_cflags=`$netcdf4_config --cflags`
-      netcdf4_lflags=`$netcdf4_config --libs`
+      netcdf4_cflags=-I`$netcdf4_config --includedir`
+      netcdf4_lflags=-L`$netcdf4_config --libdir`
    else
       netcdf4_cflags="-I$netcdf4_inc"
       netcdf4_lflags="-L$netcdf4_lib"
@@ -653,9 +653,13 @@ AC_ARG_WITH([adios2],
         ;;
      *)
         if test -n "$withval"; then
-          adios2_inc="$withval/include"
-          adios2_lib="$withval/lib"
-          adios2_bindir="$ADIOS2_INSTALL/bin"
+           adios2_inc="$withval/include"
+           if test -d $withval/lib ; then
+              adios2_lib="$withval/lib"
+           elif test -d $withval/lib64 ; then
+              adios2_lib="$withval/lib64"
+           fi
+           adios2_bindir="$ADIOS2_INSTALL/bin"
         fi
         ;;
    esac
@@ -735,66 +739,66 @@ fi
 
 # Enable C++ 17 if available
 if test "x${HAVE_CXX17}" = x1 ; then
-CXXFLAGS="$CXXFLAGS -std=c++17"
+   CXXFLAGS="$CXXFLAGS -std=c++17"
 else
-CXXFLAGS="$CXXFLAGS -std=c++11"
+   CXXFLAGS="$CXXFLAGS -std=c++11"
 fi
 
 if test "x$have_pnc" = xyes ; then
    if test "x$LIBS" = x ; then
-   LIBS="-lpnetcdf"
+      LIBS="-lpnetcdf"
    else
-   LIBS="$LIBS -lpnetcdf"
+      LIBS="$LIBS -lpnetcdf"
    fi
-   AC_DEFINE([ENABLE_PNC], [1], [Build PnetCDF benchmark])
+   AC_DEFINE([ENABLE_PNC], [1], [Enable PnetCDF I/O method])
 fi
 
 if test "x$have_netcdf4" = xyes ; then
-    if test "x$LIBS" = x ; then
-    LIBS="${netcdf4_lflags}"
-    else
-    LIBS="$LIBS ${netcdf4_lflags}"
-    fi
-    AC_DEFINE([ENABLE_NETCDF4], [1], [Build NetCDF 4 benchmark])
+   if test "x$LIBS" = x ; then
+      LIBS="-lnetcdf"
+   else
+      LIBS="$LIBS -lnetcdf"
+   fi
+   AC_DEFINE([ENABLE_NETCDF4], [1], [Enable NetCDF 4 I/O method])
 fi
 
 if test "x$have_hdf5" = xyes ; then
-    if test "x$LIBS" = x ; then
-    LIBS="-lhdf5"
-    else
-    LIBS="$LIBS -lhdf5"
-    fi
-    AC_DEFINE([ENABLE_HDF5], [1], [Build HDF5 benchmark])
-    if test "x$have_multi_dset" = xyes ; then
-      AC_DEFINE([HDF5_HAVE_DWRITE_MULTI], [1], [Have multi-dataset I/O support])
-    fi
+   if test "x$LIBS" = x ; then
+      LIBS="-lhdf5"
+   else
+      LIBS="$LIBS -lhdf5"
+   fi
+   AC_DEFINE([ENABLE_HDF5], [1], [Enable HDF5 I/O method])
+   if test "x$have_multi_dset" = xyes ; then
+      AC_DEFINE([HDF5_HAVE_DWRITE_MULTI], [1], [HDF5 has multi-dataset I/O support])
+   fi
 fi
 
 if test "x$have_logvol" = xyes ; then
-    if test "x$LIBS" = x ; then
-    LIBS="-lH5VL_log"
-    else
-    LIBS="$LIBS -lH5VL_log"
-    fi
-    AC_DEFINE([ENABLE_LOGVOL], [1], [Build logvol benchmark])
+   if test "x$LIBS" = x ; then
+      LIBS="-lH5VL_log"
+   else
+      LIBS="$LIBS -lH5VL_log"
+   fi
+   AC_DEFINE([ENABLE_LOGVOL], [1], [Enable HDF5 Log-layout based VOL I/O method])
 fi
 
 if test "x$have_adios2" = xyes ; then
-    if test "x$LIBS" = x ; then
-    LIBS="${adios2_lflags}"
-    else
-    LIBS="$LIBS ${adios2_lflags}"
-    fi
-    AC_DEFINE([ENABLE_ADIOS2], [1], [Build ADIOS2 benchmark])
+   if test "x$LIBS" = x ; then
+      LIBS="${adios2_lflags}"
+   else
+      LIBS="$LIBS ${adios2_lflags}"
+   fi
+   AC_DEFINE([ENABLE_ADIOS2], [1], [Enable ADIOS I/O method])
 
-    # Check if type adios2_varinfo is defined, introduced in 2.8.0.
-    # Use C++ compiler to check, due to ADIOSMacros.h included in adios2.h
-    # includes <string>, a C++ header
-    saved_CC=$CC
-    CC=$MPICXX
-    AC_CHECK_TYPES([adios2_varinfo], [], [], [[#include <adios2.h>
-                                               #include <adios2_c.h>]])
-    CC=$saved_CC
+   # Check if type adios2_varinfo is defined, introduced in 2.8.0.
+   # Use C++ compiler to check, due to ADIOSMacros.h included in adios2.h
+   # includes <string>, a C++ header
+   saved_CC=$CC
+   CC=$MPICXX
+   AC_CHECK_TYPES([adios2_varinfo], [], [], [[#include <adios2.h>
+                                              #include <adios2_c.h>]])
+   CC=$saved_CC
 fi
 
 AC_ARG_ENABLE([utilities],
@@ -823,8 +827,8 @@ echo \
               PnetCDF                     - ${have_pnc}
               NetCDF-4                    - ${have_netcdf4}
               HDF5                        - ${have_hdf5}
-              HDF5 log-based VOL          - ${have_logvol}
-              HDF5 multi-dataset          - ${have_multi_dset}
+              HDF5 log-layout based VOL   - ${have_logvol}
+              HDF5 multi-dataset APIs     - ${have_multi_dset}
               ADIOS-2                     - ${have_adios2}
               Build utility programs      - ${build_utils}
 
