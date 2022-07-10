@@ -37,7 +37,9 @@ decomp_copy_LDADD = ${top_builddir}/src/drivers/libe3sm_io_drivers.a ${top_build
 datstat_SOURCES = datstat.cpp
 
 bpstat_SOURCES = bpstat.cpp
-bpstat_LDADD = -lstdc++fs
+if HAVE_FILESYSTEM_HPP
+   bpstat_LDADD = -lstdc++fs
+endif
 
 BUILT_SOURCES = list_f_case.txt
 
