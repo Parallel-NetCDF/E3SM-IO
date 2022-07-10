@@ -392,13 +392,13 @@ AC_ARG_WITH([hdf5],
       hdf5_version=${hdf5_major}.${hdf5_minor}.${hdf5_patch}
       AC_MSG_RESULT([$hdf5_version])
 
-      AC_MSG_CHECKING([whether HDF5 parallel I/O is enabled])
-      AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-      #include <hdf5.h>
-      #if !defined(H5_HAVE_PARALLEL) || H5_HAVE_PARALLEL != 1
-      #error Parallel I/O is not enabled in HDF5
-      #endif
-      ]])], [hdf5_parallel_io=yes], [hdf5_parallel_io=no])
+      AC_MSG_CHECKING([whether HDF5 is configured with parallel I/O enabled])
+      AC_COMPUTE_INT([h5_parallel], [H5_HAVE_PARALLEL], [[#include <hdf5.h>]], [h5_parallel=0])
+      if test "x$h5_parallel" = x1 ; then
+         hdf5_parallel_io=yes
+      else
+         hdf5_parallel_io=no
+      fi
       AC_MSG_RESULT([$hdf5_parallel_io])
       if test "x$hdf5_parallel_io" = xno ; then
          AC_MSG_ERROR([
