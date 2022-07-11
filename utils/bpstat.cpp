@@ -189,10 +189,10 @@ int bpstat_core (std::string inpath, config &cfg, bpstat &stat) {
             if (cfg.verbose)
                 printf("var %s: nblocks=%zd block_size=%zd\n",name,block_info->nblocks,bsize);
 
-            adios2_free_blockinfo(block_info);
-
             stat.msize += block_info->nblocks * (8 + 8); // Block offset and size
             nelem = bsize * block_info->nblocks;
+
+            adios2_free_blockinfo(block_info);
 #else
             // There is no ADIOS2 API for querying number of blocks
             // Try until we got error
@@ -268,6 +268,10 @@ int bpstat_core (std::string inpath, config &cfg, bpstat &stat) {
     CHECK_AERR
     adios2_finalize (adp);
 
+    // Apps are responsible to free returned array of adios2_inquire_all_variables and adios2_inquire_all_attributes
+    free(aps);
+    free(vps);
+
     // Discarded C++ version due to lack of universal (untyped) varaible inquery API
     /*
     try {
@@ -319,6 +323,7 @@ inline int get_n_sbufiles (config &cfg, std::string inpath) {
 
     /* check if inpath is a regular file */
     struct stat path_stat;
+    memset(&path_stat, 0, sizeof (path_stat));
     stat(inpath.c_str(), &path_stat);
     if (S_ISREG(path_stat.st_mode)) return 0;
 
@@ -335,6 +340,7 @@ inline int get_n_sbufiles (config &cfg, std::string inpath) {
     if (chp == NULL) { /* no files to traverse */
         printf("Error in %s line %d: fts_open fails no file in %s\n",__FILE__,__LINE__,input_dir[0]);
         free(input_dir[0]);
+        fts_close(ftsp);
         return -1;
     }
     while ((p = fts_read(ftsp)) != NULL) {
@@ -346,6 +352,7 @@ inline int get_n_sbufiles (config &cfg, std::string inpath) {
         }
     }
     free(input_dir[0]);
+    fts_close(ftsp);
     return ret;
 #else
     std::filesystem::path fname, subfname;
