@@ -38,7 +38,7 @@
 
 /*----< add_decomp() >------------------------------------------------------------*/
 static int add_decomp (const char *infname) {
-    int err;
+    int err = 0;
     int ret;
     int i, j;
     int ver, np, ndim;
