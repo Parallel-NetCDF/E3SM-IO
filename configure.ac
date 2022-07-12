@@ -763,10 +763,14 @@ if test "x$have_netcdf4" = xyes ; then
 fi
 
 if test "x$have_hdf5" = xyes ; then
+   # check for extra libraries used when building HDF5
+   if test -f $hdf5_lib/libhdf5.settings ; then
+      extra_libs="`grep 'Extra libraries' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
+   fi
    if test "x$LIBS" = x ; then
-      LIBS="-lhdf5"
+      LIBS="-lhdf5 $extra_libs"
    else
-      LIBS="$LIBS -lhdf5"
+      LIBS="$LIBS -lhdf5 $extra_libs"
    fi
    AC_DEFINE([ENABLE_HDF5], [1], [Enable HDF5 I/O method])
    if test "x$have_multi_dset" = xyes ; then
