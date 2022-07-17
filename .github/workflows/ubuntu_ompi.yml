@@ -34,7 +34,7 @@ jobs:
             sudo apt-get install zlib1g-dev
         - name: Install PnetCDF
           run: |
-            WORKDIR=$(pwd)
+            echo "Install PnetCDF on ${GITHUB_WORKSPACE}/PnetCDF"
             rm -rf PnetCDF
             mkdir PnetCDF
             cd PnetCDF
@@ -42,17 +42,17 @@ jobs:
             wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-${VERSION}.tar.gz
             tar -zxf pnetcdf-${VERSION}.tar.gz
             cd pnetcdf-${VERSION}
-            ./configure --prefix=${WORKDIR}/PnetCDF \
+            ./configure --prefix=${GITHUB_WORKSPACE}/PnetCDF \
                         --silent \
                         --disable-fortran \
                         --disable-cxx
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
-            cd ${WORKDIR}
+            cd ${GITHUB_WORKSPACE}
         - name: Install HDF5
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
+            echo "Install HDF5 on ${GITHUB_WORKSPACE}/HDF5"
             rm -rf HDF5
             mkdir HDF5
             cd HDF5
@@ -60,7 +60,7 @@ jobs:
             wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${VERSION}/src/hdf5-${VERSION}.tar.gz
             tar -zxf hdf5-${VERSION}.tar.gz
             cd hdf5-${VERSION}
-            ./configure --prefix=${WORKDIR}/HDF5 \
+            ./configure --prefix=${GITHUB_WORKSPACE}/HDF5 \
                         --silent \
                         --enable-hl \
                         --enable-parallel \
@@ -74,11 +74,11 @@ jobs:
                         CC=mpicc
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
-            cd ${WORKDIR}
+            cd ${GITHUB_WORKSPACE}
         - name: Install NetCDF-C
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
+            echo "Install NetCDF-C on ${GITHUB_WORKSPACE}/NetCDF"
             rm -rf NetCDF
             mkdir NetCDF
             cd NetCDF
@@ -91,23 +91,23 @@ jobs:
             # git clone -q https://github.com/Unidata/netcdf-c.git
             # cd netcdf-c
             # autoreconf -i
-            ./configure --prefix=${WORKDIR}/NetCDF \
+            ./configure --prefix=${GITHUB_WORKSPACE}/NetCDF \
                         --silent \
                         --disable-dap \
                         --disable-nczarr \
                         --disable-nczarr-filters \
                         --disable-filter-testing \
                         CC=mpicc \
-                        CPPFLAGS="-I${WORKDIR}/HDF5/include" \
-                        LDFLAGS="-L${WORKDIR}/HDF5/lib" \
+                        CPPFLAGS="-I${GITHUB_WORKSPACE}/HDF5/include" \
+                        LDFLAGS="-L${GITHUB_WORKSPACE}/HDF5/lib" \
                         LIBS="-lhdf5"
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
-            cd ${WORKDIR}
+            cd ${GITHUB_WORKSPACE}
         - name: Install ADIOS2
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
+            echo "Install ADIOS2 on ${GITHUB_WORKSPACE}/ADIOS"
             rm -rf ADIOS
             mkdir ADIOS
             cd ADIOS
@@ -116,13 +116,14 @@ jobs:
             tar -zxf v${VERSION}.tar.gz
             mkdir adios2_build
             cd adios2_build
-            cmake -DCMAKE_INSTALL_PREFIX=${WORKDIR}/ADIOS \
+            cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/ADIOS \
                   -DADIOS2_USE_MPI=ON \
                   -DADIOS2_USE_Fortran=OFF \
                   -DADIOS2_USE_Python=OFF \
                   -DADIOS2_USE_ZeroMQ=OFF \
                   -DADIOS2_USE_HDF5=OFF \
                   -DADIOS2_USE_SST=OFF \
+                  -DADIOS2_USE_IME=OFF \
                   -DADIOS2_USE_BZip2=OFF \
                   -DADIOS2_USE_ZFP=OFF \
                   -DADIOS2_USE_SZ=OFF \
@@ -134,11 +135,11 @@ jobs:
                   ../ADIOS2-${VERSION}
             make -j 8 install > qout 2>&1
             make clean >> qout 2>&1
-            cd ${WORKDIR}
+            cd ${GITHUB_WORKSPACE}
         - name: Install log VOL
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
+            echo "Install Log VOL on ${GITHUB_WORKSPACE}/LOGVOL"
             rm -rf LOGVOL
             mkdir LOGVOL
             cd LOGVOL
@@ -147,19 +148,18 @@ jobs:
             tar -zxf logvol.${VERSION}.tar.gz
             cd vol-log-based-logvol.${VERSION}
             autoreconf -i
-            ./configure --prefix=${WORKDIR}/LOGVOL \
+            ./configure --prefix=${GITHUB_WORKSPACE}/LOGVOL \
                         --silent \
-                        --with-hdf5=${WORKDIR}/HDF5
+                        --with-hdf5=${GITHUB_WORKSPACE}/HDF5
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
-            cd ${WORKDIR}
+            cd ${GITHUB_WORKSPACE}
         - name: Build and check E3SM_IO with PnetCDF only
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
             rm -rf ./test_output
             autoreconf -i
-            ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
+            ./configure --with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -172,9 +172,8 @@ jobs:
         - name: Build and check E3SM_IO with HDF5 only
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
             make -s distclean
-            ./configure --with-hdf5=${WORKDIR}/HDF5 \
+            ./configure --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -187,10 +186,9 @@ jobs:
         - name: Build and check E3SM_IO with HDF5 log-based VOL only
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
             make -s distclean
-            ./configure --with-hdf5=${WORKDIR}/HDF5 \
-                        --with-logvol=${WORKDIR}/LOGVOL \
+            ./configure --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
+                        --with-logvol=${GITHUB_WORKSPACE}/LOGVOL \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -203,9 +201,8 @@ jobs:
         - name: Build and check E3SM_IO with NetCDF4 only
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
             make -s distclean
-            ./configure --with-netcdf4=${WORKDIR}/NetCDF \
+            ./configure --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -218,9 +215,8 @@ jobs:
         - name: Build and check E3SM_IO with ADIOS only
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
             make -s distclean
-            ./configure --with-adios2=${WORKDIR}/ADIOS \
+            ./configure --with-adios2=${GITHUB_WORKSPACE}/ADIOS \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
@@ -233,13 +229,12 @@ jobs:
         - name: Build and check E3SM_IO with all APIs
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
             make -s distclean
-            ./configure --with-pnetcdf=${WORKDIR}/PnetCDF \
-                        --with-hdf5=${WORKDIR}/HDF5       \
-                        --with-netcdf4=${WORKDIR}/NetCDF  \
-                        --with-logvol=${WORKDIR}/LOGVOL   \
-                        --with-adios2=${WORKDIR}/ADIOS    \
+            ./configure --with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF \
+                        --with-hdf5=${GITHUB_WORKSPACE}/HDF5       \
+                        --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF  \
+                        --with-logvol=${GITHUB_WORKSPACE}/LOGVOL   \
+                        --with-adios2=${GITHUB_WORKSPACE}/ADIOS    \
                         CC=mpicc CXX=mpicxx \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments \
@@ -259,7 +254,6 @@ jobs:
         - name: Test make distcheck
           if: ${{ success() }}
           run: |
-            WORKDIR=$(pwd)
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${WORKDIR}/PnetCDF --with-hdf5=${WORKDIR}/HDF5 --with-netcdf4=${WORKDIR}/NetCDF --with-logvol=${WORKDIR}/LOGVOL --with-adios2=${WORKDIR}/ADIOS CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF --with-hdf5=${GITHUB_WORKSPACE}/HDF5 --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF --with-logvol=${GITHUB_WORKSPACE}/LOGVOL --with-adios2=${GITHUB_WORKSPACE}/ADIOS CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
             make distclean
 
