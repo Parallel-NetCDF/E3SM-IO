@@ -117,7 +117,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     MPI_Offset mpi_num, mpi_decomp_nprocs, start, count;
     MPI_Info info = MPI_INFO_NULL;
     struct off_len *myreqs;
-    e3sm_io_config decom_cfg;  // Dummy cfg for read decom
+    e3sm_io_config decom_cfg;
     e3sm_io_driver *driver = NULL;
     int dims_int[4];
     int *raw_offsets_int = NULL;
@@ -125,7 +125,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     MPI_Comm_rank (cfg->io_comm, &rank);
     MPI_Comm_size (cfg->io_comm, &nprocs);
 
-    // Set up dummy config for the driver
+    // Set up config for read driver
     decom_cfg.io_comm        = MPI_COMM_WORLD;
     decom_cfg.info           = MPI_INFO_NULL;
     decom_cfg.num_iotasks    = decom_cfg.np;
@@ -156,7 +156,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     CHECK_PTR (driver)
 
     /* set MPI-IO hints: decomposition variables are usually small and enabling
-     * collective buffering read can be expensive. Doing collendent reads is
+     * collective buffering read can be expensive. Doing independent reads is
      * often much faster. An example is when using Lustre on Cori at NERSC.
      */
     MPI_Info_create (&info);
@@ -231,7 +231,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         /* obtain the dimension lengths of this decomposition */
         err = driver->get_att (ncid, NC_GLOBAL, name, dims_int);
         CHECK_ERR
-        for (i = 0; i < 4; i++) { decom->dims[id][i] = (MPI_Offset)dims_int[i]; }
+        for (i = 0; i < 4; i++) decom->dims[id][i] = (MPI_Offset)dims_int[i];
 
         /* obtain varid of request variable Dx.nreqs */
         sprintf (name, "D%d.nreqs", id + 1);
@@ -322,11 +322,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         /* obtain varid of request variable Dx.raw_nreqs */
         sprintf (name, "D%d.raw_nreqs", id + 1);
         err = driver->inq_var (ncid, name, &varid);
-        if (err == 0) {
-            has_raw_decom = 1;
-        } else {
-            has_raw_decom = 0;
-        }
+        has_raw_decom = (err == 0) ? 1 :  0;
 
         if (has_raw_decom) {
             /* read all numbers of requests */
@@ -357,17 +353,16 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             CHECK_ERR
             err = driver->get_vara (ncid, varid, MPI_INT, &start, &count, raw_offsets_int, coll);
             CHECK_ERR
-            for (i = 0; i < decom->raw_nreqs[id]; i++) {
+            for (i = 0; i < decom->raw_nreqs[id]; i++)
                 decom->raw_offsets[id][i] = (MPI_Offset)raw_offsets_int[i];
-            }
+
             free (raw_offsets_int);
             raw_offsets_int = NULL;
         } else { /* Generate (simulated) raw decomposition map */
             /* Count number of offsets before merge */
             decom->raw_nreqs[id] = 0;
-            for (i = 0; i < decom->contig_nreqs[id]; i++) {
+            for (i = 0; i < decom->contig_nreqs[id]; i++)
                 decom->raw_nreqs[id] += decom->blocklens[id][i];
-            }
 
             decom->raw_offsets[id] =
                 (MPI_Offset *)calloc (decom->raw_nreqs[id], sizeof (MPI_Offset));
