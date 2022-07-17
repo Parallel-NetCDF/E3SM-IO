@@ -96,7 +96,7 @@ int print_timing_WR(e3sm_io_config *cfg,
             printf("%s\n", cfg->node_info);
         printf("Total number of MPI processes      = %d\n", cfg->np);
         printf("Number of IO processes             = %d\n", cfg->num_iotasks);
-        printf("Input decomposition file           = %s\n", cfg->cfg_path);
+        printf("Input decomposition file           = %s\n", cfg->decomp_path);
         printf("Number of decompositions           = %d\n", ndecomp);
         if (cfg->rd) {
             printf ("Input file/directory               = %s\n", cfg->in_path);

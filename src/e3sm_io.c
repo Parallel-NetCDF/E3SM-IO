@@ -142,7 +142,7 @@ int main (int argc, char **argv) {
     cfg.num_group      = 1;
     cfg.out_path[0]    = '\0';
     cfg.in_path[0]     = '\0';
-    cfg.cfg_path[0]    = '\0';
+    cfg.decomp_path[0] = '\0';
     cfg.hx             = -1;
     cfg.wr             = 0;
     cfg.rd             = 0;
@@ -275,7 +275,7 @@ int main (int argc, char **argv) {
         if (!cfg.rank) usage (argv[0]);
         ERR_OUT ("Decomposition file not provided")
     }
-    strncpy (cfg.cfg_path, argv[optind], E3SM_IO_MAX_PATH);
+    strncpy (cfg.decomp_path, argv[optind], E3SM_IO_MAX_PATH);
 
     cfg.F_case_h0.nrecs = 1;  /* force only one record for F h0 case */
     cfg.F_case_h1.nrecs = nrecs;
@@ -394,7 +394,7 @@ int main (int argc, char **argv) {
 
     /* input decomposition file contains number of write requests and their
      * file access offsets (per array element) */
-    PRINT_MSG (1, "Input decomposition file name = %s\n", cfg.cfg_path);
+    PRINT_MSG (1, "Input decomposition file name = %s\n", cfg.decomp_path);
 
     /* print input and output file/folder names */
     PRINT_MSG (1, "Input  data file/folder name = %s\n", cfg.in_path);

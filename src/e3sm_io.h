@@ -142,7 +142,7 @@ typedef struct e3sm_io_config {
 
     char in_path[E3SM_IO_MAX_PATH];
     char out_path[E3SM_IO_MAX_PATH];
-    char cfg_path[E3SM_IO_MAX_PATH];
+    char decomp_path[E3SM_IO_MAX_PATH];
     int hx;
     int wr;
     int rd;

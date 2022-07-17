@@ -634,7 +634,7 @@ int main (int argc, char **argv) {
     cfg.num_group      = 1;
     cfg.out_path[0]    = '\0';
     cfg.in_path[0]     = '\0';
-    cfg.cfg_path[0]    = '\0';
+    cfg.decomp_path[0] = '\0';
     cfg.hx             = -1;
     cfg.wr             = 0;
     cfg.rd             = 0;
