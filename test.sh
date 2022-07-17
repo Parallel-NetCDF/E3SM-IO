@@ -32,8 +32,11 @@ if test "x${ENABLE_HDF5}" = x1 ; then
    APIS+=("hdf5 canonical" "hdf5 blob")
    export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${LD_LIBRARY_PATH}
    if test "x${ENABLE_LOGVOL}" = x1 ; then
-      APIS+=("hdf5 log" "hdf5_log log")
-      export LD_LIBRARY_PATH=${LOGVOL_LIB_PATH}:${LD_LIBRARY_PATH}
+      APIS+=("hdf5_log log")
+      if test "x${LOGVOL_LIB_SHARED}" = x1 ; then
+         APIS+=("hdf5 log")
+         export LD_LIBRARY_PATH=${LOGVOL_LIB_PATH}:${LD_LIBRARY_PATH}
+      fi
    fi
    # hdf5_md not yet supported
    # if test "x${HDF5_HAVE_DWRITE_MULTI}" = x1 ; then
@@ -51,7 +54,7 @@ fi
 if test "x${ENABLE_NETCDF4}" = x1 ; then
    APIS+=("netcdf4 canonical")
    export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${NETCDF4_LIB_PATH}:${LD_LIBRARY_PATH}
-   if test "x${ENABLE_LOGVOL}" = x1 ; then
+   if test "x${ENABLE_LOGVOL}" = x1 && test "x${LOGVOL_LIB_SHARED}" = x1 ; then
       APIS+=("netcdf4 log")
    fi
    DECOMPS+=("netcdf4 nc4")

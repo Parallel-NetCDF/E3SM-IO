@@ -212,7 +212,9 @@ AC_CHECK_FUNC([MPI_File_open], [],
 ])])
 AC_LANG_POP(C++)
 
-AC_PROG_RANLIB
+dnl libtoolize: `AC_PROG_RANLIB' is rendered obsolete by `LT_INIT'
+dnl AC_PROG_RANLIB
+LT_INIT
 
 AC_HEADER_STAT
 AC_HEADER_STDC
@@ -621,6 +623,11 @@ AC_ARG_WITH([logvol],
    if test "x$h5ldump" != x ; then
       AC_SUBST(H5LDUMP, [$h5ldump])
    fi
+   # check if shared libraries are available
+   lib_shared=1
+   AC_CHECK_FILE([$hdf5_lib/libhdf5.so], [], [lib_shared=0])
+   AC_CHECK_FILE([$logvol_lib/libH5VL_log.so], [], [lib_shared=0])
+   AC_SUBST(LOGVOL_LIB_SHARED, [$lib_shared])
 ])
 AM_CONDITIONAL(ENABLE_LOGVOL, [test "x$have_logvol" = xyes])
 
@@ -739,7 +746,7 @@ if test "x$have_pnc" = xyes ; then
    if test "x$LIBS" = x ; then
       LIBS="-lpnetcdf"
    else
-      LIBS="$LIBS -lpnetcdf"
+      LIBS="-lpnetcdf $LIBS"
    fi
    AC_DEFINE([ENABLE_PNC], [1], [Enable PnetCDF I/O method])
 fi
@@ -748,7 +755,7 @@ if test "x$have_netcdf4" = xyes ; then
    if test "x$LIBS" = x ; then
       LIBS="-lnetcdf"
    else
-      LIBS="$LIBS -lnetcdf"
+      LIBS="-lnetcdf $LIBS"
    fi
    AC_DEFINE([ENABLE_NETCDF4], [1], [Enable NetCDF 4 I/O method])
 fi
@@ -761,7 +768,7 @@ if test "x$have_hdf5" = xyes ; then
    if test "x$LIBS" = x ; then
       LIBS="-lhdf5 $extra_libs"
    else
-      LIBS="$LIBS -lhdf5 $extra_libs"
+      LIBS="-lhdf5 $extra_libs $LIBS"
    fi
    AC_DEFINE([ENABLE_HDF5], [1], [Enable HDF5 I/O method])
    if test "x$have_multi_dset" = xyes ; then
@@ -773,7 +780,7 @@ if test "x$have_logvol" = xyes ; then
    if test "x$LIBS" = x ; then
       LIBS="-lH5VL_log"
    else
-      LIBS="$LIBS -lH5VL_log"
+      LIBS="-lH5VL_log $LIBS"
    fi
    AC_DEFINE([ENABLE_LOGVOL], [1], [Enable HDF5 Log-layout based VOL I/O method])
 
@@ -790,7 +797,7 @@ if test "x$have_adios2" = xyes ; then
    if test "x$LIBS" = x ; then
       LIBS="${adios2_lflags}"
    else
-      LIBS="$LIBS ${adios2_lflags}"
+      LIBS="${adios2_lflags} $LIBS"
    fi
    AC_DEFINE([ENABLE_ADIOS2], [1], [Enable ADIOS I/O method])
 
