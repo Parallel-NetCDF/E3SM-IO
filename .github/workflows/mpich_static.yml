@@ -1,4 +1,4 @@
-name: OpenMPI
+name: MPICH
 
 on:
   push:
@@ -72,7 +72,7 @@ jobs:
                         --disable-fortran \
                         --disable-cxx \
                         --disable-shared \
-                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
             cd ${GITHUB_WORKSPACE}
@@ -183,7 +183,7 @@ jobs:
                         --silent \
                         --disable-shared \
                         --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
-                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
             cd ${GITHUB_WORKSPACE}
@@ -193,7 +193,7 @@ jobs:
             rm -rf ./test_output
             autoreconf -i
             ./configure --with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF \
-                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
@@ -207,7 +207,7 @@ jobs:
           run: |
             make -s distclean
             ./configure --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
-                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
@@ -222,7 +222,7 @@ jobs:
             make -s distclean
             ./configure --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
                         --with-logvol=${GITHUB_WORKSPACE}/LOGVOL \
-                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
@@ -236,7 +236,7 @@ jobs:
           run: |
             make -s distclean
             ./configure --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF \
-                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
@@ -250,7 +250,7 @@ jobs:
           run: |
             make -s distclean
             ./configure --with-adios2=${GITHUB_WORKSPACE}/ADIOS \
-                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
@@ -268,7 +268,7 @@ jobs:
                         --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF  \
                         --with-logvol=${GITHUB_WORKSPACE}/LOGVOL   \
                         --with-adios2=${GITHUB_WORKSPACE}/ADIOS    \
-                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH \
                         CFLAGS=-fno-var-tracking-assignments \
                         CXXFLAGS=-fno-var-tracking-assignments \
                         TESTMPIRUN="mpiexec --oversubscribe"
@@ -287,6 +287,6 @@ jobs:
         - name: Test make distcheck
           if: ${{ success() }}
           run: |
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF --with-hdf5=${GITHUB_WORKSPACE}/HDF5 --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF --with-logvol=${GITHUB_WORKSPACE}/LOGVOL --with-adios2=${GITHUB_WORKSPACE}/ADIOS --with-mpi=$${GITHUB_WORKSPACE}/MPICH CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF --with-hdf5=${GITHUB_WORKSPACE}/HDF5 --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF --with-logvol=${GITHUB_WORKSPACE}/LOGVOL --with-adios2=${GITHUB_WORKSPACE}/ADIOS --with-mpi=${GITHUB_WORKSPACE}/MPICH CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
             make distclean
 
