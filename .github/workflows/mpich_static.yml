@@ -1,0 +1,292 @@
+name: OpenMPI
+
+on:
+  push:
+    branches: master
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '**.jpg'
+      - '**.png'
+  pull_request:
+    branches: master
+    paths-ignore:
+      - '**.md'
+      - '**.txt'
+      - '**.jpg'
+      - '**.png'
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      timeout-minutes: 60
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set up dependencies
+          run: |
+            sudo apt-get update
+            sudo apt-get install automake autoconf libtool libtool-bin m4
+            # mpich
+            # sudo apt-get install mpich
+            # OpenMPI
+            sudo apt-get install openmpi-bin
+            # zlib
+            sudo apt-get install zlib1g-dev
+        - name: Build MPICH
+          run: |
+            echo "Install MPICH on ${GITHUB_WORKSPACE}/MPICH"
+            rm -rf MPICH
+            mkdir MPICH
+            cd MPICH
+            # git clone -q https://github.com/pmodels/mpich.git
+            # cd mpich
+            # git submodule update --init
+            # ./autogen.sh
+            VERSION=4.0.2
+            wget -q https://www.mpich.org/static/downloads/${VERSION}/mpich-${VERSION}.tar.gz
+            gzip -dc mpich-${VERSION}.tar.gz | tar -xf -
+            cd mpich-${VERSION}
+            ./configure --prefix=${GITHUB_WORKSPACE}/MPICH \
+                        --silent \
+                        --enable-romio \
+                        --with-file-system=ufs \
+                        --with-device=ch3:sock \
+                        --disable-shared \
+                        --disable-fortran \
+                        CC=gcc
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
+            cd ${GITHUB_WORKSPACE}
+        - name: Install PnetCDF
+          run: |
+            echo "Install PnetCDF on ${GITHUB_WORKSPACE}/PnetCDF"
+            rm -rf PnetCDF
+            mkdir PnetCDF
+            cd PnetCDF
+            VERSION=1.12.3
+            wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-${VERSION}.tar.gz
+            tar -zxf pnetcdf-${VERSION}.tar.gz
+            cd pnetcdf-${VERSION}
+            ./configure --prefix=${GITHUB_WORKSPACE}/PnetCDF \
+                        --silent \
+                        --disable-fortran \
+                        --disable-cxx \
+                        --disable-shared \
+                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
+            cd ${GITHUB_WORKSPACE}
+        - name: Install HDF5
+          if: ${{ success() }}
+          run: |
+            echo "Install HDF5 on ${GITHUB_WORKSPACE}/HDF5"
+            rm -rf HDF5
+            mkdir HDF5
+            cd HDF5
+            VERSION=1.13.0
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${VERSION}/src/hdf5-${VERSION}.tar.gz
+            tar -zxf hdf5-${VERSION}.tar.gz
+            cd hdf5-${VERSION}
+            ./configure --prefix=${GITHUB_WORKSPACE}/HDF5 \
+                        --silent \
+                        --enable-hl \
+                        --enable-parallel \
+                        --enable-build-mode=production \
+                        --disable-doxygen-doc \
+                        --disable-doxygen-man \
+                        --disable-doxygen-html \
+                        --disable-hltools \
+                        --disable-tools \
+                        --disable-tests \
+                        --disable-shared \
+                        CC=${GITHUB_WORKSPACE}/MPICH/bin/mpicc
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
+            cd ${GITHUB_WORKSPACE}
+        - name: Install NetCDF-C
+          if: ${{ success() }}
+          run: |
+            echo "Install NetCDF-C on ${GITHUB_WORKSPACE}/NetCDF"
+            rm -rf NetCDF
+            mkdir NetCDF
+            cd NetCDF
+            VERSION=4.9.0
+            wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v${VERSION}.tar.gz
+            tar -zxf v${VERSION}.tar.gz
+            cd netcdf-c-${VERSION}
+            # TODO: Always use an official release. E3SM-IO requires NetCDF-C 4.9.0 or later.
+            # rm -rf netcdf-c
+            # git clone -q https://github.com/Unidata/netcdf-c.git
+            # cd netcdf-c
+            # autoreconf -i
+            ./configure --prefix=${GITHUB_WORKSPACE}/NetCDF \
+                        --silent \
+                        --disable-dap \
+                        --disable-nczarr \
+                        --disable-nczarr-filters \
+                        --disable-filter-testing \
+                        --disable-shared \
+                        CC=${GITHUB_WORKSPACE}/MPICH/bin/mpicc \
+                        CPPFLAGS="-I${GITHUB_WORKSPACE}/HDF5/include" \
+                        LDFLAGS="-L${GITHUB_WORKSPACE}/HDF5/lib" \
+                        LIBS="-lhdf5"
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
+            cd ${GITHUB_WORKSPACE}
+        - name: Install ADIOS2
+          if: ${{ success() }}
+          run: |
+            echo "Install ADIOS2 on ${GITHUB_WORKSPACE}/ADIOS"
+            rm -rf ADIOS
+            mkdir ADIOS
+            cd ADIOS
+            VERSION=2.8.1
+            wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v${VERSION}.tar.gz
+            tar -zxf v${VERSION}.tar.gz
+            mkdir adios2_build
+            cd adios2_build
+            CC=${GITHUB_WORKSPACE}/MPICH/bin/mpicc \
+            CXX=${GITHUB_WORKSPACE}/MPICH/bin/mpicc \
+            cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/ADIOS \
+                  -DADIOS2_USE_MPI=ON \
+                  -DADIOS2_USE_Fortran=OFF \
+                  -DADIOS2_USE_Python=OFF \
+                  -DADIOS2_USE_ZeroMQ=OFF \
+                  -DADIOS2_USE_HDF5=OFF \
+                  -DADIOS2_USE_SST=OFF \
+                  -DADIOS2_USE_IME=OFF \
+                  -DADIOS2_USE_BZip2=OFF \
+                  -DADIOS2_USE_ZFP=OFF \
+                  -DADIOS2_USE_SZ=OFF \
+                  -DADIOS2_USE_MGARD=OFF \
+                  -DADIOS2_USE_PNG=OFF \
+                  -DADIOS2_USE_Blosc=OFF \
+                  -DADIOS2_BUILD_EXAMPLES=OFF \
+                  -DBUILD_TESTING=OFF \
+                  ../ADIOS2-${VERSION}
+            make -j 8 install > qout 2>&1
+            make clean >> qout 2>&1
+            cd ${GITHUB_WORKSPACE}
+        - name: Install log VOL
+          if: ${{ success() }}
+          run: |
+            echo "Install Log VOL on ${GITHUB_WORKSPACE}/LOGVOL"
+            rm -rf LOGVOL
+            mkdir LOGVOL
+            cd LOGVOL
+            VERSION=1.3.0
+            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.${VERSION}.tar.gz
+            tar -zxf logvol.${VERSION}.tar.gz
+            cd vol-log-based-logvol.${VERSION}
+            autoreconf -i
+            ./configure --prefix=${GITHUB_WORKSPACE}/LOGVOL \
+                        --silent \
+                        --disable-shared \
+                        --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
+                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
+            cd ${GITHUB_WORKSPACE}
+        - name: Build and check E3SM_IO with PnetCDF only
+          if: ${{ success() }}
+          run: |
+            rm -rf ./test_output
+            autoreconf -i
+            ./configure --with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF \
+                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 8
+            make check
+        - name: Dump log files if E3SM_IO with PnetCDF-only test failed
+          if: ${{ failure() }}
+          run: |
+            cat test.sh.log utils/*.log
+        - name: Build and check E3SM_IO with HDF5 only
+          if: ${{ success() }}
+          run: |
+            make -s distclean
+            ./configure --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
+                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 8
+            make check
+        - name: Dump log files if E3SM_IO with HDF5-only test failed
+          if: ${{ failure() }}
+          run: |
+            cat test.sh.log utils/*.log
+        - name: Build and check E3SM_IO with HDF5 log-based VOL only
+          if: ${{ success() }}
+          run: |
+            make -s distclean
+            ./configure --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
+                        --with-logvol=${GITHUB_WORKSPACE}/LOGVOL \
+                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 8
+            make check
+        - name: Dump log files if E3SM_IO with HDF5 log-based VOL test failed
+          if: ${{ failure() }}
+          run: |
+            cat test.sh.log utils/*.log
+        - name: Build and check E3SM_IO with NetCDF4 only
+          if: ${{ success() }}
+          run: |
+            make -s distclean
+            ./configure --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF \
+                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 8
+            make check
+        - name: Dump log files if E3SM_IO with NetCDF4-only test failed
+          if: ${{ failure() }}
+          run: |
+            cat test.sh.log utils/*.log
+        - name: Build and check E3SM_IO with ADIOS only
+          if: ${{ success() }}
+          run: |
+            make -s distclean
+            ./configure --with-adios2=${GITHUB_WORKSPACE}/ADIOS \
+                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 8
+            make check
+        - name: Dump log files if E3SM_IO with ADIOS-only test failed
+          if: ${{ failure() }}
+          run: |
+            cat test.sh.log utils/*.log
+        - name: Build and check E3SM_IO with all APIs
+          if: ${{ success() }}
+          run: |
+            make -s distclean
+            ./configure --with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF \
+                        --with-hdf5=${GITHUB_WORKSPACE}/HDF5       \
+                        --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF  \
+                        --with-logvol=${GITHUB_WORKSPACE}/LOGVOL   \
+                        --with-adios2=${GITHUB_WORKSPACE}/ADIOS    \
+                        --with-mpi=$${GITHUB_WORKSPACE}/MPICH \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments \
+                        TESTMPIRUN="mpiexec --oversubscribe"
+            make -j 8
+            make check
+        - name: Dump log files if E3SM_IO test failed
+          if: ${{ failure() }}
+          run: |
+            cat test.sh.log utils/*.log
+            cat config.log
+            ls -r ./test_output
+        - name: Test E3SM_IO all APIs -- parallel runs
+          if: ${{ success() }}
+          run: |
+            make ptest
+        - name: Test make distcheck
+          if: ${{ success() }}
+          run: |
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF --with-hdf5=${GITHUB_WORKSPACE}/HDF5 --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF --with-logvol=${GITHUB_WORKSPACE}/LOGVOL --with-adios2=${GITHUB_WORKSPACE}/ADIOS --with-mpi=$${GITHUB_WORKSPACE}/MPICH CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distclean
+
