@@ -685,10 +685,12 @@ AC_ARG_WITH([adios2],
    fi
    if test "x$adios2_lflags" != x ; then
       if test "x$LDFLAGS" = x ; then
-         LDFLAGS="$adios2_lflags"
+         # LDFLAGS="$adios2_lflags"
+         LDFLAGS="-L$adios2_lib"
       elif ! echo "${LDFLAGS}" | ${EGREP} -q -w -- "${adios2_lflags}" ; then
          # append only if not already appear in LDFLAGS
-         LDFLAGS="$LDFLAGS $adios2_lflags"
+         # LDFLAGS="$LDFLAGS $adios2_lflags"
+         LDFLAGS="$LDFLAGS -L$adios2_lib"
       fi
    fi
    AC_CHECK_HEADER([adios2_c.h], [have_adios2=yes], [have_adios2=no])
@@ -795,9 +797,11 @@ fi
 
 if test "x$have_adios2" = xyes ; then
    if test "x$LIBS" = x ; then
-      LIBS="${adios2_lflags}"
+      # LIBS="${adios2_lflags}"
+      LIBS="-ladios2_c_mpi -ladios2_c -ladios2_cxx11 -ladios2_cxx11_mpi"
    else
-      LIBS="${adios2_lflags} $LIBS"
+      # LIBS="${adios2_lflags} $LIBS"
+      LIBS="-ladios2_c_mpi -ladios2_c -ladios2_cxx11 -ladios2_cxx11_mpi $LIBS"
    fi
    AC_DEFINE([ENABLE_ADIOS2], [1], [Enable ADIOS I/O method])
 
