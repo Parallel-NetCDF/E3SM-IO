@@ -391,7 +391,6 @@ AC_ARG_WITH([hdf5],
       AC_COMPUTE_INT([hdf5_patch], [H5_VERS_RELEASE], [[#include <hdf5.h>]])
       hdf5_version=${hdf5_major}.${hdf5_minor}.${hdf5_patch}
       AC_MSG_RESULT([$hdf5_version])
-
       AC_MSG_CHECKING([whether HDF5 is configured with parallel I/O enabled])
       AC_COMPUTE_INT([h5_parallel], [H5_HAVE_PARALLEL], [[#include <hdf5.h>]], [h5_parallel=0])
       if test "x$h5_parallel" = x1 ; then
@@ -596,14 +595,6 @@ AC_ARG_WITH([logvol],
       -----------------------------------------------------------------------])
    fi
 
-   LIBS_BAK=${LIBS}
-   LIBS="$LIBS -lH5VL_log"
-   AC_CHECK_FUNC([H5Pset_buffered], [have_h5pset_buffered=yes], [have_h5pset_buffered=no])
-   if test "x$have_h5pset_buffered" = xyes ; then
-      AC_DEFINE([LOGVOL_HAVE_H5PSET_BUFFERED], [1], [Whether log-based VOL have H5Pset_buffered])
-   fi
-   LIBS=${LIBS_BAK}
-
    dnl Check if logvol version is 1.3.0 or later
    AC_MSG_CHECKING([whether logvol version is 1.3.0 or later])
    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -615,7 +606,7 @@ AC_ARG_WITH([logvol],
    AC_MSG_RESULT([$logvol_ge_1_3_0])
 
    if test x$logvol_ge_1_3_0 = xyes; then
-         AC_DEFINE([LOGVOL_GE_1003000], [1], [whether logvol version is 1.3.0 or later])
+      AC_DEFINE([LOGVOL_GE_1003000], [1], [whether logvol version is 1.3.0 or later])
    fi
 
    if test "x$have_logvol" = xyes ; then
@@ -785,6 +776,14 @@ if test "x$have_logvol" = xyes ; then
       LIBS="$LIBS -lH5VL_log"
    fi
    AC_DEFINE([ENABLE_LOGVOL], [1], [Enable HDF5 Log-layout based VOL I/O method])
+
+   saved_CC=$CC
+   CC=$MPICXX
+   AC_CHECK_FUNC([H5Pset_buffered], [have_h5pset_buffered=yes], [have_h5pset_buffered=no])
+   if test "x$have_h5pset_buffered" = xyes ; then
+      AC_DEFINE([LOGVOL_HAVE_H5PSET_BUFFERED], [1], [Whether log-based VOL have H5Pset_buffered])
+   fi
+   CC=$saved_CC
 fi
 
 if test "x$have_adios2" = xyes ; then
