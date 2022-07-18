@@ -29,8 +29,7 @@ int print_timing_WR(e3sm_io_config *cfg,
     MPI_Offset off_msg[3], sum_off[3];
     MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs, min_nreqs;
     MPI_Offset vlen, sum_decomp_varlen;
-    double pre_time, open_time, def_time, post_time, flush_time, close_time;
-    double end2end_time, wTime;
+    double wTime;
     MPI_Comm comm=cfg->io_comm;
 
     ndecomp = decom->num_decomp;
@@ -65,7 +64,7 @@ int print_timing_WR(e3sm_io_config *cfg,
     MPI_Reduce(&cmeta->my_nreqs, &max_nreqs, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     MPI_Reduce(&cmeta->my_nreqs, &min_nreqs, 1, MPI_OFFSET, MPI_MIN, 0, comm);
 
-    double dbl_tmp[7], max_dbl[7];
+    double dbl_tmp[7], max_dbl[7], min_dbl[7];
     dbl_tmp[0] = cmeta->pre_time;
     dbl_tmp[1] = cmeta->open_time;
     dbl_tmp[2] = cmeta->def_time;
@@ -74,13 +73,7 @@ int print_timing_WR(e3sm_io_config *cfg,
     dbl_tmp[5] = cmeta->close_time;
     dbl_tmp[6] = cmeta->end2end_time;
     MPI_Reduce(dbl_tmp, max_dbl, 7, MPI_DOUBLE, MPI_MAX, 0, comm);
-        pre_time = max_dbl[0];
-       open_time = max_dbl[1];
-        def_time = max_dbl[2];
-       post_time = max_dbl[3];
-      flush_time = max_dbl[4];
-      close_time = max_dbl[5];
-    end2end_time = max_dbl[6];
+    MPI_Reduce(dbl_tmp, min_dbl, 7, MPI_DOUBLE, MPI_MIN, 0, comm);
 
     if (cfg->rank == 0) {
         int nvars_noD = cmeta->nvars;
@@ -138,13 +131,13 @@ int print_timing_WR(e3sm_io_config *cfg,
         }
 
         if (cfg->strategy == canonical && (cfg->api == netcdf4 || cfg->api == hdf5))
-            wTime = post_time;
+            wTime = max_dbl[3];
         else if (cfg->strategy == log && cfg->api == netcdf4)
-            wTime = close_time;
+            wTime = max_dbl[5];
         else if (cfg->api == pnetcdf || cfg->strategy == log || cfg->api == hdf5_md)
-            wTime = flush_time;
+            wTime = max_dbl[4];
         else /* write happens at file close for hdf5 blob and adios blob */
-            wTime = close_time;
+            wTime = max_dbl[5];
 
         if (cfg->strategy == blob) {
             printf("History output name base           = %s\n", cfg->out_path);
@@ -190,19 +183,19 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("I/O flush frequency                = %6d\n", cmeta->ffreq);
         printf("No. I/O flush calls                = %6d\n", cmeta->num_flushes);
         printf("-----------------------------------------------------------\n");
-        printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
+        printf("Total write amount                         = %.2f MiB = %.2f GiB\n",
                (double)sum_amount_WR / 1048576, (double)sum_amount_WR / 1073741824);
-        printf("Max Time of I/O preparing          = %.4f sec\n",   pre_time);
-        printf("Max Time of file open/create       = %.4f sec\n",  open_time);
-        printf("Max Time of define variables       = %.4f sec\n",   def_time);
-        printf("Max Time of posting write requests = %.4f sec\n",  post_time);
-        printf("Max Time of write flushing         = %.4f sec\n",  flush_time);
-        printf("Max Time of close                  = %.4f sec\n", close_time);
-        printf("Max end-to-end time                = %.4f sec\n", end2end_time);
-        printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
+        printf("Time of I/O preparing              min/max = %8.4f / %8.4f\n", min_dbl[0], max_dbl[0]);
+        printf("Time of file open/create           min/max = %8.4f / %8.4f\n", min_dbl[1], max_dbl[1]);
+        printf("Time of define variables           min/max = %8.4f / %8.4f\n", min_dbl[2], max_dbl[2]);
+        printf("Time of posting write requests     min/max = %8.4f / %8.4f\n", min_dbl[3], max_dbl[3]);
+        printf("Time of write flushing             min/max = %8.4f / %8.4f\n", min_dbl[4], max_dbl[4]);
+        printf("Time of close                      min/max = %8.4f / %8.4f\n", min_dbl[5], max_dbl[5]);
+        printf("end-to-end time                    min/max = %8.4f / %8.4f\n", min_dbl[6], max_dbl[6]);
+        printf("I/O bandwidth in MiB/sec (write-only)      = %.4f\n",
                (double)sum_amount_WR / 1048576.0 / wTime);
-        printf("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
-               (double)sum_amount_WR / 1048576.0 / end2end_time);
+        printf("I/O bandwidth in MiB/sec (open-to-close)   = %.4f\n",
+               (double)sum_amount_WR / 1048576.0 / max_dbl[6]);
         printf("-----------------------------------------------------------\n");
 
         /* print MPI-IO hints actually used */
