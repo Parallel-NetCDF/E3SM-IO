@@ -51,7 +51,6 @@ jobs:
                         --enable-romio \
                         --with-file-system=ufs \
                         --with-device=ch3:sock \
-                        --disable-shared \
                         --disable-fortran \
                         CC=gcc
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
@@ -146,7 +145,7 @@ jobs:
             mkdir adios2_build
             cd adios2_build
             CC=${GITHUB_WORKSPACE}/MPICH/bin/mpicc \
-            CXX=${GITHUB_WORKSPACE}/MPICH/bin/mpicc \
+            CXX=${GITHUB_WORKSPACE}/MPICH/bin/mpicxx \
             cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/ADIOS \
                   -DADIOS2_USE_MPI=ON \
                   -DADIOS2_USE_Fortran=OFF \
@@ -270,8 +269,7 @@ jobs:
                         --with-adios2=${GITHUB_WORKSPACE}/ADIOS    \
                         --with-mpi=${GITHUB_WORKSPACE}/MPICH \
                         CFLAGS=-fno-var-tracking-assignments \
-                        CXXFLAGS=-fno-var-tracking-assignments \
-                        TESTMPIRUN="mpiexec --oversubscribe"
+                        CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
             make check
         - name: Dump log files if E3SM_IO test failed
