@@ -674,6 +674,15 @@ AC_ARG_WITH([adios2],
    else
       adios2_cflags="-I$adios2_inc"
       adios2_lflags="-L$adios2_lib"
+
+      if test "x$CPPFLAGS" = x ; then
+         CPPFLAGS="-DADIOS2_USE_MPI"
+      else
+         str_found=`echo "${CPPFLAGS}" | ${EGREP} -- "-DADIOS2_USE_MPI"`
+         if test "x$?" != x0 ; then
+            CPPFLAGS="-DADIOS2_USE_MPI $CPPFLAGS"
+         fi
+      fi
    fi
    if test "x$adios2_cflags" != x ; then
       if test "x$CPPFLAGS" = x ; then
@@ -765,12 +774,26 @@ fi
 if test "x$have_hdf5" = xyes ; then
    # check for extra libraries used when building HDF5
    if test -f $hdf5_lib/libhdf5.settings ; then
+      extra_ldflags="`grep ' LDFLAGS:' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
+      extra_H5_ldflags="`grep 'H5_LDFLAGS:' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
+      extra_AM_ldflags="`grep 'AM_LDFLAGS:' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
+      if test "x$extra_H5_ldflags" != x ; then
+         extra_ldflags+=$extra_H5_ldflags
+      fi
+      if test "x$extra_AM_ldflags" != x ; then
+         extra_ldflags+=$extra_AM_ldflags
+      fi
       extra_libs="`grep 'Extra libraries' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
    fi
    if test "x$LIBS" = x ; then
       LIBS="-lhdf5 $extra_libs"
    else
       LIBS="-lhdf5 $extra_libs $LIBS"
+   fi
+   if test "x$LDFLAGS" = x ; then
+      LDFLAGS=$extra_ldflags
+   else
+      LDFLAGS="$extra_ldflags $LDFLAGS"
    fi
    AC_DEFINE([ENABLE_HDF5], [1], [Enable HDF5 I/O method])
    if test "x$have_multi_dset" = xyes ; then
@@ -796,6 +819,9 @@ if test "x$have_logvol" = xyes ; then
 fi
 
 if test "x$have_adios2" = xyes ; then
+   # TODO: Ideally, all ADIOS .a files should be merged into a single libadios2.a
+   # Command to do so: "ar crsT libadios2.a libadios2_c.a libadios2_c_mpi.a ..."
+   # If this will be the case in the future, we can simply add -ladios2 to LIBS
    if test "x$LIBS" = x ; then
       # LIBS="${adios2_lflags}"
       LIBS="-ladios2_c_mpi -ladios2_c -ladios2_cxx11 -ladios2_cxx11_mpi"
