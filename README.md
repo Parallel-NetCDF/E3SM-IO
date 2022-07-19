@@ -32,16 +32,16 @@ implemented in this benchmark.
   [![Ubuntu](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
 
 ### Performance Results on Cori at NERSC
-Below shows the performance in execution times collected in September 2021 for
-three blob I/O methods on [Cori](https://docs.nersc.gov/systems/cori/) at
+Below shows the execution times of four blob I/O methods collected on July 19,
+2022 on [Cori](https://docs.nersc.gov/systems/cori/) at
 [NERSC](https://www.nersc.gov).
 <p align="center">
 <img align="center" src="cori_07192022.jpg" alt="Performance of blob I/O methods on Cori" width="600">
 </p>
 
 ### Performance Results on Summit at OLCF
-Below shows the performance in execution times collected in September 2021 for
-three blob I/O methods on [Summit at OLCF](https://www.olcf.ornl.gov/summit/).
+Below shows the execution times of three blob I/O methods collected in September 2021
+on [Summit at OLCF](https://www.olcf.ornl.gov/summit/).
 <p align="center">
 <img align="center" src="summit.jpg" alt="Performance of blob I/O methods on Summit" width="600">
 </p>
