@@ -13,7 +13,7 @@
 * Autotools utility
   + autoconf 2.69
   + automake 1.16.1
-  + libtoolize 2.4.6
+  + libtool 2.4.6
   + m4 1.4.18
 * MPI C and C++ compilers
   + Configured with a std 11 C++ compiler (supporting constant initializer)
