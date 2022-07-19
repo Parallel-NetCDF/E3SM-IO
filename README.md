@@ -36,7 +36,7 @@ Below shows the performance in execution times collected in September 2021 for
 three blob I/O methods on [Cori](https://docs.nersc.gov/systems/cori/) at
 [NERSC](https://www.nersc.gov).
 <p align="center">
-<img align="center" src="cori.jpg" alt="Performance of blob I/O methods on Cori" width="600">
+<img align="center" src="cori_07192022.jpg" alt="Performance of blob I/O methods on Cori" width="600">
 </p>
 
 ### Performance Results on Summit at OLCF
