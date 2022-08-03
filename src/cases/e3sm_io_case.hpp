@@ -36,7 +36,7 @@ typedef struct {
 typedef struct {
     int vid;         /* variable ID, returned from the driver */
 
-    char *name;      /* name of variable */
+    char *_name;     /* name of variable */
     int frame_id;    /* frame variable ID returned from adios driver */
     int decom_id;    /* decomposition map variable ID returned from adios driver */
     int piodecomid;  /* map IDs used on Scorpio starting at 512 */
@@ -292,6 +292,7 @@ int scorpio_write_var(e3sm_io_driver &driver,
     /* nDims and dimids are canonical dimensions */                           \
     int _i, *_dimids = dimids;                                                \
     varp++;                                                                   \
+    varp->_name     = strdup(name);                                           \
     varp->ndims     = nDims;   /* number of dimensions */                     \
     varp->iType     = itype;   /* internal data type of write buffer */       \
     varp->xType     = xtype;   /* external data type of variable in file */   \

@@ -45,7 +45,6 @@ int scorpio_define_var(e3sm_io_config &cfg,
 
     var->piodecomid = decomp_id + 512;
     var->ndims = ndims;
-    var->name = strdup(name.c_str());
 
     for (i = 0; i < ndims; i++)
         dnames_array[i] = dnames[dimids[i]].c_str();

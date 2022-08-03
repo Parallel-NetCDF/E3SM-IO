@@ -3897,12 +3897,6 @@ else {
 
     assert(varp - vars + 1 == cfg.nvars + nvars_decomp);
 
-    if (cfg.api == adios) {
-        for (i=nvars_decomp; i<cfg.nvars+nvars_decomp; i++)
-            if (vars[i].name != NULL)
-                free(vars[i].name);
-    }
-
 err_out:
     return err;
 }
