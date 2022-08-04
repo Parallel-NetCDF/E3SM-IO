@@ -30,28 +30,33 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     /* collective write */
     err = MPI_Info_set (cfg->info, "romio_cb_write", "enable");
     CHECK_MPIERR
-    /* no independent MPI-IO */
-    err = MPI_Info_set (cfg->info, "romio_no_indep_rw", "true");
-    CHECK_MPIERR
 
-    /* set PnetCDF I/O hints */
+    /* HDF5 may do independent I/O internally */
 
-    /* no gap between variables */
-    err = MPI_Info_set (cfg->info, "nc_var_align_size", "1");
-    CHECK_MPIERR
-    /* in-place byte swap */
-    err = MPI_Info_set (cfg->info, "nc_in_place_swap", "enable");
-    CHECK_MPIERR
-
-    /* use total write amount to estimate nc_ibuf_size */
-    estimated_nc_ibuf_size =
-        decom->dims[2][0] * decom->dims[2][1] * sizeof (double) / cfg->num_iotasks;
-    estimated_nc_ibuf_size *= cfg->nvars;
-    if (estimated_nc_ibuf_size > 16777216) {
-        char nc_ibuf_size_str[32];
-        sprintf (nc_ibuf_size_str, "%lld", estimated_nc_ibuf_size);
-        err = MPI_Info_set (cfg->info, "nc_ibuf_size", nc_ibuf_size_str);
+    if (cfg->api == pnetcdf) {
+        /* no independent MPI-IO */
+        err = MPI_Info_set (cfg->info, "romio_no_indep_rw", "true");
         CHECK_MPIERR
+
+        /* set PnetCDF I/O hints */
+
+        /* no gap between variables */
+        err = MPI_Info_set (cfg->info, "nc_var_align_size", "1");
+        CHECK_MPIERR
+        /* in-place byte swap */
+        err = MPI_Info_set (cfg->info, "nc_in_place_swap", "enable");
+        CHECK_MPIERR
+
+        /* use total write amount to estimate nc_ibuf_size */
+        estimated_nc_ibuf_size = decom->dims[2][0] * decom->dims[2][1]
+                               * sizeof (double) / cfg->num_iotasks;
+        estimated_nc_ibuf_size *= cfg->nvars;
+        if (estimated_nc_ibuf_size > 16777216) {
+            char nc_ibuf_size_str[32];
+            sprintf (nc_ibuf_size_str, "%lld", estimated_nc_ibuf_size);
+            err = MPI_Info_set (cfg->info, "nc_ibuf_size", nc_ibuf_size_str);
+            CHECK_MPIERR
+        }
     }
 
 err_out:
@@ -424,7 +429,7 @@ int main (int argc, char **argv) {
     /* set MPI-IO and PnetCDF hints */
     err = MPI_Info_create (&(cfg.info));
     CHECK_MPIERR
-    err += set_info (&cfg, &decom);
+    err = set_info (&cfg, &decom);
     if (err < 0) goto err_out;
 
     /* the core of this benchmark */
