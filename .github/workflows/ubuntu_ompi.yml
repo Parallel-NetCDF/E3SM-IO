@@ -2,7 +2,9 @@ name: OpenMPI
 
 on:
   push:
-    branches: master
+    branches:
+      - master
+      - github_action
     paths-ignore:
       - '**.md'
       - '**.txt'
