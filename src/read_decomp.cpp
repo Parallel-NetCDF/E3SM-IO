@@ -129,7 +129,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     decom_cfg.io_comm        = MPI_COMM_WORLD;
     decom_cfg.info           = MPI_INFO_NULL;
     decom_cfg.num_iotasks    = nprocs;
-    decom_cfg.num_group      = 1;
+    decom_cfg.num_subfiles   = 0;
     decom_cfg.out_path[0]    = '\0';
     decom_cfg.in_path[0]     = '\0';
     decom_cfg.decomp_path[0] = '\0';

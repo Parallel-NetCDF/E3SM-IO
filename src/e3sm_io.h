@@ -138,7 +138,7 @@ typedef struct e3sm_io_config {
     MPI_Comm io_comm;
     MPI_Info info;
     int num_iotasks;
-    int num_group;
+    int num_subfiles;
 
     char in_path[E3SM_IO_MAX_PATH];
     char out_path[E3SM_IO_MAX_PATH];
@@ -163,8 +163,7 @@ typedef struct e3sm_io_config {
     int io_stride;
     int profiling;
 
-    /* below 3 are used for PnetCDF blob I/O subfiling */
-    int      num_subfiles; /* number of subfiles */
+    /* below are used for PnetCDF blob I/O subfiling */
     int      subfile_ID;   /* unique file identifier for subfiles */
     MPI_Comm sub_comm;     /* communicator for a subfile */
     int      sub_rank;     /* rank in sub_comm */

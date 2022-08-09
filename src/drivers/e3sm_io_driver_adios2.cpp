@@ -176,7 +176,7 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
     aerr = adios2_set_engine (fp->iop, "BP3");
     CHECK_AERR
 
-    sprintf (ng, "%d", cfg->num_group);
+    sprintf (ng, "%d", cfg->num_subfiles);
     aerr = adios2_set_parameter (fp->iop, "substreams", ng);
     CHECK_AERR
     aerr = adios2_set_parameter (fp->iop, "CollectiveMetadata", "OFF");
@@ -688,8 +688,8 @@ int e3sm_io_driver_adios2::put_att (
 
     // ADIOS2 write attributes in each subfile
     // Instead of finding the exact process writing the attribute 
-    // we count them in the first num_group processes
-    if (fp->rank < cfg->num_group) {
+    // we count them in the first num_subfiles processes
+    if (fp->rank < cfg->num_subfiles) {
         esize = adios2_type_size (atype);
         this->amount_WR += size * esize;
     }

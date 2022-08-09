@@ -42,6 +42,24 @@ e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
+    if (cfg->num_subfiles != 0) {
+#ifdef LOGVOL_HAVE_GET_NSUBFILES
+        this->num_subfiles = cfg->num_subfiles;
+#else
+        int rank;
+        err = MPI_Comm_rank(cfg->io_comm, &rank);
+        CHECK_MPIERR
+        if (rank == 0) {
+            printf("\n");
+            printf("Warning: this version of Log-base VOL %s does not support\n",
+                   H5VL_LOG_VERSION);
+            printf("Warning: setting number of subfiles through the command-line\n");
+            printf("Warning: argument. It only supports through setting\n");
+            printf("Warning: environment variable H5VL_LOG_NSUBFILES.\n\n");
+        }
+#endif
+    }
+
 	this->dxplid_coll = H5Pcreate (H5P_DATASET_XFER);
 	CHECK_HID (this->dxplid_coll)
 	herr = H5Pset_dxpl_mpio (this->dxplid_coll, H5FD_MPIO_COLLECTIVE);
@@ -106,7 +124,7 @@ e3sm_io_driver_hdf5_log::~e3sm_io_driver_hdf5_log () {
 int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) {
     int err = 0;
     herr_t herr;
-    hid_t faplid;
+    hid_t faplid = -1, fcplid = -1;
     H5AC_cache_config_t mdcc;
     hdf5_file *fp;
 
@@ -139,14 +157,30 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
     herr                  = H5Pset_mdc_config (faplid, &mdcc);
     CHECK_HERR
 
-    fp->id = H5Fcreate (path.c_str (), H5F_ACC_TRUNC, H5P_DEFAULT, faplid);
+    fcplid = H5Pcreate (H5P_FILE_CREATE);
+#ifdef LOGVOL_HAVE_GET_NSUBFILES
+    if (this->num_subfiles != 0) {
+        herr = H5Pset_subfiling(fcplid, this->num_subfiles);
+        CHECK_HERR
+    }
+#endif
+
+    fp->id = H5Fcreate (path.c_str (), H5F_ACC_TRUNC, fcplid, faplid);
     CHECK_HID (fp->id)
+
+#ifdef LOGVOL_HAVE_GET_NSUBFILES
+    if (this->num_subfiles != 0) {
+        herr = H5Pget_subfiling(fcplid, &this->num_subfiles);
+        CHECK_HERR
+    }
+#endif
 
     *fid = this->files.size ();
     this->files.push_back (fp);
 
 err_out:;
     if (faplid >= 0) { H5Pclose (faplid); }
+    if (fcplid >= 0) { H5Pclose (fcplid); }
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return err;

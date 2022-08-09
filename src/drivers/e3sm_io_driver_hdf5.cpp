@@ -79,7 +79,9 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
         throw "Fitler requries chunking in HDF5";
     }
 
-    if (cfg->num_group != 1) { throw "Subfiling not supported by HDF5 driver"; }
+    /* Note cfg->num_subfiles is used by the log-based VOL method and ignored
+     * by others.
+     */
 
     /*
     env = getenv ("E3SM_IO_HDF5_ENABLE_LOGVOL");

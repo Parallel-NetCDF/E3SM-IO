@@ -23,6 +23,7 @@ class e3sm_io_driver_hdf5_log : public e3sm_io_driver_hdf5 {
     // Config
     bool use_logvol_varn  = true;
     bool merge_varn       = false;
+    int num_subfiles      = 0;
 
    public:
     e3sm_io_driver_hdf5_log (e3sm_io_config *cfg);
