@@ -133,7 +133,8 @@ jobs:
                   -DADIOS2_BUILD_EXAMPLES=OFF \
                   -DBUILD_TESTING=OFF \
                   ../ADIOS2-${VERSION}
-            make -j 8 install > qout 2>&1
+            make -j 8 > qout 2>&1
+            make install >> qout 2>&1
             make clean >> qout 2>&1
             cd ${GITHUB_WORKSPACE}
         - name: Install log VOL
