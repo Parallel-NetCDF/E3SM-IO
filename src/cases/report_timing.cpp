@@ -139,13 +139,21 @@ int print_timing_WR(e3sm_io_config *cfg,
         else /* write happens at file close for hdf5 blob and adios blob */
             wTime = max_dbl[5];
 
-        if (cfg->strategy == blob) {
+        if (cfg->strategy == log && cfg->api == hdf5_log) {
+            if (cfg->num_subfiles != 0) {
+                printf("History output folder names        = %s.subfiles\n", cmeta->outfile);
+                printf("History output subfile names       = %s.subfiles/%s.xxxx\n",
+                       cmeta->outfile, basename(cmeta->outfile));
+            }
+            printf("Number of subfiles                 = %d\n", cfg->num_subfiles);
+        }
+        else if (cfg->strategy == blob) {
             printf("History output name base           = %s\n", cfg->out_path);
             if (cfg->api == adios) {
                 printf("History output folder name         = %s.bp.dir\n", cmeta->outfile);
                 printf("History output subfile names       = %s.bp.dir/%s.bp.xxxx\n",
                        cmeta->outfile, basename(cmeta->outfile));
-                printf("Number of subfiles                 = %d\n", cfg->num_group);
+                printf("Number of subfiles                 = %d\n", cfg->num_subfiles);
                 if (cfg->verbose)
                     printf("Output file size                   = %.2f MiB = %.2f GiB\n",
                         (double)cmeta->file_size / 1048576, (double)cmeta->file_size / 1073741824);

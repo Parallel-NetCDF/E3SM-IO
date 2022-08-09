@@ -138,7 +138,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     cfg_in.io_comm        = MPI_COMM_SELF;
     cfg_in.info           = MPI_INFO_NULL;
     cfg_in.num_iotasks    = cfg_in.np;
-    cfg_in.num_group      = 1;
+    cfg_in.num_subfiles   = 0;
     cfg_in.out_path[0]    = '\0';
     cfg_in.in_path[0]     = '\0';
     cfg_in.decomp_path[0] = '\0';
@@ -446,7 +446,7 @@ int main (int argc, char **argv) {
     cfg.info           = MPI_INFO_NULL;
     cfg.np             = nprocs;
     cfg.num_iotasks    = cfg.np;
-    cfg.num_group      = 1;
+    cfg.num_subfiles   = 0;
     cfg.out_path[0]    = '\0';
     cfg.in_path[0]     = '\0';
     cfg.decomp_path[0] = '\0';

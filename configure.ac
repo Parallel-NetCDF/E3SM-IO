@@ -815,6 +815,13 @@ if test "x$have_logvol" = xyes ; then
    if test "x$have_h5pset_buffered" = xyes ; then
       AC_DEFINE([LOGVOL_HAVE_H5PSET_BUFFERED], [1], [Whether log-based VOL have H5Pset_buffered])
    fi
+
+   # Check if the 2nd argument of H5Pget_subfiling is declared as type int*
+   # In Log VOL 1.3.0, it was declared as type hbool_t*
+   AC_CHECK_DECLS([[H5Pget_subfiling(hid_t, int*)]], [], [], [[#include <H5VL_log.h>]])
+   if test x$ac_cv_have_decl_H5Pget_subfiling_hid_t__intp_ = xyes; then
+      AC_DEFINE([LOGVOL_HAVE_GET_NSUBFILES], [1], [Whether log-based VOL can set the number of subfiles])
+   fi
    CC=$saved_CC
 fi
 

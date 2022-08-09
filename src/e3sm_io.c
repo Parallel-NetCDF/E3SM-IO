@@ -101,7 +101,9 @@ static void usage (char *argv0) {
                 and HDF5 blob I/O options, which always flushes at file close).\n\
        [-s num] Stride interval of ranks for selecting MPI processes to perform\n\
                 I/O tasks (default: 1, i.e. all MPI processes).\n\
-       [-g num] Number of subfiles, used by ADIOS I/O only (default: 1).\n\
+       [-g num] Number of subfiles, used by Log-based VOL and ADIOS I/O only,\n\
+                -1 for one subfile per compute node, 0 to disable subfiling,\n\
+                (default: 0).\n\
        [-o path] Output file path (folder name when subfiling is used, file\n\
                  name otherwise).\n\
        [-a api]  I/O library name\n\
@@ -144,7 +146,7 @@ int main (int argc, char **argv) {
     cfg.io_comm        = MPI_COMM_WORLD;
     cfg.info           = MPI_INFO_NULL;
     cfg.num_iotasks    = cfg.np;
-    cfg.num_group      = 1;
+    cfg.num_subfiles   = 0;
     cfg.out_path[0]    = '\0';
     cfg.in_path[0]     = '\0';
     cfg.decomp_path[0] = '\0';
@@ -254,7 +256,7 @@ int main (int argc, char **argv) {
                 cfg.hx = atoi (optarg);
                 break;
             case 'g':
-                cfg.num_group = atoi (optarg);
+                cfg.num_subfiles = atoi (optarg);
                 break;
             case 'c':
                 cfg.chunksize = atoll (optarg);
