@@ -36,6 +36,7 @@ jobs:
             sudo apt-get install zlib1g-dev
         - name: Install PnetCDF
           run: |
+            cd ${GITHUB_WORKSPACE}
             echo "Install PnetCDF on ${GITHUB_WORKSPACE}/PnetCDF"
             rm -rf PnetCDF
             mkdir PnetCDF
@@ -50,10 +51,10 @@ jobs:
                         --disable-cxx
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
-            cd ${GITHUB_WORKSPACE}
         - name: Install HDF5
           if: ${{ success() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             echo "Install HDF5 on ${GITHUB_WORKSPACE}/HDF5"
             rm -rf HDF5
             mkdir HDF5
@@ -76,10 +77,10 @@ jobs:
                         CC=mpicc
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
-            cd ${GITHUB_WORKSPACE}
         - name: Install NetCDF-C
           if: ${{ success() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             echo "Install NetCDF-C on ${GITHUB_WORKSPACE}/NetCDF"
             rm -rf NetCDF
             mkdir NetCDF
@@ -105,10 +106,10 @@ jobs:
                         LIBS="-lhdf5"
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
-            cd ${GITHUB_WORKSPACE}
         - name: Install ADIOS2
           if: ${{ success() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             echo "Install ADIOS2 on ${GITHUB_WORKSPACE}/ADIOS"
             rm -rf ADIOS
             mkdir ADIOS
@@ -124,7 +125,6 @@ jobs:
                   -DADIOS2_USE_Python=OFF \
                   -DADIOS2_USE_ZeroMQ=OFF \
                   -DADIOS2_USE_HDF5=OFF \
-                  -DADIOS2_USE_SST=OFF \
                   -DADIOS2_USE_IME=OFF \
                   -DADIOS2_USE_BZip2=OFF \
                   -DADIOS2_USE_ZFP=OFF \
@@ -134,13 +134,16 @@ jobs:
                   -DADIOS2_USE_Blosc=OFF \
                   -DADIOS2_BUILD_EXAMPLES=OFF \
                   -DBUILD_TESTING=OFF \
+                  -DBUILD_SHARED_LIBS=OFF \
+                  -DADIOS2_USE_SST=ON \
+                  -DADIOS2_USE_BP5=ON \
                   ../ADIOS2-${VERSION}
             make -j 8 install > qout 2>&1
             make clean >> qout 2>&1
-            cd ${GITHUB_WORKSPACE}
         - name: Install log VOL
           if: ${{ success() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             echo "Install Log VOL on ${GITHUB_WORKSPACE}/LOGVOL"
             rm -rf LOGVOL
             mkdir LOGVOL
@@ -155,10 +158,10 @@ jobs:
                         --with-hdf5=${GITHUB_WORKSPACE}/HDF5
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
-            cd ${GITHUB_WORKSPACE}
         - name: Build and check E3SM_IO with PnetCDF only
           if: ${{ success() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             rm -rf ./test_output
             autoreconf -i
             ./configure --with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF \
