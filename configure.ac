@@ -823,11 +823,11 @@ if test "x$have_adios2" = xyes ; then
    # Command to do so: "ar crsT libadios2.a libadios2_c.a libadios2_c_mpi.a ..."
    # If this will be the case in the future, we can simply add -ladios2 to LIBS
    if test "x$LIBS" = x ; then
-      # LIBS="${adios2_lflags}"
-      LIBS="-ladios2_c_mpi -ladios2_c -ladios2_cxx11 -ladios2_cxx11_mpi"
+      LIBS="${adios2_lflags}"
+      # LIBS="-ladios2_c_mpi -ladios2_c -ladios2_cxx11 -ladios2_cxx11_mpi"
    else
-      # LIBS="${adios2_lflags} $LIBS"
-      LIBS="-ladios2_c_mpi -ladios2_c -ladios2_cxx11 -ladios2_cxx11_mpi $LIBS"
+      LIBS="${adios2_lflags} $LIBS"
+      # LIBS="-ladios2_c_mpi -ladios2_c -ladios2_cxx11 -ladios2_cxx11_mpi $LIBS"
    fi
    AC_DEFINE([ENABLE_ADIOS2], [1], [Enable ADIOS I/O method])
 
