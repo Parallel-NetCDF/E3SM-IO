@@ -263,14 +263,21 @@ int e3sm_io_driver_hdf5::inq_file_info (int fid, MPI_Info *info) {
     int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
-    hid_t pid;
+    hid_t pid, fdid;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     pid = H5Fget_access_plist (fp->id);
     CHECK_HID (pid);
-    herr = H5Pget_fapl_mpio (pid, NULL, info);
-    CHECK_HERR
+    fdid = H5Pget_driver (pid);
+    CHECK_HID (fdid)
+    if (fdid ==	H5FD_MPIO){
+        herr = H5Pget_fapl_mpio (pid, NULL, info);
+        CHECK_HERR
+    }
+    else{
+        *info = MPI_INFO_NULL;
+    }
 
 err_out:;
     if (pid != -1) H5Pclose (pid);
