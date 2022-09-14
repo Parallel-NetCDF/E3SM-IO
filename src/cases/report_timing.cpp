@@ -200,6 +200,7 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("Time of write flushing             min/max = %8.4f / %8.4f\n", min_dbl[4], max_dbl[4]);
         printf("Time of close                      min/max = %8.4f / %8.4f\n", min_dbl[5], max_dbl[5]);
         printf("end-to-end time                    min/max = %8.4f / %8.4f\n", min_dbl[6], max_dbl[6]);
+        printf("Emulate computation time (sleep)   min/max = %8.4f / %8.4f\n", (double)(cfg->comp_time), (double)(cfg->comp_time));
         printf("I/O bandwidth in MiB/sec (write-only)      = %.4f\n",
                (double)sum_amount_WR / 1048576.0 / wTime);
         printf("I/O bandwidth in MiB/sec (open-to-close)   = %.4f\n",

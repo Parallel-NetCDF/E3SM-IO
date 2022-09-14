@@ -269,6 +269,7 @@ int e3sm_io_driver_hdf5::inq_file_info (int fid, MPI_Info *info) {
 
     pid = H5Fget_access_plist (fp->id);
     CHECK_HID (pid);
+    // Only MPI VFD supports H5Pget_fapl_mpio
     fdid = H5Pget_driver (pid);
     CHECK_HID (fdid)
     if (fdid ==	H5FD_MPIO){

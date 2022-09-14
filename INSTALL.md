@@ -186,6 +186,8 @@
        [-s num] Stride interval of ranks for selecting MPI processes to perform
                 I/O tasks (default: 1, i.e. all MPI processes).\n\
        [-g num] Number of subfiles, used by ADIOS I/O only (default: 1).
+       [-t time] Add sleep time to emulate the computation in order to 
+                 overlapping I/O when Async VOL is used.
        [-o path] Output file path (folder name when subfiling is used, file
                  name otherwise).
        [-a api]  I/O library name
@@ -390,7 +392,7 @@
 
 ## Example Output Shown on Screen
 ```
-  % mpiexec -n 16 ./e3sm_io -o can_F_out.nc datasets/f_case_866x72_16p.nc
+  % mpiexec -n 16 src/e3sm_io -o can_F_out.nc datasets/f_case_866x72_16p.nc
   ==== Benchmarking F case =============================
   Total number of MPI processes      = 16
   Number of IO processes             = 16
@@ -406,22 +408,25 @@
   No. variables use decomposition D1 =    323
   No. variables use decomposition D2 =     63
   Total no. climate variables        =    414
+  Total no. attributes               =   1421
   Total no. noncontiguous requests   = 1977687
   Max   no. noncontiguous requests   = 189503
+  Min   no. noncontiguous requests   =  63170
   Write no. records (time dim)       =      1
   I/O flush frequency                =      1
   No. I/O flush calls                =      1
   -----------------------------------------------------------
-  Total write amount                 = 16.16 MiB = 0.02 GiB
-  Max Time of I/O preparing          = 0.0012 sec
-  Max Time of file open/create       = 0.0003 sec
-  Max Time of define variables       = 0.0674 sec
-  Max Time of posting write requests = 0.0331 sec
-  Max Time of write flushing         = 0.7664 sec
-  Max Time of close                  = 0.0044 sec
-  Max end-to-end time                = 0.8729 sec
-  I/O bandwidth (write-only)         = 21.0894 MiB/sec
-  I/O bandwidth (open-to-close)      = 18.5172 MiB/sec
+  Total write amount                         = 16.16 MiB = 0.02 GiB
+  Time of I/O preparing              min/max =   0.0008 /   0.0013
+  Time of file open/create           min/max =   0.0005 /   0.0006
+  Time of define variables           min/max =   0.0031 /   0.0033
+  Time of posting write requests     min/max =   0.0124 /   0.0257
+  Time of write flushing             min/max =   0.2817 /   0.2837
+  Time of close                      min/max =   0.0029 /   0.0029
+  end-to-end time                    min/max =   0.3175 /   0.3176
+  Emulate computation time (sleep)   min/max =   0.0000 /   0.0000
+  I/O bandwidth in MiB/sec (write-only)      = 56.9648
+  I/O bandwidth in MiB/sec (open-to-close)   = 50.8962
   -----------------------------------------------------------
   ==== Benchmarking F case =============================
   Total number of MPI processes      = 16
@@ -438,24 +443,27 @@
   No. variables use decomposition D1 =     22
   No. variables use decomposition D2 =      1
   Total no. climate variables        =     51
+  Total no. attributes               =    142
   Total no. noncontiguous requests   =  38332
   Max   no. noncontiguous requests   =   3668
+  Min   no. noncontiguous requests   =   1225
   Write no. records (time dim)       =      1
   I/O flush frequency                =      1
   No. I/O flush calls                =      1
   -----------------------------------------------------------
-  Total write amount                 = 0.34 MiB = 0.00 GiB
-  Max Time of I/O preparing          = 0.0000 sec
-  Max Time of file open/create       = 0.0048 sec
-  Max Time of define variables       = 0.0063 sec
-  Max Time of posting write requests = 0.0007 sec
-  Max Time of write flushing         = 0.0099 sec
-  Max Time of close                  = 0.0006 sec
-  Max end-to-end time                = 0.0223 sec
-  I/O bandwidth (write-only)         = 34.0947 MiB/sec
-  I/O bandwidth (open-to-close)      = 15.1156 MiB/sec
+  Total write amount                         = 0.34 MiB = 0.00 GiB
+  Time of I/O preparing              min/max =   0.0000 /   0.0000
+  Time of file open/create           min/max =   0.0005 /   0.0005
+  Time of define variables           min/max =   0.0002 /   0.0003
+  Time of posting write requests     min/max =   0.0002 /   0.0004
+  Time of write flushing             min/max =   0.0034 /   0.0034
+  Time of close                      min/max =   0.0002 /   0.0003
+  end-to-end time                    min/max =   0.0049 /   0.0049
+  Emulate computation time (sleep)   min/max =   0.0000 /   0.0000
+  I/O bandwidth in MiB/sec (write-only)      = 98.0321
+  I/O bandwidth in MiB/sec (open-to-close)   = 68.3491
   -----------------------------------------------------------
-  read_decomp=0.00 e3sm_io_core=0.90 MPI init-to-finalize=0.90
+  read_decomp=0.00 e3sm_io_core=0.32 MPI init-to-finalize=0.33
   -----------------------------------------------------------
 ```
 ## Output Files
