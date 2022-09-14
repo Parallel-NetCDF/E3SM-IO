@@ -126,6 +126,7 @@ typedef struct {
     double pre_time;
     double open_time;
     double def_time;
+    double compute_time;
     double post_time;
     double flush_time;
     double close_time;
@@ -161,6 +162,7 @@ typedef struct e3sm_io_config {
     int two_buf;
     int non_contig_buf;
     int io_stride;
+    double comp_time;   /* Simulated computation time for a time step */
     int profiling;
 
     /* below are used for PnetCDF blob I/O subfiling */

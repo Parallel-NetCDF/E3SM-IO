@@ -31,6 +31,12 @@ typedef struct {
     size_t  rec_int_buflen; int    *rec_int_buf;
     size_t  rec_flt_buflen; float  *rec_flt_buf;
     size_t  rec_dbl_buflen; double *rec_dbl_buf;
+
+    /* buffers size for record variables per record */
+    size_t  rec_txt_buflen_itr;
+    size_t  rec_int_buflen_itr;
+    size_t  rec_flt_buflen_itr;
+    size_t  rec_dbl_buflen_itr;
 } io_buffers;
 
 typedef struct {

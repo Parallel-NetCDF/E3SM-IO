@@ -95,6 +95,11 @@ int e3sm_io_case::wr_buf_malloc(e3sm_io_config &cfg, int ffreq)
         wr_buf.rec_dbl_buflen += 64;
     }
 
+    wr_buf.rec_txt_buflen_itr = wr_buf.rec_txt_buflen;
+    wr_buf.rec_int_buflen_itr = wr_buf.rec_int_buflen;
+    wr_buf.rec_flt_buflen_itr = wr_buf.rec_flt_buflen;
+    wr_buf.rec_dbl_buflen_itr = wr_buf.rec_dbl_buflen;
+
     if (cfg.api != adios && !(cfg.strategy == blob && cfg.api == hdf5)) {
         /* Note HDF5 and ADIOS blob I/O copy write data into their internal
          * buffers and only flush them out at file close. Thus, write buffers

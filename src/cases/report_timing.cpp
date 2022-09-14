@@ -64,7 +64,7 @@ int print_timing_WR(e3sm_io_config *cfg,
     MPI_Reduce(&cmeta->my_nreqs, &max_nreqs, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     MPI_Reduce(&cmeta->my_nreqs, &min_nreqs, 1, MPI_OFFSET, MPI_MIN, 0, comm);
 
-    double dbl_tmp[7], max_dbl[7], min_dbl[7];
+    double dbl_tmp[8], max_dbl[8], min_dbl[8];
     dbl_tmp[0] = cmeta->pre_time;
     dbl_tmp[1] = cmeta->open_time;
     dbl_tmp[2] = cmeta->def_time;
@@ -72,8 +72,9 @@ int print_timing_WR(e3sm_io_config *cfg,
     dbl_tmp[4] = cmeta->flush_time;
     dbl_tmp[5] = cmeta->close_time;
     dbl_tmp[6] = cmeta->end2end_time;
-    MPI_Reduce(dbl_tmp, max_dbl, 7, MPI_DOUBLE, MPI_MAX, 0, comm);
-    MPI_Reduce(dbl_tmp, min_dbl, 7, MPI_DOUBLE, MPI_MIN, 0, comm);
+    dbl_tmp[7] = cmeta->compute_time;
+    MPI_Reduce(dbl_tmp, max_dbl, 8, MPI_DOUBLE, MPI_MAX, 0, comm);
+    MPI_Reduce(dbl_tmp, min_dbl, 8, MPI_DOUBLE, MPI_MIN, 0, comm);
 
     if (cfg->rank == 0) {
         int nvars_noD = cmeta->nvars;
@@ -200,6 +201,7 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("Time of write flushing             min/max = %8.4f / %8.4f\n", min_dbl[4], max_dbl[4]);
         printf("Time of close                      min/max = %8.4f / %8.4f\n", min_dbl[5], max_dbl[5]);
         printf("end-to-end time                    min/max = %8.4f / %8.4f\n", min_dbl[6], max_dbl[6]);
+        printf("Simulated computation time         min/max = %8.4f / %8.4f\n", min_dbl[7], max_dbl[7]);
         printf("I/O bandwidth in MiB/sec (write-only)      = %.4f\n",
                (double)sum_amount_WR / 1048576.0 / wTime);
         printf("I/O bandwidth in MiB/sec (open-to-close)   = %.4f\n",

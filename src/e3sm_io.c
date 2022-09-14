@@ -104,6 +104,8 @@ static void usage (char *argv0) {
        [-g num] Number of subfiles, used by Log-based VOL and ADIOS I/O only,\n\
                 -1 for one subfile per compute node, 0 to disable subfiling,\n\
                 (default: 0).\n\
+       [-t time] Simulated computation time (sec) of a timestep (default: 0).\n\
+                 (Does not count toward end-to-end time)\n\
        [-o path] Output file path (folder name when subfiling is used, file\n\
                  name otherwise).\n\
        [-a api]  I/O library name\n\
@@ -187,7 +189,7 @@ int main (int argc, char **argv) {
     ffreq = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dmf:ha:x:g:y:p")) != EOF)
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dmf:ha:x:g:y:pt:")) != EOF)
         switch (i) {
             case 'v':
                 cfg.verbose = 1;
@@ -260,6 +262,9 @@ int main (int argc, char **argv) {
                 break;
             case 'c':
                 cfg.chunksize = atoll (optarg);
+                break;
+            case 't':
+                cfg.comp_time = atof (optarg);
                 break;
             case 'p':
                 cfg.profiling = 1;
