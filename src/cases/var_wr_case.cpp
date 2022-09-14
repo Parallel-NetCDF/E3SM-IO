@@ -307,6 +307,10 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     fix_dbl_buf_ptr = wr_buf.fix_dbl_buf;
 
     for (rec_no=0; rec_no<cmeta->nrecs; rec_no++) {
+        if (cfg.comp_time > 0) {
+            sleep ((unsigned int)(cfg.comp_time));
+        }
+
         if ((cfg.api == hdf5 && cfg.strategy != blob) || cfg.api == netcdf4) {
             err = driver.expand_rec_size (ncid, rec_no + 1);
             CHECK_ERR
@@ -441,7 +445,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     cmeta->my_nreqs        = my_nreqs;
     cmeta->metadata_WR     = metadata_size;
     cmeta->amount_WR       = total_size;
-    cmeta->end2end_time    = MPI_Wtime() - cmeta->end2end_time;
+    cmeta->end2end_time    = MPI_Wtime () - cmeta->end2end_time;
 
     /* check if there is any PnetCDF internal malloc residue */
     check_malloc(&cfg, &driver);

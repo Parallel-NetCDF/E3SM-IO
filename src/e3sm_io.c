@@ -104,6 +104,8 @@ static void usage (char *argv0) {
        [-g num] Number of subfiles, used by Log-based VOL and ADIOS I/O only,\n\
                 -1 for one subfile per compute node, 0 to disable subfiling,\n\
                 (default: 0).\n\
+       [-t time] Add sleep time to emulate the computation in order to \n\
+                 overlapping I/O when Async VOL is used.\n\
        [-o path] Output file path (folder name when subfiling is used, file\n\
                  name otherwise).\n\
        [-a api]  I/O library name\n\
@@ -165,6 +167,7 @@ int main (int argc, char **argv) {
     cfg.non_contig_buf = 0;
     cfg.io_stride      = 1;
     cfg.sub_comm       = MPI_COMM_NULL;
+    cfg.comp_time      = 0;
 
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
         cfg.G_case.nvars_D[i]    = 0;
@@ -187,7 +190,7 @@ int main (int argc, char **argv) {
     ffreq = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dmf:ha:x:g:y:p")) != EOF)
+    while ((i = getopt (argc, argv, "vkr:s:o:i:dmf:ha:x:g:y:pt:")) != EOF)
         switch (i) {
             case 'v':
                 cfg.verbose = 1;
@@ -260,6 +263,9 @@ int main (int argc, char **argv) {
                 break;
             case 'c':
                 cfg.chunksize = atoll (optarg);
+                break;
+            case 't':
+                cfg.comp_time = atoi (optarg);
                 break;
             case 'p':
                 cfg.profiling = 1;

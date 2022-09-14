@@ -161,6 +161,7 @@ typedef struct e3sm_io_config {
     int two_buf;
     int non_contig_buf;
     int io_stride;
+    int comp_time;   /* Emulate computation time (sleep) for a time step */
     int profiling;
 
     /* below are used for PnetCDF blob I/O subfiling */
