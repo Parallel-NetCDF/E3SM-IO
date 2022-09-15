@@ -132,13 +132,17 @@ static void usage (char *argv0) {
 
 /*----< main() >-------------------------------------------------------------*/
 int main (int argc, char **argv) {
-    int i, err, nrecs=1, ffreq;
+    int i, err, nrecs=1, ffreq, mpi_required=0;
     char *env;  // HDF5_VOL_CONNECTOR environment variable
     double timing[3], max_t[3];
     e3sm_io_config cfg;
     e3sm_io_decom decom;
 
-    MPI_Init (&argc, &argv);
+    err = MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &mpi_required);
+    CHECK_ERR;
+    if (mpi_required != MPI_THREAD_MULTIPLE) {
+        ERR_OUT("MPI_Init_thread failed");
+    }
 
     timing[0] = MPI_Wtime();
 
