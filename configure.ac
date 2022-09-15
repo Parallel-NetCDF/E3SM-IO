@@ -268,6 +268,18 @@ if test "x${debug}" = xyes; then
    AC_DEFINE([E3SM_IO_DEBUG], [1], [Enable debug mode])
 fi
 
+AC_ARG_ENABLE([threading],
+    [AS_HELP_STRING([--enable-threading],
+                    [Enable option to initialize MPI with multi-thread support.
+                     @<:@default: disabled@:>@])],
+    [threading=${enableval}], [threading=no]
+)
+AM_CONDITIONAL(E3SM_IO_THREADING, [test "x$threading" = xyes])
+
+if test "x${threading}" = xyes; then
+    AC_DEFINE([E3SM_IO_THREADING], [1], [Enable option to initialize MPI with multi-thread support])
+fi
+
 UD_PROG_M4
 M4FLAGS=""
 
