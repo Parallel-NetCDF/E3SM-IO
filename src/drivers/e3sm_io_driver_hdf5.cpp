@@ -260,6 +260,8 @@ err_out:;
 }
 
 int e3sm_io_driver_hdf5::inq_file_info (int fid, MPI_Info *info) {
+    *info = MPI_INFO_NULL;
+    return 0;
     int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
