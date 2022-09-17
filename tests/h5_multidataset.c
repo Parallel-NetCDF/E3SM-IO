@@ -1,3 +1,7 @@
+/* Test program for HDF5 PR # 1859
+ * https://github.com/HDFGroup/hdf5/issues/1859
+ */
+
 #include "hdf5.h"
 
 #define NREQS 2
@@ -44,14 +48,26 @@ main(int argc, char *argv[])
     H5Sclose(dataspace[0]);
     H5Pclose(cparms);
 
+    /* HDF5 multidataset APIs require filespace to be updated with the latest
+     * dimensions at the moment H5Dwrite_multi is called.
+     */
+#define FINAL_DIMS
+#ifdef FINAL_DIMS
+    /* Extend the dataset */
+    dims[0] = NREQS;
+    H5Dset_extent(dataset, dims);
+#endif
+
     for (i=0; i<NREQS; i++) {
         hsize_t start[NREQS] = {0, 0};
         hsize_t count[NREQS] = {1, 1};
         hsize_t block[NREQS] = {1, rec_size};
 
+#ifndef FINAL_DIMS
         /* Extend the dataset */
         dims[0] = i+1;
         H5Dset_extent(dataset, dims);
+#endif
 
         /* Select a hyperslab */
         filespace[i] = H5Dget_space(dataset);
@@ -64,6 +80,10 @@ main(int argc, char *argv[])
         ids[i] = dataset;
         mType[i] = H5T_NATIVE_INT;
     }
+#ifndef FINAL_DIMS
+    for (i=0; i<NREQS; i++)
+        H5Sset_extent_simple(filespace[i], 2, dims, maxdims);
+#endif
 
     /* collective I/O */
     hid_t xfer_plist = H5Pcreate(H5P_DATASET_XFER);
