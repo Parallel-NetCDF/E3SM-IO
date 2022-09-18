@@ -140,6 +140,8 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
 
     faplid = H5Pcreate (H5P_FILE_ACCESS);
     CHECK_HID (faplid)
+    herr = H5Pset_meta_block_size (faplid, 4 * 1024 * 1024);
+    CHECK_HERR
     herr = H5Pset_fapl_mpio (faplid, comm, info);
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
@@ -205,6 +207,8 @@ int e3sm_io_driver_hdf5_log::open (std::string path, MPI_Comm comm, MPI_Info inf
 
     faplid = H5Pcreate (H5P_FILE_ACCESS);
     CHECK_HID (faplid)
+    herr = H5Pset_meta_block_size (faplid, 4 * 1024 * 1024);
+    CHECK_HERR
     herr = H5Pset_fapl_mpio (faplid, comm, info);
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
