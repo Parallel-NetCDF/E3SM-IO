@@ -241,7 +241,7 @@ int print_timing_WR(e3sm_io_config *cfg,
             printf ("#%%$: %s_file_size_gib: 0.0\n", prefix);
         }
         printf ("#%%$: %s_n_subfile: %d\n", prefix, cfg->num_subfiles);
-        printf ("#%%$: %s_n_group: %d\n", prefix, cfg->num_group);
+        printf ("#%%$: %s_n_group: %d\n", prefix, cfg->num_subfiles);
         printf ("#%%$: %s_n_decom_var: %3d\n", prefix, cmeta->num_decomp_vars);
         printf ("#%%$: %s_n_non_decom_var: %3d\n", prefix, nvars_noD);
         for (i=0; i<ndecomp; i++)
@@ -254,19 +254,19 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf ("#%%$: %s_n_flush: %3d\n", prefix, cmeta->num_flushes);
         printf ("#%%$: %s_write_size_mib: %.2f\n", prefix, (double)sum_amount_WR / 1048576);
         printf ("#%%$: %s_write_size_gib: %.2f\n", prefix, (double)sum_amount_WR / 1073741824);
-        printf ("#%%$: %s_prep_time: %.4f\n", prefix, pre_time);
-        printf ("#%%$: %s_open_create_time: %.4f\n", prefix, open_time);
-        printf ("#%%$: %s_def_time: %.4f\n", prefix, def_time);
-        printf ("#%%$: %s_post_time: %.4f\n", prefix, post_time);
-        printf ("#%%$: %s_flush_time: %.4f\n", prefix, flush_time);
-        printf ("#%%$: %s_close_time: %.4f\n", prefix, close_time);
-        printf ("#%%$: %s_e2e_time: %.4f\n", prefix, end2end_time);
-        printf ("#%%$: %s_bw_o2c_mib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / end2end_time);
-        printf ("#%%$: %s_bw_o2c_gib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / end2end_time / 1024.0);
+        printf ("#%%$: %s_prep_time: %.4f\n", prefix, max_dbl[0]);
+        printf ("#%%$: %s_open_create_time: %.4f\n", prefix, max_dbl[1]);
+        printf ("#%%$: %s_def_time: %.4f\n", prefix, max_dbl[2]);
+        printf ("#%%$: %s_post_time: %.4f\n", prefix, max_dbl[3]);
+        printf ("#%%$: %s_flush_time: %.4f\n", prefix, max_dbl[4]);
+        printf ("#%%$: %s_close_time: %.4f\n", prefix, max_dbl[5]);
+        printf ("#%%$: %s_e2e_time: %.4f\n", prefix, max_dbl[6]);
+        printf ("#%%$: %s_bw_o2c_mib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / max_dbl[6]);
+        printf ("#%%$: %s_bw_o2c_gib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / max_dbl[6] / 1024.0);
         printf ("#%%$: %s_bw_wr_mib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / wTime);
         printf ("#%%$: %s_bw_wr_gib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / wTime / 1024.0);
-        printf ("#%%$: %s_rbw_o2c_mib: %.4f\n", prefix, (double)(cmeta->file_size) / 1048576.0 / end2end_time);
-        printf ("#%%$: %s_rbw_o2c_gib: %.4f\n", prefix, (double)(cmeta->file_size) / 1048576.0 / end2end_time / 1024.0);
+        printf ("#%%$: %s_rbw_o2c_mib: %.4f\n", prefix, (double)(cmeta->file_size) / 1048576.0 / max_dbl[6]);
+        printf ("#%%$: %s_rbw_o2c_gib: %.4f\n", prefix, (double)(cmeta->file_size) / 1048576.0 / max_dbl[6] / 1024.0);
     }
     fflush(stdout);
 
