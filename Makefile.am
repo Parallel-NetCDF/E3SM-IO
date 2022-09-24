@@ -45,10 +45,9 @@ EXTRA_DIST =   test.sh \
                m4/list_len.m4 \
                m4/utils.m4 \
                README.md \
-               INSTALL.md \
                COPYRIGHT \
                AUTHORS \
-               slurm.knl
+               docs
 
 ptest: src/e3sm_io
 	@echo "==========================================================="
