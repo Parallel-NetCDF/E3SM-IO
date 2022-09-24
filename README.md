@@ -30,7 +30,8 @@ log-based layout in files.
 ### Compile and Run Instructions for E3SM-IO
 * See [INSTALL.md](./docs/INSTALL.md)
 * Current build status:
-  [![Ubuntu](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
+  [![MPICH](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml)
+  [![OpenMPI](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
 
 ### Performance Results on Cori at NERSC
 Below shows the execution times of four blob I/O methods collected on July 2022
