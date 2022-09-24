@@ -21,29 +21,30 @@ by each MPI process. The access offsets are stored in a text file, referred to
 as the "decomposition map file". This benchmark currently studies three cases
 from E3SM, namely F, G and I cases. Information about the climate variables
 written in these three case studies and their decomposition maps can be found
-in [variables.md](./variables.md).
+in [variables.md](./docs/variables.md).
 
-[BLOB_IO.md](./BLOB_IO.md) describes the designs of blob I/O methods
-implemented in this benchmark.
+[BLOB_IO.md](./docs/BLOB_IO.md) describes the designs of blob I/O methods
+implemented in this benchmark. Blob I/O methods store data in a timely
+log-based layout in files.
 
 ### Compile and Run Instructions for E3SM-IO
-* See [INSTALL.md](./INSTALL.md)
+* See [INSTALL.md](./docs/INSTALL.md)
 * Current build status:
   [![Ubuntu](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
 
 ### Performance Results on Cori at NERSC
-Below shows the execution times of four blob I/O methods collected on July 19,
-2022 on [Cori](https://docs.nersc.gov/systems/cori/) at
+Below shows the execution times of four blob I/O methods collected on July 2022
+on [Cori](https://docs.nersc.gov/systems/cori/) at
 [NERSC](https://www.nersc.gov).
 <p align="center">
-<img align="center" src="cori_07192022.jpg" alt="Performance of blob I/O methods on Cori" width="600">
+<img align="center" src="./docs/cori_07192022.jpg" alt="Performance of blob I/O methods on Cori" width="600">
 </p>
 
 ### Performance Results on Summit at OLCF
-Below shows the execution times of three blob I/O methods collected in September 2021
+Below shows the execution times of four blob I/O methods collected in September 2022
 on [Summit at OLCF](https://www.olcf.ornl.gov/summit/).
 <p align="center">
-<img align="center" src="summit.jpg" alt="Performance of blob I/O methods on Summit" width="600">
+<img align="center" src="./docs/summit_09_2022.jpg" alt="Performance of blob I/O methods on Summit" width="600">
 </p>
 
 ### Developers
