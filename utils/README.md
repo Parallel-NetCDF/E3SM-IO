@@ -304,7 +304,7 @@ of MPI processes to convert.
 * Kai-yuan Hou <<kai-yuanhou2020@u.northwestern.edu>>
 
 Copyright (C) 2021, Northwestern University.
-See [COPYRIGHT](COPYRIGHT) notice in top-level directory.
+See [COPYRIGHT](../COPYRIGHT) notice in top-level directory.
 
 ### Project funding supports:
 This research was supported by the Exascale Computing Project (17-SC-20-SC), a

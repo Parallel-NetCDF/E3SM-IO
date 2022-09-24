@@ -18,7 +18,7 @@
 * MPI C and C++ compilers
   + Configured with a std 11 C++ compiler (supporting constant initializer)
 * (Optional) [PnetCDF 1.12.3](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz)
-* (Optional) [HDF5 1.13.0](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz)
+* (Optional) [HDF5 1.13.2](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.2/src/hdf5-1.13.2.tar.gz)
   + Configured with parallel I/O support (configured with `--enable-parallel` is required)
 * (Optional) [HDF5 Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
   + Experimental software developed as part of the Datalib project
@@ -26,8 +26,9 @@
   + Configured with parallel I/O support (cmake with `-DADIOS2_USE_MPI=ON` is required)
 * (Optional) [NetCDF-C 4.9.0](https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz)
   + Configured with parallel HDF5 support (i.e. `--enable-netcdf4`)
-  + Note currently this option fails to run due to a
-    [bug](https://github.com/Unidata/netcdf-c/issues/2251) in NetCDF-C.
+  + Note using NetCDF-C versions prior to 4.9.0 will fail to run due to a
+    [bug](https://github.com/Unidata/netcdf-c/issues/2251) related to dimension
+    scales.
 
 ## Instructions for Building Dependent I/O Libraries
 * Build PnetCDF
@@ -48,12 +49,12 @@
   + Configure HDF5 with parallel I/O enabled.
   + Run `make install`
   + Example build commands are given below. This example will install
-    the HDF5 library under the folder `${HOME}/HDF5/1.13.0`.
+    the HDF5 library under the folder `${HOME}/HDF5/1.13.2`.
     ```
-    % wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.0/src/hdf5-1.13.0.tar.gz
+    % wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.2/src/hdf5-1.13.2.tar.gz
     % tar -zxf hdf5-1_13_0.tar.gz
-    % cd hdf5-1.13.0
-    % ./configure --prefix=${HOME}/HDF5/1.13.0 --enable-parallel CC=mpicc
+    % cd hdf5-1.13.2
+    % ./configure --prefix=${HOME}/HDF5/1.13.2 --enable-parallel CC=mpicc
     % make -j 4 install
     ```
 * Build HDF5 log-based VOL plugin.
@@ -66,7 +67,7 @@
     % wget https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.2.0.tar.gz
     % tar -zxf logvol.1.2.0.tar.gz
     % cd vol-log-based-logvol.1.2.0
-    % ./configure --prefix=${HOME}/Log_VOL/1.2.0 --with-hdf5=${HOME}/HDF5/1.13.0 --enable-shared CC=mpicc
+    % ./configure --prefix=${HOME}/Log_VOL/1.2.0 --with-hdf5=${HOME}/HDF5/1.13.2 --enable-shared CC=mpicc
     % make -j 4 install
     ```
 * Build ADIOS with parallel I/O support
@@ -95,8 +96,8 @@
     % cd netcdf-c-4.9.0
     % ./configure --prefix=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc \
-                  CPPFLAGS=-I${HOME}/HDF5/1.13.0/include \
-                  LDFLAGS=-L${HOME}/HDF5/1.13.0/lib \
+                  CPPFLAGS=-I${HOME}/HDF5/1.13.2/include \
+                  LDFLAGS=-L${HOME}/HDF5/1.13.2/lib \
                   LIBS=-lhdf5
     % make -j 4 install
     ```
@@ -127,7 +128,7 @@
     % cd E3SM-IO
     % autoreconf -i
     % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.3 \
-                  --with-hdf5=${HOME}/HDF5/1.13.0 \
+                  --with-hdf5=${HOME}/HDF5/1.13.2 \
                   --with-logvol=${HOME}/Log_VOL/1.2.0 \
                   --with-adios2=${HOME}/ADIOS2/2.8.1 \
                   --with-netcdf4=${HOME}/NetCDF/4.9.0 \
@@ -142,7 +143,7 @@
   converted into a NetCDF file to be read in parallel as the input file by this
   benchmark program. For the F, G, and I cases, there are 3, 6, and 5 data
   decomposition text files, respectively.
-* See [utils/README](./utils) for instructions to run utility programs
+* See [utils/README.md](../utils/README.md) for instructions to run utility programs
   + `dat2nc` converts the decomposition map .dat files to NetCDF CDF-5 files.
   + `dat2decomp` is more general utility program that can convert the
     decomposition map .dat files in text format to a CDF5/HDF5/NetCDF-4/BP
@@ -247,7 +248,7 @@
       subfile names, which have the numerical IDs appended as the suffix.
     * Because all variables are stored in a blob fashion in the files, the
       subfiles altogether can only be understood by the conversion utility
-      tool [utils/pnetcdf_blob_replay.c](utils/pnetcdf_blob_replay.c), which
+      tool [utils/pnetcdf_blob_replay.c](../utils/pnetcdf_blob_replay.c), which
       is developed to run off-line after the completion of an E3SM run to
       convert the subfiles into a single regular NetCDF file.
     * The blobs are per-record based, which means all write requests to the
@@ -473,11 +474,11 @@
   names are created by inserting "_h0", and "_h1" to user-supplied file name.
   The header of F case files from running the provided decomposition file
   `f_case_866x72_16p.nc` using PnetCDF obtainable by command `ncmpidump -h` is
-  available in [datasets/f_case_h0.txt](datasets/f_case_h0.txt), and
-  [datasets/f_case_h1.txt](datasets/f_case_h1.txt).
+  available in [datasets/f_case_h0.txt](../datasets/f_case_h0.txt), and
+  [datasets/f_case_h1.txt](../datasets/f_case_h1.txt).
 * The G case only creates one output file. When using the PnetCDF I/O method
   and the provided decomposition file `g_case_cmpaso_16p.nc` to run, the header
-  of output file can be found in [datasets/g_case_hist.txt](datasets/g_case_hist.txt).
+  of output file can be found in [datasets/g_case_hist.txt](../datasets/g_case_hist.txt).
 * The option '-a adios' automatically appends ".bp.dir" extension to the
   user-provided input path and creates two folders for F  and I cases (one for
   G case.)
@@ -486,5 +487,5 @@
 
 ---
 * Copyright (C) 2021, Northwestern University.
-* See [COPYRIGHT](COPYRIGHT) notice in top-level directory.
+* See [COPYRIGHT](../COPYRIGHT) notice in top-level directory.
 

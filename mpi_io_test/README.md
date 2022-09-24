@@ -135,5 +135,5 @@ email: wkliao@eecs.northwestern.edu
 
 Copyright (C) 2018, Northwestern University.
 
-See [COPYRIGHT](COPYRIGHT) notice in top-level directory.
+See [COPYRIGHT](../COPYRIGHT) notice in top-level directory.
 
