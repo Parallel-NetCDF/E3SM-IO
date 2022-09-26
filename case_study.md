@@ -7,11 +7,11 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
 1. <details> <summary>Install HDF5 1.13.2 (enable threadsafe, parallel, unsupported):</summary>
 
     ```shell
+    % export $HDF5_DIR=#path to the directory to install HDF5
     % wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.2/src/hdf5-1.13.2.tar.gz
     % tar -xf hdf5-1.13.2.tar.gz
     % cd hdf5-1.13.2
     
-    # $HDF5_DIR points to HDF5 install dir.
     % ./configure --prefix=$HDF5_DIR --enable-parallel --enable-threadsafe --enable-unsupported CC=mpicc CXX=mpicxx
     % make; make install 
     ```
@@ -20,10 +20,11 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
 1. <details> <summary>Install Argobots (required by Async Vol):</summary>
 
     ```shell
+    % export $ABT_DIR=#path to the directory to install Argobots
     % git clone https://github.com/pmodels/argobots.git
     % cd argobots
     % ./autogen.sh
-    # $ABT_DIR points to Argobots install dir.
+    
     % ./configure --prefix=$ABT_DIR CC=mpicc CXX=mpicxx
     % make; make install
     ```
@@ -32,12 +33,13 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
 1. <details> <summary>Async Vol</summary>
 
     ```shell
-    % export ABT_DIR=#path to argobots install dir
-    % export HDF5_DIR=#path to hdf5 install dir
+    % export HDF5_DIR=#path to hdf5 install dir # already set when installing HDF5
+    % export ABT_DIR=#path to argobots install dir # already set when installing Argobots
+    % export ASYNC_DIR=#path to the directory to install Async Vol
     % export HDF5_ROOT=${HDF5_DIR}
+
     % git clone https://github.com/hpc-io/vol-async.git
     % cd vol-async; mkdir build; cd build
-    # $ASYNC_DIR points to Async Vol install dir
     % CC=mpicc CXX=mpicxx cmake .. -DCMAKE_INSTALL_PREFIX=$ASYNC_DIR
     % make; make install
     ```
@@ -46,10 +48,13 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
 1. <details> <summary>Cache Vol.</summary>
 
     ```shell
+    % export ABT_DIR=#path to argobots install dir # already set when installing Argobots
+    % export ASYNC_DIR=#path to Async Vol install dir # already set when installing Async Vol
+    % export CAHCE_DIR=#path to the directory to install Cache Vol
+
     % git clone https://github.com/hpc-io/vol-cache.git
     % cd vol-cache; mkdir build; cd build
     % export LD_LIBRARY_PATH="$ABT_DIR/lib:$LD_LIBRARY_PATH"
-    # $CAHCE_DIR points to Cache Vol install dir
     % CC=mpicc CXX=mpicxx HDF5_VOL_DIR=$ASYNC_DIR cmake .. -DCMAKE_INSTALL_PREFIX=$CAHCE_DIR
     % make; make install
     ```
