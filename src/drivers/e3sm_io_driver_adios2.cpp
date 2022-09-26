@@ -119,7 +119,7 @@ bool e3sm_io_driver_adios2::compatible (std::string path) {
     iop = adios2_declare_io (adp, "e3sm_check");
     CHECK_APTR (iop)
 
-    aerr = adios2_set_engine (iop, "BP3");
+    aerr = adios2_set_engine (iop, "BP4");
     CHECK_AERR
 
     std::cerr.setstate(std::ios_base::failbit);
@@ -173,7 +173,7 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
 
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
-    aerr = adios2_set_engine (fp->iop, "BP3");
+    aerr = adios2_set_engine (fp->iop, "BP4");
     CHECK_AERR
 
     sprintf (ng, "%d", cfg->num_subfiles);
@@ -218,7 +218,7 @@ int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info,
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
 
-    aerr = adios2_set_engine (fp->iop, "BP3");
+    aerr = adios2_set_engine (fp->iop, "BP4");
     CHECK_AERR
     aerr = adios2_set_parameter (fp->iop, "substreams", "1");
     CHECK_AERR
