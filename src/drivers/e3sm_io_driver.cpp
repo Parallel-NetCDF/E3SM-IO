@@ -104,6 +104,14 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
          */
         path = remove_file_system_type_prefix(filename);
 
+// ADIOS2?
+#ifdef ENABLE_ADIOS2
+        if(e3sm_io_driver_adios2::compatible(std::string(path))) {
+            cfg->api = adios;
+            goto done_check;
+        }
+#endif
+
         /* must include config.h on 32-bit machines, as AC_SYS_LARGEFILE is
          * called at the configure time and it defines _FILE_OFFSET_BITS to 64
          * if large file feature is supported.
@@ -166,15 +174,6 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
             goto done_check;
         }
 #endif
-
-// ADIOS2?
-#ifdef ENABLE_ADIOS2
-        if(e3sm_io_driver_adios2::compatible(std::string(path))) {
-            cfg->api = adios;
-            goto done_check;
-        }
-#endif
-
 
 done_check:
         if (cfg->rank == 0 && fd >= 0) { close (fd); }

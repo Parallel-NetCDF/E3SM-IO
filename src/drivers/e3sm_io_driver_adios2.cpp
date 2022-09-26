@@ -104,14 +104,14 @@ err_out:;
     return err;
 }
 
-bool e3sm_io_driver_adios2::compatible (std::string path) {
+int get_bp_version (std::string path) {
     int err = 0;
     adios2_error aerr;
     adios2_adios *adp = NULL;
     adios2_io *iop    = NULL;
     adios2_engine *ep = NULL;
     adios2_bool result;
-    bool ret = false;
+    int ret = -1;
 
     adp = adios2_init (MPI_COMM_SELF, "");
     CHECK_APTR (adp)
@@ -119,15 +119,29 @@ bool e3sm_io_driver_adios2::compatible (std::string path) {
     iop = adios2_declare_io (adp, "e3sm_check");
     CHECK_APTR (iop)
 
-    aerr = adios2_set_engine (iop, "BP3");
+    // Try BP4
+    aerr = adios2_set_engine (iop, "BP4");
     CHECK_AERR
 
     std::cerr.setstate(std::ios_base::failbit);
     ep = adios2_open (iop, path.c_str(), adios2_mode_read);
     std::cerr.clear();
     if (ep) { 
-        ret = true; 
+        ret = 4; 
         adios2_close (ep);
+    }
+    else {
+        // Try BP3
+        aerr = adios2_set_engine (iop, "BP3");
+        CHECK_AERR
+
+        std::cerr.setstate(std::ios_base::failbit);
+        ep = adios2_open (iop, path.c_str(), adios2_mode_read);
+        std::cerr.clear();
+        if (ep) { 
+            ret = 3; 
+            adios2_close (ep);
+        }
     }
 
     adios2_remove_io (&result, adp, "e3sm_check");
@@ -137,6 +151,9 @@ err_out:;
     return (err == -1) ? false : ret;
 }
 
+bool e3sm_io_driver_adios2::compatible (std::string path) {
+    return (get_bp_version(path) >= 0);
+}
 
 e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {}
 
@@ -173,7 +190,7 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
 
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
-    aerr = adios2_set_engine (fp->iop, "BP3");
+    aerr = adios2_set_engine (fp->iop, "BP4");
     CHECK_AERR
 
     sprintf (ng, "%d", cfg->num_subfiles);
@@ -218,7 +235,12 @@ int e3sm_io_driver_adios2::open (std::string path, MPI_Comm comm, MPI_Info info,
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
 
-    aerr = adios2_set_engine (fp->iop, "BP3");
+    if (get_bp_version(path) == 4) {
+        aerr = adios2_set_engine (fp->iop, "BP4");
+    }
+    else{
+        aerr = adios2_set_engine (fp->iop, "BP3");
+    }
     CHECK_AERR
     aerr = adios2_set_parameter (fp->iop, "substreams", "1");
     CHECK_AERR

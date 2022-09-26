@@ -114,7 +114,8 @@ static void usage (char *argv0) {
            hdf5:      HDF5 library\n\
            hdf5_md:   HDF5 library using multi-dataset I/O APIs\n\
            hdf5_log:  HDF5 library with Log-based VOL\n\
-           adios:     ADIOS library using BP3 format\n\
+           adios_bp3: ADIOS library using BP3 format\n\
+           adios:     ADIOS library using BP4 format\n\
        [-x strategy] I/O strategy\n\
            canonical: Store variables in the canonical layout (default).\n\
            log:       Store variables in the log-based storage layout.\n\

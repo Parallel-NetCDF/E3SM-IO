@@ -46,7 +46,7 @@ elif test "$1" = ./dat2decomp ; then
       CMD="$1 -a bp -i $LIST_FILE -o $1.bp"
       echo $CMD
       $CMD
-      rm -rf $1.bp.dir
+      rm -rf $1.bp*
    fi
 elif test "$1" = ./decomp_copy ; then
    if test "x${ENABLE_PNC}" = x1 && test "x${ENABLE_HDF5}" = x1 ; then
@@ -68,7 +68,7 @@ elif test "$1" = ./decomp_copy ; then
       CMD="$1 -a bp -i $NC_FILE -o $1.bp"
       echo $CMD
       $CMD
-      rm -rf $1.bp.dir
+      rm -rf $1.bp*
    fi
 elif test "$1" = ./datstat ; then
    CMD="$1 -d $top_srcdir/datasets/piodecomp16tasks16io02dims_ioid_548.dat"
