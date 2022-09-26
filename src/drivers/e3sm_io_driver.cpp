@@ -137,7 +137,9 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
             hid_t fid = -1;
             htri_t isnc, islog;
 
-            fid = H5Fopen (path, H5F_ACC_RDONLY, H5P_DEFAULT);
+            hid_t faplid = H5Pcreate (H5P_FILE_ACCESS);
+            H5Pset_fapl_mpio(faplid, MPI_COMM_SELF, MPI_INFO_NULL);
+            fid = H5Fopen (path, H5F_ACC_RDONLY, faplid);
             if (fid < 0) { ERR_OUT ("HDF5 header detected, but not a HDF5 file"); }
 
             // Check for NetCDF4
@@ -152,6 +154,7 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
                 }
             }
             if (fid >= 0) { H5Fclose (fid); }
+            if (faplid >= 0) { H5Pclose(faplid); }
 
             if (isnc == false) {
                 goto done_check;
