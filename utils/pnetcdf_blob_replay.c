@@ -401,7 +401,7 @@ int set_vars(int        in_ncid,
 
     /* copy over variable definition and attributes */
     for (i=0; i<nvars; i++) {
-        int dimids[3], nattrs;
+        int dimids[4], nattrs;
         MPI_Offset tmp;
 
         /* inquire metadata of variable i */
