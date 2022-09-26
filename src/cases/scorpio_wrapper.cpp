@@ -223,7 +223,13 @@ int scorpio_write_var(e3sm_io_driver &driver,
         /* Scorpio allows variables to switch decomposition at different time
          * steps.
          */
-        err = driver.put_varl(fid, var.decom_id, MPI_INT, &var.piodecomid, nbe);
+        if (var.fill_id >= 0) {
+            err = driver.put_varl(fid, var.decom_id, MPI_INT, &var.piodecomid, nbe);
+        }
+        else {
+            int tmp = -(var.piodecomid);
+            err = driver.put_varl(fid, var.decom_id, MPI_INT, &tmp, nbe);
+        }
         CHECK_ERR
     }
 
