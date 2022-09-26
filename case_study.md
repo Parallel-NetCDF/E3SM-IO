@@ -37,7 +37,7 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
     % export HDF5_ROOT=${HDF5_DIR}
     % git clone https://github.com/hpc-io/vol-async.git
     % cd vol-async; mkdir build; cd build
-    # $ASYNC_DIR points to ASYNC vol install dir
+    # $ASYNC_DIR points to Async Vol install dir
     % CC=mpicc CXX=mpicxx cmake .. -DCMAKE_INSTALL_PREFIX=$ASYNC_DIR
     % make; make install
     ```
@@ -49,6 +49,7 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
     % git clone https://github.com/hpc-io/vol-cache.git
     % cd vol-cache; mkdir build; cd build
     % export LD_LIBRARY_PATH="$ABT_DIR/lib:$LD_LIBRARY_PATH"
+    # $CAHCE_DIR points to Cache Vol install dir
     % CC=mpicc CXX=mpicxx HDF5_VOL_DIR=$ASYNC_DIR cmake .. -DCMAKE_INSTALL_PREFIX=$CAHCE_DIR
     % make; make install
     ```
@@ -58,8 +59,6 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
 ```shell
 % # git clone git@github.com:Parallel-NetCDF/E3SM-IO.git
 % git clone -b thread git@github.com:Parallel-NetCDF/E3SM-IO.git
-
-% # modify source codes (see below)
 
 % cd E3SM-IO
 % autoreconf -i
@@ -71,54 +70,6 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
     CXX=mpicxx
 % make; make install
 ```
-
-<details> <summary>Modify source codes:</summary>
-Two modifications to source codes are currently necessary.
-
-1. `e3sm_io_driver_hdf5::inq_file_info(...)` needs to return early due to [this Github issue](https://github.com/hpc-io/vol-cache/issues/15)
-2. `e3sm_io_get_driver`
-
-```diff
-% git diff
-diff --git a/src/drivers/e3sm_io_driver.cpp b/src/drivers/e3sm_io_driver.cpp
-index 4f0d205..32a88bd 100644
---- a/src/drivers/e3sm_io_driver.cpp
-+++ b/src/drivers/e3sm_io_driver.cpp
-@@ -136,7 +136,9 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
-             hid_t fid = -1;
-             htri_t isnc, islog;
-
--            fid = H5Fopen (path, H5F_ACC_RDONLY, H5P_DEFAULT);
-+            hid_t faplid = H5Pcreate (H5P_FILE_ACCESS);
-+            H5Pset_fapl_mpio(faplid, MPI_COMM_SELF, MPI_INFO_NULL);
-+            fid = H5Fopen (path, H5F_ACC_RDONLY, faplid);
-             if (fid < 0) { ERR_OUT ("HDF5 header detected, but not a HDF5 file"); }
-
-             // Check for NetCDF4
-@@ -151,6 +153,7 @@ e3sm_io_driver *e3sm_io_get_driver (const char *filename, /* NULL is for read */
-                 }
-             }
-             if (fid >= 0) { H5Fclose (fid); }
-+            if (faplid >= 0) { H5Pclose(faplid); }
-
-             if (isnc == false) {
-                 goto done_check;
-diff --git a/src/drivers/e3sm_io_driver_hdf5.cpp b/src/drivers/e3sm_io_driver_hdf5.cpp
-index 0504dd2..ac7322b 100644
---- a/src/drivers/e3sm_io_driver_hdf5.cpp
-+++ b/src/drivers/e3sm_io_driver_hdf5.cpp
-@@ -260,6 +260,8 @@ err_out:;
- }
-
- int e3sm_io_driver_hdf5::inq_file_info (int fid, MPI_Info *info) {
-+    *info = MPI_INFO_NULL;
-+    return 0;
-     int err = 0;
-     herr_t herr;
-     hdf5_file *fp = this->files[fid];
-```
-
-</details>
 
 ## Running E3SM-IO
 1. <details> <summary>Set up environment:</summary>
