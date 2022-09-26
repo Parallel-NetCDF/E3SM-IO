@@ -69,6 +69,16 @@ int scorpio_define_var(e3sm_io_config &cfg,
                                    &one, &var->decom_id);
         CHECK_ERR
 
+        /* add an associated scalar variable fillval_id (fill value ID) for double variables */
+        if (xtype == NC_DOUBLE){
+            err = driver.def_local_var(fid, "fillval_id/" + name, NC_DOUBLE, 1,
+                                       &one, &var->fill_id);
+            CHECK_ERR
+        }
+        else {
+            var->fill_id = -1;
+        }
+
         /* Add attributes */
 
         /* In Scorpio, variable's attributes are only written by rank 0 */
@@ -157,6 +167,7 @@ int scorpio_define_var(e3sm_io_config &cfg,
 
         var->decom_id   = -1;
         var->frame_id   = -1;
+        var->fill_id    = -1;
     }
 err_out:
     return err;
@@ -213,6 +224,12 @@ int scorpio_write_var(e3sm_io_driver &driver,
          * steps.
          */
         err = driver.put_varl(fid, var.decom_id, MPI_INT, &var.piodecomid, nbe);
+        CHECK_ERR
+    }
+
+    if (var.fill_id >= 0) {
+        double tmp = 0;
+        err = driver.put_varl(fid, var.fill_id, MPI_DOUBLE, &tmp, nbe);
         CHECK_ERR
     }
 

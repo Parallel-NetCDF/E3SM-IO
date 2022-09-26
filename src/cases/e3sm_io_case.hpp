@@ -37,6 +37,7 @@ typedef struct {
     int vid;         /* variable ID, returned from the driver */
 
     char *_name;     /* name of variable */
+    int fill_id;  /* fill value variable ID returned from adios driver */
     int frame_id;    /* frame variable ID returned from adios driver */
     int decom_id;    /* decomposition map variable ID returned from adios driver */
     int piodecomid;  /* map IDs used on Scorpio starting at 512 */
