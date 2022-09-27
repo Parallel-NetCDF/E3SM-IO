@@ -29,9 +29,9 @@ int print_timing_WR(e3sm_io_config *cfg,
     MPI_Offset off_msg[3], sum_off[3];
     MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs, min_nreqs;
     MPI_Offset vlen, sum_decomp_varlen;
-    double wTime;
+    double pre_time, open_time, def_time, post_time, flush_time, close_time;
+    double end2end_time, wTime;
     MPI_Comm comm=cfg->io_comm;
-    char prefix[16];
 
     ndecomp = decom->num_decomp;
 
@@ -65,7 +65,7 @@ int print_timing_WR(e3sm_io_config *cfg,
     MPI_Reduce(&cmeta->my_nreqs, &max_nreqs, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     MPI_Reduce(&cmeta->my_nreqs, &min_nreqs, 1, MPI_OFFSET, MPI_MIN, 0, comm);
 
-    double dbl_tmp[7], max_dbl[7], min_dbl[7];
+    double dbl_tmp[7], max_dbl[7];
     dbl_tmp[0] = cmeta->pre_time;
     dbl_tmp[1] = cmeta->open_time;
     dbl_tmp[2] = cmeta->def_time;
@@ -74,7 +74,13 @@ int print_timing_WR(e3sm_io_config *cfg,
     dbl_tmp[5] = cmeta->close_time;
     dbl_tmp[6] = cmeta->end2end_time;
     MPI_Reduce(dbl_tmp, max_dbl, 7, MPI_DOUBLE, MPI_MAX, 0, comm);
-    MPI_Reduce(dbl_tmp, min_dbl, 7, MPI_DOUBLE, MPI_MIN, 0, comm);
+        pre_time = max_dbl[0];
+       open_time = max_dbl[1];
+        def_time = max_dbl[2];
+       post_time = max_dbl[3];
+      flush_time = max_dbl[4];
+      close_time = max_dbl[5];
+    end2end_time = max_dbl[6];
 
     if (cfg->rank == 0) {
         int nvars_noD = cmeta->nvars;
@@ -132,23 +138,15 @@ int print_timing_WR(e3sm_io_config *cfg,
         }
 
         if (cfg->strategy == canonical && (cfg->api == netcdf4 || cfg->api == hdf5))
-            wTime = max_dbl[3];
+            wTime = post_time;
         else if (cfg->strategy == log && cfg->api == netcdf4)
-            wTime = max_dbl[5];
+            wTime = close_time;
         else if (cfg->api == pnetcdf || cfg->strategy == log || cfg->api == hdf5_md)
-            wTime = max_dbl[4];
+            wTime = flush_time;
         else /* write happens at file close for hdf5 blob and adios blob */
-            wTime = max_dbl[5];
+            wTime = close_time;
 
-        if (cfg->strategy == log && cfg->api == hdf5_log) {
-            if (cfg->num_subfiles != 0) {
-                printf("History output folder names        = %s.subfiles\n", cmeta->outfile);
-                printf("History output subfile names       = %s.subfiles/%s.xxxx\n",
-                       cmeta->outfile, basename(cmeta->outfile));
-            }
-            printf("Number of subfiles                 = %d\n", cfg->num_subfiles);
-        }
-        else if (cfg->strategy == blob) {
+        if (cfg->strategy == blob) {
             printf("History output name base           = %s\n", cfg->out_path);
             if (cfg->api == adios) {
                 printf("History output folder name         = %s.bp.dir\n", cmeta->outfile);
@@ -192,81 +190,23 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("I/O flush frequency                = %6d\n", cmeta->ffreq);
         printf("No. I/O flush calls                = %6d\n", cmeta->num_flushes);
         printf("-----------------------------------------------------------\n");
-        printf("Total write amount                         = %.2f MiB = %.2f GiB\n",
+        printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)sum_amount_WR / 1048576, (double)sum_amount_WR / 1073741824);
-        printf("Time of I/O preparing              min/max = %8.4f / %8.4f\n", min_dbl[0], max_dbl[0]);
-        printf("Time of file open/create           min/max = %8.4f / %8.4f\n", min_dbl[1], max_dbl[1]);
-        printf("Time of define variables           min/max = %8.4f / %8.4f\n", min_dbl[2], max_dbl[2]);
-        printf("Time of posting write requests     min/max = %8.4f / %8.4f\n", min_dbl[3], max_dbl[3]);
-        printf("Time of write flushing             min/max = %8.4f / %8.4f\n", min_dbl[4], max_dbl[4]);
-        printf("Time of close                      min/max = %8.4f / %8.4f\n", min_dbl[5], max_dbl[5]);
-        printf("end-to-end time                    min/max = %8.4f / %8.4f\n", min_dbl[6], max_dbl[6]);
-        printf("Emulate computation time (sleep)   min/max = %8.4f / %8.4f\n", (double)(cfg->comp_time), (double)(cfg->comp_time));
-        printf("I/O bandwidth in MiB/sec (write-only)      = %.4f\n",
+        printf("Max Time of I/O preparing          = %.4f sec\n",   pre_time);
+        printf("Max Time of file open/create       = %.4f sec\n",  open_time);
+        printf("Max Time of define variables       = %.4f sec\n",   def_time);
+        printf("Max Time of posting write requests = %.4f sec\n",  post_time);
+        printf("Max Time of write flushing         = %.4f sec\n",  flush_time);
+        printf("Max Time of close                  = %.4f sec\n", close_time);
+        printf("Max end-to-end time                = %.4f sec\n", end2end_time);
+        printf("I/O bandwidth (write-only)         = %.4f MiB/sec\n",
                (double)sum_amount_WR / 1048576.0 / wTime);
-        printf("I/O bandwidth in MiB/sec (open-to-close)   = %.4f\n",
-               (double)sum_amount_WR / 1048576.0 / max_dbl[6]);
+        printf("I/O bandwidth (open-to-close)      = %.4f MiB/sec\n",
+               (double)sum_amount_WR / 1048576.0 / end2end_time);
         printf("-----------------------------------------------------------\n");
 
         /* print MPI-IO hints actually used */
         if (cfg->verbose) print_info(&cmeta->info_used);
-                
-        if (cfg->run_case == F) {   // F case
-            if (cmeta->nvars == NVARS_F_CASE_H0){ // H0
-                sprintf(prefix, "e3smio_f0");
-            }
-            else {   // H1
-                sprintf(prefix, "e3smio_f1");
-            }
-        }
-        else if (cfg->run_case == I) {   // I case
-            if (cmeta->nvars == NVARS_I_CASE_H0){ // H0
-                sprintf(prefix, "e3smio_i0");
-            }
-            else {   // H1
-                sprintf(prefix, "e3smio_i1");
-            }
-        }
-        else { // G case
-            sprintf(prefix, "e3smio_g");
-        }
-
-        printf ("#%%$: %s_fname: %s\n", prefix, cmeta->outfile);
-        if (cfg->verbose) {
-            printf ("#%%$: %s_file_size_mib: %.2f\n", prefix, (double)(cmeta->file_size) / 1048576);
-            printf ("#%%$: %s_file_size_gib: %.2f\n", prefix, (double)(cmeta->file_size) / 1073741824);
-        }
-        else{
-            printf ("#%%$: %s_file_size_mib: 0.0\n", prefix);
-            printf ("#%%$: %s_file_size_gib: 0.0\n", prefix);
-        }
-        printf ("#%%$: %s_n_subfile: %d\n", prefix, cfg->num_subfiles);
-        printf ("#%%$: %s_n_group: %d\n", prefix, cfg->num_subfiles);
-        printf ("#%%$: %s_n_decom_var: %3d\n", prefix, cmeta->num_decomp_vars);
-        printf ("#%%$: %s_n_non_decom_var: %3d\n", prefix, nvars_noD);
-        for (i=0; i<ndecomp; i++)
-            printf("#%%$: %s_n_decom_%d_var: %3d\n", prefix,
-                   i, cmeta->nvars_D[i]);
-        printf ("#%%$: %s_n_var: %3d\n", prefix, cmeta->nvars);
-        printf ("#%%$: %s_n_rec: %3d\n", prefix, cmeta->nrecs);
-        printf ("#%%$: %s_n_req_all: %3lld\n", prefix, sum_nreqs);
-        printf ("#%%$: %s_n_req_max: %3lld\n", prefix, max_nreqs);
-        printf ("#%%$: %s_n_flush: %3d\n", prefix, cmeta->num_flushes);
-        printf ("#%%$: %s_write_size_mib: %.2f\n", prefix, (double)sum_amount_WR / 1048576);
-        printf ("#%%$: %s_write_size_gib: %.2f\n", prefix, (double)sum_amount_WR / 1073741824);
-        printf ("#%%$: %s_prep_time: %.4f\n", prefix, max_dbl[0]);
-        printf ("#%%$: %s_open_create_time: %.4f\n", prefix, max_dbl[1]);
-        printf ("#%%$: %s_def_time: %.4f\n", prefix, max_dbl[2]);
-        printf ("#%%$: %s_post_time: %.4f\n", prefix, max_dbl[3]);
-        printf ("#%%$: %s_flush_time: %.4f\n", prefix, max_dbl[4]);
-        printf ("#%%$: %s_close_time: %.4f\n", prefix, max_dbl[5]);
-        printf ("#%%$: %s_e2e_time: %.4f\n", prefix, max_dbl[6]);
-        printf ("#%%$: %s_bw_o2c_mib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / max_dbl[6]);
-        printf ("#%%$: %s_bw_o2c_gib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / max_dbl[6] / 1024.0);
-        printf ("#%%$: %s_bw_wr_mib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / wTime);
-        printf ("#%%$: %s_bw_wr_gib: %.4f\n", prefix, (double)sum_amount_WR / 1048576.0 / wTime / 1024.0);
-        printf ("#%%$: %s_rbw_o2c_mib: %.4f\n", prefix, (double)(cmeta->file_size) / 1048576.0 / max_dbl[6]);
-        printf ("#%%$: %s_rbw_o2c_gib: %.4f\n", prefix, (double)(cmeta->file_size) / 1048576.0 / max_dbl[6] / 1024.0);
     }
     fflush(stdout);
 
