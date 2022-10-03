@@ -1,6 +1,12 @@
 # Case Study - Running with Cache Vol and Async Vol
 This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-io/vol-cache) and [Async Vol](https://github.com/hpc-io/vol-async) enabled. 
 
+Cache Vol is an HDF5 plugin that incorporates fast storage layers (e.g, burst buffer, node-local storage) into parallel I/O workflow for caching and staging data to improve the I/O efficiency. 
+
+Async Vol is another HDF5 plugin that takes advantage of an asynchronous interface by scheduling I/O as early as possible and overlaps computation or communication with I/O operations, which hides the cost associated with I/O and improves the overall performance. 
+
+Both Cache Vol and Async Vol can be enabled by directly setting the environment variables without modifying E3SM-IO source codes. This case study gives an instruction on how to install Cache Vol and Async Vol, and gives an demo of how to run E3SM-IO with them.
+
 ## E3SM-IO with HDF5 using Cache Vol and Async Vol
 ### Installing HDF5, Async Vol and Cache Vol
 
@@ -120,16 +126,16 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
     No. I/O flush calls                =      1
     -----------------------------------------------------------
     Total write amount                         = 16.97 MiB = 0.02 GiB
-    Time of I/O preparing              min/max =   0.0016 /   0.0017
-    Time of file open/create           min/max =   0.3652 /   0.3887
-    Time of define variables           min/max =  52.5990 /  65.7430
-    Time of posting write requests     min/max =  28.7611 /  28.7702
-    Time of write flushing             min/max =   0.4261 /   0.4370
-    Time of close                      min/max =   4.9671 /   4.9838
-    end-to-end time                    min/max = 100.3077 / 100.3243
-    Simulated computation time         min/max =   2.0001 /   2.0001
-    I/O bandwidth in MiB/sec (write-only)      = 0.5898
-    I/O bandwidth in MiB/sec (open-to-close)   = 0.1691
+    Time of I/O preparing              min/max =   0.0015 /   0.0016
+    Time of file open/create           min/max =   0.6382 /   0.6735
+    Time of define variables           min/max =  58.7400 /  65.5300
+    Time of posting write requests     min/max =  35.6823 /  35.6953
+    Time of write flushing             min/max =   0.3860 /   0.3990
+    Time of close                      min/max =   5.0383 /   5.0620
+    end-to-end time                    min/max = 107.3378 / 107.3614
+    Emulate computation time (sleep)   min/max =   2.0000 /   2.0000
+    I/O bandwidth in MiB/sec (write-only)      = 0.4754
+    I/O bandwidth in MiB/sec (open-to-close)   = 0.1580
     -----------------------------------------------------------
     ==== Benchmarking F case =============================
     Total number of MPI processes      = 16
@@ -140,4 +146,32 @@ This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-
     Using noncontiguous write buffer   = no
     Variable write order: same as variables are defined
     ==== HDF5 canonical I/O ==============================
+    History output file                = can_F_out_h1.h5
+    No. variables use no decomposition =     27
+    No. variables use decomposition D0 =      1
+    No. variables use decomposition D1 =     22
+    No. variables use decomposition D2 =      1
+    Total no. climate variables        =     51
+    Total no. attributes               =    142
+    Total no. noncontiguous requests   = 188168
+    Max   no. noncontiguous requests   =  18020
+    Min   no. noncontiguous requests   =   6009
+    Write no. records (time dim)       =      5
+    I/O flush frequency                =      1
+    No. I/O flush calls                =      5
+    -----------------------------------------------------------
+    Total write amount                         = 1.88 MiB = 0.00 GiB
+    Time of I/O preparing              min/max =   0.0000 /   0.0000
+    Time of file open/create           min/max =   0.5060 /   0.5420
+    Time of define variables           min/max =   5.4920 /   6.9240
+    Time of posting write requests     min/max =  24.1601 /  24.1834
+    Time of write flushing             min/max =   0.5714 /   0.5886
+    Time of close                      min/max =   0.9043 /   0.9089
+    end-to-end time                    min/max =  33.1583 /  33.1629
+    Emulate computation time (sleep)   min/max =   2.0000 /   2.0000
+    I/O bandwidth in MiB/sec (write-only)      = 0.0776
+    I/O bandwidth in MiB/sec (open-to-close)   = 0.0566
+    -----------------------------------------------------------
+    read_decomp=1.80 e3sm_io_core=140.52 MPI init-to-finalize=142.33
+    -----------------------------------------------------------
     ```
