@@ -310,8 +310,17 @@ int main (int argc, char **argv) {
     cfg.I_case_h0.nrecs = nrecs;
     cfg.I_case_h1.nrecs = 1;  /* force only one record for I h1 case */
 
-#warning TODO: test HDF5 multi-dataset APIs for multiple time steps at a time.
-//    if (cfg.api == hdf5_md) ffreq = 1;
+#ifdef HDF5_HAVE_MULTI_DATASET_API
+    /* HDF5 multi-dataset APIs may have the following limitations.
+     * 1. Support same dataset appears twice or more times in a single call.
+     * 2. Support datasets some requiring type conversion and some don't.
+     *    In this case, the collective I/O mode will roll back to independent
+     *    mode internally.
+     * See https://github.com/HDFGroup/hdf5/issues/1859
+     */
+#warning TODO: HDF5 multi-dataset APIs do not support writing multiple time steps at a time. Setting flush freq to 1.
+    if (cfg.api == hdf5_md) ffreq = 1;
+#endif
 
     cfg.F_case_h0.ffreq = ffreq;
     cfg.F_case_h1.ffreq = ffreq;
