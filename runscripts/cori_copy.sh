@@ -15,7 +15,8 @@ IN_F120=/global/cscratch1/sd/khl7265/FS_64_1M/E3SM/realdata/F_120
 IN_G=/global/cscratch1/sd/khl7265/FS_64_1M/E3SM/realdata/G
 IN_I=/global/cscratch1/sd/khl7265/FS_64_1M/E3SM/realdata/I
 
-CONFIGS= (F120 G I)
+CONFIGS=(F120 G I)
+DRIVERS=("pnetcdf canonical" "hdf5_log log" "adios blob" "pnetcdf blob")
 OUTDIR_ROOT=${CSCRATCH}/FS_128_16M/E3SM
 SUBFILEDIR_ROOT=${CSCRATCH}/FS_8_1M/E3SM
 
