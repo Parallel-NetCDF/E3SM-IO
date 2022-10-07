@@ -158,9 +158,7 @@ do
             OUTDIR="${OUTDIR_ROOT}/${API}/${STRATE}/${CONFIG_NAME}"
         fi
 
-        RDDIR="${OUTDIR}_RD"
-        rm -rf ${RDDIR}
-        cp -r ${OUTDIR} ${RDDIR}
+        RDDIR="${OUTDIR}_${i}"
 
         for FX in ${FXS[@]}
         do
