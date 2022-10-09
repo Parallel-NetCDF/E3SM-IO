@@ -174,6 +174,8 @@ do
             echo "#%$=: strategy: ${STRATE}"
             echo "#%$=: number_of_nodes: ${NN}"
             echo "#%$=: number_of_proc: ${NP}"
+
+            rm -rf ${RDDIR}/${FX}_replay*
         
             STARTTIME=$(date +%s.%N)
 
