@@ -178,7 +178,7 @@ do
             STARTTIME=$(date +%s.%N)
 
             if [ "${API}" == "adios" ] ; then
-                srun -n ${NP} -t ${RTL} -c 4 --cpu_bind=cores /tmp/adios2pio-nm --bp-file=${RDDIR}/${FX} --nc-file=${RDDIR}/${FX}_replay --pio-format=pnetcdf
+                srun -n ${NP} -t ${RTL} -c 4 --cpu_bind=cores /tmp/adios2pio-nm.exe --bp-file=${RDDIR}/${FX}.bp --nc-file=${RDDIR}/${FX}_replay --pio-format=pnetcdf
             elif [ "${API}" == "hdf5_log" ] ; then
                 srun -n ${NP} -t ${RTL} -c 4 --cpu_bind=cores /tmp/h5lreplay -i ${RDDIR}/${FX} -o ${RDDIR}/${FX}_replay
             else

@@ -41,9 +41,12 @@ do
             OUTDIR="${OUTDIR_ROOT}/${API}/${STRATE}/${CONFIG_NAME}"
         fi
 
-        RDDIR="${OUTDIR}_${i}"
-        rm -rf ${RDDIR}
-        cp -R ${OUTDIR} ${RDDIR}
+        for i in $(seq 3);
+        do
+            RDDIR="${OUTDIR}_${i}"
+            rm -rf ${RDDIR}
+            cp -R ${OUTDIR} ${RDDIR}
+        done
     done
 done
 
