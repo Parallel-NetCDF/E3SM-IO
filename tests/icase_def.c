@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 
    cmode = NC_CLOBBER | NC_NETCDF4;
 #ifdef NC_NODIMSCALE_ATTACH
-   cmode |= NC_NODIMSCALE_ATTACH
+   cmode |= NC_NODIMSCALE_ATTACH;
 #endif
 
    err = nc_create_par("testfile.nc", cmode, MPI_COMM_WORLD, MPI_INFO_NULL, &ncid); ERR
