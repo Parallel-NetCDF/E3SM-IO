@@ -454,11 +454,11 @@ int set_vars(int        in_ncid,
 #ifndef NUM_DECOMP_AUX_VARS
         /* skip copying decomposition variables */
         int name_len = strlen(name);
-        if ((name[0] == 'D' && strcmp(name+name_len-6, ".nreqs"     ) == 0) ||
-            (name[0] == 'D' && strcmp(name+name_len-11,".blob_start") == 0) ||
-            (name[0] == 'D' && strcmp(name+name_len-11,".blob_count") == 0) ||
-            (name[0] == 'D' && strcmp(name+name_len-8, ".offsets"   ) == 0) ||
-            (name[0] == 'D' && strcmp(name+name_len-8, ".lengths"   ) == 0)) {
+        if ((name[0] == 'D' && name_len > 6 && strcmp(name+name_len-6, ".nreqs"     ) == 0) ||
+            (name[0] == 'D' && name_len > 11 && strcmp(name+name_len-11,".blob_start") == 0) ||
+            (name[0] == 'D' && name_len > 11 && strcmp(name+name_len-11,".blob_count") == 0) ||
+            (name[0] == 'D' && name_len > 8 && strcmp(name+name_len-8, ".offsets"   ) == 0) ||
+            (name[0] == 'D' && name_len > 6 && strcmp(name+name_len-8, ".lengths"   ) == 0)) {
             nvars_decomp++;
             continue;
         }
