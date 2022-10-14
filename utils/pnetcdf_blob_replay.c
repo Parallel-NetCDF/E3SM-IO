@@ -604,14 +604,20 @@ int main (int argc, char **argv)
     if (out_file[0] == '\0')
         strcpy(out_file, in_file_base);
 
+    /* check output file and it should not exist */
+    int file_exist= 0;
+    if (world_rank == 0 && access(out_file, F_OK) == 0)
+        file_exist = 1;
+    MPI_Bcast(&file_exist, 1, MPI_INT, 0, MPI_COMM_WORLD);
+    if (file_exist) {
+        if (world_rank == 0)
+            fprintf(stderr,"Error: output file already exists (%s)\n",out_file);
+        MPI_Finalize();
+        exit(1);
+    }
+
     MPI_Barrier(MPI_COMM_WORLD); /*----------------------------------------*/
     total_t = open_t = MPI_Wtime();
-
-    /* check output file and it should not exist */
-    if (world_rank == 0 && access(out_file, F_OK) == 0) {
-        fprintf(stderr,"Error: output file should not exist %s\n",out_file);
-        MPI_Abort(MPI_COMM_WORLD, -1);
-    }
 
     /* TODO: check the number of subfiles, N */
     /*       if the number of subfiles > nprocs
@@ -693,7 +699,7 @@ int main (int argc, char **argv)
     CHECK_NC_ERR
 
     if (global_nprocs != world_nprocs && world_rank == 0)
-        printf("Warning: no. processes (%d) is not equal to the one creating subfiles (%d)\n",
+        printf("Warning: no. processes (%d) is not equal to the one used when creating the files (%d)\n",
                world_nprocs, global_nprocs);
 
     /* inquire number of subfiles */
