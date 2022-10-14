@@ -931,7 +931,7 @@ int main (int argc, char **argv)
     MPI_Offset m_alloc, max_alloc;
 
     err = ncmpi_inq_malloc_size(&m_alloc);
-    CHECK_NC_ERR
+    if (err == NC_ENOTENABLED) m_alloc = 0;
 
     off_buf[0] = read_amnt;
     off_buf[1] = write_amnt;
@@ -947,8 +947,9 @@ int main (int argc, char **argv)
                 m_alloc);
     }
     err = ncmpi_inq_malloc_max_size(&m_alloc);
-    CHECK_NC_ERR
+    if (err == NC_ENOTENABLED) m_alloc = 0;
     MPI_Reduce(&m_alloc, &max_alloc, 1, MPI_OFFSET, MPI_MAX, 0, MPI_COMM_WORLD);
+    if (err == NC_ENOTENABLED) err = NC_NOERR;
 
     /* find the max timings amount all processes */
     double timings[6], max_time[6];
@@ -981,7 +982,7 @@ int main (int argc, char **argv)
                (double)write_amnt / 1048576, (double)write_amnt / 1073741824);
         printf("Write bandwidth                    = %.4f MiB/sec\n",
                (double)write_amnt / 1048576 / max_time[3]);
-        if (verbose)
+        if (verbose && max_alloc > 0)
             printf("MAX heap memory used by PnetCDF internally is %.2f MiB\n",
                    (float)max_alloc / 1048576);
         printf("-----------------------------------------------------------\n");
