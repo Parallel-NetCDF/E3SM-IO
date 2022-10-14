@@ -137,6 +137,26 @@ for API in "${APIS[@]}" ; do
         echo "CMD = ${CMD}"
         ${CMD}
 
+        # test replay on blob files
+        if test "x${ap[1]}" = xblob ; then
+           if test "x${ap[0]}" = xpnetcdf ; then
+              PNETCDF_REPLAY="utils/pnetcdf_blob_replay"
+              if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
+                 CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h0.${FILE_EXT} -o ${OUT_FILE_BASE}_h0.${FILE_EXT}.can"
+                 echo "CMD = ${CMD}"
+                 ${CMD}
+                 CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h1.${FILE_EXT} -o ${OUT_FILE_BASE}_h1.${FILE_EXT}.can"
+                 echo "CMD = ${CMD}"
+                 ${CMD}
+              elif test $CONFIG = g_case_cmpaso_16p ; then
+                 CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}.${FILE_EXT} -o ${OUT_FILE_BASE}.${FILE_EXT}.can"
+                 echo "CMD = ${CMD}"
+                 ${CMD}
+              fi
+           fi
+        fi
+
+        # check ADIOS BP files
         if test "x$BPSTAT" != x && test "x${ap[0]}" = xadios ; then
            if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
               CMD="${BPSTAT} ${OUT_FILE}_h0.${FILE_EXT}"
