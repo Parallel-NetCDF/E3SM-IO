@@ -200,7 +200,7 @@ int set_decomp(int        ncid,
         err = ncmpi_inq_attlen(ncid, varid, "global_dimids", &tmp);
         CHECK_VAR_ERR(ncid, varid)
         dp->ndims = tmp;
-        int dimids[2];
+        int dimids[3]; /* number of fix-sized dimensions is <= 3 */
         err = ncmpi_get_att(ncid, varid, "global_dimids", dimids);
         CHECK_VAR_ERR(ncid, varid)
         for (j=0; j<dp->ndims; j++) {
@@ -257,18 +257,18 @@ int set_decomp(int        ncid,
         dp->w_startx = dp->w_counts + nreqs;
         dp->w_countx = dp->w_startx + nreqs;
 
-        dp->w_starts[0] = (MPI_Offset*) malloc(nreqs * 3 * 4 * sizeof(MPI_Offset));
-        dp->w_counts[0] = dp->w_starts[0] + nreqs * 3;
-        dp->w_startx[0] = dp->w_counts[0] + nreqs * 3;
-        dp->w_countx[0] = dp->w_startx[0] + nreqs * 3;
+        dp->w_starts[0] = (MPI_Offset*) malloc(nreqs * 4 * 4 * sizeof(MPI_Offset));
+        dp->w_counts[0] = dp->w_starts[0] + nreqs * 4;
+        dp->w_startx[0] = dp->w_counts[0] + nreqs * 4;
+        dp->w_countx[0] = dp->w_startx[0] + nreqs * 4;
         for (j=1; j<nreqs; j++) {
-            dp->w_starts[j] = dp->w_starts[j-1] + 3;
-            dp->w_counts[j] = dp->w_counts[j-1] + 3;
-            dp->w_startx[j] = dp->w_startx[j-1] + 3;
-            dp->w_countx[j] = dp->w_countx[j-1] + 3;
+            dp->w_starts[j] = dp->w_starts[j-1] + 4;
+            dp->w_counts[j] = dp->w_counts[j-1] + 4;
+            dp->w_startx[j] = dp->w_startx[j-1] + 4;
+            dp->w_countx[j] = dp->w_countx[j-1] + 4;
         }
 
-        /* no fixed-size variables are 2 or more dimensional */
+        /* no fixed-size variables are 4 or more dimensional */
         for (j=0; j<nreqs; j++) {
             dp->w_starts[j][0] = 0;
             dp->w_counts[j][0] = 1;
@@ -288,6 +288,23 @@ int set_decomp(int        ncid,
                 dp->w_countx[j][0] = dp->w_counts[j][1];
                 dp->w_countx[j][1] = dp->w_counts[j][2];
             }
+            else if (dp->ndims == 3) { /* 3D */
+                MPI_Offset tmp = dp->offsets[j];
+                dp->w_starts[j][1] = tmp / (dp->dims[1] * dp->dims[2]);
+                tmp %= dp->dims[1] * dp->dims[2];
+                dp->w_starts[j][2] = tmp / dp->dims[2];
+                dp->w_starts[j][3] = tmp % dp->dims[2];
+                dp->w_counts[j][1] = 1;
+                dp->w_counts[j][2] = 1;
+                dp->w_counts[j][3] = dp->lengths[j];
+                dp->w_startx[j][0] = dp->w_starts[j][1];
+                dp->w_startx[j][1] = dp->w_starts[j][2];
+                dp->w_startx[j][2] = dp->w_starts[j][3];
+                dp->w_countx[j][0] = dp->w_counts[j][1];
+                dp->w_countx[j][1] = dp->w_counts[j][2];
+                dp->w_countx[j][2] = dp->w_counts[j][3];
+             }
+             else assert(0);
             /* each length[j] is no bigger than last dims[] */
         }
     }
