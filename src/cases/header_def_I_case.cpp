@@ -180,14 +180,16 @@ int e3sm_io_case::def_I_case(e3sm_io_config   &cfg,
         char name[64];
 
         /* g_dimids[] are the original dimension IDs */
-        for (i=0; i<decom.num_decomp; i++) {
-            g_dimids[i][0] = dim_lat;
-            g_dimids[i][1] = dim_lon;
+        g_dimids[0][0] = dim_lat;
+        g_dimids[0][1] = dim_lon;
+        for (i=1; i<decom.num_decomp; i++) {
+            g_dimids[i][1] = dim_lat;
+            g_dimids[i][2] = dim_lon;
         }
-        g_dimids[1][2] = dim_levgrnd   /* same size as levdcmp */;
-        g_dimids[2][2] = dim_levlak;
-        g_dimids[3][2] = dim_ltype;
-        g_dimids[4][2] = dim_natpft;
+        g_dimids[1][0] = dim_levgrnd   /* same size as levdcmp */;
+        g_dimids[2][0] = dim_levlak;
+        g_dimids[3][0] = dim_ltype;
+        g_dimids[4][0] = dim_natpft;
 
         /* additional dimensions to be used by decomposition variables */
         MPI_Comm_size(cfg.sub_comm, &nprocs);
