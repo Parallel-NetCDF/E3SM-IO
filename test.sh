@@ -142,13 +142,16 @@ for API in "${APIS[@]}" ; do
            if test "x${ap[0]}" = xpnetcdf ; then
               PNETCDF_REPLAY="utils/pnetcdf_blob_replay"
               if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
+                 rm -f ${OUT_FILE_BASE}_h0.${FILE_EXT}.can
                  CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h0.${FILE_EXT} -o ${OUT_FILE_BASE}_h0.${FILE_EXT}.can"
                  echo "CMD = ${CMD}"
                  ${CMD}
+                 rm -f ${OUT_FILE_BASE}_h1.${FILE_EXT}.can
                  CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h1.${FILE_EXT} -o ${OUT_FILE_BASE}_h1.${FILE_EXT}.can"
                  echo "CMD = ${CMD}"
                  ${CMD}
               elif test $CONFIG = g_case_cmpaso_16p ; then
+                 rm -f ${OUT_FILE_BASE}.${FILE_EXT}.can
                  CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}.${FILE_EXT} -o ${OUT_FILE_BASE}.${FILE_EXT}.can"
                  echo "CMD = ${CMD}"
                  ${CMD}
