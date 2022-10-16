@@ -12,14 +12,14 @@
 #include <libgen.h> /* basename() */
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> /* strdup() */
 #include <unistd.h> /* getopt() */
 
 #include <mpi.h>
 #include <pnetcdf.h>
 
 #define MAX_NFILES 6
-#define LINE_SIZE 4692802
+#define LINE_SIZE  4692802
 
 #define ERR { \
     if (err != NC_NOERR) { \
@@ -43,28 +43,44 @@
 
 static int verbose, line_sz, raw_decom;
 
+typedef struct {
+    int off;
+    int len;
+} off_len;
+
+/*----< off_len_compare() >--------------------------------------------------*/
+/* This subroutine is used in qsort() */
+static
+int off_len_compare(const void *p1, const void *p2) {
+    int off1 = ((off_len*)p1)->off;
+    int off2 = ((off_len*)p2)->off;
+    if (off1 > off2) return (1);
+    if (off1 < off2) return (-1);
+    return (0);
+}
+
 /*----< intcompare() >------------------------------------------------------*/
 /* This subroutine is used in qsort() */
 static
 int intcompare(const void *p1, const void *p2) {
     int i = *((int *)p1);
     int j = *((int *)p2);
-    if (i > j) return(1);
-    if (i < j) return(-1);
-    return(0);
+    if (i > j) return (1);
+    if (i < j) return (-1);
+    return (0);
 }
 
 /*----< add_decomp() >-------------------------------------------------------*/
 static
-int add_decomp(int ncid, const char *infname, int label) {
+int add_decomp(int ncid, const char *infname, int label, int fill_gaps) {
     char *buf, name[128], *map, *str;
     FILE *fd;
-    int i, j, rank, nprocs, dimid, ndims, err=NC_NOERR;
-    int varid[5], *nreqs, *raw_nreqs=NULL, *off, *len, *raw_off;
-    int total_nreqs, max_nreqs, min_nreqs, maxlen, minlen, total_raw_nreqs;
-    MPI_Offset k, gsize, *dims, *dims_C, start, count, raw_start, raw_count;
-
-    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    int i, j, rank, nprocs, dimid, ndims, ngaps, cur, err=NC_NOERR;
+    int varid[5], *nreqs, **off, **len;
+    int total_nreqs, max_nreqs, min_nreqs, maxlen, minlen;
+    MPI_Offset k, gsize, *dims, *dims_C, start, count;
+    int *raw_nreqs, **raw_off, total_raw_nreqs;
+    MPI_Offset raw_start;
 
     fd = fopen(infname, "r");
     if (fd == NULL) {
@@ -74,7 +90,7 @@ int add_decomp(int ncid, const char *infname, int label) {
     }
 
     /* buffer stores one line read from input file */
-    buf = (char *)malloc(line_sz);
+    buf = (char*) malloc(line_sz);
 
     /* header lines:(first 2 lines of the decomposition file), for example
      *     version 2001 npes 43200 ndims 2
@@ -100,7 +116,7 @@ int add_decomp(int ncid, const char *infname, int label) {
     nprocs = atoi(strtok(NULL, " "));
     strtok(NULL, " "); /* token "ndims" */
     ndims = atoi(strtok(NULL, " "));
-    dims = (MPI_Offset *)malloc(ndims * sizeof(MPI_Offset));
+    dims = (MPI_Offset*) malloc(ndims * sizeof(MPI_Offset));
 
     /* get dimension sizes
      * Note the dimensions are in Fortran order in the decomposition file
@@ -109,13 +125,15 @@ int add_decomp(int ncid, const char *infname, int label) {
     fgets(buf, LINE_SIZE, fd);
     if (verbose) printf("\t%s", buf);
     dims[0] = atoll(strtok(buf, " "));
-    for (i = 1; i < ndims; i++) dims[i] = atoll(strtok(NULL, " "));
+    for (i=1; i<ndims; i++) dims[i] = atoll(strtok(NULL, " "));
     /* Note dims[] is in Fortran order */
     if (verbose) {
         if (ndims == 1)
             printf("lable D%d: dims = %lld\n", label, dims[0]);
         else if (ndims == 2)
-            printf("lable D%d: dims = %lld %lld\n", label, dims[0], dims[1]);
+            printf("lable D%d: dims = %lld x %lld (in C order)\n", label, dims[1], dims[0]);
+        else if (ndims == 3)
+            printf("lable D%d: dims = %lld x %lld x %lld (in C order)\n", label, dims[2], dims[1], dims[0]);
     }
 
     /* gsize is total number of elements in the global array */
@@ -125,11 +143,12 @@ int add_decomp(int ncid, const char *infname, int label) {
     /* map is used to check whether the entire array is covered by requests
      * of all processes.
      */
-    map = (char *)calloc(gsize, 1);
+    map = (char*) calloc(gsize, 1);
 
     /* nreqs[i] is the number of elements accessed by process i */
-    nreqs = (int *)calloc(nprocs, sizeof(int));
-    raw_nreqs = (int *)calloc(nprocs, sizeof(int));
+    nreqs = (int*)  malloc(nprocs * sizeof(int));
+    off   = (int**) malloc(nprocs * sizeof(int*));
+    len   = (int**) malloc(nprocs * sizeof(int*));
 
     /* decomposition data format:
      *  (process.rank.ID)(number.of.requests)
@@ -138,8 +157,8 @@ int add_decomp(int ncid, const char *infname, int label) {
      * Fortran index based. Note the offsets are not sorted in an increasing
      * order and may contain 0s which should be ignored.
      */
-    for (rank = 0; rank < nprocs; rank++) {
-        int ncontig = 0, decomp_rank;
+    for (rank=0; rank<nprocs; rank++) {
+        int prev, decomp_rank;
         char *ret;
 
         /* reads the first line of rank ID and no. requests */
@@ -148,7 +167,7 @@ int add_decomp(int ncid, const char *infname, int label) {
         }
         if (ret == NULL || strncmp(buf, "Obtained", 8) == 0) {
             /* there is no request for remaining ranks */
-            for (decomp_rank = rank; decomp_rank < nprocs; decomp_rank++)
+            for (decomp_rank=rank; decomp_rank<nprocs; decomp_rank++)
                 nreqs[rank] = 0;
             break; /* loop of rank */
         }
@@ -161,10 +180,10 @@ int add_decomp(int ncid, const char *infname, int label) {
         if (nreqs[rank] == 0) /* this rank has zero request */
             continue;         /* loop of rank */
 
-        /* Record number of raw offsets before it is merged */
-        raw_nreqs[rank] = nreqs[rank];
+        /* read and store offsets */
+        off[rank] = (int *)malloc(nreqs[rank] * sizeof(int));
+        len[rank] = (int *)malloc(nreqs[rank] * sizeof(int));
 
-        off = (int *)malloc(nreqs[rank] * sizeof(int));
         fgets(buf, LINE_SIZE + 1, fd); /* 2nd line: list of offsets */
         if (strlen(buf) >= LINE_SIZE) {
             printf("Error: line size is larger than default %d\n", LINE_SIZE);
@@ -172,60 +191,170 @@ int add_decomp(int ncid, const char *infname, int label) {
             goto fn_exit;
         }
 
-        /* construct the offset list */
-        off[0] = atoi(strtok(buf, " "));
+        /* construct the offset list:
+         * The offsets stored in the dat files are in Fortran 1-based index.
+         * There are 0s that need to be removed.
+         */
+        off[rank][0] = atoi(strtok(buf, " "));
         j = 1;
-        while (off[0] == 0) { /* skip leading 0 values, if there is any */
-            off[0] = atoi(strtok(NULL, " "));
+        while (off[rank][0] == 0) { /* skip leading 0 values, if there is any */
+            off[rank][0] = atoi(strtok(NULL, " "));
             j++;
         }
-        off[0]--;
+        off[rank][0]--;
         k = 1;
-        for (; j < nreqs[rank]; j++) {
-            off[k] = atoi(strtok(NULL, " "));
-            if (off[k] == 0) continue; /* skip 0 values */
-            off[k]--;                  /* offset is 1 based */
+        for (; j<nreqs[rank]; j++) {
+            off[rank][k] = atoi(strtok(NULL, " "));
+            if (off[rank][k] == 0) continue; /* skip 0 values */
+            off[rank][k]--;                  /* offset is 1 based */
             k++;
         }
+        /* k now is the number of non-zero offsets */
 
-        /* sort off[] into an increasing order */
-        qsort((void *)off, k, sizeof(int), intcompare);
+        /* sort off[rank][] into an increasing order */
+        qsort((void *)off[rank], k, sizeof(int), intcompare);
 
-        ncontig = 1;
+        /* build a map for checking if the decompositions cover all elements */
+        for (j=0; j<k; j++) map[off[rank][j]] = 1;
+
+        /* coalescing contiguous offsets (must break boundary at dimension X) */
+        prev = 0;
+        len[rank][0] = 1;
         for (j=1; j<k; j++) {
-            /* break contiguity at dimension boundaries or noncontiguous */
-            if (off[j] % dims[0] == 0 || off[j] > off[j - 1] + 1)
-               ncontig++;
+            if (off[rank][j] != off[rank][prev] + len[rank][prev] || /* noncontiguous */
+                off[rank][j] % dims[0] == 0) { /* break at dimension boundaries */
+                                               /* Note dims[] is in Fortran order */
+                prev++;
+                if (prev < j) off[rank][prev] = off[rank][j];
+                len[rank][prev] = 1;
+            } else
+                len[rank][prev]++;
         }
-        nreqs[rank] = ncontig;
+        /* nreqs[] becomes number of noncontiguous requests */
+        nreqs[rank] = prev+1;
 
-        for (j = 0; j < k; j++) map[off[j]] = 1;
-        free(off);
+        if (rank == 0) maxlen = minlen = len[rank][0];
+        for (j=0; j<nreqs[rank]; j++) {
+            maxlen = (len[rank][j] > maxlen) ? len[rank][j] : maxlen;
+            minlen = (len[rank][j] < minlen) ? len[rank][j] : minlen;
+        }
+    }
+
+    /* calculate number of gaps (unconverted consecutive blocks of elements) */
+    ngaps = 0;
+    cur = 1;
+    for (k=0, j=0; j<gsize; j++) {
+        k += map[j];
+        if (map[j] == 0) {
+            if (cur == 1) {
+                ngaps++;
+                cur = 0;
+            }
+            /* Note dims[] is in Fortran order */
+            else if (j % dims[0] == 0) /* end of dim X */
+                ngaps++;
+        }
+        else cur = 1;
+    }
+
+    /* check if the entire array is covered */
+    if (k != gsize) {
+        printf("Warning: decomposition %d does not cover the entire array\n",
+               label);
+        printf("\tglobal %dD array size: %lld", ndims, dims[ndims-1]);
+        for (i=ndims-2; i>=0; i--) printf(" x %lld", dims[i]);
+        printf(" = %lld\n", gsize);
+        printf("\tthe decomposition map covers only %lld of them\n", k);
+        printf("\tnumber of missing elements are:   %lld\n", gsize-k);
+        printf("\tnumber of gaps:                   %d\n", ngaps);
+        if (fill_gaps) printf("\tOption to fill in gaps is enabled\n");
+    }
+    if (fill_gaps && k != gsize) {
+        /* assign gaps to all processes */
+        int *fill_nreqs;
+        fill_nreqs = (int*) malloc(nprocs * sizeof(int));
+
+        /* divide number of gaps evenly among all processes */
+        int rem = ngaps / nprocs;
+        for (rank=0; rank<nprocs; rank++) {
+            int nelems = (rank < ngaps % nprocs) ? rem + 1 : rem;
+            fill_nreqs[rank] = nelems;
+            /* extend requests */
+            off[rank] = (int*) realloc(off[rank], (nreqs[rank] + nelems) * sizeof(int));
+            len[rank] = (int*) realloc(len[rank], (nreqs[rank] + nelems) * sizeof(int));
+        }
+
+        /* assign contiguous gaps to the same process */
+        rank = 0;
+        int prev = 1;
+        int ncontig = nreqs[rank] - 1; /* add at the end */
+        for (j=0; j<gsize; j++) {
+            if (map[j] == 0) {
+                /* Note dims[] is in Fortran order */
+                if (prev == 1 || j % dims[0] == 0) { /* end of dim X */
+                    ncontig++;
+                    if (ncontig == nreqs[rank] + fill_nreqs[rank]) {
+                        rank++;
+                        ncontig = nreqs[rank]; /* add at the end */
+                    }
+                    assert(rank <= nprocs);
+                    off[rank][ncontig] = j;
+                    len[rank][ncontig] = 1;
+                    prev = 0;
+                }
+                else
+                    len[rank][ncontig]++;
+            }
+            else prev = 1;
+        }
+
+        /* sort off-len pairs into an increasing order */
+        for (rank=0; rank<nprocs; rank++) {
+            nreqs[rank] += fill_nreqs[rank];
+            off_len *pairs = (off_len*) malloc(nreqs[rank] * sizeof(off_len));
+            for (i=0; i<nreqs[rank]; i++) {
+                pairs[i].off = off[rank][i];
+                pairs[i].len = len[rank][i];
+            }
+            qsort((void*)pairs, nreqs[rank], sizeof(off_len), off_len_compare);
+            for (i=0; i<nreqs[rank]; i++) {
+                off[rank][i] = pairs[i].off;
+                len[rank][i] = pairs[i].len;
+            }
+            free(pairs);
+        }
+        free(fill_nreqs);
+    }
+    free(map);
+
+    if (raw_decom) {
+        /* populate raw_off */
+        raw_nreqs = (int*)  malloc(nprocs * sizeof(int));
+        raw_off   = (int**) malloc(nprocs * sizeof(int*));
+        for (rank=0; rank<nprocs; rank++) {
+            raw_nreqs[rank] = 0;
+            for (i=0; i<nreqs[rank]; i++)
+                raw_nreqs[rank] += len[rank][i];
+            raw_off[rank] = (int*) malloc(raw_nreqs[rank] * sizeof(int));
+            k = 0;
+            for (i=0; i<nreqs[rank]; i++)
+                for (j=0; j<len[rank][i]; j++)
+                    raw_off[rank][k++] = off[rank][i] + j;
+        }
+        total_raw_nreqs = raw_nreqs[0];
+        for (rank=1; rank<nprocs; rank++)
+            total_raw_nreqs += raw_nreqs[rank];
     }
 
     /* find total, max, and min nreqs amount all processes */
     total_nreqs = max_nreqs = min_nreqs = nreqs[0];
-    total_raw_nreqs = raw_nreqs[0];
-    for (i = 1; i < nprocs; i++) {
+    for (i=1; i<nprocs; i++) {
         total_nreqs += nreqs[i];
-        total_raw_nreqs += raw_nreqs[i];
         max_nreqs = (nreqs[i] > max_nreqs) ? nreqs[i] : max_nreqs;
         min_nreqs = (nreqs[i] < min_nreqs) ? nreqs[i] : min_nreqs;
     }
 
-    if (verbose) printf("max_nreqs=%d min_nreqs=%d\n", max_nreqs, min_nreqs);
-
-    /* check if the entire array is covered */
-    for (k = 0, j = 0; j < gsize; j++) k += map[j];
-    if (k != gsize) {
-        printf("Warning: decomposition %d does not cover the entire array\n",
-               label);
-        printf("\tglobal %dD array size: %lld", ndims, dims[0]);
-        for (i=1; i<ndims; i++) printf(" x %lld", dims[i]);
-        printf(" = %lld\n", gsize);
-        printf("\tthe decomposition map covers only %lld of them\n", k);
-    }
-    free(map);
+    if (verbose) printf("total_nreqs=%d max_nreqs=%d min_nreqs=%d\n", total_nreqs, max_nreqs, min_nreqs);
 
     /* check if dimension decomp_nprocs has been defined in the netCDF file */
     err = ncmpi_inq_dimid(ncid, "decomp_nprocs", &dimid);
@@ -288,8 +417,7 @@ int add_decomp(int ncid, const char *infname, int label) {
     err = ncmpi_put_att_text(ncid, varid[2], "description", strlen(str), str);
     ERR
 
-    maxlen = minlen = 0;
-    err             = ncmpi_put_att_int(ncid, varid[2], "max", NC_INT, 1, &maxlen);
+    err = ncmpi_put_att_int(ncid, varid[2], "max", NC_INT, 1, &maxlen);
     ERR
     err = ncmpi_put_att_int(ncid, varid[2], "min", NC_INT, 1, &minlen);
     ERR
@@ -316,11 +444,12 @@ int add_decomp(int ncid, const char *infname, int label) {
 
     /* swap dims in Fortran order to dims_C in C order */
     dims_C = (MPI_Offset *)malloc(ndims * sizeof(MPI_Offset));
-    for (i=0; i < ndims; i++) dims_C[i] = dims[ndims - i - 1];
+    for (i=0; i<ndims; i++) dims_C[i] = dims[ndims - i - 1];
     sprintf(name, "D%d.dims", label);
     err = ncmpi_put_att_longlong(ncid, NC_GLOBAL, name, NC_INT, ndims, dims_C);
     ERR
     free(dims_C);
+    free(dims);
 
     sprintf(name, "D%d.max_nreqs", label);
     err = ncmpi_put_att_int(ncid, NC_GLOBAL, name, NC_INT, 1, &max_nreqs);
@@ -337,116 +466,48 @@ int add_decomp(int ncid, const char *infname, int label) {
     err = ncmpi_put_var_int_all(ncid, varid[0], nreqs);
     ERR
 
-    /* write variable containing number of requests before merge for each process */
-    if (raw_decom){
+    /* write variable containing number of requests before coalescing */
+    if (raw_decom) {
         err = ncmpi_put_var_int_all(ncid, varid[3], raw_nreqs);
         ERR
     }
 
-    /* read the offsets again into allocated array off */
     start = 0;
     raw_start = 0;
-    rewind(fd);
-    fgets(buf, LINE_SIZE, fd);
-    fgets(buf, LINE_SIZE, fd);
-    for (rank = 0; rank < nprocs; rank++) {
-        int prev, ncontig = 0, decomp_rank;
-        char *ret;
-
-        /* reads the first line of rank ID and no. requests */
-        while (NULL != (ret = fgets(buf, LINE_SIZE, fd))) {
-            if (buf[0] != '\n') break; /* non-empty line */
-        }
-        if (ret == NULL || strncmp(buf, "Obtained", 8) == 0) {
-            /* there is no request for remaining ranks */
-            for (decomp_rank = rank; decomp_rank < nprocs; decomp_rank++) nreqs[rank] = 0;
-            break; /* loop of rank */
-        }
-
-        decomp_rank = atoi(strtok(buf, " ")); /* rank ID */
-        while (rank < decomp_rank)            /* this rank has no request */
-            rank++;
-
-        nreqs[rank] = atoi(strtok(NULL, " ")); /* number of requests */
-        if (nreqs[rank] == 0)                  /* this rank has zero request */
-            continue;                          /* loop of rank */
-
-        off = (int *)malloc(nreqs[rank] * sizeof(int));
-        len = (int *)malloc(nreqs[rank] * sizeof(int));
-        raw_off = (int *)malloc(raw_nreqs[rank] * sizeof(int));
-        fgets(buf, LINE_SIZE, fd);
-        i=0;
-        off[0] = raw_off[i++] = atoi(strtok(buf, " "));
-        j      = 1;
-        while (off[0] == 0) {
-            off[0] = raw_off[i++] = atoi(strtok(NULL, " "));
-            j++;
-        }
-        off[0]--;
-        k = 1;
-        for (; j < nreqs[rank]; j++) {
-            off[k] = raw_off[i++] = atoi(strtok(NULL, " "));
-            if (off[k] == 0) continue; /* skip 0 values */
-            off[k]--;                  /* offset is 1 based */
-            k++;
-        }
-
-        /* sort off[] into an increasing order */
-        qsort((void *)off, k, sizeof(int), intcompare);
-
-        ncontig = 1;
-        prev    = 0;
-        len[0]  = 1;
-        for (j = 1; j < k; j++) {
-            /* break contiguity at dimension boundaries or noncontiguous */
-            if (off[j] % dims[0] == 0 || off[j] > off[j - 1] + 1) ncontig++;
-
-            if (off[j] % dims[0] == 0 || off[j] > off[prev] + len[prev]) {
-                prev++;
-                if (prev < j) off[prev] = off[j];
-                len[prev] = 1;
-            } else
-                len[prev]++;
-        }
-        assert(prev + 1 == ncontig);
-
-        if (rank == 0) maxlen = minlen = len[0];
-        for (j = 0; j < ncontig; j++) {
-            maxlen = (len[j] > maxlen) ? len[j] : maxlen;
-            minlen = (len[j] < minlen) ? len[j] : minlen;
-        }
-
+    for (rank=0; rank<nprocs; rank++) {
         /* write/append to variables offsets and lengths */
-        count = ncontig;
-        err   = ncmpi_put_vara_int_all(ncid, varid[1], &start, &count, off);
+        count = nreqs[rank];
+        err = ncmpi_put_vara_int_all(ncid, varid[1], &start, &count, off[rank]);
         ERR
-        err = ncmpi_put_vara_int_all(ncid, varid[2], &start, &count, len);
+        err = ncmpi_put_vara_int_all(ncid, varid[2], &start, &count, len[rank]);
         ERR
-        start += ncontig;
+        start += count;
 
         /* write/append raw file offsets before merge */
-        if (raw_decom){
-            raw_count = raw_nreqs[rank];
-            err = ncmpi_put_vara_int_all(ncid, varid[4], &raw_start, &raw_count, raw_off);
+        if (raw_decom) {
+            count = raw_nreqs[rank];
+            err = ncmpi_put_vara_int_all(ncid, varid[4], &raw_start, &count, raw_off[rank]);
             ERR
-            raw_start += raw_count; 
+            raw_start += count;
         }
-
-        free(off);
-        free(len);
-        free(raw_off);
     }
-    free(dims);
-
-    err = ncmpi_put_att_int(ncid, varid[2], "max", NC_INT, 1, &maxlen);
-    ERR
-    err = ncmpi_put_att_int(ncid, varid[2], "min", NC_INT, 1, &minlen);
-    ERR
 
 fn_exit:
     fclose(fd);
+
     free(nreqs);
-    free(raw_nreqs);
+    for (rank=0; rank<nprocs; rank++) {
+        free(off[rank]);
+        free(len[rank]);
+    }
+    free(off);
+    free(len);
+    if (raw_decom) {
+        for (rank=0; rank<nprocs; rank++)
+            free(raw_off[rank]);
+        free(raw_off);
+        free(raw_nreqs);
+    }
     free(buf);
 
     return err;
@@ -467,38 +528,23 @@ void extract_file_names(const char  *inList,
 
     fd = fopen(inList, "r");
     if (fd == NULL) {
-        printf("Error: open fails on file %s(%s)\n",inList,strerror(errno));
+        printf("Error: open fails on file %s(%s)\n", inList, strerror(errno));
         exit(1);
     }
 
     /* count number of input files */
     num_files = 0;
     while (fgets(line, 1024, fd)) {
-        if (strlen(line) == 0)
-            continue; /* skip empty lines */
-        if (line[0] == '#')
-            continue; /* skip comment line(start with #) */
-        num_files++;
-    }
-
-    /* read input file names */
-    rewind(fd);
-    i=0;
-    while (fgets(line, 1024, fd)) {
-        char *tail;
-        if (strlen(line) == 0)
-            continue; /* skip empty lines */
-        if (line[0] == '#')
-            continue; /* skip comment line(start with #) */
+        char *ptr = line;
+        while (*ptr == ' ' || *ptr == '\t') ptr++; /* skip blank space */
+        if (*ptr == '\n') continue; /* skip empty lines */
+        if (*ptr == '#')  continue; /* skip comment line(start with #) */
         /* remove blanks at tail. Note fgets stores newline to the buffer */
-        tail = line + strlen(line) - 1;
-        while (*tail == ' ' || *tail == '\t' || *tail == '\n') tail--;
-        tail[1] = '\0';
+        while (ptr[strlen(ptr)-1] == '\n' || ptr[strlen(ptr)-1] == ' ')
+            ptr[strlen(ptr)-1] = '\0';
         /* save file name to in_list */
-        infname[i] = strdup(line);
-        i++;
+        infname[num_files++] = strdup(ptr);
     }
-    assert(i == num_files);
     fclose(fd);
 
     *num_decomp = num_files;
@@ -506,10 +552,11 @@ void extract_file_names(const char  *inList,
 
 static void usage(char *argv0) {
     char *help =
-    "Usage: %s [-h|-v|-r|-l] -i input_file -o out_file\n"
+    "Usage: %s [-h|-v|-r|-f|-l num] -i input_file -o out_file\n"
     "  -h             Print help\n"
     "  -v             Verbose mode\n"
-    "  -r             Include original decomposition map\n"
+    "  -r             Include original decomposition maps\n"
+    "  -f             Fill in unassigned elements in decomposition maps\n"
     "  -l num         max number of characters per line in input file\n"
     "  -i input_file  a text file containing a list of decomposition\n"
     "                 map .dat file names\n"
@@ -520,14 +567,14 @@ static void usage(char *argv0) {
 /*----< main() >------------------------------------------------------------*/
 int main(int argc, char **argv) {
     char *inList=NULL, *infname[MAX_NFILES], *outfname=NULL, cmd_line[4096];
-    int i, rank, ncid, num_decomp=0, dimid, err=NC_NOERR;
+    int i, rank, ncid, num_decomp=0, dimid, err=NC_NOERR, fill_gaps;
     MPI_Info info;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
     cmd_line[0] = '\0';
-    for (i=0; i < argc; i++) {
+    for (i=0; i<argc; i++) {
         strcat(cmd_line, argv[i]);
         strcat(cmd_line, " ");
     }
@@ -536,15 +583,18 @@ int main(int argc, char **argv) {
     line_sz   = LINE_SIZE;
     verbose   = 0;
     raw_decom = 0;
+    fill_gaps = 0;
 
     /* get command-line arguments */
-    while ((i = getopt(argc, argv, "hvro:l:i:")) != EOF)
+    while ((i = getopt(argc, argv, "hvrfo:l:i:")) != EOF)
         switch (i) {
             case 'v': verbose = 1;
                       break;
             case 'o': outfname = strdup(optarg);
                       break;
             case 'l': line_sz = atoi(optarg);
+                      break;
+            case 'f': fill_gaps = 1;
                       break;
             case 'r': raw_decom = 1;
                       break;
@@ -608,7 +658,7 @@ int main(int argc, char **argv) {
     CHECK_MPIERR
 
     /* create a new NC file */
-    err = ncmpi_create(MPI_COMM_WORLD, outfname, NC_NOCLOBBER|NC_64BIT_DATA,
+    err = ncmpi_create(MPI_COMM_WORLD, outfname, NC_NOCLOBBER,
                        info, &ncid);
     if (err != NC_NOERR) {
         printf("Error at line %d in %s: %s\n", __LINE__, __FILE__,
@@ -628,8 +678,8 @@ int main(int argc, char **argv) {
     ERR
 
     for (i=0; i<num_decomp; i++) {
-        err = add_decomp(ncid, infname[i], i + 1); ERR;
-        err = ncmpi_redef(ncid); ERR;
+        err = add_decomp(ncid, infname[i], i+1, fill_gaps); ERR
+        err = ncmpi_redef(ncid); ERR
     }
 
     err = ncmpi_close(ncid);
