@@ -406,6 +406,7 @@ static
 int set_vars(int        in_ncid,
              int        out_ncid,
              int        nvars,
+             int        num_decomp,
              io_decomp *decomp,
              io_var    *var)
 {
@@ -416,21 +417,41 @@ int set_vars(int        in_ncid,
     err = ncmpi_inq_unlimdim(in_ncid, &rec_dim);
     CHECK_NC_ERR
 
+#define NUM_DECOMP_AUX_VARS 5
+#ifdef NUM_DECOMP_AUX_VARS
+    /* first nvars_decomp variables are decomposition variables:
+     * D*.nreqs, D*.blob_start, D*.blob_count, D*.offsets, D*.lengths
+     */
+    nvars_decomp = num_decomp * NUM_DECOMP_AUX_VARS;
+#endif
+
     /* copy over variable definition and attributes */
     for (i=0; i<nvars; i++) {
         int dimids[4], nattrs;
         MPI_Offset tmp;
+
+        var[i].varid  = -1; /* decomposition variable */
+        var[i].is_rec = 0;
+        var[i].dec_id = -1;
+
+#ifdef NUM_DECOMP_AUX_VARS
+        if (i < nvars_decomp) {
+            /* inquire xtype of variable i */
+            err = ncmpi_inq_vartype(in_ncid, i, &xtype);
+            CHECK_VAR_ERR(in_ncid, i)
+            var[i].vlen = xlen_nc_type(xtype);
+            continue;
+        }
+#endif
 
         /* inquire metadata of variable i */
         err = ncmpi_inq_var(in_ncid, i, name, &xtype, &var[i].ndims, dimids,
                             &nattrs);
         CHECK_VAR_ERR(in_ncid, i)
 
-        var[i].varid  = -1;
-        var[i].is_rec = 0;
-        var[i].dec_id = -1;
-        var[i].vlen   = xlen_nc_type(xtype);
+        var[i].vlen = xlen_nc_type(xtype);
 
+#ifndef NUM_DECOMP_AUX_VARS
         /* skip copying decomposition variables */
         int name_len = strlen(name);
         if ((name[0] == 'D' && strcmp(name+name_len-6, ".nreqs"     ) == 0) ||
@@ -441,6 +462,7 @@ int set_vars(int        in_ncid,
             nvars_decomp++;
             continue;
         }
+#endif
 
         /* inquire global_dimids (global dimension IDs) */
         err = ncmpi_inq_attlen(in_ncid, i, "global_dimids", &tmp);
@@ -737,7 +759,7 @@ int main (int argc, char **argv)
     /* read variable metadata from input file, define variables in output file,
      * and copy over their attributes
      */
-    err = set_vars(in_ncid, out_ncid, nvars, decomp, var);
+    err = set_vars(in_ncid, out_ncid, nvars, num_decomp, decomp, var);
     if (err != 0) goto err_out;
     err = ncmpi_enddef(out_ncid);
     CHECK_NC_ERR
