@@ -473,7 +473,12 @@ int main (int argc, char **argv) {
     timing[2] = MPI_Wtime() - timing[2];
 
     /* report timing breakdowns */
-    report_timing_WR(&cfg, &decom);
+    if (cfg.rd) {
+        report_timing_RD(&cfg, &decom);
+    }
+    else{
+        report_timing_WR(&cfg, &decom);
+    }
 
     if (cfg.profiling) e3sm_io_print_profile(&cfg);
 

@@ -150,12 +150,106 @@ int e3sm_io_case::rd_test(e3sm_io_config &cfg,
                           e3sm_io_driver &driver)
 {
     int err=0;
+    char *ext;
+    case_meta *cmeta;
 
-    if (cfg.api == adios)
-        ERR_OUT ("Read is not implemented when using ADIOS I/O")
+    if (cfg.strategy != canonical)
+        ERR_OUT ("Read is only supported in canonical storage layout")
 
-    /* TODO: for others, borrow wr_test() over here */
+    /* construct I/O metadata */
+    err = calc_metadata(&cfg, &decom);
+    CHECK_ERR
+
+    ext = strrchr(cfg.in_path, '.');
+
+    if (cfg.run_case == G) {
+        cmeta            = &cfg.G_case;
+        cmeta->nrecs     =  cfg.G_case.nrecs;
+        cmeta->nvars     = NVARS_G_CASE;
+        cmeta->info_used = MPI_INFO_NULL;
+
+        /* set flush frequency, once per ffreq time steps */
+        if (cmeta->ffreq == -1 || cmeta->ffreq > cmeta->nrecs)
+            cmeta->ffreq = cmeta->nrecs;
+
+        /* construct file name */
+        strcpy(cmeta->outfile, cfg.in_path);
+
+        cfg.nvars = cmeta->nvars;
+        err = var_rd_case(cfg, decom, driver, cmeta);
+        CHECK_ERR
+
+        goto err_out;
+    }
+
+    /* Only F anc I cases write to h0 and h1 files */
+    if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
+        if (cfg.run_case == F) {
+            cmeta        = &cfg.F_case_h0;
+            cmeta->nrecs =  cfg.F_case_h0.nrecs;
+            cmeta->nvars = NVARS_F_CASE_H0;
+        }
+        else if (cfg.run_case == I) {
+            cmeta        = &cfg.I_case_h0;
+            cmeta->nrecs =  cfg.I_case_h0.nrecs;
+            cmeta->nvars = NVARS_I_CASE_H0;
+        }
+        cmeta->info_used = MPI_INFO_NULL;
+
+        /* set flush frequency, once per ffreq time steps */
+        if (cmeta->ffreq == -1 || cmeta->ffreq > cmeta->nrecs)
+            cmeta->ffreq = cmeta->nrecs;
+
+        /* construct file name */
+        if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5") && strcmp(ext, ".nc4")))
+            sprintf(cmeta->outfile, "%s_h0", cfg.in_path);
+        else { /* add "_h0" before file extension */
+            strcpy(cmeta->outfile, cfg.in_path);
+            sprintf(cmeta->outfile + (ext - cfg.in_path), "_h0%s", ext);
+        }
+
+        cfg.hist = h0;
+        cfg.nvars = cmeta->nvars;
+        err = var_rd_case(cfg, decom, driver, cmeta);
+        CHECK_ERR
+    }
+
+    if (cfg.hx == 1 || cfg.hx == -1) {  /* h1 file */
+        if (cfg.run_case == F) {
+            cmeta        = &cfg.F_case_h1;
+            cmeta->nrecs =  cfg.F_case_h1.nrecs;
+            cmeta->nvars = NVARS_F_CASE_H1;
+        }
+        else if (cfg.run_case == I) {
+            cmeta        = &cfg.I_case_h1;
+            cmeta->nrecs =  cfg.I_case_h1.nrecs;
+            cmeta->nvars = NVARS_I_CASE_H1;
+        }
+        cmeta->info_used = MPI_INFO_NULL;
+
+        /* set flush frequency, once per ffreq time steps */
+        if (cmeta->ffreq == -1 || cmeta->ffreq > cmeta->nrecs)
+            cmeta->ffreq = cmeta->nrecs;
+
+        /* construct file name */
+        if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5") && strcmp(ext, ".nc4")))
+            sprintf(cmeta->outfile, "%s_h1", cfg.in_path);
+        else { /* add "_h1" before file extension */
+            strcpy(cmeta->outfile, cfg.in_path);
+            sprintf(cmeta->outfile + (ext - cfg.in_path), "_h1%s", ext);
+        }
+
+        cfg.hist = h1;
+        cfg.nvars = cmeta->nvars;
+        err = var_rd_case(cfg, decom, driver, cmeta);
+        CHECK_ERR
+    }
 
 err_out:
+    if (cfg.sub_comm != MPI_COMM_NULL) {
+        MPI_Comm_free(&cfg.sub_comm);
+        cfg.sub_comm = MPI_COMM_NULL;
+    }
+
     return err;
 }
