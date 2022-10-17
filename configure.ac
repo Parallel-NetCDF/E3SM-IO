@@ -645,6 +645,15 @@ AC_ARG_WITH([logvol],
    if test "x$h5ldump" != x ; then
       AC_SUBST(H5LDUMP, [$h5ldump])
    fi
+   if test "x$logvol_bindir" != x ; then
+      AC_PATH_PROG([h5lreplay],[h5lreplay],,[$logvol_bindir])
+   else
+      dnl Check h5lreplay under $PATH
+      AC_PATH_PROG([h5lreplay],[h5lreplay])
+   fi
+   if test "x$h5lreplay" != x ; then
+      AC_SUBST(H5LREPLAY, [$h5lreplay])
+   fi
    # check if shared libraries are available
    lib_shared=1
    AC_CHECK_FILE([$hdf5_lib/libhdf5.so], [], [lib_shared=0])
