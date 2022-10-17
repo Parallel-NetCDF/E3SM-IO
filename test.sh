@@ -195,6 +195,7 @@ for API in "${APIS[@]}" ; do
                 echo "Error: Output file $f is not Log VOL, but ${FILE_KIND}"
                 exit 1
              else
+                ${H5LREPLAY} -i ${f} -o ${f}_replay.h5
                 echo "Success: Output file $f is ${FILE_KIND}"
                 echo ""
              fi
