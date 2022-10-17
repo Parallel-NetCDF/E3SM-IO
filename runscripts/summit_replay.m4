@@ -14,10 +14,11 @@ set -x #echo on
 
 CONFIG_FDBG=../datasets/f_case_866x72_16p.nc
 CONFIG_F30=../datasets/f_case_48602x72_512p.nc
-CONFIG_F120=${CSCRATCH}/FS_128_16M/e3sm_data/decom/FC5AV1C-H01A_ne120_oRRS18v3_21600p_raw.nc
-CONFIG_G=${CSCRATCH}/FS_128_16M/e3sm_data/decom/GMPAS-NYF_T62_oRRS18to6v3_9600p_raw.nc
+CONFIG_F120=/gpfs/alpine/csc332/scratch/khl7265/FS_EVAL/e3sm/decom/FC5AV1C-H01A_ne120_oRRS18v3_21600p_raw.nc
+CONFIG_GDBG=../datasets/g_case_cmpaso_16p.nc 
+CONFIG_G=/gpfs/alpine/csc332/scratch/khl7265/FS_EVAL/e3sm/decom/GMPAS-NYF_T62_oRRS18to6v3_9600p_raw.nc
 CONFIG_IDBG=../datasets/i_case_f19_g16_16p.nc 
-CONFIG_I=${CSCRATCH}/FS_128_16M/e3sm_data/decom/I1850GSWCNPRDCTCBC_hcru_hcru_1344p_raw.nc
+CONFIG_I=/gpfs/alpine/csc332/scratch/khl7265/FS_EVAL/e3sm/decom/I1850GSWCNPRDCTCBC_hcru_hcru_1344p_raw.nc
 
 IN_FDBG=/global/cscratch1/sd/khl7265/FS_64_1M/E3SM/realdata/F_DBG
 IN_F30=/global/cscratch1/sd/khl7265/FS_64_1M/E3SM/realdata/F_30
@@ -83,11 +84,6 @@ do
     mkdir -p ${OUTDIR_ROOT}/${API}/${STRATE}/${CONFIG_NAME}
     mkdir -p ${SUBFILEDIR_ROOT}/${API}/${STRATE}/${CONFIG_NAME}
 done
-
-sbcast -v /global/cfs/cdirs/m844/khl7265/cori/pio/eval_build/tools/adios2pio-nm/adios2pio-nm.exe /tmp/adios2pio-nm.exe
-sbcast -v /global/cfs/cdirs/m844/khl7265/cori/.local/log_io_vol/master_static/bin/h5lreplay /tmp/h5lreplay
-sbcast -v ../utils/pnetcdf_blob_replay /tmp/pnetcdf_blob_replay
-sbcast -v ../src/e3sm_io /tmp/e3sm_io
 
 export LD_LIBRARY_PATH=${HDF5_LIB_PATH}/lib:${PNC_LIB_PATH}/lib:${ADIOS2_LIB_PATH}/lib64:${LOGVOL_LIB_PATH}/lib:${LD_LIBRARY_PATH}
 export PNETCDF_SHOW_PERFORMANCE_INFO=1
@@ -180,14 +176,14 @@ do
             STARTTIME=$(date +%s.%N)
 
             if [ "${API}" == "adios" ] ; then
-                srun -n ${NP} -t ${RTL} -c 4 --cpu_bind=cores /tmp/adios2pio-nm.exe --bp-file=${RDDIR}/${FX}.bp --nc-file=${RDDIR}/${FX}_replay --pio-format=pnetcdf
+                jsrun -X 1 -p ${NP} -n ${NA} -r 2 -d plane:42 -c 21 -g 0 -b packed:smt:2 -l cpu-cpu --stdio_mode collected /ccs/home/khl7265/csc332/pio/eval_build/tools/adios2pio-nm/adios2pio-nm.exe --bp-file=${RDDIR}/${FX}.bp --nc-file=${RDDIR}/${FX}_replay --pio-format=pnetcdf
             elif [ "${API}" == "hdf5_log" ] ; then
-                srun -n ${NP} -t ${RTL} -c 4 --cpu_bind=cores /tmp/h5lreplay -i ${RDDIR}/${FX} -o ${RDDIR}/${FX}_replay
+                jsrun -X 1 -p ${NP} -n ${NA} -r 2 -d plane:42 -c 21 -g 0 -b packed:smt:2 -l cpu-cpu --stdio_mode collected ${LOGVOL_LIB_PATH}/bin/h5lreplay -i ${RDDIR}/${FX} -o ${RDDIR}/${FX}_replay
             else
                 if [ "${STRATE}" == "blob" ] ; then
-                    srun -n ${NP} -t ${RTL} -c 4 --cpu_bind=cores /tmp/pnetcdf_blob_replay -i ${RDDIR}/${FX} -o ${RDDIR}/${FX}_replay
+                    jsrun -X 1 -p ${NP} -n ${NA} -r 2 -d plane:42 -c 21 -g 0 -b packed:smt:2 -l cpu-cpu --stdio_mode collected ../utils/pnetcdf_blob_replay -i ${RDDIR}/${FX} -o ${RDDIR}/${FX}_replay
                 else
-                    srun -n ${NP} -t ${RTL} -c 4 --cpu_bind=cores /tmp/e3sm_io -k -i ${RDDIR}/${FX} -a ${API} -f ${FX} -r ${NREC} -y ${NREC} -x ${STRATE} ${CONFIG} 
+                    jsrun -X 1 -p ${NP} -n ${NA} -r 2 -d plane:42 -c 21 -g 0 -b packed:smt:2 -l cpu-cpu --stdio_mode collected ../src/e3sm_io -k -i ${RDDIR}/${FX} -a ${API} -f ${FX} -r ${NREC} -y ${NREC} -x ${STRATE} ${CONFIG} 
                 fi
             fi
 
