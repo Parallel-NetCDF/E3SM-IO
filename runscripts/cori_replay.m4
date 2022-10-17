@@ -186,6 +186,8 @@ do
             else
                 if [ "${STRATE}" == "blob" ] ; then
                     srun -n ${NP} -t ${RTL} -c 4 --cpu_bind=cores /tmp/pnetcdf_blob_replay -i ${RDDIR}/${FX} -o ${RDDIR}/${FX}_replay
+                else
+                    srun -n ${NP} -t ${RTL} -c 4 --cpu_bind=cores /tmp/e3sm_io -k -i ${RDDIR}/${FX} -a ${API} -f ${FX} -r ${NREC} -x ${STRATE} ${CONFIG} 
                 fi
             fi
 
