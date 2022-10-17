@@ -252,6 +252,7 @@ extern void print_info (MPI_Info *info_used);
 extern int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom);
 extern int e3sm_io_xlen_nc_type(nc_type xtype, int *size);
 extern int report_timing_WR(e3sm_io_config *cfg, e3sm_io_decom *decom);
+extern int report_timing_RD(e3sm_io_config *cfg, e3sm_io_decom *decom);
 #ifdef __cplusplus
 }
 #endif

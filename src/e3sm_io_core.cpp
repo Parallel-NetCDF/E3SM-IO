@@ -24,6 +24,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     int err=0;
     e3sm_io_case *tcase    = NULL;
     e3sm_io_driver *driver = NULL;
+    char *ext;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_TOTAL)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_CORE)
@@ -36,9 +37,32 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     /* perform read */
     if (cfg->rd) {
         e3sm_io_api api_tmp = cfg->api;
+        char path[1028];
 
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_INIT_DRIVER)
-        driver = e3sm_io_get_driver (cfg->in_path, cfg);
+        /* construct file name */
+        if (cfg->run_case == F || cfg->run_case == I) {
+            if (ext == NULL || (strcmp(ext, ".nc") && strcmp(ext, ".h5") && strcmp(ext, ".nc4")))
+                if (cfg->hx == 0 || cfg->hx == -1){
+                    sprintf(path, "%s_h0", cfg->in_path);
+                }
+                else{
+                    sprintf(path, "%s_h1", cfg->in_path);
+                }
+            else { /* add "_h0" before file extension */
+                strcpy(path, cfg->in_path);
+                if (cfg->hx == 0 || cfg->hx == -1){
+                    sprintf(path + (ext - cfg->in_path), "_h0%s", ext);
+                }
+                else{
+                    sprintf(path + (ext - cfg->in_path), "_h1%s", ext);
+                }
+            }
+        }
+        else{
+            strcpy(path, cfg->in_path);
+        }
+        driver = e3sm_io_get_driver (path, cfg);
         CHECK_PTR (driver)
         E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_DRIVER)
 

@@ -17,9 +17,11 @@ CXX_SRCS =  e3sm_io_case.cpp \
             header_def_I_case.cpp \
             header_inq_F_case.cpp \
             header_inq_G_case.cpp \
+            header_inq_I_case.cpp \
             var_rd_F_case.cpp \
             var_rd_G_case.cpp \
             var_wr_case.cpp \
+            var_rd_case.cpp \
             scorpio_wrapper.cpp \
             report_timing.cpp \
             utils.cpp
