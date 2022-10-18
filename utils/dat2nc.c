@@ -41,7 +41,7 @@
     }                                                                        \
 }
 
-static int verbose, line_sz, raw_decom;
+static int verbose, line_sz, raw_decom, fill_gaps, sort_off;
 
 typedef struct {
     int off;
@@ -72,10 +72,10 @@ int intcompare(const void *p1, const void *p2) {
 
 /*----< add_decomp() >-------------------------------------------------------*/
 static
-int add_decomp(int ncid, const char *infname, int label, int fill_gaps) {
+int add_decomp(int ncid, const char *infname, int label) {
     char *buf, name[128], *map, *str;
     FILE *fd;
-    int i, j, rank, nprocs, dimid, ndims, ngaps, cur, err=NC_NOERR;
+    int i, j, rank, nprocs, dimid, ndims, dimX, ngaps, cur, err=NC_NOERR;
     int varid[5], *nreqs, **off, **len;
     int total_nreqs, max_nreqs, min_nreqs, maxlen, minlen;
     MPI_Offset k, gsize, *dims, *dims_C, start, count;
@@ -126,7 +126,7 @@ int add_decomp(int ncid, const char *infname, int label, int fill_gaps) {
     if (verbose) printf("\t%s", buf);
     dims[0] = atoll(strtok(buf, " "));
     for (i=1; i<ndims; i++) dims[i] = atoll(strtok(NULL, " "));
-    /* Note dims[] is in Fortran order */
+    /* Note dims[] read from the PIO decomposition file are in Fortran order */
     if (verbose) {
         if (ndims == 1)
             printf("lable D%d: dims = %lld\n", label, dims[0]);
@@ -135,6 +135,7 @@ int add_decomp(int ncid, const char *infname, int label, int fill_gaps) {
         else if (ndims == 3)
             printf("lable D%d: dims = %lld x %lld x %lld (in C order)\n", label, dims[2], dims[1], dims[0]);
     }
+    dimX = dims[0]; /* the least significant dimension */
 
     /* gsize is total number of elements in the global array */
     gsize = dims[0];
@@ -211,8 +212,9 @@ int add_decomp(int ncid, const char *infname, int label, int fill_gaps) {
         }
         /* k now is the number of non-zero offsets */
 
-        /* sort off[rank][] into an increasing order */
-        qsort((void *)off[rank], k, sizeof(int), intcompare);
+        if (sort_off)
+            /* sort off[rank][] into an increasing order */
+            qsort((void *)off[rank], k, sizeof(int), intcompare);
 
         /* build a map for checking if the decompositions cover all elements */
         for (j=0; j<k; j++) map[off[rank][j]] = 1;
@@ -221,18 +223,20 @@ int add_decomp(int ncid, const char *infname, int label, int fill_gaps) {
         prev = 0;
         len[rank][0] = 1;
         for (j=1; j<k; j++) {
-            if (off[rank][j] != off[rank][prev] + len[rank][prev] || /* noncontiguous */
-                off[rank][j] % dims[0] == 0) { /* break at dimension boundaries */
-                                               /* Note dims[] is in Fortran order */
+            if (off[rank][j] != off[rank][prev] + len[rank][prev] || /* not contiguous from previous offset-length pair */
+                off[rank][j] % dimX == 0) { /* break at dimension boundaries */
                 prev++;
                 if (prev < j) off[rank][prev] = off[rank][j];
                 len[rank][prev] = 1;
             } else
                 len[rank][prev]++;
         }
-        /* nreqs[] becomes number of noncontiguous requests */
+        /* set nreqs[] to the number of offset-length pairs */
         nreqs[rank] = prev+1;
 
+        /* find max and min contiguous length among all offset-length pairs and
+         * among all processes
+         */
         if (rank == 0) maxlen = minlen = len[rank][0];
         for (j=0; j<nreqs[rank]; j++) {
             maxlen = (len[rank][j] > maxlen) ? len[rank][j] : maxlen;
@@ -251,7 +255,7 @@ int add_decomp(int ncid, const char *infname, int label, int fill_gaps) {
                 cur = 0;
             }
             /* Note dims[] is in Fortran order */
-            else if (j % dims[0] == 0) /* end of dim X */
+            else if (j % dimX == 0) /* end of dim X */
                 ngaps++;
         }
         else cur = 1;
@@ -291,7 +295,7 @@ int add_decomp(int ncid, const char *infname, int label, int fill_gaps) {
         for (j=0; j<gsize; j++) {
             if (map[j] == 0) {
                 /* Note dims[] is in Fortran order */
-                if (prev == 1 || j % dims[0] == 0) { /* end of dim X */
+                if (prev == 1 || j % dimX == 0) { /* end of dim X */
                     ncontig++;
                     if (ncontig == nreqs[rank] + fill_nreqs[rank]) {
                         rank++;
@@ -308,20 +312,22 @@ int add_decomp(int ncid, const char *infname, int label, int fill_gaps) {
             else prev = 1;
         }
 
-        /* sort off-len pairs into an increasing order */
         for (rank=0; rank<nprocs; rank++) {
             nreqs[rank] += fill_nreqs[rank];
-            off_len *pairs = (off_len*) malloc(nreqs[rank] * sizeof(off_len));
-            for (i=0; i<nreqs[rank]; i++) {
-                pairs[i].off = off[rank][i];
-                pairs[i].len = len[rank][i];
+            /* sort off-len pairs into an increasing order */
+            if (sort_off) {
+                off_len *pairs = (off_len*) malloc(nreqs[rank] * sizeof(off_len));
+                for (i=0; i<nreqs[rank]; i++) {
+                    pairs[i].off = off[rank][i];
+                    pairs[i].len = len[rank][i];
+                }
+                qsort((void*)pairs, nreqs[rank], sizeof(off_len), off_len_compare);
+                for (i=0; i<nreqs[rank]; i++) {
+                    off[rank][i] = pairs[i].off;
+                    len[rank][i] = pairs[i].len;
+                }
+                free(pairs);
             }
-            qsort((void*)pairs, nreqs[rank], sizeof(off_len), off_len_compare);
-            for (i=0; i<nreqs[rank]; i++) {
-                off[rank][i] = pairs[i].off;
-                len[rank][i] = pairs[i].len;
-            }
-            free(pairs);
         }
         free(fill_nreqs);
     }
@@ -552,11 +558,12 @@ void extract_file_names(const char  *inList,
 
 static void usage(char *argv0) {
     char *help =
-    "Usage: %s [-h|-v|-r|-f|-l num] -i input_file -o out_file\n"
+    "Usage: %s [-h|-v|-r|-f|-s|-l num] -i input_file -o out_file\n"
     "  -h             Print help\n"
     "  -v             Verbose mode\n"
     "  -r             Include original decomposition maps\n"
     "  -f             Fill in unassigned elements in decomposition maps\n"
+    "  -s             Sort offsets of decomposition maps increasingly\n"
     "  -l num         max number of characters per line in input file\n"
     "  -i input_file  a text file containing a list of decomposition\n"
     "                 map .dat file names\n"
@@ -567,7 +574,7 @@ static void usage(char *argv0) {
 /*----< main() >------------------------------------------------------------*/
 int main(int argc, char **argv) {
     char *inList=NULL, *infname[MAX_NFILES], *outfname=NULL, cmd_line[4096];
-    int i, rank, ncid, num_decomp=0, dimid, err=NC_NOERR, fill_gaps;
+    int i, rank, ncid, num_decomp=0, dimid, err=NC_NOERR;
     MPI_Info info;
 
     MPI_Init(&argc, &argv);
@@ -584,9 +591,10 @@ int main(int argc, char **argv) {
     verbose   = 0;
     raw_decom = 0;
     fill_gaps = 0;
+    sort_off  = 0;
 
     /* get command-line arguments */
-    while ((i = getopt(argc, argv, "hvrfo:l:i:")) != EOF)
+    while ((i = getopt(argc, argv, "hvrfso:l:i:")) != EOF)
         switch (i) {
             case 'v': verbose = 1;
                       break;
@@ -597,6 +605,8 @@ int main(int argc, char **argv) {
             case 'f': fill_gaps = 1;
                       break;
             case 'r': raw_decom = 1;
+                      break;
+            case 's': sort_off = 1;
                       break;
             case 'i': inList = strdup(optarg);
                       break;
@@ -678,7 +688,7 @@ int main(int argc, char **argv) {
     ERR
 
     for (i=0; i<num_decomp; i++) {
-        err = add_decomp(ncid, infname[i], i+1, fill_gaps); ERR
+        err = add_decomp(ncid, infname[i], i+1); ERR
         err = ncmpi_redef(ncid); ERR
     }
 

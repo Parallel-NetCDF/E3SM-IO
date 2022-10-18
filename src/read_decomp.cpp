@@ -116,7 +116,6 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     size_t num, decomp_nprocs;
     MPI_Offset mpi_num, mpi_decomp_nprocs, start, count;
     MPI_Info info = MPI_INFO_NULL;
-    struct off_len *myreqs;
     e3sm_io_config decom_cfg;
     e3sm_io_driver *driver = NULL;
     int dims_int[4];
@@ -255,7 +254,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         free (all_nreqs);
 
         if (cfg->verbose)
-            printf ("D%d rank %d: proc_start=%d proc_count=%d start%lld count=%lld\n", id + 1, rank,
+            printf ("D%d rank %d: proc_start=%d proc_count=%d start=%lld count=%lld\n", id + 1, rank,
                     proc_start, proc_count, start, count);
 
         /* read starting offsets of requests into disps[] */
@@ -274,103 +273,120 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         err = driver->get_vara (ncid, varid, MPI_INT, &start, &count, decom->blocklens[id], coll);
         CHECK_ERR
 
-        /* sort all disps[] of all responsible requests into an increasing
-         * order (this is to satisfy the MPI fileview or monotonically
-         * nondecreasing file offset requirement)
-         */
-        myreqs = (struct off_len *)malloc (nreqs * sizeof (struct off_len));
-        for (i = 0; i < nreqs; i++) {
-            myreqs[i].off = decom->disps[id][i];
-            myreqs[i].len = decom->blocklens[id][i];
-        }
-        qsort ((void *)myreqs, nreqs, sizeof (struct off_len), compare);
-        for (i = 0; i < nreqs; i++) {
-            decom->disps[id][i]     = myreqs[i].off;
-            decom->blocklens[id][i] = myreqs[i].len;
-        }
-        free (myreqs);
+        decom->contig_nreqs[id] = nreqs;
 
-        /* coalesce offset-length pairs */
-        j = 0;
-        for (i = 1; i < nreqs; i++) {
-            if (decom->disps[id][i] % decom->dims[id][decom->ndims[id] - 1] == 0 ||
-                decom->disps[id][i] > decom->disps[id][j] + decom->blocklens[id][j]) {
-                /* break contiguity at dimension boundaries or noncontiguous */
-                j++;
-                if (j < i) {
-                    decom->disps[id][j]     = decom->disps[id][i];
-                    decom->blocklens[id][j] = decom->blocklens[id][i];
-                }
-            } else
-                decom->blocklens[id][j] += decom->blocklens[id][i];
-        }
-        /* update number of true noncontiguous requests */
-        if (nreqs > 0) decom->contig_nreqs[id] = j + 1;
-
-        /* ADIOS blob I/O requires the decomposition map in the original form,
-         * i.e. all offsets, no lengths, and may contains zero offsets (to be
-         * skipped). There is an option in dat2nc utility program to generate
-         * the decomposition map in original form. The decomposition variables
-         * stored the map in original form are named "Dx.raw_nreqs" (number of
-         * offsets) and "Dx.raw_offsets" (offsets). If variable "Dx.raw_nreqs"
-         * presents in the decomposition NetCDF file, which means the original
-         * PIO decomposition was included, the ADIOS blob driver will reads the
-         * PIO decomposition map from the variables. Otherwise, this functions
-         * will converted the offset-length pairs back into the original map.
-         * See README file for more details.
-         */
-        /* obtain varid of request variable Dx.raw_nreqs */
-        sprintf (name, "D%d.raw_nreqs", id + 1);
-        err = driver->inq_var (ncid, name, &varid);
-        has_raw_decom = (err == 0) ? 1 :  0;
-
-        if (has_raw_decom) {
-            /* read all numbers of requests */
-            all_raw_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
-            err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, all_raw_nreqs, coll);
-            CHECK_ERR
-
-            /* calculate start index in Dx.offsets for this process */
-            start = 0;
-            for (i = 0; i < proc_start; i++) start += all_raw_nreqs[i];
-
-            /* calculate number of requests for this process */
-            count = 0;
-            for (; i < proc_start + proc_count; i++) count += all_raw_nreqs[i];
-            decom->raw_nreqs[id] = count;
-            free (all_raw_nreqs);
-
-            if (cfg->verbose)
-                printf ("D%d rank %d: proc_start=%d proc_count=%d start%lld count=%lld\n", id + 1,
-                        rank, proc_start, proc_count, start, count);
-
-            /* read starting offsets of requests into disps[] */
-            decom->raw_offsets[id] =
-                (MPI_Offset *)malloc (decom->raw_nreqs[id] * sizeof (MPI_Offset));
-            raw_offsets_int = (int *)malloc (decom->raw_nreqs[id] * sizeof (int));
-            sprintf (name, "D%d.raw_offsets", id + 1);
+        if (cfg->api == adios) {
+            /* ADIOS blob I/O requires the decomposition map in the original
+             * form, i.e. all offsets, no lengths, and may contains zero
+             * offsets (to be skipped). There is an option in dat2nc utility
+             * program to generate the decomposition map in original form. The
+             * decomposition variables stored the map in original form are
+             * named "Dx.raw_nreqs" (number of offsets) and "Dx.raw_offsets"
+             * (offsets). If variable "Dx.raw_nreqs" presents in the
+             * decomposition NetCDF file, which means the original PIO
+             * decomposition was included, the ADIOS blob driver will reads the
+             * PIO decomposition map from the variables. Otherwise, this
+             * functions will converted the offset-length pairs back into the
+             * original map.  See README file for more details.
+             */
+            /* obtain varid of request variable Dx.raw_nreqs */
+            sprintf (name, "D%d.raw_nreqs", id + 1);
             err = driver->inq_var (ncid, name, &varid);
-            CHECK_ERR
-            err = driver->get_vara (ncid, varid, MPI_INT, &start, &count, raw_offsets_int, coll);
-            CHECK_ERR
-            for (i = 0; i < decom->raw_nreqs[id]; i++)
-                decom->raw_offsets[id][i] = (MPI_Offset)raw_offsets_int[i];
+            has_raw_decom = (err == 0) ? 1 :  0;
 
-            free (raw_offsets_int);
-            raw_offsets_int = NULL;
-        } else { /* Generate (simulated) raw decomposition map */
-            /* Count number of offsets before merge */
-            decom->raw_nreqs[id] = 0;
-            for (i = 0; i < decom->contig_nreqs[id]; i++)
-                decom->raw_nreqs[id] += decom->blocklens[id][i];
+            if (has_raw_decom) {
+                /* read all numbers of requests */
+                all_raw_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
+                err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, all_raw_nreqs, coll);
+                CHECK_ERR
 
-            decom->raw_offsets[id] =
-                (MPI_Offset *)calloc (decom->raw_nreqs[id], sizeof (MPI_Offset));
+                /* calculate start index in Dx.offsets for this process */
+                start = 0;
+                for (i = 0; i < proc_start; i++) start += all_raw_nreqs[i];
 
-            for (i = 0, j = 0; i < decom->contig_nreqs[id]; i++)
-                for (k = decom->disps[id][i]; k < (decom->disps[id][i] + decom->blocklens[id][i]);
-                     k++)
-                    decom->raw_offsets[id][j++] = k + 1;
+                /* calculate number of requests for this process */
+                count = 0;
+                for (; i < proc_start + proc_count; i++) count += all_raw_nreqs[i];
+                decom->raw_nreqs[id] = count;
+                free (all_raw_nreqs);
+
+                if (cfg->verbose)
+                    printf ("D%d rank %d: proc_start=%d proc_count=%d start%lld count=%lld\n", id + 1,
+                            rank, proc_start, proc_count, start, count);
+
+                /* read starting offsets of requests into disps[] */
+                decom->raw_offsets[id] =
+                    (MPI_Offset *)malloc (decom->raw_nreqs[id] * sizeof (MPI_Offset));
+                raw_offsets_int = (int *)malloc (decom->raw_nreqs[id] * sizeof (int));
+                sprintf (name, "D%d.raw_offsets", id + 1);
+                err = driver->inq_var (ncid, name, &varid);
+                CHECK_ERR
+                err = driver->get_vara (ncid, varid, MPI_INT, &start, &count, raw_offsets_int, coll);
+                CHECK_ERR
+                for (i = 0; i < decom->raw_nreqs[id]; i++)
+                    decom->raw_offsets[id][i] = (MPI_Offset)raw_offsets_int[i];
+
+                free (raw_offsets_int);
+                raw_offsets_int = NULL;
+            } else {
+                /* Generate (simulated) raw decomposition map. The below
+                 * implementation is not ideal, as it sorts the offsets into an
+                 * increasing order, which no longer be the same as the
+                 * original maps. Consider generating the raw_offsets variables
+                 * in the decomposition map files when running utility program
+                 * 'dat2decomp' with option -r.
+                 */
+
+                /* Must sort all disps[] of all responsible requests into an
+                 * increasing order (this is to satisfy the MPI fileview or
+                 * monotonically nondecreasing file offset requirement)
+                 */
+                struct off_len *myreqs;
+                myreqs = (struct off_len *)malloc (nreqs * sizeof (struct off_len));
+                for (i = 0; i < nreqs; i++) {
+                    myreqs[i].off = decom->disps[id][i];
+                    myreqs[i].len = decom->blocklens[id][i];
+                }
+                qsort ((void *)myreqs, nreqs, sizeof (struct off_len), compare);
+                for (i = 0; i < nreqs; i++) {
+                    decom->disps[id][i]     = myreqs[i].off;
+                    decom->blocklens[id][i] = myreqs[i].len;
+                }
+                free (myreqs);
+
+                /* coalesce offset-length pairs */
+                j = 0;
+                for (i = 1; i < nreqs; i++) {
+                    if (decom->disps[id][i] % decom->dims[id][decom->ndims[id] - 1] == 0 ||
+                        decom->disps[id][i] != decom->disps[id][j] + decom->blocklens[id][j]) {
+                        /* break contiguity at dimension boundaries or noncontiguous */
+                        j++;
+                        if (j < i) {
+                            decom->disps[id][j]     = decom->disps[id][i];
+                            decom->blocklens[id][j] = decom->blocklens[id][i];
+                        }
+                    } else
+                        decom->blocklens[id][j] += decom->blocklens[id][i];
+                }
+                /* update number of true noncontiguous requests */
+                if (nreqs > 0) decom->contig_nreqs[id] = j + 1;
+
+                /* Count number of offsets before merge */
+                decom->raw_nreqs[id] = 0;
+                for (i = 0; i < decom->contig_nreqs[id]; i++)
+                    decom->raw_nreqs[id] += decom->blocklens[id][i];
+
+                decom->raw_offsets[id] =
+                    (MPI_Offset *)calloc (decom->raw_nreqs[id], sizeof (MPI_Offset));
+
+                /* Warning: below assumes the offsets of decom->disps[id][*]
+                 * have been sorted into an increasing order
+                 */
+                for (i = 0, j = 0; i < decom->contig_nreqs[id]; i++)
+                    for (k = decom->disps[id][i]; k < (decom->disps[id][i] + decom->blocklens[id][i]);
+                         k++)
+                        decom->raw_offsets[id][j++] = k + 1;
+            }
         }
 
         if (cfg->verbose) {
