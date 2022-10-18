@@ -70,13 +70,16 @@ int intcompare(const void *p1, const void *p2) {
     return (0);
 }
 
+#define TRUE "true"
+#define FALSE "false"
+
 /*----< add_decomp() >-------------------------------------------------------*/
 static
 int add_decomp(int ncid, const char *infname, int label) {
     char *buf, name[128], *map, *str;
     FILE *fd;
     int i, j, rank, nprocs, dimid, ndims, dimX, ngaps, cur, err=NC_NOERR;
-    int varid[5], *nreqs, **off, **len;
+    int varid[6], *nreqs, **off, **len, *fill_starts, dim_nprocs;
     int total_nreqs, max_nreqs, min_nreqs, maxlen, minlen;
     MPI_Offset k, gsize, *dims, *dims_C, start, count;
     int *raw_nreqs, **raw_off, total_raw_nreqs;
@@ -150,6 +153,9 @@ int add_decomp(int ncid, const char *infname, int label) {
     nreqs = (int*)  malloc(nprocs * sizeof(int));
     off   = (int**) malloc(nprocs * sizeof(int*));
     len   = (int**) malloc(nprocs * sizeof(int*));
+
+    /* start index in nreqs[] for requests to be writtend with fill values */
+    fill_starts = (int*) malloc(nprocs * sizeof(int));
 
     /* decomposition data format:
      *  (process.rank.ID)(number.of.requests)
@@ -244,6 +250,9 @@ int add_decomp(int ncid, const char *infname, int label) {
         }
     }
 
+    /* start index for requests to be written with fill values */
+    for (rank=0; rank<nprocs; rank++) fill_starts[rank] = nreqs[rank];
+
     /* calculate number of gaps (unconverted consecutive blocks of elements) */
     ngaps = 0;
     cur = 1;
@@ -314,6 +323,7 @@ int add_decomp(int ncid, const char *infname, int label) {
 
         for (rank=0; rank<nprocs; rank++) {
             nreqs[rank] += fill_nreqs[rank];
+
             /* sort off-len pairs into an increasing order */
             if (sort_off) {
                 off_len *pairs = (off_len*) malloc(nreqs[rank] * sizeof(off_len));
@@ -339,11 +349,11 @@ int add_decomp(int ncid, const char *infname, int label) {
         raw_off   = (int**) malloc(nprocs * sizeof(int*));
         for (rank=0; rank<nprocs; rank++) {
             raw_nreqs[rank] = 0;
-            for (i=0; i<nreqs[rank]; i++)
+            for (i=0; i<fill_starts[rank]; i++)
                 raw_nreqs[rank] += len[rank][i];
             raw_off[rank] = (int*) malloc(raw_nreqs[rank] * sizeof(int));
             k = 0;
-            for (i=0; i<nreqs[rank]; i++)
+            for (i=0; i<fill_starts[rank]; i++)
                 for (j=0; j<len[rank][i]; j++)
                     raw_off[rank][k++] = off[rank][i] + j;
         }
@@ -363,14 +373,14 @@ int add_decomp(int ncid, const char *infname, int label) {
     if (verbose) printf("total_nreqs=%d max_nreqs=%d min_nreqs=%d\n", total_nreqs, max_nreqs, min_nreqs);
 
     /* check if dimension decomp_nprocs has been defined in the netCDF file */
-    err = ncmpi_inq_dimid(ncid, "decomp_nprocs", &dimid);
+    err = ncmpi_inq_dimid(ncid, "decomp_nprocs", &dim_nprocs);
     if (err == NC_EBADDIM) { /* not defined */
-        err = ncmpi_def_dim(ncid, "decomp_nprocs", nprocs, &dimid);
+        err = ncmpi_def_dim(ncid, "decomp_nprocs", nprocs, &dim_nprocs);
         ERR
     } else {
         /* if decomp_nprocs already exist, check if value matches */
         MPI_Offset decomp_nprocs;
-        err = ncmpi_inq_dimlen(ncid, dimid, &decomp_nprocs);
+        err = ncmpi_inq_dimlen(ncid, dim_nprocs, &decomp_nprocs);
         ERR
         if (decomp_nprocs != nprocs) {
             printf("Error: decomp_nprocs=%lld mismatches among input files %d\n",
@@ -382,25 +392,23 @@ int add_decomp(int ncid, const char *infname, int label) {
 
     /* define variable nreqs for this decomposition */
     sprintf(name, "D%d.nreqs", label);
-    err = ncmpi_def_var(ncid, name, NC_INT, 1, &dimid, &varid[0]);
+    err = ncmpi_def_var(ncid, name, NC_INT, 1, &dim_nprocs, &varid[0]);
     ERR
 
-    /* define attribute description for this variable */
+    /* add an attribute to describe this variable */
     str = "Number of noncontiguous requests per process";
     err = ncmpi_put_att_text(ncid, varid[0], "description", strlen(str), str);
     ERR
 
-    /* define variable raw_nreqs for this decomposition */
-    if (raw_decom) {
-        sprintf(name, "D%d.raw_nreqs", label);
-        err = ncmpi_def_var(ncid, name, NC_INT, 1, &dimid, &varid[3]);
-        ERR
+    /* define variable fill_starts for this decomposition */
+    sprintf(name, "D%d.fill_starts", label);
+    err = ncmpi_def_var(ncid, name, NC_INT, 1, &dim_nprocs, &varid[1]);
+    ERR
 
-        /* define attribute description for this variable */
-        str = "Number of file offsets accessed per process before merge";
-        err = ncmpi_put_att_text(ncid, varid[3], "description", strlen(str), str);
-        ERR
-    }
+    /* add an attribute to describe this variable */
+    str = "Start index in offsets[] and lengths[] for requests to be written with fill values";
+    err = ncmpi_put_att_text(ncid, varid[1], "description", strlen(str), str);
+    ERR
 
     /* define dimension total_nreqs for this decomposition */
     sprintf(name, "D%d.total_nreqs", label);
@@ -409,26 +417,36 @@ int add_decomp(int ncid, const char *infname, int label) {
 
     /* define variable offsets(store starting element indices) */
     sprintf(name, "D%d.offsets", label);
-    err = ncmpi_def_var(ncid, name, NC_INT, 1, &dimid, &varid[1]);
+    err = ncmpi_def_var(ncid, name, NC_INT, 1, &dimid, &varid[2]);
     ERR
     str = "Flattened starting indices of noncontiguous requests";
-    err = ncmpi_put_att_text(ncid, varid[1], "description", strlen(str), str);
+    err = ncmpi_put_att_text(ncid, varid[2], "description", strlen(str), str);
     ERR
 
     /* define variable lengths(store number of elements) */
     sprintf(name, "D%d.lengths", label);
-    err = ncmpi_def_var(ncid, name, NC_INT, 1, &dimid, &varid[2]);
+    err = ncmpi_def_var(ncid, name, NC_INT, 1, &dimid, &varid[3]);
     ERR
     str = "Lengths of noncontiguous requests";
-    err = ncmpi_put_att_text(ncid, varid[2], "description", strlen(str), str);
+    err = ncmpi_put_att_text(ncid, varid[3], "description", strlen(str), str);
     ERR
 
-    err = ncmpi_put_att_int(ncid, varid[2], "max", NC_INT, 1, &maxlen);
+    err = ncmpi_put_att_int(ncid, varid[3], "max", NC_INT, 1, &maxlen);
     ERR
-    err = ncmpi_put_att_int(ncid, varid[2], "min", NC_INT, 1, &minlen);
+    err = ncmpi_put_att_int(ncid, varid[3], "min", NC_INT, 1, &minlen);
     ERR
 
     if (raw_decom) {
+        /* define variable raw_nreqs for this decomposition */
+        sprintf(name, "D%d.raw_nreqs", label);
+        err = ncmpi_def_var(ncid, name, NC_INT, 1, &dim_nprocs, &varid[4]);
+        ERR
+
+        /* define attribute description for this variable */
+        str = "Number of file offsets accessed per process before merge";
+        err = ncmpi_put_att_text(ncid, varid[4], "description", strlen(str), str);
+        ERR
+
         /* define dimension total_raw_nreqs for this decomposition */
         sprintf(name, "D%d.total_raw_nreqs", label);
         err = ncmpi_def_dim(ncid, name, total_raw_nreqs, &dimid);
@@ -436,10 +454,10 @@ int add_decomp(int ncid, const char *infname, int label) {
 
         /* define variable raw_offsets */
         sprintf(name, "D%d.raw_offsets", label);
-        err = ncmpi_def_var(ncid, name, NC_INT, 1, &dimid, &varid[4]);
+        err = ncmpi_def_var(ncid, name, NC_INT, 1, &dimid, &varid[5]);
         ERR
         str = "File offsets accessed before merge";
-        err = ncmpi_put_att_text(ncid, varid[4], "description", strlen(str), str);
+        err = ncmpi_put_att_text(ncid, varid[5], "description", strlen(str), str);
         ERR
     }
 
@@ -464,6 +482,13 @@ int add_decomp(int ncid, const char *infname, int label) {
     err = ncmpi_put_att_int(ncid, NC_GLOBAL, name, NC_INT, 1, &min_nreqs);
     ERR
 
+    sprintf(name, "D%d.fully_covered", label);
+    if (ngaps)
+        err = ncmpi_put_att_text(ncid, NC_GLOBAL, name, strlen(FALSE), FALSE);
+    else
+        err = ncmpi_put_att_text(ncid, NC_GLOBAL, name, strlen(TRUE), TRUE);
+    ERR
+
     /* exit define mode */
     err = ncmpi_enddef(ncid);
     ERR
@@ -472,9 +497,13 @@ int add_decomp(int ncid, const char *infname, int label) {
     err = ncmpi_put_var_int_all(ncid, varid[0], nreqs);
     ERR
 
+    /* write variable containing number of requests for each process */
+    err = ncmpi_put_var_int_all(ncid, varid[1], fill_starts);
+    ERR
+
     /* write variable containing number of requests before coalescing */
     if (raw_decom) {
-        err = ncmpi_put_var_int_all(ncid, varid[3], raw_nreqs);
+        err = ncmpi_put_var_int_all(ncid, varid[4], raw_nreqs);
         ERR
     }
 
@@ -483,16 +512,16 @@ int add_decomp(int ncid, const char *infname, int label) {
     for (rank=0; rank<nprocs; rank++) {
         /* write/append to variables offsets and lengths */
         count = nreqs[rank];
-        err = ncmpi_put_vara_int_all(ncid, varid[1], &start, &count, off[rank]);
+        err = ncmpi_put_vara_int_all(ncid, varid[2], &start, &count, off[rank]);
         ERR
-        err = ncmpi_put_vara_int_all(ncid, varid[2], &start, &count, len[rank]);
+        err = ncmpi_put_vara_int_all(ncid, varid[3], &start, &count, len[rank]);
         ERR
         start += count;
 
         /* write/append raw file offsets before merge */
         if (raw_decom) {
             count = raw_nreqs[rank];
-            err = ncmpi_put_vara_int_all(ncid, varid[4], &raw_start, &count, raw_off[rank]);
+            err = ncmpi_put_vara_int_all(ncid, varid[5], &raw_start, &count, raw_off[rank]);
             ERR
             raw_start += count;
         }
@@ -502,6 +531,7 @@ fn_exit:
     fclose(fd);
 
     free(nreqs);
+    free(fill_starts);
     for (rank=0; rank<nprocs; rank++) {
         free(off[rank]);
         free(len[rank]);
