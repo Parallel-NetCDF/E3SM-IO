@@ -67,6 +67,9 @@ int intcompare(const void *p1, const void *p2) {
     return (0);
 }
 
+#define TRUE "true"
+#define FALSE "false"
+
 /*----< add_decomp() >-------------------------------------------------------*/
 static
 int add_decomp(int             ncid,
@@ -78,7 +81,7 @@ int add_decomp(int             ncid,
     char *buf, name[128], *map, *str;
     FILE *fd;
     int i, j, rank, nprocs, dimid, ndims, dimX, ngaps, cur, err=0;
-    int varid[5], *nreqs, **off, **len;
+    int varid[6], *nreqs, **off, **len, *fill_starts, dim_nprocs;
     int total_nreqs, max_nreqs, min_nreqs, maxlen, minlen;
     MPI_Offset k, gsize, *dims, start, count;
     int *raw_nreqs, **raw_off, total_raw_nreqs;
@@ -153,6 +156,9 @@ int add_decomp(int             ncid,
     nreqs = (int*)  malloc(nprocs * sizeof(int));
     off   = (int**) malloc(nprocs * sizeof(int*));
     len   = (int**) malloc(nprocs * sizeof(int*));
+
+    /* start index in nreqs[] for requests to be writtend with fill values */
+    fill_starts = (int*) malloc(nprocs * sizeof(int));
 
     /* decomposition data format:
      *  (process.rank.ID)(number.of.requests)
@@ -247,6 +253,9 @@ int add_decomp(int             ncid,
         }
     }
 
+    /* start index for requests to be written with fill values */
+    for (rank=0; rank<nprocs; rank++) fill_starts[rank] = nreqs[rank];
+
     /* calculate number of gaps (unconverted consecutive blocks of elements) */
     ngaps = 0;
     cur = 1;
@@ -317,6 +326,7 @@ int add_decomp(int             ncid,
 
         for (rank=0; rank<nprocs; rank++) {
             nreqs[rank] += fill_nreqs[rank];
+
             /* sort off-len pairs into an increasing order */
             if (sort_off) {
                 off_len *pairs = (off_len*) malloc(nreqs[rank] * sizeof(off_len));
@@ -342,11 +352,11 @@ int add_decomp(int             ncid,
         raw_off   = (int**) malloc(nprocs * sizeof(int*));
         for (rank=0; rank<nprocs; rank++) {
             raw_nreqs[rank] = 0;
-            for (i=0; i<nreqs[rank]; i++)
+            for (i=0; i<fill_starts[rank]; i++)
                 raw_nreqs[rank] += len[rank][i];
             raw_off[rank] = (int*) malloc(raw_nreqs[rank] * sizeof(int));
             k = 0;
-            for (i=0; i<nreqs[rank]; i++)
+            for (i=0; i<fill_starts[rank]; i++)
                 for (j=0; j<len[rank][i]; j++)
                     raw_off[rank][k++] = off[rank][i] + j;
         }
@@ -369,9 +379,9 @@ int add_decomp(int             ncid,
     if (have_decom_dim) {
         /* if decomp_nprocs already exist, check if value matches */
         MPI_Offset decomp_nprocs;
-        err = driver->inq_dim(ncid, "decomp_nprocs", &dimid);
+        err = driver->inq_dim(ncid, "decomp_nprocs", &dim_nprocs);
         CHECK_ERR
-        err = driver->inq_dimlen(ncid, dimid, &decomp_nprocs);
+        err = driver->inq_dimlen(ncid, dim_nprocs, &decomp_nprocs);
         CHECK_ERR
         if (decomp_nprocs != nprocs) {
             printf("Error: decomp_nprocs=%lld mismatches among input files %d\n",
@@ -380,32 +390,30 @@ int add_decomp(int             ncid,
             exit(1);
         }
     } else {
-        err = driver->def_dim(ncid, "decomp_nprocs", nprocs, &dimid);
+        err = driver->def_dim(ncid, "decomp_nprocs", nprocs, &dim_nprocs);
         CHECK_ERR
         have_decom_dim = true;
     }
 
     /* define variable nreqs for this decomposition */
     sprintf(name, "D%d.nreqs", label);
-    err = driver->def_var(ncid, name, NC_INT, 1, &dimid, &varid[0]);
+    err = driver->def_var(ncid, name, NC_INT, 1, &dim_nprocs, &varid[0]);
     CHECK_ERR
 
-    /* define attribute description for this variable */
+    /* add an attribute to describe this variable */
     str = (char *)"Number of noncontiguous requests per process";
     err = driver->put_att(ncid, varid[0], "description", NC_CHAR, strlen(str), str);
     CHECK_ERR
 
-    /* define variable raw_nreqs for this decomposition */
-    if (raw_decom) {
-        sprintf(name, "D%d.raw_nreqs", label);
-        err = driver->def_var(ncid, name, NC_INT, 1, &dimid, &varid[3]);
-        CHECK_ERR
+    /* define variable fill_starts for this decomposition */
+    sprintf(name, "D%d.fill_starts", label);
+    err = driver->def_var(ncid, name, NC_INT, 1, &dim_nprocs, &varid[1]);
+    CHECK_ERR
 
-        /* define attribute description for this variable */
-        str = (char *)"Number of file offsets accessed per process before merge";
-        err = driver->put_att(ncid, varid[3], "description", NC_CHAR, strlen(str), str);
-        CHECK_ERR
-    }
+    /* add an attribute to describe this variable */
+    str = (char*)"Start index in offsets[] and lengths[] for requests to be written with fill values";
+    err = driver->put_att(ncid, varid[1], "description", NC_CHAR, strlen(str), str);
+    CHECK_ERR
 
     /* define dimension total_nreqs for this decomposition */
     sprintf(name, "D%d.total_nreqs", label);
@@ -414,26 +422,36 @@ int add_decomp(int             ncid,
 
     /* define variable offsets(store starting element indices) */
     sprintf(name, "D%d.offsets", label);
-    err = driver->def_var(ncid, name, NC_INT, 1, &dimid, &varid[1]);
+    err = driver->def_var(ncid, name, NC_INT, 1, &dimid, &varid[2]);
     CHECK_ERR
     str = (char *)"Flattened starting indices of noncontiguous requests";
-    err = driver->put_att(ncid, varid[1], "description", NC_CHAR, strlen(str), str);
+    err = driver->put_att(ncid, varid[2], "description", NC_CHAR, strlen(str), str);
     CHECK_ERR
 
     /* define variable lengths(store number of elements) */
     sprintf(name, "D%d.lengths", label);
-    err = driver->def_var(ncid, name, NC_INT, 1, &dimid, &varid[2]);
+    err = driver->def_var(ncid, name, NC_INT, 1, &dimid, &varid[3]);
     CHECK_ERR
     str = (char *)"Lengths of noncontiguous requests";
-    err = driver->put_att(ncid, varid[2], "description", NC_CHAR, strlen(str), str);
+    err = driver->put_att(ncid, varid[3], "description", NC_CHAR, strlen(str), str);
     CHECK_ERR
 
-    err = driver->put_att(ncid, varid[2], "max", NC_INT, 1, &maxlen);
+    err = driver->put_att(ncid, varid[3], "max", NC_INT, 1, &maxlen);
     CHECK_ERR
-    err = driver->put_att(ncid, varid[2], "min", NC_INT, 1, &minlen);
+    err = driver->put_att(ncid, varid[3], "min", NC_INT, 1, &minlen);
     CHECK_ERR
 
     if (raw_decom) {
+        /* define variable raw_nreqs for this decomposition */
+        sprintf(name, "D%d.raw_nreqs", label);
+        err = driver->def_var(ncid, name, NC_INT, 1, &dim_nprocs, &varid[4]);
+        CHECK_ERR
+
+        /* define attribute description for this variable */
+        str = (char *)"Number of file offsets accessed per process before merge";
+        err = driver->put_att(ncid, varid[4], "description", NC_CHAR, strlen(str), str);
+        CHECK_ERR
+
         /* define dimension total_raw_nreqs for this decomposition */
         sprintf(name, "D%d.total_raw_nreqs", label);
         err = driver->def_dim(ncid, name, total_raw_nreqs, &dimid);
@@ -441,10 +459,10 @@ int add_decomp(int             ncid,
 
         /* define variable raw_offsets */
         sprintf(name, "D%d.raw_offsets", label);
-        err = driver->def_var(ncid, name, NC_INT, 1, &dimid, &varid[4]);
+        err = driver->def_var(ncid, name, NC_INT, 1, &dimid, &varid[5]);
         CHECK_ERR
         str = (char *)"File offsets accessed before merge";
-        err = driver->put_att(ncid, varid[4], "description", NC_CHAR, strlen(str), str);
+        err = driver->put_att(ncid, varid[5], "description", NC_CHAR, strlen(str), str);
         CHECK_ERR
     }
 
@@ -469,6 +487,13 @@ int add_decomp(int             ncid,
     err = driver->put_att(ncid, NC_GLOBAL, name, NC_INT, 1, &min_nreqs);
     CHECK_ERR
 
+    sprintf(name, "D%d.fully_covered", label);
+    if (ngaps)
+        err = driver->put_att(ncid, NC_GLOBAL, name, NC_CHAR, strlen(FALSE), FALSE);
+    else
+        err = driver->put_att(ncid, NC_GLOBAL, name, NC_CHAR, strlen(TRUE), TRUE);
+    CHECK_ERR
+
     /* exit define mode */
     err = driver->enddef(ncid);
     CHECK_ERR
@@ -477,9 +502,13 @@ int add_decomp(int             ncid,
     err = driver->put_vara(ncid, varid[0], MPI_INT, NULL, NULL, nreqs, coll);
     CHECK_ERR
 
+    /* write variable containing number of requests for each process */
+    err = driver->put_vara(ncid, varid[1], MPI_INT, NULL, NULL, fill_starts, coll);
+    CHECK_ERR
+
     /* write variable containing number of requests before coalescing */
     if (raw_decom) {
-        err = driver->put_vara(ncid, varid[3], MPI_INT, NULL, NULL, raw_nreqs, coll);
+        err = driver->put_vara(ncid, varid[4], MPI_INT, NULL, NULL, raw_nreqs, coll);
         CHECK_ERR
     }
 
@@ -489,16 +518,16 @@ int add_decomp(int             ncid,
     for (rank=0; rank<nprocs; rank++) {
         /* write/append to variables offsets and lengths */
         count = nreqs[rank];
-        err = driver->put_vara(ncid, varid[1], MPI_INT, &start, &count, off[rank], coll);
+        err = driver->put_vara(ncid, varid[2], MPI_INT, &start, &count, off[rank], coll);
         CHECK_ERR
-        err = driver->put_vara(ncid, varid[2], MPI_INT, &start, &count, len[rank], coll);
+        err = driver->put_vara(ncid, varid[3], MPI_INT, &start, &count, len[rank], coll);
         CHECK_ERR
         start += count;
 
         /* write/append raw file offsets before merge */
         if (raw_decom) {
             count = raw_nreqs[rank];
-            err = driver->put_vara(ncid, varid[4], MPI_INT, &raw_start, &count, raw_off[rank], coll);
+            err = driver->put_vara(ncid, varid[5], MPI_INT, &raw_start, &count, raw_off[rank], coll);
             CHECK_ERR
             raw_start += count;
         }
@@ -508,6 +537,7 @@ err_out:
     fclose(fd);
 
     free(nreqs);
+    free(fill_starts);
     for (rank=0; rank<nprocs; rank++) {
         free(off[rank]);
         free(len[rank]);
