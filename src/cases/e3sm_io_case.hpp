@@ -399,8 +399,7 @@ int scorpio_write_var(e3sm_io_driver &driver,
     cmeta->num_attrs++;                                                       \
 }
 #define GET_GATTR_INT(name, val) {                                            \
-    int buf = val;                                                            \
-    err = driver.get_att(ncid, NC_GLOBAL, prefix+name,  &buf);                \
+    err = driver.get_att(ncid, NC_GLOBAL, prefix+name,  val);                 \
     CHECK_ERR                                                                 \
     cmeta->num_attrs++;                                                       \
 }
@@ -411,53 +410,48 @@ int scorpio_write_var(e3sm_io_driver &driver,
     cmeta->num_attrs++;                                                       \
 }
 #define GET_ATTR_TXT(name, dbuf) {                                            \
-    char buf[1024];                                                           \
-    err = driver.get_att(ncid, varp->vid, name, buf);                         \
+    err = driver.get_att(ncid, varp->vid, name, dbuf);                        \
     CHECK_VAR_ERR(varp->vid)                                                  \
     cmeta->num_attrs++;                                                       \
 }
 #define GET_ATTR_INT1(name, val) {                                            \
-    int buf = val;                                                            \
-    err = driver.get_att(ncid, varp->vid, name, &buf);                        \
+    err = driver.get_att(ncid, varp->vid, name, val);                         \
     CHECK_VAR_ERR(varp->vid)                                                  \
     cmeta->num_attrs++;                                                       \
 }
 #define GET_ATTR_INT(name, num, dbuf) {                                       \
-    int buf[32];                                                              \
-    err = driver.get_att(ncid, varp->vid, name, buf);                         \
+    err = driver.get_att(ncid, varp->vid, name, dbuf);                        \
     CHECK_VAR_ERR(varp->vid)                                                  \
     cmeta->num_attrs++;                                                       \
 }
 #define GET_ATTR_FLT1(name, val) {                                            \
-    float buf = val;                                                          \
-    err = driver.get_att(ncid, varp->vid, name, &buf);                        \
+    err = driver.get_att(ncid, varp->vid, name, val);                         \
     CHECK_VAR_ERR(varp->vid)                                                  \
     cmeta->num_attrs++;                                                       \
 }
 #define GET_ATTR_DBL1(name, val) {                                            \
-    double buf = val;                                                         \
-    err = driver.get_att(ncid, varp->vid, name, &buf);                        \
+    err = driver.get_att(ncid, varp->vid, name, val);                         \
     CHECK_VAR_ERR(varp->vid)                                                  \
 }
 #define GET_ATTR_FILL(val) {                                                  \
     if (varp->xType == NC_FLOAT) {                                            \
-        float buf = (float)val;                                               \
-        err = driver.get_att(ncid,varp->vid,_FillValue,&buf);                 \
+        err = driver.get_att(ncid,varp->vid,_FillValue,&val);                 \
     }                                                                         \
     else if (varp->xType == NC_INT) {                                         \
-        int buf = (int)val;                                                   \
+        int buf;                                                              \
         err = driver.get_att(ncid,varp->vid,_FillValue,&buf);                 \
+        val = (float)buf;                                                     \
     }                                                                         \
     else if (varp->xType == NC_DOUBLE) {                                      \
-        double buf = (double)val;                                             \
+        double buf;                                                           \
         err = driver.get_att(ncid,varp->vid,_FillValue,&buf);                 \
+        val = (float)buf;                                                     \
     }                                                                         \
     CHECK_VAR_ERR(varp->vid)                                                  \
     cmeta->num_attrs++;                                                       \
 }
 #define GET_ATTR_INT64(name, num, dbuf) {                                     \
-    int64_t buf[32];                                                          \
-    err = driver.get_att(ncid, varp->vid, name, buf);                         \
+    err = driver.get_att(ncid, varp->vid, name, dbuf);                        \
     CHECK_VAR_ERR(varp->vid)                                                  \
     cmeta->num_attrs++;                                                       \
 }
