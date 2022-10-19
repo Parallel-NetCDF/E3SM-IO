@@ -42,10 +42,10 @@
 ### Dimension sizes of decomposition maps available in this folder
   | map_f_case_16p | map_g_case_16p      | map_i_case_16p |
   |:---------------|:--------------------|:---------------|
-  | ncol = 866     | nCells = 28571      | lat = 96       |
-  | lev = 72       | nEdges = 87980      | lon = 144      |
+  | ncol = 866     | nCells = 285        | lat = 96       |
+  | lev = 72       | nEdges = 879        | lon = 144      |
   |                | nVertLevels = 100   | levgrnd = 15   |
-  |                | nVertices = 59329   | levdcmp = 15   |
+  |                | nVertices = 593     | levdcmp = 15   |
   |                | nVertLevelsP1 = 101 | levlak = 10    |
   |                |                     | ltype = 9      |
   |                |                     | natpft = 17    |
