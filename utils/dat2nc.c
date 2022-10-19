@@ -709,7 +709,7 @@ int main(int argc, char **argv) {
     CHECK_MPIERR
 
     /* create a new NC file */
-    err = ncmpi_create(MPI_COMM_WORLD, outfname, NC_NOCLOBBER,
+    err = ncmpi_create(MPI_COMM_WORLD, outfname, NC_NOCLOBBER|NC_64BIT_DATA,
                        info, &ncid);
     if (err != NC_NOERR) {
         printf("Error at line %d in %s: %s\n", __LINE__, __FILE__,
