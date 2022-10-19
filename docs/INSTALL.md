@@ -159,12 +159,12 @@
   + Run the write test with default settings, i.e. using PnetCDF library and
     producing files storing variables in a canonical data layout.
     ```
-    % mpiexec -n 16 src/e3sm_io -o can_F_out.nc datasets/f_case_866x72_16p.nc
+    % mpiexec -n 16 src/e3sm_io -o can_F_out.nc datasets/map_f_case_16p.nc
     ```
 * The number of MPI processes used to run this benchmark can be smaller than
   the one used when creating the decomposition maps, i.e. the value of variable
   `decomp_nprocs` stored in the decomposition NetCDF file. For example, in file
-  `datasets/f_case_866x72_16p.nc`, the value of scalar variable `decomp_nprocs`
+  `datasets/map_f_case_16p.nc`, the value of scalar variable `decomp_nprocs`
   is 16, which is the number of MPI processes originally used to generate the
   decomposition `.dat` files. When running this benchmark using a smaller
   number of MPI processes, the I/O workload will be divided among all the
@@ -242,7 +242,7 @@
       with a high file striping count to obtain a good I/O performance.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o can_F_out.nc -a pnetcdf -x canonical -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.nc -k -o can_F_out.nc -a pnetcdf -x canonical -r 25
       ```
   + **-a pnetcdf -x blob**
     * Multiple subfiles in the NetCDF format will be created. The files conform
@@ -261,7 +261,7 @@
       the process rank order.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc -k -o blob_F_out.nc -a pnetcdf -x blob -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.nc -k -o blob_F_out.nc -a pnetcdf -x blob -r 25
       ```
   + **-a hdf5 -x canonical**
     * This option writes/reads data using HDF5 APIs `H5Dwrite`/`H5Dread`.
@@ -271,7 +271,7 @@
       `HDF5_PLUGIN_PATH`.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.h5 -k -o can_F_out.h5 -a hdf5 -x canonical -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5 -x canonical -r 25
       ```
   + **-a hdf5_md -x canonical**
     * This option writes/reads data using HDF5 multi-dataset APIs
@@ -282,7 +282,7 @@
       `HDF5_PLUGIN_PATH`.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.h5 -k -o can_F_out.h5 -a hdf5_md -x canonical -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5_md -x canonical -r 25
       ```
   + **-a hdf5 -x blob**
     * This is the blob I/O implementation using HDF5 library. Different from
@@ -303,7 +303,7 @@
       subfiles into a single regular HDF5 file.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.h5 -k -o blob_F_out.h5 -a hdf5 -x blob -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o blob_F_out.h5 -a hdf5 -x blob -r 25
       ```
   + **-a hdf5 -x log**
     * This option writes data using the HDF5 log-based VOL.
@@ -314,7 +314,7 @@
     * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH`.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.h5 -k -o can_F_out.h5 -a hdf5 -x log -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5 -x log -r 25
       ```
   + **-a hdf5_log -x log**
     * This option writes data using the HDF5 log-based VOL and specifically
@@ -323,7 +323,7 @@
     * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH`.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.h5 -k -o log_F_out.h5 -a hdf5_log -x log -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o log_F_out.h5 -a hdf5_log -x log -r 25
       ```
   + **-a netcdf4 -x canonical**
     * This option writes data using the NetCDF-4 library.
@@ -334,7 +334,7 @@
       independent I/O mode is used when writing the data to files.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc4 -k -o can_F_out.nc4 -a netcdf4 -x canonical -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.nc4 -k -o can_F_out.nc4 -a netcdf4 -x canonical -r 25
       ```
     * If environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH` are
       set to use log-based VOL, then the execution will abort, as this option
@@ -353,7 +353,7 @@
       export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/LOG_VOL/lib
       export HDF5_PLUGIN_PATH=${HOME}/LOG_VOL/lib
       export HDF5_VOL_CONNECTOR="LOG under_vol=0;under_info={}"
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.nc4 -k -o log_F_out.nc4 -a netcdf4 -x log -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.nc4 -k -o log_F_out.nc4 -a netcdf4 -x log -r 25
       ```
   + **-a adios -x blob**
     * This option writes data using the ADIOS library.
@@ -377,43 +377,43 @@
       map into list of offsets accessed.
     * Example run command:
       ```
-      mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.bp -k -o blob_F_out -a adios -x blob -r 25
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.bp -k -o blob_F_out -a adios -x blob -r 25
       ```
 
 ## Example input and job script files
 * Three small-size decomposition map files are available for testing. They
   are generated from E3SM runs on 16 MPI processes.
   + F case uses 3 decomposition maps.
-    + File `datasets/f_case_866x72_16p.nc` is in NetCDF classic CDF-5 format
-    + File `datasets/f_case_866x72_16p.h5` is in HDF5 format
-    + File `datasets/f_case_866x72_16p.nc4` is in NetCDF4 format
-    + File `datasets/f_case_866x72_16p.bp` is in ADIOS BP format
+    + File `datasets/map_f_case_16p.nc` is in NetCDF classic CDF-5 format
+    + File `datasets/map_f_case_16p.h5` is in HDF5 format
+    + File `datasets/map_f_case_16p.nc4` is in NetCDF4 format
+    + File `datasets/map_f_case_16p.bp` is in ADIOS BP format
   + G case uses 6 decomposition maps.
-    + File `datasets/g_case_cmpaso_16p.nc` is in NetCDF classic CDF-5 format
-    + File `datasets/g_case_cmpaso_16p.h5` is in HDF5 format
-    + File `datasets/g_case_cmpaso_16p.nc4` is in NetCDF4 format
-    + File `datasets/g_case_cmpaso_16p.bp` is in ADIOS BP format
+    + File `datasets/map_g_case_16p.nc` is in NetCDF classic CDF-5 format
+    + File `datasets/map_g_case_16p.h5` is in HDF5 format
+    + File `datasets/map_g_case_16p.nc4` is in NetCDF4 format
+    + File `datasets/map_g_case_16p.bp` is in ADIOS BP format
   + I case uses 5 decomposition maps.
-    + File `datasets/i_case_f19_g16_16p.nc` is in NetCDF classic CDF-5 format
-    + File `datasets/i_case_f19_g16_16p.h5` is in HDF5 format
-    + File `datasets/i_case_f19_g16_16p.nc4` is in NetCDF4 format
-    + File `datasets/i_case_f19_g16_16p.bp` is in ADIOS BP format
+    + File `datasets/map_i_case_16p.nc` is in NetCDF classic CDF-5 format
+    + File `datasets/map_i_case_16p.h5` is in HDF5 format
+    + File `datasets/map_i_case_16p.nc4` is in NetCDF4 format
+    + File `datasets/map_i_case_16p.bp` is in ADIOS BP format
 * File `datasets/f_case_48602x72_512p.nc` contains 3 decomposition maps for a
   median-size F case produced from a 512-process run.
 * Three large decomposition files are available upon request.
-  + `piodecomp21600tasks_F_case.nc` (266 MB) for F case produced from 21600 processes.
-  + `GMPAS-NYF_T62_oRRS18to6v3_9600p.nc` (303 MB) for G case produced from 9600 processes.
+  + `f_case_21600p.nc` (266 MB) for F case produced from 21600 processes.
+  + `g_case_9600p.nc` (303 MB) for G case produced from 9600 processes.
   + `i_case_1344p.nc` (12 MB)for I case produced from 1344 processes.
 * An example batch script file for running a job on Cori @NERSC with 8 KNL
   nodes, 64 MPI processes per node, is provided in [slurm.knl](./slurm.knl).
 
 ## Example Output Shown on Screen
 ```
-  % mpiexec -n 16 src/e3sm_io -o can_F_out.nc datasets/f_case_866x72_16p.nc
+  % mpiexec -n 16 src/e3sm_io -o can_F_out.nc datasets/map_f_case_16p.nc
   ==== Benchmarking F case =============================
   Total number of MPI processes      = 16
   Number of IO processes             = 16
-  Input decomposition file           = datasets/f_case_866x72_16p.nc
+  Input decomposition file           = datasets/map_f_case_16p.nc
   Number of decompositions           = 3
   Output file/directory              = can_F_out.nc
   Using noncontiguous write buffer   = no
@@ -448,7 +448,7 @@
   ==== Benchmarking F case =============================
   Total number of MPI processes      = 16
   Number of IO processes             = 16
-  Input decomposition file           = datasets/f_case_866x72_16p.nc
+  Input decomposition file           = datasets/map_f_case_16p.nc
   Number of decompositions           = 3
   Output file/directory              = can_F_out.nc
   Using noncontiguous write buffer   = no
@@ -489,11 +489,11 @@
   the F case, each run of `e3sm_io` produces two history output files whose
   names are created by inserting "_h0", and "_h1" to user-supplied file name.
   The header of F case files from running the provided decomposition file
-  `f_case_866x72_16p.nc` using PnetCDF obtainable by command `ncmpidump -h` is
+  `map_f_case_16p.nc` using PnetCDF obtainable by command `ncmpidump -h` is
   available in [datasets/f_case_h0.txt](../datasets/f_case_h0.txt), and
   [datasets/f_case_h1.txt](../datasets/f_case_h1.txt).
 * The G case only creates one output file. When using the PnetCDF I/O method
-  and the provided decomposition file `g_case_cmpaso_16p.nc` to run, the header
+  and the provided decomposition file `map_g_case_16p.nc` to run, the header
   of output file can be found in [datasets/g_case_hist.txt](../datasets/g_case_hist.txt).
 * The option '-a adios' automatically appends ".bp.dir" extension to the
   user-provided input path and creates two folders for F  and I cases (one for

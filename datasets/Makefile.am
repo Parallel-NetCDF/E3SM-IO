@@ -1,7 +1,6 @@
-EXTRA_DIST = f_case_866x72_16p.nc  g_case_cmpaso_16p.nc  i_case_f19_g16_16p.nc  \
-             f_case_866x72_16p.nc4 g_case_cmpaso_16p.nc4 i_case_f19_g16_16p.nc4 \
-             f_case_866x72_16p.h5  g_case_cmpaso_16p.h5  i_case_f19_g16_16p.h5  \
-             f_case_866x72_16p.bp  g_case_cmpaso_16p.bp  i_case_f19_g16_16p.bp  \
+EXTRA_DIST = map_f_case_16p.nc map_f_case_16p.h5 map_f_case_16p.nc4 map_f_case_16p.bp \
+             map_g_case_16p.nc map_g_case_16p.h5 map_g_case_16p.nc4 map_g_case_16p.bp \
+             map_i_case_16p.nc map_i_case_16p.h5 map_i_case_16p.nc4 map_i_case_16p.bp \
              f_case_h0.txt   \
              f_case_h1.txt   \
              g_case_hist.txt \

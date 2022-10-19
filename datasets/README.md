@@ -4,20 +4,20 @@
   They are F, G, and I cases. The decomposition maps were generated from E3SM
   runs on 16 MPI processes.
   + F case uses 3 decomposition maps.
-    + File `f_case_866x72_16p.nc` is in NetCDF classic CDF-5 format
-    + File `f_case_866x72_16p.h5` is in HDF5 format
-    + File `f_case_866x72_16p.nc4` is in NetCDF4 format
-    + File `f_case_866x72_16p.bp` is in ADIOS BP format
+    + File `map_f_case_16p.nc` is in NetCDF classic CDF-5 format
+    + File `map_f_case_16p.h5` is in HDF5 format
+    + File `map_f_case_16p.nc4` is in NetCDF4 format
+    + File `map_f_case_16p.bp` is in ADIOS BP format
   + G case uses 6 decomposition maps.
-    + File `g_case_cmpaso_16p.nc` is in NetCDF classic CDF-5 format
-    + File `g_case_cmpaso_16p.h5` is in HDF5 format
-    + File `g_case_cmpaso_16p.nc4` is in NetCDF4 format
-    + File `g_case_cmpaso_16p.bp` is in ADIOS BP format
+    + File `map_g_case_16p.nc` is in NetCDF classic CDF-5 format
+    + File `map_g_case_16p.h5` is in HDF5 format
+    + File `map_g_case_16p.nc4` is in NetCDF4 format
+    + File `map_g_case_16p.bp` is in ADIOS BP format
   + I case uses 5 decomposition maps.
-    + File `i_case_f19_g16_16p.nc` is in NetCDF classic CDF-5 format
-    + File `i_case_f19_g16_16p.h5` is in HDF5 format
-    + File `i_case_f19_g16_16p.nc4` is in NetCDF4 format
-    + File `i_case_f19_g16_16p.bp` is in ADIOS BP format
+    + File `map_i_case_16p.nc` is in NetCDF classic CDF-5 format
+    + File `map_i_case_16p.h5` is in HDF5 format
+    + File `map_i_case_16p.nc4` is in NetCDF4 format
+    + File `map_i_case_16p.bp` is in ADIOS BP format
 
 * Metadata (file header) of the three cases are available in text format.
   + F case produces 2 output files, namely **h0** and **h1**.
@@ -40,15 +40,15 @@
   | D6 |            | nCells x nVertLevelsP1  |                                  |
 
 ### Dimension sizes of decomposition maps available in this folder
-  | f_case_866x72_16p | g_case_cmpaso_16p   | i_case_f19_g16_16p |
-  |:------------------|:--------------------|:-------------------|
-  | ncol = 866        | nCells = 28571      | lat = 96           |
-  | lev = 72          | nEdges = 87980      | lon = 144          |
-  |                   | nVertLevels = 100   | levgrnd = 15       |
-  |                   | nVertices = 59329   | levdcmp = 15       |
-  |                   | nVertLevelsP1 = 101 | levlak = 10        |
-  |                   |                     | ltype = 9          |
-  |                   |                     | natpft = 17        |
+  | map_f_case_16p | map_g_case_16p      | map_i_case_16p |
+  |:---------------|:--------------------|:---------------|
+  | ncol = 866     | nCells = 28571      | lat = 96       |
+  | lev = 72       | nEdges = 87980      | lon = 144      |
+  |                | nVertLevels = 100   | levgrnd = 15   |
+  |                | nVertices = 59329   | levdcmp = 15   |
+  |                | nVertLevelsP1 = 101 | levlak = 10    |
+  |                |                     | ltype = 9      |
+  |                |                     | natpft = 17    |
 
 ### Decomposition Map's dimension sizes used in production runs (standard resolution)
   | F case 21600p | G case 9600p        | I case 1344p |

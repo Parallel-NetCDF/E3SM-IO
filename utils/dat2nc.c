@@ -21,6 +21,8 @@
 #define MAX_NFILES 6
 #define LINE_SIZE  4692802
 
+// #define REDUCED_RATIO 100
+
 #define ERR { \
     if (err != NC_NOERR) { \
         printf("Error at line %d in %s: %s\n", __LINE__, __FILE__, \
@@ -129,14 +131,21 @@ int add_decomp(int ncid, const char *infname, int label) {
     if (verbose) printf("\t%s", buf);
     dims[0] = atoll(strtok(buf, " "));
     for (i=1; i<ndims; i++) dims[i] = atoll(strtok(NULL, " "));
+
+#ifdef REDUCED_RATIO
+    printf("label D%d: dim[%d] is reduced from %lld to %lld\n",
+           label, ndims-1, dims[ndims-1], dims[ndims-1]/REDUCED_RATIO);
+    dims[ndims-1] /= REDUCED_RATIO;
+#endif
+
     /* Note dims[] read from the PIO decomposition file are in Fortran order */
     if (verbose) {
         if (ndims == 1)
-            printf("lable D%d: dims = %lld\n", label, dims[0]);
+            printf("label D%d: dims = %lld\n", label, dims[0]);
         else if (ndims == 2)
-            printf("lable D%d: dims = %lld x %lld (in C order)\n", label, dims[1], dims[0]);
+            printf("label D%d: dims = %lld x %lld (in C order)\n", label, dims[1], dims[0]);
         else if (ndims == 3)
-            printf("lable D%d: dims = %lld x %lld x %lld (in C order)\n", label, dims[2], dims[1], dims[0]);
+            printf("label D%d: dims = %lld x %lld x %lld (in C order)\n", label, dims[2], dims[1], dims[0]);
     }
     dimX = dims[0]; /* the least significant dimension */
 
@@ -154,7 +163,7 @@ int add_decomp(int ncid, const char *infname, int label) {
     off   = (int**) malloc(nprocs * sizeof(int*));
     len   = (int**) malloc(nprocs * sizeof(int*));
 
-    /* start index in nreqs[] for requests to be writtend with fill values */
+    /* start index in nreqs[] for requests to be written with fill values */
     fill_starts = (int*) malloc(nprocs * sizeof(int));
 
     /* decomposition data format:
@@ -204,7 +213,8 @@ int add_decomp(int ncid, const char *infname, int label) {
          */
         off[rank][0] = atoi(strtok(buf, " "));
         j = 1;
-        while (off[rank][0] == 0) { /* skip leading 0 values, if there is any */
+        while (off[rank][0] == 0 || off[rank][0] > gsize) {
+            /* skip leading 0 values and values > gsize, if there is any */
             off[rank][0] = atoi(strtok(NULL, " "));
             j++;
         }
@@ -212,8 +222,9 @@ int add_decomp(int ncid, const char *infname, int label) {
         k = 1;
         for (; j<nreqs[rank]; j++) {
             off[rank][k] = atoi(strtok(NULL, " "));
-            if (off[rank][k] == 0) continue; /* skip 0 values */
-            off[rank][k]--;                  /* offset is 1 based */
+            if (off[rank][k] == 0 || off[rank][k] > gsize)
+                continue;   /* skip 0 values and > gsize */
+            off[rank][k]--; /* offset is 1 based */
             k++;
         }
         /* k now is the number of non-zero offsets */

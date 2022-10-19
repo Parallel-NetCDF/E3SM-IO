@@ -32,10 +32,10 @@
 
 /*----< replay_decomp() >-------------------------------------------------*/
 /* Read I/O decomposition file, cfg->decomp_path. The contents of the file
- * are shown below, an example from 866x72_16p.nc
+ * are shown below, an example from map_f_case_16p.nc
  *
- *   % ncdump -h f_case_866x72_16p.nc
- *   netcdf f_case_866x72_16p.nc {
+ *   % ncdump -h map_f_case_16p.nc
+ *   netcdf map_f_case_16p.nc {
  *   // file format: CDF-1
  *   dimensions:
  *       num_decomp = 3 ;
@@ -70,7 +70,7 @@
  *           D3.lengths:min = 1 ;
  *
  *   // global attributes:
- *       :command_line = "./dat2nc -o f_case_866x72_16p.nc -1
+ *       :command_line = "./dat2nc -o map_f_case_16p.nc -1
  * datasets/piodecomp16tasks16io01dims_ioid_514.dat -2
  * datasets/piodecomp16tasks16io01dims_ioid_516.dat -3
  * datasets/piodecomp16tasks16io02dims_ioid_548.dat " ; :D1.ndims = 1 ; :D1.dims = 866 ;

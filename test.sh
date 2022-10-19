@@ -20,7 +20,7 @@ else
    RUN="${TESTMPIRUN} -n $1"
 fi
 
-CONFIGS=("f_case_866x72_16p" "g_case_cmpaso_16p" "i_case_f19_g16_16p")
+CONFIGS=("map_f_case_16p" "map_g_case_16p" "map_i_case_16p")
 
 APIS=()
 if test "x${ENABLE_PNC}" = x1 ; then
@@ -124,12 +124,12 @@ for API in "${APIS[@]}" ; do
 
         # construct real output file names
         OUT_FILE="${OUT_FILE_BASE}.${FILE_EXT}"
-        if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
+        if test $CONFIG = map_f_case_16p || test $CONFIG = map_i_case_16p ; then
            REAL_OUT_FILE="${OUT_FILE_BASE}_h0.${FILE_EXT} ${OUT_FILE_BASE}_h1.${FILE_EXT}"
            if test "x${ap[0]}" = xadios ; then
               REAL_OUT_FILE="${OUT_FILE}_h0.${FILE_EXT} ${OUT_FILE}_h1.${FILE_EXT}"
            fi
-        elif test $CONFIG = g_case_cmpaso_16p ; then
+        elif test $CONFIG = map_g_case_16p ; then
            REAL_OUT_FILE="${OUT_FILE_BASE}.${FILE_EXT}"
         fi
 
@@ -141,7 +141,7 @@ for API in "${APIS[@]}" ; do
         if test "x${ap[1]}" = xblob ; then
            if test "x${ap[0]}" = xpnetcdf ; then
               PNETCDF_REPLAY="utils/pnetcdf_blob_replay"
-              if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
+              if test $CONFIG = map_f_case_16p || test $CONFIG = map_i_case_16p ; then
                  rm -f ${OUT_FILE_BASE}_h0.${FILE_EXT}.can
                  CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h0.${FILE_EXT} -o ${OUT_FILE_BASE}_h0.${FILE_EXT}.can"
                  echo "CMD = ${CMD}"
@@ -150,7 +150,7 @@ for API in "${APIS[@]}" ; do
                  CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h1.${FILE_EXT} -o ${OUT_FILE_BASE}_h1.${FILE_EXT}.can"
                  echo "CMD = ${CMD}"
                  ${CMD}
-              elif test $CONFIG = g_case_cmpaso_16p ; then
+              elif test $CONFIG = map_g_case_16p ; then
                  rm -f ${OUT_FILE_BASE}.${FILE_EXT}.can
                  CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}.${FILE_EXT} -o ${OUT_FILE_BASE}.${FILE_EXT}.can"
                  echo "CMD = ${CMD}"
@@ -161,14 +161,14 @@ for API in "${APIS[@]}" ; do
 
         # check ADIOS BP files
         if test "x$BPSTAT" != x && test "x${ap[0]}" = xadios ; then
-           if test $CONFIG = f_case_866x72_16p || test $CONFIG = i_case_f19_g16_16p ; then
+           if test $CONFIG = map_f_case_16p || test $CONFIG = map_i_case_16p ; then
               CMD="${BPSTAT} ${OUT_FILE}_h0.${FILE_EXT}"
               echo "CMD = ${CMD}"
               ${CMD}
               CMD="${BPSTAT} ${OUT_FILE}_h1.${FILE_EXT}"
               echo "CMD = ${CMD}"
               ${CMD}
-           elif test $CONFIG = g_case_cmpaso_16p ; then
+           elif test $CONFIG = map_g_case_16p ; then
               CMD="${BPSTAT} ${OUT_FILE_BASE}.${FILE_EXT}"
               echo "CMD = ${CMD}"
               ${CMD}
