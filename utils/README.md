@@ -38,22 +38,25 @@ file into the NetCDF file.
     The decomposition map records the offsets of individual array elements
     accessed by a process. `dat2nc` detects consecutive offsets and merges them
     into a contiguous access region, represented by a pair of offset and length.
-  + **Sorts the offset and length pairs into an increasing order of offsets**
-    The offsets in a decomposition map generated from PIO or Scorpio are **NOT**
-    necessarily sorted in an increasing order.
-* The original decomposition maps, i.e. offsets only, can also be included in the
-  NetCDF file if using the command-line option `-r`. When this option is enabled,
-  `dat2nc` will save a copy of the original decomposition maps into a variable.
-  This raw form of decomposition maps can be used in the ADIOS blob I/O method.
+  + **Option -s** - Sorts the offset and length pairs into an increasing order
+    of offsets. The offsets in a decomposition map generated from PIO or
+    Scorpio are **NOT** necessarily sorted in an increasing order.
+  + **Option -r** - The original decomposition maps, i.e. offsets only, can
+    also be included in the NetCDF file if using the command-line option `-r`.
+    When this option is enabled, `dat2nc` will save a copy of the original
+    decomposition maps into variables with prefix name "raw_".
+  + **Option -f** - Assigns the uncovered elements in decomposition maps. Not
+    all decomposition maps cover the enire array elements they decompose.
+
 * Three decomposition map files from a small E3SM F case running 16 MPI processes
   are provided in folder [datasets](../datasets).
   * `piodecomp16tasks16io01dims_ioid_514.dat`  (decomposition along the fastest dimensions)
   * `piodecomp16tasks16io01dims_ioid_516.dat`  (decomposition along the fastest dimensions)
   * `piodecomp16tasks16io02dims_ioid_548.dat`  (decomposition along the fastest two dimensions)
 * The input file to `dat2nc` is a text file contains a list of decomposition map
-  file names. An example is provided in [./input_files.txt](input_files.txt).
+  file names. An example is provided in [./input_files_f_case.txt](input_files_f_case.txt).
   ```
-  % cat ./input_files.txt
+  % cat ./input_files_f_case.txt
   ../datasets/piodecomp16tasks16io01dims_ioid_514.dat
   ../datasets/piodecomp16tasks16io01dims_ioid_516.dat
   ../datasets/piodecomp16tasks16io02dims_ioid_548.dat
@@ -61,83 +64,109 @@ file into the NetCDF file.
 * The command to convert and combine the three `.dat` files from the small F case
   example to a NetCDF file is:
   ```
-  % ./dat2nc -i input_list.txt -o f_case_866x72_16p.nc
+  % ./dat2nc -i input_files_f_case.txt -o map_f_case_16p.nc
   ```
 * Full list of command-line options of `./dat2nc`:
   ```
   % ./dat2nc -h
-  Usage: dat2nc [-h|-v|-r|-l] -i input_file -o out_file
+  Usage: dat2nc [-h|-v|-r|-f|-s|-l num] -i input_file -o out_file
   -h             Print help
   -v             Verbose mode
-  -r             Include original decomposition map
+  -r             Include original decomposition maps
+  -f             Fill in unassigned elements in decomposition maps
+  -s             Sort offsets of decomposition maps increasingly
   -l num         max number of characters per line in input file
   -i input_file  a text file containing a list of decomposition
                  map .dat file names
   -o out_file    name of output netCDF file
   ```
-* The output NetCDF file, `f_case_866x72_16p.nc`, converted from these 3
+* The output NetCDF file, `map_f_case_16p.nc`, converted from these 3
   decomposition `.dat` files is also provided in folder `../datasets`.
   Its metadata can be obtained from running NetCDF utility program `ncdump`
   or `ncmpidump` and is shown below.
   ```
     % cd ./datasets
-    % ncmpidump -h f_case_866x72_16p.nc
-    netcdf f_case_866x72_16p {
-    // file format: CDF-1
+    % ncmpidump -h map_f_case_16p.nc
+    netcdf map_f_case_16p {
+    // file format: CDF-5 (big variables)
     dimensions:
-        num_decomp = 3 ;         // number of decomposition maps
-        decomp_nprocs = 16 ;     // number of MPI processes used when creating the decomposition maps
-        D1.total_nreqs = 47 ;    // decomposition 1's total number noncontiguous write requests (offset-length pairs)
-        D2.total_nreqs = 407 ;
-        D3.total_nreqs = 29304 ; // decomposition map 3 contains 29304 offset-length pairs
+        num_decomp = 3 ;
+        decomp_nprocs = 16 ;
+        D1.total_nreqs = 47 ;
+        D1.total_raw_nreqs = 866 ;
+        D2.total_nreqs = 866 ;
+        D2.total_raw_nreqs = 866 ;
+        D3.total_nreqs = 62352 ;
+        D3.total_raw_nreqs = 62352 ;
     variables:
         int D1.nreqs(decomp_nprocs) ;
-            D1.nreqs:description = "Number of noncontiguous requests per process" ;
+                D1.nreqs:description = "Number of noncontiguous requests per process" ;
+        int D1.fill_starts(decomp_nprocs) ;
+                D1.fill_starts:description = "Start index in offsets[] and lengths[] for requests to be written with fill values" ;
         int D1.offsets(D1.total_nreqs) ;
-            D1.offsets:description = "Flattened starting indices of noncontiguous requests" ;
+                D1.offsets:description = "Flattened starting indices of noncontiguous requests" ;
         int D1.lengths(D1.total_nreqs) ;
-            D1.lengths:description = "Lengths of noncontiguous requests" ;
-            D1.lengths:max = 36 ;   // maximal length among all 47 offset-length pairs
-            D1.lengths:min = 9 ;    // minimal length among all 47 offset-length pairs
+                D1.lengths:description = "Lengths of noncontiguous requests" ;
+                D1.lengths:max = 36 ;
+                D1.lengths:min = 9 ;
+        int D1.raw_nreqs(decomp_nprocs) ;
+                D1.raw_nreqs:description = "Number of file offsets accessed per process before merge" ;
+        int D1.raw_offsets(D1.total_raw_nreqs) ;
+                D1.raw_offsets:description = "File offsets accessed before merge" ;
         int D2.nreqs(decomp_nprocs) ;
-            D2.nreqs:description = "Number of noncontiguous requests per process" ;
+                D2.nreqs:description = "Number of noncontiguous requests per process" ;
+        int D2.fill_starts(decomp_nprocs) ;
+                D2.fill_starts:description = "Start index in offsets[] and lengths[] for requests to be written with fill values" ;
         int D2.offsets(D2.total_nreqs) ;
-            D2.offsets:description = "Flattened starting indices of noncontiguous requests" ;
+                D2.offsets:description = "Flattened starting indices of noncontiguous requests" ;
         int D2.lengths(D2.total_nreqs) ;
-            D2.lengths:description = "Lengths of noncontiguous requests" ;
-            D2.lengths:max = 4 ;
-            D2.lengths:min = 1 ;
+                D2.lengths:description = "Lengths of noncontiguous requests" ;
+                D2.lengths:max = 1 ;
+                D2.lengths:min = 1 ;
+        int D2.raw_nreqs(decomp_nprocs) ;
+                D2.raw_nreqs:description = "Number of file offsets accessed per process before merge" ;
+        int D2.raw_offsets(D2.total_raw_nreqs) ;
+                D2.raw_offsets:description = "File offsets accessed before merge" ;
         int D3.nreqs(decomp_nprocs) ;
-            D3.nreqs:description = "Number of noncontiguous requests per process" ;
+                D3.nreqs:description = "Number of noncontiguous requests per process" ;
+        int D3.fill_starts(decomp_nprocs) ;
+                D3.fill_starts:description = "Start index in offsets[] and lengths[] for requests to be written with fill values" ;
         int D3.offsets(D3.total_nreqs) ;
-            D3.offsets:description = "Flattened starting indices of noncontiguous requests" ;
+                D3.offsets:description = "Flattened starting indices of noncontiguous requests" ;
         int D3.lengths(D3.total_nreqs) ;
-            D3.lengths:description = "Lengths of noncontiguous requests" ;
-            D3.lengths:max = 4 ;
-            D3.lengths:min = 1 ;
+                D3.lengths:description = "Lengths of noncontiguous requests" ;
+                D3.lengths:max = 1 ;
+                D3.lengths:min = 1 ;
+        int D3.raw_nreqs(decomp_nprocs) ;
+                D3.raw_nreqs:description = "Number of file offsets accessed per process before merge" ;
+        int D3.raw_offsets(D3.total_raw_nreqs) ;
+                D3.raw_offsets:description = "File offsets accessed before merge" ;
 
     // global attributes:
-        :command_line = "./dat2nc -o f_case_866x72_16p.nc -1 datasets/piodecomp16tasks16io01dims_ioid_514.dat -2 datasets/piodecomp16tasks16io01dims_ioid_516.dat -3 datasets/piodecomp16tasks16io02dims_ioid_548.dat " ;
-        :D1.ndims = 1 ;      // number of dimensions that are decomposed
-        :D1.dims = 866 ;     // dimension size
-        :D1.max_nreqs = 4 ;  // maximum number of offset-length pairs among all MPI processes
-        :D1.min_nreqs = 2 ;  // minimum number of offset-length pairs among all MPI processes
-        :D2.ndims = 1 ;
-        :D2.dims = 866 ;
-        :D2.max_nreqs = 39 ;
-        :D2.min_nreqs = 13 ;
-        :D3.ndims = 2 ;        // data decomposition is done alone 2 dimensions
-        :D3.dims = 72, 866 ;   // sizes of the two decompisition dimensions
-        :D3.max_nreqs = 2808 ; // among all 29304 offset-length pairs, the maximum number of pairs among 16 processes
-        :D3.min_nreqs = 936 ;  // among all 29304 offset-length pairs, the minimum number of pairs among 16 processes
+                :command_line = "./dat2decomp -v -r -a cdf5 -i input_files_f.txt -o map_f_case_16p.nc " ;
+                :D1.ndims = 1 ;
+                :D1.dims = 866 ;
+                :D1.max_nreqs = 4 ;
+                :D1.min_nreqs = 2 ;
+                :D1.fully_covered = "true" ;
+                :D2.ndims = 1 ;
+                :D2.dims = 866 ;
+                :D2.max_nreqs = 56 ;
+                :D2.min_nreqs = 52 ;
+                :D2.fully_covered = "true" ;
+                :D3.ndims = 2 ;
+                :D3.dims = 72, 866 ;
+                :D3.max_nreqs = 4032 ;
+                :D3.min_nreqs = 3744 ;
+                :D3.fully_covered = "true" ;
     }
   ```
 * The NetCDF file containing the 6 decompositions from a small E3SM G case
   running 16 MPI processes is also available in folder `../datasets` with file
-  named `g_case_cmpaso_16p.nc`.
+  named `map_g_case_16p.nc`.
 * The NetCDF file containing the 5 decompositions from a small E3SM I case
   running 16 MPI processes is also available in folder `../datasets` with file
-  named `i_case_f19_g16_16p.nc`.
+  named `map_i_case_16p.nc`.
 ---
 
 ## dat2decomp
@@ -157,24 +186,26 @@ format.
 * The command to combine the three `.dat` files for the small F case to a HDF5
   file is:
   ```
-  % ./dat2decomp -a hdf5 -i input_list.txt -o f_case_866x72_16p.nc
+  % ./dat2decomp -a hdf5 -i input_files_f_case.txt -o map_f_case_16p.nc
   ```
 * Command-line options of `./dat2decomp`:
   ```
   % ./dat2decomp -h
-  Usage: ./dat2decomp [-h|-v|-r|-l num] -a fmt -i input_file -o out_file
-    [-h]           Print help
-    [-v]           Verbose mode
-    [-r]           Include original decomposition map
-    [-l num]       max number of characters per line in input file
-    -a fmt         output file format, fmt is one of the followings
-       cdf5:       NetCDF classic 64-bit data format
-       netcdf4:    NetCDF-4 (HDF5-based) format
-       hdf5:       HDF5 format
-       bp:         ADIOS2 BP format
-    -i input_file  input file containing a list of decomposition
-                   map .dat files
-    -o out_file    output file name
+  Usage: ./dat2decomp [-h|-v|-r|-f|-s|-l num] -a fmt -i input_file -o out_file
+  -h             Print help
+  -v             Verbose mode
+  -r             Include original decomposition maps
+  -f             Fill in unassigned elements in decomposition maps
+  -s             Sort offsets of decomposition maps increasingly
+  -l num         max number of characters per line in input file
+  -a fmt         output file format, fmt is one of the followings
+     cdf5:       NetCDF classic 64-bit data format
+     netcdf4:    NetCDF-4 (HDF5-based) format
+     hdf5:       HDF5 format
+     bp:         ADIOS2 BP format
+  -i input_file  a text file containing a list of decomposition
+                 map .dat file names
+  -o out_file    output file name
   ```
 ---
 
@@ -186,7 +217,7 @@ NetCDF4, or ADIOS BP format to a new file in a different format.
   NetCDF CDF5 file to an HDF5 file, `e3sm_io` must be configured with
   `--with-pnetcdf` and `--with-hdf5`. Below is an example command.
   ```
-  % ./decomp_copy -a hdf5 -i f_case_866x72_16p.nc -o f_case_866x72_16p.h5
+  % ./decomp_copy -a hdf5 -i map_f_case_16p.nc -o map_f_case_16p.h5
   ```
 * Command-line options of `./decomp_copy`:
   ```

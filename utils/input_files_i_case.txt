@@ -1,0 +1,12 @@
+../datasets/i_case_16p_D1_lat_lon.dat
+../datasets/i_case_16p_D2_levgrndlevdcmp_lat_lon.dat
+../datasets/i_case_16p_D3_levlak_lat_lon.dat
+../datasets/i_case_16p_D4_ltype_lat_lon.dat
+../datasets/i_case_16p_D5_natpft_lat_lon.dat
+
+# ../datasets/i_case_1344p_D1_lat_lon.dat
+# ../datasets/i_case_1344p_D2_levgrndlevdcmp_lat_lon.dat
+# ../datasets/i_case_1344p_D3_levlak_lat_lon.dat
+# ../datasets/i_case_1344p_D4_ltype_lat_lon.dat
+# ../datasets/i_case_1344p_D5_natpft_lat_lon.dat
+

@@ -1,0 +1,7 @@
+../datasets/g_case_16p_D1_nCells.dat
+../datasets/g_case_16p_D2_nEdges.dat
+../datasets/g_case_16p_D3_nCells_nVertLevels.dat
+../datasets/g_case_16p_D4_nEdges_nVertLevels.dat
+../datasets/g_case_16p_D5_nVertices_nVertLevels.dat
+../datasets/g_case_16p_D6_nCells_nVertLevelsP1.dat
+
