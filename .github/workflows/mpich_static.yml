@@ -6,19 +6,19 @@ on:
       - master
       - github_action
     paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - '**.jpg'
-      - '**.png'
-      - 'tests/**'
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.jpg'
+      - '**/*.png'
+      - 'tests/*'
   pull_request:
     branches: master
     paths-ignore:
-      - '**.md'
-      - '**.txt'
-      - '**.jpg'
-      - '**.png'
-      - 'tests/**'
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.jpg'
+      - '**/*.png'
+      - 'tests/*'
 
 jobs:
     build:
