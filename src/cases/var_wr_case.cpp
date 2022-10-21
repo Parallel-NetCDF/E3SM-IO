@@ -62,11 +62,10 @@
     CHECK_ERR                                                                 \
 }
 
-#define IPUT_VARA_NOADV(itype, buf) {                                         \
-    err = driver.put_vara(ncid, varid, itype, start, count, buf, nb);         \
-    CHECK_VAR_ERR(varid)                                                      \
+#define IPUT_VARA_NOADV(varp, itype, buf) {                                   \
+    err = driver.put_vara(ncid, varp.vid, itype, start, count, buf, nb);      \
+    CHECK_VAR_ERR(varp._name)                                                 \
     my_nreqs++;                                                               \
-    varid++;                                                                  \
 }
 
 #define IPUT_VARA(varp, itype, adv, buf) {                                    \
@@ -74,7 +73,7 @@
         err = scorpio_write_var(driver, rec_no, ncid, varp, itype, buf, nb);  \
     else                                                                      \
         err = driver.put_vara(ncid, varp.vid, itype, start, count, buf, nb);  \
-    CHECK_VAR_ERR(varp.vid)                                                   \
+    CHECK_VAR_ERR(varp._name)                                                 \
     buf += (adv);                                                             \
     my_nreqs++;                                                               \
 }
@@ -84,7 +83,7 @@
         err = scorpio_write_var(driver, -1, ncid, varp, itype, buf, nb);      \
     else                                                                      \
         err = driver.put_vara(ncid, varp.vid, itype, NULL, NULL, buf, nb);    \
-    CHECK_VAR_ERR(varp.vid)                                                   \
+    CHECK_VAR_ERR(varp._name)                                                 \
     buf += (adv);                                                             \
     my_nreqs++;                                                               \
 }
@@ -113,7 +112,7 @@
         my_nreqs++;                                                           \
         buf += decom.count[dp] + gap;                                         \
     }                                                                         \
-    CHECK_VAR_ERR(varp.vid)                                                   \
+    CHECK_VAR_ERR(varp._name)                                                 \
     nvars_D[dp]++;                                                            \
 }
 
@@ -136,7 +135,7 @@
         my_nreqs++;                                                           \
         buf += decom.count[dp] + gap;                                         \
     }                                                                         \
-    CHECK_VAR_ERR(varp.vid)                                                   \
+    CHECK_VAR_ERR(varp._name)                                                 \
     if (rec_no == 0) nvars_D[dp]++;                                           \
 }
 
@@ -269,9 +268,8 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     } else
 #endif
     if (cfg.strategy == blob) {
-        int varid=0;
-
         /* write decomposition variables, they are defined first in file */
+        i = 0;
         for (j=0; j<decom.num_decomp; j++) {
             start[0] = sub_rank;
             count[0] = 1;
@@ -280,21 +278,26 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
 
             /* write to D*.nreqs, 1D array */
             contig_nreqs[j] = decom.contig_nreqs[j];
-            IPUT_VARA_NOADV(MPI_INT, contig_nreqs+j)
+            IPUT_VARA_NOADV(vars[i], MPI_INT, contig_nreqs+j)
+            i++;
 
             /* write to D*.blob_start, 1D array */
             blob_start[j] = decom.start[j];
-            IPUT_VARA_NOADV(MPI_LONG_LONG, blob_start+j)
+            IPUT_VARA_NOADV(vars[i], MPI_LONG_LONG, blob_start+j)
+            i++;
 
             /* write to D*.blob_count, 1D array */
             blob_count[j] = decom.count[j];
-            IPUT_VARA_NOADV(MPI_LONG_LONG, blob_count+j);
+            IPUT_VARA_NOADV(vars[i], MPI_LONG_LONG, blob_count+j);
+            i++;
 
             /* write to D*.offsets, 2D array */
-            IPUT_VARA_NOADV(MPI_INT, decom.disps[j])
+            IPUT_VARA_NOADV(vars[i], MPI_INT, decom.disps[j])
+            i++;
 
             /* write to D*.lengths, 2D array */
-            IPUT_VARA_NOADV(MPI_INT, decom.blocklens[j])
+            IPUT_VARA_NOADV(vars[i], MPI_INT, decom.blocklens[j])
+            i++;
 
             /* these 4 are used for record variables in blob I/O */
             starts[j][0] = 0;
