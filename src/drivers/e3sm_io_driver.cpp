@@ -16,6 +16,7 @@
 #include <cstdlib>
 #include <cstring>
 //
+#include <string.h> /* strdup() */
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>

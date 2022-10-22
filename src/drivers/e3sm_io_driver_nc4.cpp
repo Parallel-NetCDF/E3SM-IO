@@ -11,6 +11,7 @@
 #endif
 //
 #include <sys/stat.h>
+#include <string.h> /* strdup() */
 //
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
