@@ -147,6 +147,33 @@ class e3sm_io_case {
                            int dim_max_nreqs[MAX_NUM_DECOMP],
                            int g_dimids[MAX_NUM_DECOMP][MAX_NDIMS]);
 
+        int def_var(e3sm_io_config             &cfg,
+                    e3sm_io_decom              &decom,
+                    e3sm_io_driver             &driver,
+                    case_meta                  *cmeta,
+                    int                         ncid,
+                    std::string                 name,
+                    std::map<int, std::string> &dnames,
+                    int                         xtype,
+                    int                         nDims,
+                    int                         dim_time,
+                    int                        *dimids,
+                    MPI_Datatype                itype,
+                    int                         decomid,
+                    var_meta                   *varp);
+
+        int inq_var(e3sm_io_config             &cfg,
+                    e3sm_io_decom              &decom,
+                    e3sm_io_driver             &driver,
+                    case_meta                  *cmeta,
+                    int                         ncid,
+                    std::string                 name,
+                    int                         dim_time,
+                    int                        *dimids,
+                    MPI_Datatype                itype,
+                    int                         decomid,
+                    var_meta                   *varp);
+
     public:
          e3sm_io_case();
         ~e3sm_io_case();
@@ -318,6 +345,14 @@ int scorpio_write_var(e3sm_io_driver &driver,
     cmeta->num_attrs++;                                                       \
 }
 #define DEF_VAR(name, xtype, nDims, dimids, itype, decomid) {                 \
+    varp++;                                                                   \
+    err = e3sm_io_case::def_var(cfg, decom, driver, cmeta, ncid, name,        \
+                                dnames, xtype,  nDims, dim_time, dimids,      \
+                                itype, decomid, varp);                        \
+    if (err != 0) goto err_out;                                               \
+}
+#if 0
+#define DEF_VAR(name, xtype, nDims, dimids, itype, decomid) {                 \
     /* nDims and dimids are canonical dimensions */                           \
     int _i, *_dimids = dimids;                                                \
     varp++;                                                                   \
@@ -384,13 +419,13 @@ int scorpio_write_var(e3sm_io_driver &driver,
             wr_buf.fix_flt_buflen += varp->vlen + wr_buf.gap;                 \
     }                                                                         \
 }
+#endif
 #define INQ_DIM(name, num, dimid) {                                           \
     err = driver.inq_dim(ncid, name, dimid);                                  \
     CHECK_ERR                                                                 \
     if (cfg.api == adios) dnames[*dimid] = name;                              \
 }
-#define GET_GATTR_TXT(name, dbuf) {                                           \
-    char buf[2014];                                                           \
+#define GET_GATTR_TXT(name, buf) {                                            \
     err = driver.get_att(ncid, NC_GLOBAL, prefix+name, buf);                  \
     CHECK_ERR                                                                 \
     cmeta->num_attrs++;                                                       \
@@ -453,6 +488,13 @@ int scorpio_write_var(e3sm_io_driver &driver,
     cmeta->num_attrs++;                                                       \
 }
 #define INQ_VAR(name, xtype, nDims, dimids, itype, decomid) {                 \
+    varp++;                                                                   \
+    err = e3sm_io_case::inq_var(cfg, decom, driver, cmeta, ncid, name,        \
+                                dim_time, dimids, itype, decomid, varp);      \
+    if (err != 0) goto err_out;                                               \
+}
+#if 0
+#define INQ_VAR(name, xtype, nDims, dimids, itype, decomid) {                 \
     /* nDims and dimids are canonical dimensions */                           \
     int _i, *_dimids = dimids;                                                \
     varp++;                                                                   \
@@ -498,3 +540,5 @@ int scorpio_write_var(e3sm_io_driver &driver,
             wr_buf.fix_flt_buflen += varp->vlen + wr_buf.gap;                 \
     }                                                                         \
 }
+#endif
+

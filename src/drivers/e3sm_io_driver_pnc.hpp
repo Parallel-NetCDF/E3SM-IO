@@ -43,7 +43,9 @@ class e3sm_io_driver_pnc : public e3sm_io_driver {
     int def_var (int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did);
     int def_local_var (
         int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did);
-    int inq_var (int fid, std::string name, int *did);
+    int inq_varid(int fid, std::string name, int *did);
+    int inq_var(int fid, int varid, std::string &name, nc_type *xtypep,
+                int *ndimsp, int *dimids, int *nattsp);
     int inq_var_name(int ncid, int varid, char *name);
     int inq_var_off (int fid, int vid, MPI_Offset *off);
     int def_dim (int fid, std::string name, MPI_Offset size, int *dimid);

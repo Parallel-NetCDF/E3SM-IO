@@ -106,6 +106,8 @@ static void usage (char *argv0) {
                 (default: 0).\n\
        [-t time] Add sleep time to emulate the computation in order to \n\
                  overlapping I/O when Async VOL is used.\n\
+       [-i path] Input file path (folder name when subfiling is used, file\n\
+                 name otherwise).\n\
        [-o path] Output file path (folder name when subfiling is used, file\n\
                  name otherwise).\n\
        [-a api]  I/O library name\n\

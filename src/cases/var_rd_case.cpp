@@ -436,8 +436,8 @@ int e3sm_io_case::var_rd_case(e3sm_io_config &cfg,
     cmeta->num_flushes     = nflushes;
     cmeta->num_decomp_vars = num_decomp_vars;
     cmeta->my_nreqs        = my_nreqs;
-    cmeta->metadata_WR     = metadata_size;
-    cmeta->amount_WR       = total_size;
+    cmeta->metadata_RD     = metadata_size;
+    cmeta->amount_RD       = total_size;
     cmeta->end2end_time    = MPI_Wtime () - cmeta->end2end_time;
 
     /* check if there is any PnetCDF internal malloc residue */
