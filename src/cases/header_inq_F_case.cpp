@@ -111,7 +111,7 @@ int e3sm_io_case::inq_var_decomp(e3sm_io_config &cfg,
             ival = 6;
             GET_ATTR_INT("piotype", 1, &ival)
         }
-        err = driver.inq_varid(ncid, "/__pio__/info/nproc", &vars[j].vid);
+        err = driver.inq_varid(ncid, (char*)"/__pio__/info/nproc", &vars[j].vid);
         CHECK_ERR
     }
     else {

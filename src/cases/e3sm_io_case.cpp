@@ -343,7 +343,7 @@ int e3sm_io_case::inq_var(e3sm_io_config &cfg,
                           e3sm_io_driver &driver,
                           case_meta      *cmeta,
                           int             ncid,
-                          std::string     name,
+                          char           *name,
                           int             dim_time,
                           int            *dimids,
                           MPI_Datatype    itype,
@@ -356,9 +356,9 @@ int e3sm_io_case::inq_var(e3sm_io_config &cfg,
     err = driver.inq_varid(ncid, name, &varp->vid);
     CHECK_ERR
 
-    varp->_name = strdup(name.c_str());
+    varp->_name = strdup(name);
 
-    err = driver.inq_var(ncid, varp->vid, name, &varp->xType,
+    err = driver.inq_var(ncid, varp->vid, NULL, &varp->xType,
                          &varp->ndims, dimids, NULL);
     CHECK_ERR
 

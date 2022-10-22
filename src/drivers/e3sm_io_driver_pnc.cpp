@@ -254,20 +254,17 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_pnc::inq_varid (int fid, std::string name, int *varid) {
+int e3sm_io_driver_pnc::inq_varid (int fid, const char *name, int *varid) {
 
     // inq_var is used to check whether a variable exist so error is expected
-    return ncmpi_inq_varid (fid, name.c_str (), varid);
+    return ncmpi_inq_varid (fid, name, varid);
 }
 
-int e3sm_io_driver_pnc::inq_var (int fid, int varid, std::string &name,
-                                 nc_type *xtypep, int *ndimsp, int *dimids,
-                                 int *nattsp)
+int e3sm_io_driver_pnc::inq_var (int fid, int varid, char *name, nc_type *xtypep,
+                                 int *ndimsp, int *dimids, int *nattsp)
 {
-    char _name[1024];
     int err;
-    err = ncmpi_inq_var(fid, varid, _name, xtypep, ndimsp, dimids, nattsp);
-    name = strdup(_name);
+    err = ncmpi_inq_var(fid, varid, name, xtypep, ndimsp, dimids, nattsp);
     return err;
 }
 

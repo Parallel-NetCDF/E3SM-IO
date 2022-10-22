@@ -285,13 +285,13 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_nc4::inq_varid (int fid, std::string name, int *varid) {
+int e3sm_io_driver_nc4::inq_varid (int fid, const char *name, int *varid) {
     int err;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_INQ_VAR)
 
-    err = nc_inq_varid (fid, name.c_str (), varid);
+    err = nc_inq_varid (fid, name, varid);
     // inq_var is used to check whether a variable exist so error is expected
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_INQ_VAR)
@@ -299,18 +299,15 @@ int e3sm_io_driver_nc4::inq_varid (int fid, std::string name, int *varid) {
     return err;
 }
 
-int e3sm_io_driver_nc4::inq_var (int fid, int varid, std::string &name,
-                                 nc_type *xtypep, int *ndimsp, int *dimids,
-                                 int *nattsp)
+int e3sm_io_driver_nc4::inq_var (int fid, int varid, char *name, nc_type *xtypep,
+                                 int *ndimsp, int *dimids, int *nattsp)
 {
     int err;
-    char _name[1024];
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_NC4_INQ_VAR)
 
-    err = nc_inq_var (fid, varid, _name, xtypep, ndimsp, dimids, nattsp);
-    name = strdup(_name);
+    err = nc_inq_var (fid, varid, name, xtypep, ndimsp, dimids, nattsp);
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4_INQ_VAR)
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_NC4)

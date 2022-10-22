@@ -167,7 +167,7 @@ class e3sm_io_case {
                     e3sm_io_driver             &driver,
                     case_meta                  *cmeta,
                     int                         ncid,
-                    std::string                 name,
+                    char                       *name,
                     int                         dim_time,
                     int                        *dimids,
                     MPI_Datatype                itype,
@@ -489,7 +489,7 @@ int scorpio_write_var(e3sm_io_driver &driver,
 }
 #define INQ_VAR(name, xtype, nDims, dimids, itype, decomid) {                 \
     varp++;                                                                   \
-    err = e3sm_io_case::inq_var(cfg, decom, driver, cmeta, ncid, name,        \
+    err = e3sm_io_case::inq_var(cfg, decom, driver, cmeta, ncid, (char*)name, \
                                 dim_time, dimids, itype, decomid, varp);      \
     if (err != 0) goto err_out;                                               \
 }
