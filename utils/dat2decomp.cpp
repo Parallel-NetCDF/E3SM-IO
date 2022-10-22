@@ -17,7 +17,7 @@
 #include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <string.h> /* strdup() */
 #include <unistd.h> /* getopt() */
 
 #include <e3sm_io.h>
