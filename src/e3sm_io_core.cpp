@@ -62,6 +62,13 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         else{
             strcpy(path, cfg->in_path);
         }
+        if (cfg->strategy == blob && cfg->api != adios) {
+            /* append subfile ID to subfile name */
+            char sub_str[8];
+            sprintf(sub_str, ".%04d", cfg->subfile_ID);
+            strcat(path, sub_str);
+        }
+
         driver = e3sm_io_get_driver (path, cfg);
         CHECK_PTR (driver)
         E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_DRIVER)

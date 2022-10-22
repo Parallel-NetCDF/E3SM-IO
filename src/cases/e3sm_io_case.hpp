@@ -21,23 +21,25 @@ typedef struct {
     size_t  gap;
 
     /* buffers for fixed-size variables */
-    size_t  fix_txt_buflen; char   *fix_txt_buf;
-    size_t  fix_int_buflen; int    *fix_int_buf;
-    size_t  fix_flt_buflen; float  *fix_flt_buf;
-    size_t  fix_dbl_buflen; double *fix_dbl_buf;
+    size_t  fix_txt_buflen; char      *fix_txt_buf;
+    size_t  fix_int_buflen; int       *fix_int_buf;
+    size_t  fix_flt_buflen; float     *fix_flt_buf;
+    size_t  fix_dbl_buflen; double    *fix_dbl_buf;
+    size_t  fix_lld_buflen; long long *fix_lld_buf;
 
     /* buffers for record variables */
-    size_t  rec_txt_buflen; char   *rec_txt_buf;
-    size_t  rec_int_buflen; int    *rec_int_buf;
-    size_t  rec_flt_buflen; float  *rec_flt_buf;
-    size_t  rec_dbl_buflen; double *rec_dbl_buf;
+    size_t  rec_txt_buflen; char      *rec_txt_buf;
+    size_t  rec_int_buflen; int       *rec_int_buf;
+    size_t  rec_flt_buflen; float     *rec_flt_buf;
+    size_t  rec_dbl_buflen; double    *rec_dbl_buf;
+    size_t  rec_lld_buflen; long long *rec_lld_buf;
 } io_buffers;
 
 typedef struct {
     int vid;         /* variable ID, returned from the driver */
 
     char *_name;     /* name of variable */
-    int fill_id;  /* fill value variable ID returned from adios driver */
+    int fill_id;     /* fill value variable ID returned from adios driver */
     int frame_id;    /* frame variable ID returned from adios driver */
     int decom_id;    /* decomposition map variable ID returned from adios driver */
     int piodecomid;  /* map IDs used on Scorpio starting at 512 */
@@ -167,7 +169,7 @@ class e3sm_io_case {
                     e3sm_io_driver             &driver,
                     case_meta                  *cmeta,
                     int                         ncid,
-                    char                       *name,
+                    const char                 *name,
                     int                         dim_time,
                     int                        *dimids,
                     MPI_Datatype                itype,
@@ -401,22 +403,28 @@ int scorpio_write_var(e3sm_io_driver &driver,
     /* increment I/O buffer sizes */                                          \
     if (varp->isRecVar) {                                                     \
         if (varp->iType == MPI_DOUBLE)                                        \
-            wr_buf.rec_dbl_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.rec_dbl_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_INT)                                      \
-            wr_buf.rec_int_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.rec_int_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_CHAR)                                     \
-            wr_buf.rec_txt_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.rec_txt_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_FLOAT)                                    \
-            wr_buf.rec_flt_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.rec_flt_buflen   += varp->vlen + wr_buf.gap;               \
+        else if (varp->iType == MPI_LONG_LONG)                                \
+            wr_buf.rec_lld_buflen += varp->vlen + wr_buf.gap;                 \
+        else assert(0)                                                        \
     } else {                                                                  \
         if (varp->iType == MPI_DOUBLE)                                        \
-            wr_buf.fix_dbl_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.fix_dbl_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_INT)                                      \
-            wr_buf.fix_int_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.fix_int_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_CHAR)                                     \
-            wr_buf.fix_txt_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.fix_txt_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_FLOAT)                                    \
-            wr_buf.fix_flt_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.fix_flt_buflen   += varp->vlen + wr_buf.gap;               \
+        else if (varp->iType == MPI_LONG_LONG)                                \
+            wr_buf.fix_lld_buflen += varp->vlen + wr_buf.gap;                 \
+        else assert(0)                                                        \
     }                                                                         \
 }
 #endif
@@ -522,22 +530,28 @@ int scorpio_write_var(e3sm_io_driver &driver,
     /* increment I/O buffer sizes */                                          \
     if (varp->isRecVar) {                                                     \
         if (varp->iType == MPI_DOUBLE)                                        \
-            wr_buf.rec_dbl_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.rec_dbl_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_INT)                                      \
-            wr_buf.rec_int_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.rec_int_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_CHAR)                                     \
-            wr_buf.rec_txt_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.rec_txt_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_FLOAT)                                    \
-            wr_buf.rec_flt_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.rec_flt_buflen   += varp->vlen + wr_buf.gap;               \
+        else if (varp->iType == MPI_LONG_LONG)                                \
+            wr_buf.rec_lld_buflen += varp->vlen + wr_buf.gap;                 \
+        else assert(0)                                                        \
     } else {                                                                  \
         if (varp->iType == MPI_DOUBLE)                                        \
-            wr_buf.fix_dbl_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.fix_dbl_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_INT)                                      \
-            wr_buf.fix_int_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.fix_int_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_CHAR)                                     \
-            wr_buf.fix_txt_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.fix_txt_buflen   += varp->vlen + wr_buf.gap;               \
         else if (varp->iType == MPI_FLOAT)                                    \
-            wr_buf.fix_flt_buflen += varp->vlen + wr_buf.gap;                 \
+            wr_buf.fix_flt_buflen   += varp->vlen + wr_buf.gap;               \
+        else if (varp->iType == MPI_LONG_LONG)                                \
+            wr_buf.fix_lld_buflen += varp->vlen + wr_buf.gap;                 \
+        else assert(0)                                                        \
     }                                                                         \
 }
 #endif

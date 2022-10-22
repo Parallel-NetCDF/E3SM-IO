@@ -157,6 +157,9 @@ int e3sm_io_case::rd_test(e3sm_io_config &cfg,
     if (cfg.strategy != canonical)
         ERR_OUT ("Read is only supported in canonical storage layout")
 
+    if (cfg.api == hdf5)
+        ERR_OUT ("Read currently does not support HDF5 methods")
+
     /* construct I/O metadata */
     err = calc_metadata(&cfg, &decom);
     CHECK_ERR
@@ -324,6 +327,9 @@ int e3sm_io_case::def_var(e3sm_io_config            &cfg,
             wr_buf.rec_txt_buflen += varp->vlen + wr_buf.gap;
         else if (varp->iType == MPI_FLOAT)
             wr_buf.rec_flt_buflen += varp->vlen + wr_buf.gap;
+        else if (varp->iType == MPI_LONG_LONG)
+            wr_buf.rec_lld_buflen += varp->vlen + wr_buf.gap;
+        else assert(0);
     } else {
         if (varp->iType == MPI_DOUBLE)
             wr_buf.fix_dbl_buflen += varp->vlen + wr_buf.gap;
@@ -333,6 +339,9 @@ int e3sm_io_case::def_var(e3sm_io_config            &cfg,
             wr_buf.fix_txt_buflen += varp->vlen + wr_buf.gap;
         else if (varp->iType == MPI_FLOAT)
             wr_buf.fix_flt_buflen += varp->vlen + wr_buf.gap;
+        else if (varp->iType == MPI_LONG_LONG)
+            wr_buf.fix_lld_buflen += varp->vlen + wr_buf.gap;
+        else assert(0);
     }
 err_out:
     return err;
@@ -343,7 +352,7 @@ int e3sm_io_case::inq_var(e3sm_io_config &cfg,
                           e3sm_io_driver &driver,
                           case_meta      *cmeta,
                           int             ncid,
-                          char           *name,
+                          const char     *name,
                           int             dim_time,
                           int            *dimids,
                           MPI_Datatype    itype,
@@ -354,6 +363,7 @@ int e3sm_io_case::inq_var(e3sm_io_config &cfg,
     int err=0, j;
 
     err = driver.inq_varid(ncid, name, &varp->vid);
+if (err != 0) printf("name=%s\n",name);
     CHECK_ERR
 
     varp->_name = strdup(name);
@@ -405,6 +415,9 @@ int e3sm_io_case::inq_var(e3sm_io_config &cfg,
             wr_buf.rec_txt_buflen += varp->vlen + wr_buf.gap;
         else if (varp->iType == MPI_FLOAT)
             wr_buf.rec_flt_buflen += varp->vlen + wr_buf.gap;
+        else if (varp->iType == MPI_LONG_LONG)
+            wr_buf.rec_lld_buflen += varp->vlen + wr_buf.gap;
+        else assert(0);
     } else {
         if (varp->iType == MPI_DOUBLE)
             wr_buf.fix_dbl_buflen += varp->vlen + wr_buf.gap;
@@ -414,6 +427,9 @@ int e3sm_io_case::inq_var(e3sm_io_config &cfg,
             wr_buf.fix_txt_buflen += varp->vlen + wr_buf.gap;
         else if (varp->iType == MPI_FLOAT)
             wr_buf.fix_flt_buflen += varp->vlen + wr_buf.gap;
+        else if (varp->iType == MPI_LONG_LONG)
+            wr_buf.fix_lld_buflen += varp->vlen + wr_buf.gap;
+        else assert(0);
     }
 err_out:
     return err;
