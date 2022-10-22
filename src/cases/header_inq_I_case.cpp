@@ -1021,11 +1021,11 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
 
-    /* float INQICIT(time, lat, lon) */
+    /* float DEFICIT(time, lat, lon) */
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("INQICIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DEFICIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)

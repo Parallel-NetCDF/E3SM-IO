@@ -136,6 +136,12 @@ for API in "${APIS[@]}" ; do
         CMD="${RUN} ${EXEC} -k -a ${ap[0]} -r 2 -x ${ap[1]} -y 2 -o ${OUT_FILE} ${IN_FILE}"
         echo "CMD = ${CMD}"
         ${CMD}
+        # run read operations (currently support pnetcdf, netcdf4 and canonical only)
+        if test "x${ap[1]}" = xcanonical && "x${ap[0]}" != xhdf5 ; then
+           CMD="${RUN} ${EXEC} -k -a ${ap[0]} -r 2 -x ${ap[1]} -y 2 -i ${OUT_FILE} ${IN_FILE}"
+           echo "CMD = ${CMD}"
+           ${CMD}
+        fi
 
         # test replay on blob files
         if test "x${ap[1]}" = xblob ; then
