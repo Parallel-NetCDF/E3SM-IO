@@ -24,7 +24,6 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     int err=0;
     e3sm_io_case *tcase    = NULL;
     e3sm_io_driver *driver = NULL;
-    char *ext;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_TOTAL)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_CORE)
@@ -37,7 +36,8 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     /* perform read */
     if (cfg->rd) {
         e3sm_io_api api_tmp = cfg->api;
-        char path[1028];
+        char path[1028], *ext;
+        ext = strrchr(cfg->in_path, '.');
 
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_INIT_DRIVER)
         /* construct file name */

@@ -234,7 +234,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         /* obtain varid of request variable Dx.nreqs */
         sprintf (name, "D%d.nreqs", id + 1);
-        err = driver->inq_var (ncid, name, &varid);
+        err = driver->inq_varid (ncid, name, &varid);
         CHECK_ERR
 
         /* read all numbers of requests */
@@ -260,7 +260,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         /* read starting offsets of requests into disps[] */
         decom->disps[id] = (int *)malloc (nreqs * sizeof (int));
         sprintf (name, "D%d.offsets", id + 1);
-        err = driver->inq_var (ncid, name, &varid);
+        err = driver->inq_varid (ncid, name, &varid);
         CHECK_ERR
         err = driver->get_vara (ncid, varid, MPI_INT, &start, &count, decom->disps[id], coll);
         CHECK_ERR
@@ -268,7 +268,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         /* read lengths of requests into blocklens[] */
         decom->blocklens[id] = (int *)malloc (nreqs * sizeof (int));
         sprintf (name, "D%d.lengths", id + 1);
-        err = driver->inq_var (ncid, name, &varid);
+        err = driver->inq_varid (ncid, name, &varid);
         CHECK_ERR
         err = driver->get_vara (ncid, varid, MPI_INT, &start, &count, decom->blocklens[id], coll);
         CHECK_ERR
@@ -291,7 +291,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
              */
             /* obtain varid of request variable Dx.raw_nreqs */
             sprintf (name, "D%d.raw_nreqs", id + 1);
-            err = driver->inq_var (ncid, name, &varid);
+            err = driver->inq_varid (ncid, name, &varid);
             has_raw_decom = (err == 0) ? 1 :  0;
 
             if (has_raw_decom) {
@@ -319,7 +319,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                     (MPI_Offset *)malloc (decom->raw_nreqs[id] * sizeof (MPI_Offset));
                 raw_offsets_int = (int *)malloc (decom->raw_nreqs[id] * sizeof (int));
                 sprintf (name, "D%d.raw_offsets", id + 1);
-                err = driver->inq_var (ncid, name, &varid);
+                err = driver->inq_varid (ncid, name, &varid);
                 CHECK_ERR
                 err = driver->get_vara (ncid, varid, MPI_INT, &start, &count, raw_offsets_int, coll);
                 CHECK_ERR

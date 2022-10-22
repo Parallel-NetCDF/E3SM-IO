@@ -100,7 +100,7 @@ int e3sm_io_case::inq_var_decomp(e3sm_io_config &cfg,
 
             varp = vars + j;
             sprintf (name, "/__pio__/decomp/%d", (j + 512));
-            err = driver.inq_var(ncid, name, &varp->vid);
+            err = driver.inq_varid(ncid, name, &varp->vid);
             CHECK_ERR
 
             for (i=0; i<decom.ndims[j]; i++)
@@ -111,7 +111,7 @@ int e3sm_io_case::inq_var_decomp(e3sm_io_config &cfg,
             ival = 6;
             GET_ATTR_INT("piotype", 1, &ival)
         }
-        err = driver.inq_var(ncid, "/__pio__/info/nproc", &vars[j].vid);
+        err = driver.inq_varid(ncid, "/__pio__/info/nproc", &vars[j].vid);
         CHECK_ERR
     }
     else {

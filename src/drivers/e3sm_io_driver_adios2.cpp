@@ -451,7 +451,9 @@ err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
     return err;
 }
-int e3sm_io_driver_adios2::inq_var (int fid, std::string name, int *did) {
+
+int e3sm_io_driver_adios2::inq_varid(int fid, std::string name, int *did)
+{
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];
@@ -478,6 +480,14 @@ int e3sm_io_driver_adios2::inq_var (int fid, std::string name, int *did) {
 
 err_out:;
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2)
+    return err;
+}
+
+int e3sm_io_driver_adios2::inq_var (int fid, int varid, std::string &name,
+                                    nc_type *xtypep, int *ndimsp, int *dimids,
+                                    int *nattsp)
+{
+    int err=0;
     return err;
 }
 

@@ -361,9 +361,20 @@ err_out:
     return err;
 }
 
-int e3sm_io_driver_h5blob::inq_var (int fid, std::string name, int *did) {
+int e3sm_io_driver_h5blob::inq_varid (int fid, std::string name, int *did) {
     int err = 0;
 
+    ERR_OUT ("HDF5 blob I/O does not implement inq_varid yet")
+
+err_out:
+    return err;
+}
+
+int e3sm_io_driver_h5blob::inq_var (int fid, int varid, std::string &name,
+                                    nc_type *xtypep, int *ndimsp, int *dimids,
+                                    int *nattsp)
+{
+    int err=0;
     ERR_OUT ("HDF5 blob I/O does not implement inq_var yet")
 
 err_out:
