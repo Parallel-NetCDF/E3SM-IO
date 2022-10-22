@@ -452,7 +452,7 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::inq_varid(int fid, std::string name, int *did)
+int e3sm_io_driver_adios2::inq_varid(int fid, const char *name, int *did)
 {
     int err = 0;
     adios2_error aerr;
@@ -463,7 +463,7 @@ int e3sm_io_driver_adios2::inq_varid(int fid, std::string name, int *did)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_INQ_VAR)
-    dp = adios2_inquire_variable (fp->iop, name.c_str ());
+    dp = adios2_inquire_variable (fp->iop, name);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_ADIOS2_INQ_VAR)
     // inq_var is used to check whether a variable exist so error is expected
     if (!dp) {
@@ -483,9 +483,8 @@ err_out:;
     return err;
 }
 
-int e3sm_io_driver_adios2::inq_var (int fid, int varid, std::string &name,
-                                    nc_type *xtypep, int *ndimsp, int *dimids,
-                                    int *nattsp)
+int e3sm_io_driver_adios2::inq_var (int fid, int varid, char *name, nc_type *xtypep,
+                                    int *ndimsp, int *dimids, int *nattsp)
 {
     int err=0;
     return err;

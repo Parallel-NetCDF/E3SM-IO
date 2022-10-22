@@ -32,9 +32,9 @@ class e3sm_io_driver {
         int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did) = 0;
     virtual int def_local_var (
         int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did) = 0;
-    virtual int inq_varid(int fid, std::string name, int *did)                               = 0;
-    virtual int inq_var(int fid, int varid, std::string &name, nc_type *xtypep,
-                        int *ndimsp, int *dimids, int *nattsp) = 0;
+    virtual int inq_varid(int fid, const char *name, int *did) = 0;
+    virtual int inq_var(int fid, int varid, char *name, nc_type *xtypep, int *ndimsp,
+                        int *dimids, int *nattsp) = 0;
     virtual int inq_var_name (int fid, int did, char *name)                                  = 0;
     virtual int inq_var_off (int fid, int vid, MPI_Offset *off)                              = 0;
     virtual int def_dim (int fid, std::string name, MPI_Offset size, int *dimid)             = 0;

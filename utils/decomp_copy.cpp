@@ -250,7 +250,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         // Di.nreqs
         name = "D" + std::to_string (i) + ".nreqs";
-        err  = din->inq_varid (fidi, name, &varnri);
+        err  = din->inq_varid (fidi, name.c_str(), &varnri);
         CHECK_ERR
         err = dout->def_var (fido, name, NC_INT, 1, &dimnpo, &varnro);
         CHECK_ERR
@@ -267,7 +267,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         if (have_raw) {
             // Di.raw_nreqs
             name = "D" + std::to_string (i) + ".raw_nreqs";
-            err  = din->inq_varid (fidi, name, &varnrri);
+            err  = din->inq_varid (fidi, name.c_str(), &varnrri);
             CHECK_ERR
             err = dout->def_var (fido, name, NC_INT, 1, &dimnpo, &varnrro);
             CHECK_ERR
@@ -284,7 +284,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         // Di.offsets
         name = "D" + std::to_string (i) + ".offsets";
-        err  = din->inq_varid (fidi, name, &varoffi);
+        err  = din->inq_varid (fidi, name.c_str(), &varoffi);
         CHECK_ERR
         err = dout->def_var (fido, name, NC_INT, 1, &dimnro, &varoffo);
         CHECK_ERR
@@ -301,7 +301,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         if (have_raw) {
             // Di.raw_offsets
             name = "D" + std::to_string (i) + ".raw_offsets";
-            err  = din->inq_varid (fidi, name, &varroffi);
+            err  = din->inq_varid (fidi, name.c_str(), &varroffi);
             CHECK_ERR
             err = dout->def_var (fido, name, NC_INT, 1, &dimnrro, &varroffo);
             CHECK_ERR
@@ -318,7 +318,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         // Di.lengths
         name = "D" + std::to_string (i) + ".lengths";
-        err  = din->inq_varid (fidi, name, &varleni);
+        err  = din->inq_varid (fidi, name.c_str(), &varleni);
         CHECK_ERR
         err = dout->def_var (fido, name, NC_INT, 1, &dimnro, &varleno);
         CHECK_ERR
