@@ -238,7 +238,7 @@ elif [[ "$HOSTNAME_PREFIX" == "logi" ]]; then
             LOGVOL_LIB_PATH=/gpfs/alpine/csc332/scratch/khl7265/.local/log_io_vol/profiling_static
         else
             LOGVOL_SRC_PATH=/gpfs/alpine/csc332/scratch/khl7265/logvol/master
-            LOGVOL_LIB_PATH=/gpfs/alpine/csc332/scratch/khl7265/.local/log_io_vol/master_static
+            LOGVOL_LIB_PATH=/gpfs/alpine/csc332/scratch/khl7265/.local/log_io_vol/master
         fi
     fi
 fi

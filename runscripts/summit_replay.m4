@@ -1,14 +1,14 @@
 changequote(`[[[', `]]]')dnl
 changecom([[[###]]], [[[$$$]]])dnl
 #!/bin/bash
-#SBATCH -q VAR_QUEUE
-#SBATCH -N VAR_NN
-#SBATCH -C VAR_NODE_TYPE
-#SBATCH -t 00:VAR_TL:00
-#SBATCH -o [[[]]]VAR_NAME[[[]]]_%j.txt
-#SBATCH -e [[[]]]VAR_NAME[[[]]]_%j.err
-#SBATCH -L SCRATCH
-#SBATCH -A [[[]]]VAR_ACC[[[]]]
+# Begin LSF Directives
+#BSUB -P VAR_ACC
+#BSUB -W 00:VAR_TL
+#BSUB -nnodes VAR_NN
+#BSUB -J [[[]]]VAR_NAME[[[]]]
+#BSUB -o [[[]]]VAR_NAME[[[]]]_%J.txt
+#BSUB -e [[[]]]VAR_NAME[[[]]]_%J.err
+#BSUB -q [[[]]]VAR_QUEUE[[[]]]
 
 set -x #echo on
 
@@ -49,12 +49,12 @@ CONFIG_NAME=$(basename -- "${CONFIG}")
 CONFIG_NAME="${CONFIG_NAME%.*}"
 INDIR="IN_${CONFIG_POST}"
 INDIR=${!INDIR}
-DRIVERS=("pnetcdf canonical" "hdf5_log log" "adios blob" "pnetcdf blob")
+DRIVERS=("hdf5_log log" "adios blob" "pnetcdf blob")
 OPTIONS=(11111)
 FFREQS=(VAR_RECS)
 OPS=(VAR_OP)
 
-NN=${SLURM_NNODES}
+NN=VAR_NN
 NP=VAR_NP
 let NA=NN*2
 let NG=NN-1
@@ -82,10 +82,9 @@ do
     API=${tmp[0]}
     STRATE=${tmp[1]}
     mkdir -p ${OUTDIR_ROOT}/${API}/${STRATE}/${CONFIG_NAME}
-    mkdir -p ${SUBFILEDIR_ROOT}/${API}/${STRATE}/${CONFIG_NAME}
 done
 
-export LD_LIBRARY_PATH=${HDF5_LIB_PATH}/lib:${PNC_LIB_PATH}/lib:${ADIOS2_LIB_PATH}/lib64:${LOGVOL_LIB_PATH}/lib:${LD_LIBRARY_PATH}
+#export LD_LIBRARY_PATH=${HDF5_LIB_PATH}/lib:${PNC_LIB_PATH}/lib:${ADIOS2_LIB_PATH}/lib64:${LOGVOL_LIB_PATH}/lib:${LD_LIBRARY_PATH}
 export PNETCDF_SHOW_PERFORMANCE_INFO=1
 #export PNETCDF_DEFAULT_CHUNK_DIM="ncol : 14563 ; nbnd : 2 ; Time : 1 ; ilev : 73 ; lev : 72 ; chars : 64 ;nCells : 16384 ; nEdges : 16384 ; nVertices : 16384 ; nVertLevelsP1 : 81 ; nVertLevels : 80 ; StrLen : 64 ;"
 export PNETCDF_HINTS="nc_zip_delay_init=1;nc_zip_nrec=1;nc_zip_buffer_size=0"
