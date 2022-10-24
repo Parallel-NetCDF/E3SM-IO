@@ -137,7 +137,8 @@ for API in "${APIS[@]}" ; do
         echo "CMD = ${CMD}"
         ${CMD}
         # run read operations (currently support pnetcdf, netcdf4 and canonical only)
-        if test "x${ap[1]}" = xcanonical && "x${ap[0]}" != xhdf5 ; then
+        # Disable read for netcdf4 as it is extremely slow.
+        if test "x${ap[1]}" = xcanonical && test "x${ap[0]}" == xpnetcdf ; then
            CMD="${RUN} ${EXEC} -k -a ${ap[0]} -r 2 -x ${ap[1]} -y 2 -i ${OUT_FILE} ${IN_FILE}"
            echo "CMD = ${CMD}"
            ${CMD}
@@ -149,16 +150,16 @@ for API in "${APIS[@]}" ; do
               PNETCDF_REPLAY="utils/pnetcdf_blob_replay"
               if test $CONFIG = map_f_case_16p || test $CONFIG = map_i_case_16p ; then
                  rm -f ${OUT_FILE_BASE}_h0.${FILE_EXT}.can
-                 CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h0.${FILE_EXT} -o ${OUT_FILE_BASE}_h0.${FILE_EXT}.can"
+                 CMD="${RUN} ${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h0.${FILE_EXT} -o ${OUT_FILE_BASE}_h0.${FILE_EXT}.can"
                  echo "CMD = ${CMD}"
                  ${CMD}
                  rm -f ${OUT_FILE_BASE}_h1.${FILE_EXT}.can
-                 CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h1.${FILE_EXT} -o ${OUT_FILE_BASE}_h1.${FILE_EXT}.can"
+                 CMD="${RUN} ${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}_h1.${FILE_EXT} -o ${OUT_FILE_BASE}_h1.${FILE_EXT}.can"
                  echo "CMD = ${CMD}"
                  ${CMD}
               elif test $CONFIG = map_g_case_16p ; then
                  rm -f ${OUT_FILE_BASE}.${FILE_EXT}.can
-                 CMD="${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}.${FILE_EXT} -o ${OUT_FILE_BASE}.${FILE_EXT}.can"
+                 CMD="${RUN} ${PNETCDF_REPLAY} -i ${OUT_FILE_BASE}.${FILE_EXT} -o ${OUT_FILE_BASE}.${FILE_EXT}.can"
                  echo "CMD = ${CMD}"
                  ${CMD}
               fi
