@@ -369,7 +369,8 @@ int add_decomp(int             ncid,
             k = 0;
             for (i=0; i<fill_starts[rank]; i++)
                 for (j=0; j<len[rank][i]; j++)
-                    raw_off[rank][k++] = off[rank][i] + j;
+                    /* raw offsets are Fortran based, starting from 1 */
+                    raw_off[rank][k++] = off[rank][i] + j + 1;
         }
         total_raw_nreqs = raw_nreqs[0];
         for (rank=1; rank<nprocs; rank++)
