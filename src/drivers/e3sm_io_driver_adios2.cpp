@@ -152,7 +152,7 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
     fp       = new adios2_file ();
-    fp->path = std::string (path);
+    fp->path = std::string (path) + ".bp"; /* BP5 files directory */
     err      = MPI_Comm_rank (comm, &(fp->rank));
     CHECK_MPIERR
 
@@ -173,7 +173,7 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
 
     fp->iop = adios2_declare_io (fp->adp, "e3sm_wrap");
     CHECK_APTR (fp->iop)
-    aerr = adios2_set_engine (fp->iop, "BP3");
+    aerr = adios2_set_engine (fp->iop, "BP5");
     CHECK_AERR
 
     sprintf (ng, "%d", cfg->num_subfiles);
@@ -255,8 +255,8 @@ int e3sm_io_driver_adios2::close (int fid) {
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
     if (fp->ep) {
-        // aerr = adios2_end_step (fp->ep);
-        // CHECK_AERR
+        aerr = adios2_end_step (fp->ep);
+        CHECK_AERR
 
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2_CLOSE)
         aerr = adios2_close (fp->ep);

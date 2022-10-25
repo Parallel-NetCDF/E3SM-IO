@@ -35,7 +35,7 @@ int add_gattrs(e3sm_io_config &cfg,
     if (cfg.strategy == blob) {
         if (cfg.api == adios) {
             PUT_GATTR_INT("/__pio__/fillmode", 256)
-            prefix = "pio_global/";
+            prefix = "/__pio__/global/";
         }
         else {
             MPI_Comm_size(cfg.io_comm, &nprocs);
@@ -891,7 +891,7 @@ int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
     nvars_decomp = 0;
     if (cfg.strategy == blob) {
         if (cfg.api == adios)
-            nvars_decomp = decom.num_decomp + 1;
+            nvars_decomp = (2 * decom.num_decomp) + 3;
         else
             nvars_decomp = NVARS_DECOMP * decom.num_decomp;
 

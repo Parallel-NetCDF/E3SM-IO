@@ -35,7 +35,7 @@ int add_gattrs(e3sm_io_config &cfg,
     if (cfg.strategy == blob) {
         if (cfg.api == adios) {
             PUT_GATTR_INT("/__pio__/fillmode", 256)
-            prefix = "pio_global/";
+            prefix = "/__pio__/global/";
         }
         else {
             MPI_Comm_size(cfg.io_comm, &nprocs);
@@ -92,6 +92,7 @@ int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
     var_meta *varp;
 
     if (cfg.api == adios ) {
+        MPI_Offset one = 1;
         for (j=0; j<decom.num_decomp; j++) {
             int ival, piodims[MAX_NUM_DECOMP];
 
@@ -108,9 +109,21 @@ int e3sm_io_case::def_var_decomp(e3sm_io_config &cfg,
             PUT_ATTR_INT("ndims", 1, decom.ndims+j)
             ival = 6;
             PUT_ATTR_INT("piotype", 1, &ival)
+
+            varp = vars + decom.num_decomp + j;
+            sprintf (name, "/__pio__/track/num_decomp_block_writers/%d", (j + 512));
+            err = driver.def_local_var(ncid, name, NC_INT, 1,
+                                       &one, &varp->vid);
+            CHECK_ERR
         }
         err = driver.def_local_var(ncid, "/__pio__/info/nproc", NC_INT, 0,
-                                   NULL, &vars[j].vid);
+                                   NULL, &vars[2*decom.num_decomp].vid);
+        CHECK_ERR
+        err = driver.def_local_var(ncid, "/__pio__/info/block_nprocs", NC_INT, 0,
+                                   NULL, &vars[2*decom.num_decomp+1].vid);
+        CHECK_ERR
+        err = driver.def_local_var(ncid, "/__pio__/info/block_list", NC_INT, 1,
+                                   &one, &vars[2*decom.num_decomp+2].vid);
         CHECK_ERR
     }
     else {
@@ -285,7 +298,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
     nvars_decomp = 0;
     if (cfg.strategy == blob) {
         if (cfg.api == adios)
-            nvars_decomp = decom.num_decomp + 1;
+            nvars_decomp = (2 * decom.num_decomp) + 3;
         else
             nvars_decomp = NVARS_DECOMP * decom.num_decomp;
 

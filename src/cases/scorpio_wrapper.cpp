@@ -53,31 +53,42 @@ int scorpio_define_var(e3sm_io_config &cfg,
     if (decomp_id >= 0) {
         MPI_Offset one = 1;
 
-        err = driver.def_local_var(fid, name, xtype, 1,
+        err = driver.def_local_var(fid, "/__pio__/var/" + name, xtype, 1,
                                    &(decom.raw_nreqs[decomp_id]), &var->vid);
         CHECK_ERR
 
         assert(ndims > 0);
 
         /* add an associated scalar variable frame_id (i.e. timesteps) */
-        err = driver.def_local_var(fid, "frame_id/" + name, NC_INT, 1,
-                                   &one, &var->frame_id);
-        CHECK_ERR
+        if (cfg.rank == 0) {
+            err = driver.def_local_var(fid, "/__pio__/track/frame_id/" + name, NC_INT, 1,
+                                       &one, &var->frame_id);
+            CHECK_ERR
+        }
 
         /* add an associated scalar variable decom_id (decomposition map ID) */
-        err = driver.def_local_var(fid, "decomp_id/" + name, NC_INT, 1,
-                                   &one, &var->decom_id);
-        CHECK_ERR
+        if (cfg.rank == 0) {
+            err = driver.def_local_var(fid, "/__pio__/track/decomp_id/" + name, NC_INT, 1,
+                                       &one, &var->decom_id);
+            CHECK_ERR
+        }
 
         /* add an associated scalar variable fillval_id (fill value ID) for double variables */
         if (xtype == NC_DOUBLE){
-            err = driver.def_local_var(fid, "fillval_id/" + name, NC_DOUBLE, 1,
-                                       &one, &var->fill_id);
-            CHECK_ERR
+            if (cfg.rank == 0) {
+                err = driver.def_local_var(fid, "/__pio__/track/fillval_id/" + name, NC_DOUBLE, 1,
+                                           &one, &var->fill_id);
+                CHECK_ERR
+            }
         }
         else {
             var->fill_id = -1;
         }
+
+        /* add an associated variable num_data_block_writers (number of data block writers) */
+        err = driver.def_local_var(fid, "/__pio__/track/num_data_block_writers/" + name, NC_INT, 1,
+                                   &one, &var->num_data_block_writers);
+        CHECK_ERR
 
         /* Add attributes */
 
@@ -85,28 +96,28 @@ int scorpio_define_var(e3sm_io_config &cfg,
         if (cfg.rank == 0) {
             /* Decomposition map ID number */
             sprintf(cbuf, "%d", var->piodecomid);
-            err = driver.put_att(fid, var->vid, "__pio__/decomp", NC_CHAR,
+            err = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/decomp", NC_CHAR,
                                  strlen(cbuf), &cbuf);
             CHECK_ERR
 
             /* dimension names */
-            err = driver.put_att(fid, var->vid, "__pio__/dims", NC_STRING,
+            err = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/dims", NC_STRING,
                                  ndims, dnames_array.data());
             CHECK_ERR
 
             /* Type of NetCDF API called */
-            err = driver.put_att(fid, var->vid, "__pio__/ncop", NC_CHAR, 7,
+            err = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/ncop", NC_CHAR, 7,
                                  (void *)"darray");
             CHECK_ERR
 
             /* NetCDF external data type */
             ibuf = xtype;
-            err = driver.put_att(fid, var->vid, "__pio__/nctype", NC_INT, 1,
+            err = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/nctype", NC_INT, 1,
                                  &ibuf);
             CHECK_ERR
 
             /* Number of dimensions */
-            err = driver.put_att(fid, var->vid, "__pio__/ndims", NC_INT, 1,
+            err = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/ndims", NC_INT, 1,
                                  &ndims);
             CHECK_ERR
         }
@@ -122,12 +133,12 @@ int scorpio_define_var(e3sm_io_config &cfg,
 
             vsize = 2 * sizeof(int64_t) * ndims  // Include start and count arrays
                   + var->vlen * esize;
-            err = driver.def_local_var(fid, name, NC_UBYTE, 1, &vsize,
+            err = driver.def_local_var(fid, "/__pio__/var/" + name, NC_UBYTE, 1, &vsize,
                                        &var->vid);
             CHECK_ERR
         }
         else {
-            err = driver.def_local_var(fid, name, xtype, ndims, NULL,
+            err = driver.def_local_var(fid, "/__pio__/var/" + name, xtype, ndims, NULL,
                                        &var->vid);
             CHECK_ERR
         }
@@ -137,30 +148,30 @@ int scorpio_define_var(e3sm_io_config &cfg,
         if (cfg.rank == 0) {
             // ADIOS type enum, variables without decomposition map are stored as byte array
             ibuf = (int)e3sm_io_type_nc2adios (xtype);
-            err  = driver.put_att(fid, var->vid, "__pio__/adiostype", NC_INT,
+            err  = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/adiostype", NC_INT,
                                   1, &ibuf);
             CHECK_ERR
 
             // Scalar var does not have dims
             if (ndims > 0) {
-                err = driver.put_att(fid, var->vid, "__pio__/dims", NC_STRING,
+                err = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/dims", NC_STRING,
                                      ndims, dnames_array.data());
                 CHECK_ERR
             }
 
             // Type of NetCDF API called
-            err = driver.put_att(fid, var->vid, "__pio__/ncop", NC_CHAR, 7,
+            err = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/ncop", NC_CHAR, 7,
                                  (void *)"put_var");
             CHECK_ERR
 
             // NetCDF type enum
             ibuf = xtype;
-            err = driver.put_att(fid, var->vid, "__pio__/nctype", NC_INT, 1,
+            err = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/nctype", NC_INT, 1,
                                  &ibuf);
             CHECK_ERR
 
             // Number of dimensions
-            err = driver.put_att(fid, var->vid, "__pio__/ndims", NC_INT, 1,
+            err = driver.put_att(fid, NC_GLOBAL, "/__pio__/var/" + name + "/def/ndims", NC_INT, 1,
                                  &ndims);
             CHECK_ERR
         }
@@ -212,30 +223,42 @@ int scorpio_write_var(e3sm_io_driver &driver,
     err = driver.put_varl(fid, var.vid, itype, wbuf, nbe);
     CHECK_ERR
 
+    if (var.decomp_id >= 0) {
+        int num_data_block_writers = 1;
+        err = driver.put_varl(fid, var.num_data_block_writers, MPI_INT, &num_data_block_writers, nbe);
+        CHECK_ERR
+    }
+
     if (var.frame_id >= 0) {
         /* Scorpio allows variables to be written with different numbers of
          * time steps.
          */
-        err = driver.put_varl(fid, var.frame_id, MPI_INT, &frameid, nbe);
-        CHECK_ERR
+        if (driver.cfg->rank == 0) {
+            err = driver.put_varl(fid, var.frame_id, MPI_INT, &frameid, nbe);
+            CHECK_ERR
+        }
 
         /* Scorpio allows variables to switch decomposition at different time
          * steps.
          */
-        if (var.fill_id >= 0) {
-            err = driver.put_varl(fid, var.decom_id, MPI_INT, &var.piodecomid, nbe);
+        if (driver.cfg->rank == 0) {
+            if (var.fill_id >= 0) {
+                err = driver.put_varl(fid, var.decom_id, MPI_INT, &var.piodecomid, nbe);
+            }
+            else {
+                int tmp = -(var.piodecomid);
+                err = driver.put_varl(fid, var.decom_id, MPI_INT, &tmp, nbe);
+            }
+            CHECK_ERR
         }
-        else {
-            int tmp = -(var.piodecomid);
-            err = driver.put_varl(fid, var.decom_id, MPI_INT, &tmp, nbe);
-        }
-        CHECK_ERR
     }
 
     if (var.fill_id >= 0) {
-        double tmp = 0;
-        err = driver.put_varl(fid, var.fill_id, MPI_DOUBLE, &tmp, nbe);
-        CHECK_ERR
+        if (driver.cfg->rank == 0) {
+            double tmp = 0;
+            err = driver.put_varl(fid, var.fill_id, MPI_DOUBLE, &tmp, nbe);
+            CHECK_ERR
+        }
     }
 
 err_out:
