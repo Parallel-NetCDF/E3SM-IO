@@ -30,7 +30,7 @@
 #define VAR_ITYPE REC_ITYPE
 
 #define FILE_OPEN(filename) {                                                 \
-    err = driver.open(filename, comm, cfg.info, &ncid);                       \
+    err = driver.open(filename, comm, MPI_INFO_NULL, &ncid);                  \
     CHECK_ERR                                                                 \
 }
 
