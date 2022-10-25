@@ -10,12 +10,13 @@ typedef enum e3sm_io_op_mode { coll, indep, nb, nbe } e3sm_io_op_mode;
 
 class e3sm_io_driver {
    protected:
-    e3sm_io_config *cfg;
     MPI_Offset amount_WR;
     MPI_Offset amount_RD;
 
    public:
-    e3sm_io_driver (e3sm_io_config *cfg) : cfg(cfg), amount_WR(0), amount_RD(0) {};
+    e3sm_io_config *cfg;
+
+    e3sm_io_driver (e3sm_io_config *cfg) : amount_WR(0), amount_RD(0), cfg(cfg) {};
     virtual ~e3sm_io_driver () {};
     virtual int create (std::string path, MPI_Comm comm, MPI_Info info, int *fid) = 0;
     virtual int open (std::string path, MPI_Comm comm, MPI_Info info, int *fid)   = 0;
