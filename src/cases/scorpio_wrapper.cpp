@@ -202,8 +202,8 @@ int scorpio_write_var(e3sm_io_driver &driver,
         MPI_Type_size(itype, &esize);
         wbuf = (void*) malloc(2 * var.ndims * sizeof(int64_t) + var.vlen * esize);
         ptr = (int64_t*)wbuf;
-        for (i=0; i<var.ndims;   i++) *(ptr++) = 0;
-        for (;    i<var.ndims*2; i++) *(ptr++) = var.dims[i];
+        for (i=0; i<var.ndims; i++) *(ptr++) = 0;
+        for (i=0; i<var.ndims; i++) *(ptr++) = var.dims[i];
         memcpy(ptr, buf, var.vlen * esize);
 
         /* not partitioned variables are stored as byte type */
