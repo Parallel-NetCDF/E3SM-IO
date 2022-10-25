@@ -188,8 +188,6 @@ int scorpio_write_var(e3sm_io_driver &driver,
     int err;
     void *wbuf=buf;
 
-    if (var.isRecVar) frameid = -1;
-
     /* prepend start and count to write buffer for small, not-partitioned,
      * non-scalar variables This must be done by allocating another buffer,
      * add start/count, and copy over user write buffer.
@@ -202,8 +200,9 @@ int scorpio_write_var(e3sm_io_driver &driver,
         MPI_Type_size(itype, &esize);
         wbuf = (void*) malloc(2 * var.ndims * sizeof(int64_t) + var.vlen * esize);
         ptr = (int64_t*)wbuf;
-        for (i=0; i<var.ndims; i++) *(ptr++) = 0;
-        for (i=0; i<var.ndims; i++) *(ptr++) = var.dims[i];
+        *(ptr++) = (var.isRecVar) ? frameid : 0; /* prepend start of 1st dim */
+        for (i=1; i<var.ndims; i++) *(ptr++) = 0; /* prepend start of remaining dims */
+        for (i=0; i<var.ndims; i++) *(ptr++) = var.dims[i]; /* prepend count */
         memcpy(ptr, buf, var.vlen * esize);
 
         /* not partitioned variables are stored as byte type */
