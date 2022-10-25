@@ -78,11 +78,11 @@ int intcompare(const void *p1, const void *p2) {
 /*----< add_decomp() >-------------------------------------------------------*/
 static
 int add_decomp(int ncid, const char *infname, int label) {
-    char *buf, name[128], *map, *str;
+    char *buf, name[128], *str;
     FILE *fd;
     int i, j, rank, nprocs, dimid, ndims, dimX, ngaps, cur, err=NC_NOERR;
     int varid[6], *nreqs, **off, **len, *fill_starts, dim_nprocs;
-    int total_nreqs, max_nreqs, min_nreqs, maxlen, minlen;
+    int *map, total_nreqs, max_nreqs, min_nreqs, maxlen, minlen;
     MPI_Offset k, gsize, *dims, *dims_C, start, count;
     int *raw_nreqs, **raw_off, total_raw_nreqs;
     MPI_Offset raw_start;
@@ -156,7 +156,8 @@ int add_decomp(int ncid, const char *infname, int label) {
     /* map is used to check whether the entire array is covered by requests
      * of all processes.
      */
-    map = (char*) calloc(gsize, 1);
+    map = (int*) malloc(gsize * sizeof(int));
+    for (i=0; i<gsize; i++) map[i] = -1;
 
     /* nreqs[i] is the number of elements accessed by process i */
     nreqs = (int*)  malloc(nprocs * sizeof(int));
@@ -234,7 +235,7 @@ int add_decomp(int ncid, const char *infname, int label) {
             qsort((void *)off[rank], k, sizeof(int), intcompare);
 
         /* build a map for checking if the decompositions cover all elements */
-        for (j=0; j<k; j++) map[off[rank][j]] = 1;
+        for (j=0; j<k; j++) map[off[rank][j]] = rank;
 
         /* coalescing contiguous offsets (must break boundary at dimension X) */
         prev = 0;
@@ -250,6 +251,7 @@ int add_decomp(int ncid, const char *infname, int label) {
         }
         /* set nreqs[] to the number of offset-length pairs */
         nreqs[rank] = prev+1;
+        if (verbose) printf("%2d: decomposition %d nreqs=%d\n", rank, label, nreqs[rank]);
 
         /* find max and min contiguous length among all offset-length pairs and
          * among all processes
@@ -268,8 +270,8 @@ int add_decomp(int ncid, const char *infname, int label) {
     ngaps = 0;
     cur = 1;
     for (k=0, j=0; j<gsize; j++) {
-        k += map[j];
-        if (map[j] == 0) {
+        k += (map[j] >= 0) ? 1 : 0;
+        if (map[j] == -1) {
             if (cur == 1) {
                 ngaps++;
                 cur = 0;
@@ -313,7 +315,7 @@ int add_decomp(int ncid, const char *infname, int label) {
         int prev = 1;
         int ncontig = nreqs[rank] - 1; /* add at the end */
         for (j=0; j<gsize; j++) {
-            if (map[j] == 0) {
+            if (map[j] == -1) {
                 /* Note dims[] is in Fortran order */
                 if (prev == 1 || j % dimX == 0) { /* end of dim X */
                     ncontig++;
@@ -334,6 +336,7 @@ int add_decomp(int ncid, const char *infname, int label) {
 
         for (rank=0; rank<nprocs; rank++) {
             nreqs[rank] += fill_nreqs[rank];
+            if (verbose) printf("%2d: after fille: decomposition %d nreqs=%d\n", rank, label, nreqs[rank]);
 
             /* sort off-len pairs into an increasing order */
             if (sort_off) {
