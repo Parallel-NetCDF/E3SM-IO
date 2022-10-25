@@ -42,6 +42,7 @@ typedef struct {
     int fill_id;     /* fill value variable ID returned from adios driver */
     int frame_id;    /* frame variable ID returned from adios driver */
     int decom_id;    /* decomposition map variable ID returned from adios driver */
+    int num_data_block_writers; /* number of data block_writers returned from adios driver */
     int piodecomid;  /* map IDs used on Scorpio starting at 512 */
     int ndims;                  /* number of dimensions */
     MPI_Offset dims[MAX_NDIMS]; /* dimension sizes */

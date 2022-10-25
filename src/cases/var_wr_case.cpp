@@ -197,7 +197,7 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
      */
     if (cfg.strategy == blob) {
         if (cfg.api == adios)
-            num_decomp_vars = decom.num_decomp + 1;
+            num_decomp_vars = (2 * decom.num_decomp) + 3;
         else
             num_decomp_vars = decom.num_decomp * NVARS_DECOMP;
     }
@@ -255,16 +255,31 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
 #ifdef ENABLE_ADIOS2
     /* write decomposition maps */
     if (cfg.api == adios) {
+        /* /__pio__/decomp/<decomp_id> */
         for (j=0; j<decom.num_decomp; j++) {
             err = driver.put_varl(ncid, vars[j].vid, MPI_LONG_LONG,
                                   decom.raw_offsets[j], nb);
             CHECK_ERR
         }
-        /* nproc, number of processes, is only written by rank 0 */
-        if (cfg.rank == 0) {
-            err = driver.put_varl(ncid, vars[j].vid, MPI_INT, &cfg.np, nb);
+        /* /__pio__/track/num_decomp_block_writers/<decomp_id> */
+        int num_decomp_block_writers = 1;
+        for (j=decom.num_decomp; j<2*decom.num_decomp; j++) {
+            err = driver.put_varl(ncid, vars[j].vid, MPI_INT,
+                                  &num_decomp_block_writers, nb);
             CHECK_ERR
         }
+        /* nproc, number of processes, is only written by rank 0 */
+        if (cfg.rank == 0) {
+            err = driver.put_varl(ncid, vars[2*decom.num_decomp].vid, MPI_INT, &cfg.np, nb);
+            CHECK_ERR
+        }
+        /* /__pio__/info/block_nprocs */
+        int block_nprocs = 1;
+        err = driver.put_varl(ncid, vars[2*decom.num_decomp+1].vid, MPI_INT, &block_nprocs, nb);
+        CHECK_ERR
+        /* /__pio__/info/block_list */
+        err = driver.put_varl(ncid, vars[2*decom.num_decomp+2].vid, MPI_INT, &global_rank, nb);
+        CHECK_ERR
     } else
 #endif
     if (cfg.strategy == blob) {
