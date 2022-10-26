@@ -379,6 +379,8 @@
       ```
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.bp -k -o blob_F_out -a adios -x blob -r 25
       ```
+### Run E3SM-IO with Cache VOL and Async VOL:
+*  When using HDF5 as the I/O method, Cache VOL and Async VOL can be enabled. See [cache_async_vol.md](./cache_async_vol.md).
 
 ## Example input and job script files
 * Three small-size decomposition map files are available for testing. They
