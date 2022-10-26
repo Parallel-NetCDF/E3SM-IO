@@ -36,7 +36,8 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
     % cd hdf5-1.13.2
     
     % ./configure --prefix=$HDF5_DIR --enable-parallel --enable-threadsafe --enable-unsupported CC=mpicc CXX=mpicxx
-    % make; make install 
+    % make
+    % make install
     ```
 
 + Argobots, required by Async VOL:
@@ -50,7 +51,8 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
     % ./autogen.sh
 
     % ./configure --prefix=$ABT_DIR CC=mpicc CXX=mpicxx
-    % make; make install
+    % make
+    % make install
     ```
 
 + Async VOL
@@ -62,7 +64,8 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
     % git clone https://github.com/hpc-io/vol-async.git
     % cd vol-async; mkdir build; cd build
     % CC=mpicc CXX=mpicxx cmake .. -DCMAKE_INSTALL_PREFIX=$ASYNC_DIR
-    % make; make install
+    % make
+    % make install
     ```
 
 + Cache VOL
@@ -75,7 +78,8 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
     % cd vol-cache; mkdir build; cd build
     % export LD_LIBRARY_PATH="$ABT_DIR/lib:$LD_LIBRARY_PATH"
     % CC=mpicc CXX=mpicxx HDF5_VOL_DIR=$ASYNC_DIR cmake .. -DCMAKE_INSTALL_PREFIX=$CAHCE_DIR
-    % make; make install
+    % make
+    % make install
     ```
  
 
@@ -93,7 +97,8 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
     --enable-threading \
     CC=mpicc \
     CXX=mpicxx
-% make; make install
+% make
+% make install
 ```
 
 ## Run Instructions
