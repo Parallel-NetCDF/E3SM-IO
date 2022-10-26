@@ -1,4 +1,4 @@
-# Case Study - Running with Cache VOL and Async VOL
+# Running E3SM-IO with HDF5 Cache VOL and Async VOL
 * [Build Instructions](#build-instructions)
 * [Run Instructions](#run-instructions)
 * [Example Output](#example-output)
