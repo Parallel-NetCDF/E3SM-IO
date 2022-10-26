@@ -62,7 +62,9 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
     # HDF5_DIR, ABT_DIR, ASYNC_DIR, HDF5_ROOT
 
     % git clone https://github.com/hpc-io/vol-async.git
-    % cd vol-async; mkdir build; cd build
+    % cd vol-async
+    % mkdir build
+    % cd build
     % CC=mpicc CXX=mpicxx cmake .. -DCMAKE_INSTALL_PREFIX=$ASYNC_DIR
     % make
     % make install
@@ -75,7 +77,9 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
     # ABT_DIR, ASYNC_DIR, CAHCE_DIR
 
     % git clone https://github.com/hpc-io/vol-cache.git
-    % cd vol-cache; mkdir build; cd build
+    % cd vol-cache
+    % mkdir build
+    % cd build
     % export LD_LIBRARY_PATH="$ABT_DIR/lib:$LD_LIBRARY_PATH"
     % CC=mpicc CXX=mpicxx HDF5_VOL_DIR=$ASYNC_DIR cmake .. -DCMAKE_INSTALL_PREFIX=$CAHCE_DIR
     % make
