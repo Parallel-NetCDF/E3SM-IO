@@ -137,7 +137,7 @@ this option will initialize MPI with multi-thread support, i.e. initialize with 
 ==== Benchmarking F case =============================
 Total number of MPI processes      = 16
 Number of IO processes             = 16
-Input decomposition file           = /files2/scratch/zhd1108/E3SM-IO/E3SM-IO/datasets/f_case_866x72_16p.h5
+Input decomposition file           = /files2/scratch/zhd1108/E3SM-IO/E3SM-IO/datasets/map_f_case_16p.h5
 Number of decompositions           = 3
 Output file/directory              = can_F_out.h5
 Using noncontiguous write buffer   = no
@@ -150,29 +150,29 @@ No. variables use decomposition D1 =    323
 No. variables use decomposition D2 =     63
 Total no. climate variables        =    414
 Total no. attributes               =   1421
-Total no. noncontiguous requests   = 1977687
-Max   no. noncontiguous requests   = 189503
-Min   no. noncontiguous requests   =  63170
+Total no. noncontiguous requests   = 4207968
+Max   no. noncontiguous requests   = 272135
+Min   no. noncontiguous requests   = 252670
 Write no. records (time dim)       =      1
 I/O flush frequency                =      1
 No. I/O flush calls                =      1
 -----------------------------------------------------------
 Total write amount                         = 16.97 MiB = 0.02 GiB
-Time of I/O preparing              min/max =   0.0015 /   0.0016
-Time of file open/create           min/max =   0.6382 /   0.6735
-Time of define variables           min/max =  58.7400 /  65.5300
-Time of posting write requests     min/max =  35.6823 /  35.6953
-Time of write flushing             min/max =   0.3860 /   0.3990
-Time of close                      min/max =   5.0383 /   5.0620
-end-to-end time                    min/max = 107.3378 / 107.3614
+Time of I/O preparing              min/max =   0.0010 /   0.0011
+Time of file open/create           min/max =   0.5526 /   0.5896
+Time of define variables           min/max =  65.7061 /  65.7251
+Time of posting write requests     min/max =  33.5788 /  33.5797
+Time of write flushing             min/max =   0.0000 /   0.0000
+Time of close                      min/max =   5.3138 /   5.3703
+end-to-end time                    min/max = 105.2095 / 105.2659
 Emulate computation time (sleep)   min/max =   2.0000 /   2.0000
-I/O bandwidth in MiB/sec (write-only)      = 0.4754
-I/O bandwidth in MiB/sec (open-to-close)   = 0.1580
+I/O bandwidth in MiB/sec (write-only)      = 0.5053
+I/O bandwidth in MiB/sec (open-to-close)   = 0.1612
 -----------------------------------------------------------
 ==== Benchmarking F case =============================
 Total number of MPI processes      = 16
 Number of IO processes             = 16
-Input decomposition file           = /files2/scratch/zhd1108/E3SM-IO/E3SM-IO/datasets/f_case_866x72_16p.h5
+Input decomposition file           = /files2/scratch/zhd1108/E3SM-IO/E3SM-IO/datasets/map_f_case_16p.h5
 Number of decompositions           = 3
 Output file/directory              = can_F_out.h5
 Using noncontiguous write buffer   = no
@@ -185,25 +185,25 @@ No. variables use decomposition D1 =     22
 No. variables use decomposition D2 =      1
 Total no. climate variables        =     51
 Total no. attributes               =    142
-Total no. noncontiguous requests   = 188168
-Max   no. noncontiguous requests   =  18020
-Min   no. noncontiguous requests   =   6009
+Total no. noncontiguous requests   = 400226
+Max   no. noncontiguous requests   =  25963
+Min   no. noncontiguous requests   =  24026
 Write no. records (time dim)       =      5
 I/O flush frequency                =      1
 No. I/O flush calls                =      5
 -----------------------------------------------------------
 Total write amount                         = 1.88 MiB = 0.00 GiB
 Time of I/O preparing              min/max =   0.0000 /   0.0000
-Time of file open/create           min/max =   0.5060 /   0.5420
-Time of define variables           min/max =   5.4920 /   6.9240
-Time of posting write requests     min/max =  24.1601 /  24.1834
-Time of write flushing             min/max =   0.5714 /   0.5886
-Time of close                      min/max =   0.9043 /   0.9089
-end-to-end time                    min/max =  33.1583 /  33.1629
+Time of file open/create           min/max =   0.3636 /   0.3906
+Time of define variables           min/max =   6.8050 /   6.8171
+Time of posting write requests     min/max =  24.1418 /  24.1848
+Time of write flushing             min/max =   0.0000 /   0.0000
+Time of close                      min/max =   1.3208 /   1.3250
+end-to-end time                    min/max =  32.7165 /  32.7208
 Emulate computation time (sleep)   min/max =   2.0000 /   2.0000
 I/O bandwidth in MiB/sec (write-only)      = 0.0776
-I/O bandwidth in MiB/sec (open-to-close)   = 0.0566
+I/O bandwidth in MiB/sec (open-to-close)   = 0.0574
 -----------------------------------------------------------
-read_decomp=1.80 e3sm_io_core=140.52 MPI init-to-finalize=142.33
+read_decomp=1.56 e3sm_io_core=137.99 MPI init-to-finalize=139.56
 -----------------------------------------------------------
 ```
