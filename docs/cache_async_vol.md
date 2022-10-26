@@ -24,7 +24,7 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
     export HDF5_ROOT=$HDF5_DIR
     ```
 
-+ HDF5 1.13.2 (enable threadsafe parallel, unsupported):
++ HDF5 1.13.2: `--enable-parallel`, `--enable-threadsafe`, and `--enable-unsupported` are [required by Cache VOL](https://vol-cache.readthedocs.io/en/latest/gettingstarted.html#installation) at configure time.
 
     ```shell
     # the following env variable will be used:
@@ -40,7 +40,7 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
     % make install
     ```
 
-+ Argobots, required by Async VOL:
++ Argobots, [required by Async VOL](https://hdf5-vol-async.readthedocs.io/en/latest/gettingstarted.html#build-async-i-o-vol):
 
     ```shell
     # the following env variable will be used:
@@ -84,6 +84,10 @@ Both Cache VOL and Async VOL can be enabled by directly setting the environment 
  
 
 ### Installing E3SM-IO
+`--enable-threading` option is required at configure time. Using
+this option will initialize MPI with multi-thread support, i.e. initialize with `MPI_Init_thread` instead of `MPI_Init`. Using
+`MPI_Init_thread` is [required by Cache VOL](https://vol-cache.readthedocs.io/en/latest/gettingstarted.html#examples).
+
 ```shell
 # clone this repo
 % # git clone git@github.com:Parallel-NetCDF/E3SM-IO.git
