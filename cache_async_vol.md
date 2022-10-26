@@ -1,15 +1,15 @@
-# Case Study - Running with Cache Vol and Async Vol
+# Case Study - Running with Cache VOL and Async VOL
 * [Build Instructions](#build-instructions)
 * [Run Instructions](#run-instructions)
 * [Example Output](#example-output)
 
-This case study runs E3SM-IO using HDF5 with [Cache Vol](https://github.com/hpc-io/vol-cache) and [Async Vol](https://github.com/hpc-io/vol-async) enabled. 
+This case study runs E3SM-IO using HDF5 with [Cache VOL](https://github.com/hpc-io/vol-cache) and [Async VOL](https://github.com/hpc-io/vol-async) enabled.
 
-Cache Vol is an HDF5 plugin that incorporates fast storage layers (e.g, burst buffer, node-local storage) into parallel I/O workflow for caching and staging data to improve the I/O efficiency. 
+Cache VOL is an HDF5 plugin that incorporates fast storage layers (e.g, burst buffer, node-local storage) into parallel I/O workflow for caching and staging data to improve the I/O efficiency.
 
-Async Vol is another HDF5 plugin that takes advantage of an asynchronous interface by scheduling I/O as early as possible and overlaps computation or communication with I/O operations, which hides the cost associated with I/O and improves the overall performance. 
+Async VOL is another HDF5 plugin that takes advantage of an asynchronous interface by scheduling I/O as early as possible and overlaps computation or communication with I/O operations, which hides the cost associated with I/O and improves the overall performance.
 
-Both Cache Vol and Async Vol can be enabled by directly setting the environment variables without modifying E3SM-IO source codes. This case study gives an instruction on how to install Cache Vol and Async Vol, and gives an demo of how to run E3SM-IO with them.
+Both Cache VOL and Async VOL can be enabled by directly setting the environment variables without modifying E3SM-IO source codes. This case study gives an instruction on how to install Cache VOL and Async VOL, and gives an demo of how to run E3SM-IO with them.
 
 ## Build Instructions
 ### Prerequisite
@@ -18,8 +18,8 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     ```shell
     export HDF5_DIR=#the dir you want to install HDF5 to
     export ABT_DIR=#the dir you want to install argobots to
-    export ASYNC_DIR=#the dir you want to install async vol to
-    export CACHE_DIR=#the dir you want to install cache vol to
+    export ASYNC_DIR=#the dir you want to install Async VOL to
+    export CACHE_DIR=#the dir you want to install Cache VOL to
  
     export HDF5_ROOT=$HDF5_DIR
     ```
@@ -39,7 +39,7 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     % make; make install 
     ```
 
-+ Argobots, required by Async Vol:
++ Argobots, required by Async VOL:
 
     ```shell
     # the following env variable will be used:
@@ -53,7 +53,7 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     % make; make install
     ```
 
-+ Async Vol
++ Async VOL
 
     ```shell
     # the following env variables will be used:
@@ -65,7 +65,7 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     % make; make install
     ```
 
-+ Cache Vol
++ Cache VOL
 
     ```shell
     # the following env variables will be used:
@@ -104,8 +104,8 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     export HDF5_DIR=#path to hdf5 install dir
     export HDF5_ROOT=$HDF5_DIR
     export ABT_DIR=#path to argobots install dir
-    export ASYNC_DIR=#path to async vol install dir
-    export CACHE_DIR=#path to cache vol install dir
+    export ASYNC_DIR=#path to Async VOL install dir
+    export CACHE_DIR=#path to Cache VOL install dir
 
     # the followings are newly added env variables.
     export HDF5_PLUGIN_PATH=$CACHE_DIR/lib:$ASYNC_DIR/lib
