@@ -130,7 +130,7 @@ this option will initialize MPI with multi-thread support, i.e. initialize with 
 1. Run commands
     ```shell
     % cd E3SM-IO
-    % mpiexec -n 16 src/e3sm_io datasets/f_case_866x72_16p.h5 -k -o can_F_out.h5 -a hdf5 -x canonical -r 5 -t 2
+    % mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5 -x canonical -r 5 -t 2
     ```
 ## Example Output
 ```
