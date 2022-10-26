@@ -13,7 +13,7 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
 
 ## Build Instructions
 ### Prerequisite
-+ <details> <summary>Set up environment:</summary>
++ Set up environment:
 
     ```shell
     export HDF5_DIR=#the dir you want to install HDF5 to
@@ -23,8 +23,8 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
  
     export HDF5_ROOT=$HDF5_DIR
     ```
-    </details>
-+ <details> <summary> HDF5 1.13.2 (enable threadsafe parallel, unsupported):</summary>
+
++ HDF5 1.13.2 (enable threadsafe parallel, unsupported):
 
     ```shell
     # the following env variable will be used:
@@ -39,8 +39,7 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     % make; make install 
     ```
 
-    </details>
-+ <details> <summary> Argobots, required by Async Vol:</summary>
++ Argobots, required by Async Vol:
 
     ```shell
     # the following env variable will be used:
@@ -53,8 +52,8 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     % ./configure --prefix=$ABT_DIR CC=mpicc CXX=mpicxx
     % make; make install
     ```
-    </details>
-+ <details> <summary>Async Vol</summary>
+
++ Async Vol
 
     ```shell
     # the following env variables will be used:
@@ -65,8 +64,8 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     % CC=mpicc CXX=mpicxx cmake .. -DCMAKE_INSTALL_PREFIX=$ASYNC_DIR
     % make; make install
     ```
-    </details>
-+ <details> <summary>Cache Vol</summary>
+
++ Cache Vol
 
     ```shell
     # the following env variables will be used:
@@ -78,7 +77,7 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     % CC=mpicc CXX=mpicxx HDF5_VOL_DIR=$ASYNC_DIR cmake .. -DCMAKE_INSTALL_PREFIX=$CAHCE_DIR
     % make; make install
     ```
-    </details>
+ 
 
 ### Installing E3SM-IO
 ```shell
@@ -98,7 +97,7 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
 ```
 
 ## Run Instructions
-1. <details> <summary>Set up environment:</summary>
+1. Set up environment:
 
     ```shell
     # the followings are already set during installation.
@@ -113,7 +112,7 @@ Both Cache Vol and Async Vol can be enabled by directly setting the environment 
     export LD_LIBRARY_PATH=$HDF5_PLUGIN_PATH:$ABT_DIR/lib:$HDF5_DIR/lib:$LD_LIBRARY_PATH
     export HDF5_VOL_CONNECTOR="cache_ext config=cache_1.cfg;under_vol=512;under_info={under_vol=0;under_info={}}"
     ```
-    </details>
+
 
 1. Run commands
     ```shell
