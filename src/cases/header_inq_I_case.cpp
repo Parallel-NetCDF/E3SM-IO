@@ -102,8 +102,8 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     int dim_string_length, dim_levdcmp, dim_levtrc, dim_hist_interval;
     int dim_nelems[MAX_NUM_DECOMP], dim_max_nreqs[MAX_NUM_DECOMP];
     int g_dimids[MAX_NUM_DECOMP][4];
-    MPI_Offset lat, lon, levgrnd, levdcmp, levlak, ltype, natpft;
-    MPI_Offset string_length, hist_interval;
+    // MPI_Offset lat, lon, levgrnd, levdcmp, levlak, ltype, natpft;
+    // MPI_Offset string_length, hist_interval;
     float fillv = 1.e+36f, missv = 1.e+36f;
     std::map<int, std::string> dnames;
     var_meta *varp;
@@ -147,6 +147,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
      *                                 not decomposed: 14 variables
      */
 
+    /*
     lat           = decom.dims[0][0];
     lon           = decom.dims[0][1];
     levgrnd       = decom.dims[1][0];
@@ -156,6 +157,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     natpft        = decom.dims[4][0];
     string_length =  16;
     hist_interval =   2;
+    */
 
     /* define dimensions */
     INQ_DIM("time",           NC_UNLIMITED, &dim_time)
