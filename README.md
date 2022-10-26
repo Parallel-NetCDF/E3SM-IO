@@ -32,6 +32,7 @@ log-based layout in files.
 * Current build status:
   [![MPICH](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml)
   [![OpenMPI](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
+* Run E3SM-IO with Cache Vol and Async Vol: see [cache_async_vol.md](./cache_async_vol.md)
 
 ### Performance Results on Cori at NERSC
 Below shows the execution times of four blob I/O methods collected on July 2022
