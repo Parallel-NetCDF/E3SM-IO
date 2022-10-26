@@ -672,16 +672,10 @@ int main (int argc, char **argv)
         MPI_Abort(MPI_COMM_WORLD, -1);
     }
 
-    /* disable collective read for reading blob subfiles */
-    MPI_Info_create(&r_info);
-    MPI_Info_set(r_info, "romio_cb_read", "disable");
-    MPI_Info_set(r_info, "romio_no_indep_rw", "false");
-
     /* open input subfiles using sub_comm */
-    err = ncmpi_open(sub_comm, in_file, NC_NOWRITE, r_info, &in_ncid);
+    err = ncmpi_open(sub_comm, in_file, NC_NOWRITE, MPI_INFO_NULL, &in_ncid);
     CHECK_NC_ERR
 
-    MPI_Info_free(&r_info);
     /* inquire the MPI-IO hints actually used */
     err = ncmpi_inq_file_info(in_ncid, &r_info);
     CHECK_NC_ERR
