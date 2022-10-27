@@ -446,6 +446,7 @@ int main (int argc, char *argv[]) {
         CHECK_MPIERR
     } else {
         if (cfg.rank == 0) { std::cout << "Error, cannot open " << inpath << "." << std::endl; }
+        nerrs++;
     }
 
     if (cfg.rank == 0) {
@@ -469,5 +470,5 @@ err_out:;
         std::cout << "Filed to parse " << nerrs << " files." << std::endl;
     }
     MPI_Finalize ();
-    return 0;
+    return (nerrs > 0);
 }
