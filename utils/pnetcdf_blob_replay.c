@@ -587,7 +587,9 @@ int main (int argc, char **argv)
     io_var *var=NULL;
     MPI_Offset start[3], count[3], num_recs=0;
     MPI_Info r_info=MPI_INFO_NULL, w_info=MPI_INFO_NULL;
-    double open_t, def_t, read_post_t, read_wait_t, read_t, write_post_t, write_wait_t, write_t, close_t, total_t, mark_t, mark_t2;
+    double open_t, def_t, close_t, total_t, mark_t, mark_t2;
+    double read_post_t=0, read_wait_t=0, read_t;
+    double write_post_t=0, write_wait_t=0, write_t;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -1004,24 +1006,28 @@ int main (int argc, char **argv)
         printf("No. decompositions                 = %3d\n", num_decomp);
         printf("No. variables                      = %3d\n", nvars);
         printf("No. records (time steps)           = %3lld\n", num_recs);
+        printf("-----------------------------------------------------------\n");
         printf("Max Time of file open/create       = %.4f sec\n", max_time[0]);
         printf("Max Time of define variables       = %.4f sec\n", max_time[1]);
-        printf("Max Time of read                   = %.4f sec\n", max_time[2]);
+        printf("-----------------------------------------------\n");
         printf("Max Time of read post              = %.4f sec\n", max_time[6]);
         printf("Max Time of read wait              = %.4f sec\n", max_time[7]);
-        printf("Max Time of write                  = %.4f sec\n", max_time[3]);
+        printf("Max Time of read                   = %.4f sec\n", max_time[2]);
+        printf("-----------------------------------------------\n");
         printf("Max Time of write post             = %.4f sec\n", max_time[8]);
         printf("Max Time of write wait             = %.4f sec\n", max_time[9]);
+        printf("Max Time of write                  = %.4f sec\n", max_time[3]);
+        printf("-----------------------------------------------\n");
         printf("Max Time of close                  = %.4f sec\n", max_time[4]);
         printf("Max end-to-end time                = %.4f sec\n", max_time[5]);
         printf("-----------------------------------------------------------\n");
         printf("Total read  amount                 = %.2f MiB = %.2f GiB\n",
                (double)read_amnt / 1048576, (double)read_amnt / 1073741824);
-        printf("Read  bandwidth                    = %.4f MiB/sec\n",
+        printf("Read  bandwidth                    = %.2f MiB/sec\n",
                (double)read_amnt / 1048576 / max_time[2]);
         printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)write_amnt / 1048576, (double)write_amnt / 1073741824);
-        printf("Write bandwidth                    = %.4f MiB/sec\n",
+        printf("Write bandwidth                    = %.2f MiB/sec\n",
                (double)write_amnt / 1048576 / max_time[3]);
         if (verbose && max_alloc > 0)
             printf("MAX heap memory used by PnetCDF internally is %.2f MiB\n",
