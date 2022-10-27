@@ -587,7 +587,7 @@ int main (int argc, char **argv)
     io_var *var=NULL;
     MPI_Offset start[3], count[3], num_recs=0;
     MPI_Info r_info=MPI_INFO_NULL, w_info=MPI_INFO_NULL;
-    double open_t, def_t, read_t, write_t, close_t, total_t, mark_t;
+    double open_t, def_t, read_post_t, read_wait_t, read_t, write_post_t, write_wait_t, write_t, close_t, total_t, mark_t, mark_t2;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
@@ -773,6 +773,7 @@ int main (int argc, char **argv)
     num_igets = num_iputs = 0;
 
     /* read fixed-size variables */
+    mark_t2 = MPI_Wtime();
     buf_ptr = buf;
     for (i=0; i<nvars; i++) {
         if (var[i].varid == -1 || var[i].is_rec) continue;
@@ -796,14 +797,18 @@ int main (int argc, char **argv)
         buf_ptr += var[i].vlen;
         num_igets++;
     }
+    read_post_t += MPI_Wtime() - mark_t2;
 
+    mark_t2 = MPI_Wtime();
     err = ncmpi_wait_all(in_ncid, NC_REQ_ALL, NULL, NULL);
     CHECK_NC_ERR
+    read_wait_t += MPI_Wtime() - mark_t2;
 
     read_t += MPI_Wtime() - mark_t;
     mark_t  = MPI_Wtime();
 
     /* write fixed-size variables */
+    mark_t2 = MPI_Wtime();
     buf_ptr = buf;
     for (i=0; i<nvars; i++) {
         if (var[i].varid == -1 || var[i].is_rec) continue;
@@ -827,9 +832,12 @@ int main (int argc, char **argv)
         buf_ptr += var[i].vlen;
         num_iputs++;
     }
+    write_post_t += MPI_Wtime() - mark_t2;
 
+    mark_t2 = MPI_Wtime();
     err = ncmpi_wait_all(out_ncid, NC_REQ_ALL, NULL, NULL);
     CHECK_NC_ERR
+    write_wait_t += MPI_Wtime() - mark_t2;
 
     write_t += MPI_Wtime() - mark_t;
 
@@ -842,6 +850,7 @@ int main (int argc, char **argv)
         count[0] = 1;
 
         /* read from input file */
+        mark_t2 = MPI_Wtime();
         buf_ptr = buf;
         for (i=0; i<nvars; i++) {
             if (var[i].varid == -1 || var[i].is_rec == 0) continue;
@@ -866,14 +875,18 @@ int main (int argc, char **argv)
             buf_ptr += var[i].vlen;
             num_igets++;
         }
+        read_post_t += MPI_Wtime() - mark_t2;
 
+        mark_t2 = MPI_Wtime();
         err = ncmpi_wait_all(in_ncid, NC_REQ_ALL, NULL, NULL);
         CHECK_NC_ERR
+        read_wait_t += MPI_Wtime() - mark_t2;
 
         read_t += MPI_Wtime() - mark_t;
         mark_t  = MPI_Wtime();
 
         /* write to output file */
+        mark_t2 = MPI_Wtime();
         buf_ptr = buf;
         for (i=0; i<nvars; i++) {
             if (var[i].varid == -1 || var[i].is_rec == 0) continue;
@@ -904,8 +917,12 @@ int main (int argc, char **argv)
             num_iputs++;
         }
 
+        write_post_t += MPI_Wtime() - mark_t2;
+
+        mark_t2 = MPI_Wtime();
         err = ncmpi_wait_all(out_ncid, NC_REQ_ALL, NULL, NULL);
         CHECK_NC_ERR
+        write_wait_t += MPI_Wtime() - mark_t2;
 
         write_t += MPI_Wtime() - mark_t;
     }
@@ -968,14 +985,18 @@ int main (int argc, char **argv)
     if (err == NC_ENOTENABLED) err = NC_NOERR;
 
     /* find the max timings amount all processes */
-    double timings[6], max_time[6];
+    double timings[10], max_time[10];
     timings[0] = open_t;
     timings[1] = def_t;
     timings[2] = read_t;
     timings[3] = write_t;
     timings[4] = close_t;
     timings[5] = total_t;
-    MPI_Reduce(timings, max_time, 6, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    timings[6] = read_post_t;
+    timings[7] = read_wait_t;
+    timings[8] = write_post_t;
+    timings[9] = write_wait_t;
+    MPI_Reduce(timings, max_time, 10, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
 
     if (world_rank == 0) {
         printf("Input subfile base name            = %s\n", in_file_base);
@@ -986,7 +1007,11 @@ int main (int argc, char **argv)
         printf("Max Time of file open/create       = %.4f sec\n", max_time[0]);
         printf("Max Time of define variables       = %.4f sec\n", max_time[1]);
         printf("Max Time of read                   = %.4f sec\n", max_time[2]);
+        printf("Max Time of read post              = %.4f sec\n", max_time[6]);
+        printf("Max Time of read wait              = %.4f sec\n", max_time[7]);
         printf("Max Time of write                  = %.4f sec\n", max_time[3]);
+        printf("Max Time of write post             = %.4f sec\n", max_time[8]);
+        printf("Max Time of write wait             = %.4f sec\n", max_time[9]);
         printf("Max Time of close                  = %.4f sec\n", max_time[4]);
         printf("Max end-to-end time                = %.4f sec\n", max_time[5]);
         printf("-----------------------------------------------------------\n");
