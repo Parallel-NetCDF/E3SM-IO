@@ -142,9 +142,8 @@ int print_timing_WR(e3sm_io_config *cfg,
         else if (cfg->strategy == blob) {
             printf("History output name base           = %s\n", cfg->out_path);
             if (cfg->api == adios) {
-                printf("History output folder name         = %s.bp.dir\n", cmeta->outfile);
-                printf("History output subfile names       = %s.bp.dir/%s.bp.xxxx\n",
-                       cmeta->outfile, basename(cmeta->outfile));
+                printf("History output folder name         = %s\n", cmeta->outfile);
+                printf("History output subfile names       = %s/dat.xxxx\n", cmeta->outfile);
                 printf("Number of subfiles                 = %d\n", cfg->num_subfiles);
                 if (cfg->verbose)
                     printf("Output file size                   = %.2f MiB = %.2f GiB\n",
@@ -353,9 +352,8 @@ int print_timing_RD(e3sm_io_config *cfg,
         else if (cfg->strategy == blob) {
             printf("History input name base            = %s\n", cfg->out_path);
             if (cfg->api == adios) {
-                printf("History input folder name          = %s.bp.dir\n", cmeta->outfile);
-                printf("History input subfile names        = %s.bp.dir/%s.bp.xxxx\n",
-                       cmeta->outfile, basename(cmeta->outfile));
+                printf("History input folder name          = %s\n", cmeta->outfile);
+                printf("History input subfile names        = %s/dat.xxxx\n", cmeta->outfile);
                 printf("Number of subfiles                 = %d\n", cfg->num_subfiles);
                 if (cfg->verbose)
                     printf("Input file size                    = %.2f MiB = %.2f GiB\n",
