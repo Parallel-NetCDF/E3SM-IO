@@ -126,9 +126,10 @@ for API in "${APIS[@]}" ; do
         OUT_FILE="${OUT_FILE_BASE}.${FILE_EXT}"
         if test $CONFIG = map_f_case_16p || test $CONFIG = map_i_case_16p ; then
            REAL_OUT_FILE="${OUT_FILE_BASE}_h0.${FILE_EXT} ${OUT_FILE_BASE}_h1.${FILE_EXT}"
-           if test "x${ap[0]}" = xadios ; then
-              REAL_OUT_FILE="${OUT_FILE}_h0.${FILE_EXT} ${OUT_FILE}_h1.${FILE_EXT}"
-           fi
+           # if test "x${ap[0]}" = xadios ; then
+           #    The line below is for BP3
+           #    REAL_OUT_FILE="${OUT_FILE}_h0.${FILE_EXT} ${OUT_FILE}_h1.${FILE_EXT}"
+           # fi
         elif test $CONFIG = map_g_case_16p ; then
            REAL_OUT_FILE="${OUT_FILE_BASE}.${FILE_EXT}"
         fi
