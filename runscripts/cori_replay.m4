@@ -12,11 +12,11 @@ changecom([[[###]]], [[[$$$]]])dnl
 
 set -x #echo on
 
-CONFIG_FDBG=../datasets/f_case_866x72_16p.nc
+CONFIG_FDBG=../datasets/map_f_case_16p.nc
 CONFIG_F30=../datasets/f_case_48602x72_512p.nc
 CONFIG_F120=${CSCRATCH}/FS_128_16M/e3sm_data/decom/FC5AV1C-H01A_ne120_oRRS18v3_21600p_raw.nc
 CONFIG_G=${CSCRATCH}/FS_128_16M/e3sm_data/decom/GMPAS-NYF_T62_oRRS18to6v3_9600p_raw.nc
-CONFIG_IDBG=../datasets/i_case_f19_g16_16p.nc 
+CONFIG_IDBG=../datasets/map_i_case_16p.nc
 CONFIG_I=${CSCRATCH}/FS_128_16M/e3sm_data/decom/I1850GSWCNPRDCTCBC_hcru_hcru_1344p_raw.nc
 
 IN_FDBG=/global/cscratch1/sd/khl7265/FS_64_1M/E3SM/realdata/F_DBG
