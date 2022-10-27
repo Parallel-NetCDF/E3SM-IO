@@ -152,7 +152,7 @@ int e3sm_io_driver_adios2::create (std::string path, MPI_Comm comm, MPI_Info inf
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_ADIOS2)
 
     fp       = new adios2_file ();
-    fp->path = std::string (path) + ".bp"; /* BP5 files directory */
+    fp->path = std::string (path); /* BP5 files directory */
     err      = MPI_Comm_rank (comm, &(fp->rank));
     CHECK_MPIERR
 
