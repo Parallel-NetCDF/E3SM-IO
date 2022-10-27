@@ -8,7 +8,7 @@
 set -e
 
 DECOMP_REPLAY="utils/decomp_copy"
-# BPSTAT="utils/bpstat"
+BPSTAT="utils/bpstat"
 DECOMPS=()
 
 VERBOSE=0
