@@ -1,16 +1,16 @@
-#
 # Copyright (C) 2021, Northwestern University and Argonne National Laboratory
 # See COPYRIGHT notice in top-level directory.
 #
+# @configure_input@
 
-SUFFIXES = .a .o .c .m4 .h
+SUFFIXES = .o .c .h .cpp .hpp
 
 AM_CPPFLAGS  = -I${top_srcdir}/src
 AM_CPPFLAGS += -I${top_builddir}/src
 AM_CPPFLAGS += -I${top_srcdir}/src/drivers
 AM_CPPFLAGS += -I${top_srcdir}/src/cases
 
-noinst_LIBRARIES = libe3sm_io_drivers.a
+noinst_LTLIBRARIES = libe3sm_io_drivers.la
 
 C_SRCS = e3sm_io_driver.cpp 
 
@@ -47,7 +47,7 @@ C_SRCS += e3sm_io_driver_adios2.cpp
 H_SRCS += e3sm_io_driver_adios2.hpp
 endif
 
-libe3sm_io_drivers_a_SOURCES = $(C_SRCS) $(H_SRCS)
+libe3sm_io_drivers_la_SOURCES = $(C_SRCS) $(H_SRCS)
 
 CLEANFILES = core core.* *.gcda *.gcno *.gcov gmon.out
 

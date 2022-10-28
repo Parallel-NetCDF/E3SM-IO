@@ -1,3 +1,7 @@
+#
+# Copyright (C) 2021, Northwestern University and Argonne National Laboratory
+# See COPYRIGHT notice in top-level directory.
+#
 # @configure_input@
 
 SUFFIXES = .o .c .cpp
@@ -29,10 +33,10 @@ pnetcdf_blob_replay_LDADD = -lpnetcdf
 endif
 
 dat2decomp_SOURCES = dat2decomp.cpp 
-dat2decomp_LDADD = ${top_builddir}/src/drivers/libe3sm_io_drivers.a ${top_builddir}/src/e3sm_io_profile.o
+dat2decomp_LDADD = ../src/drivers/libe3sm_io_drivers.la ../src/e3sm_io_profile.o
 
 decomp_copy_SOURCES = decomp_copy.cpp 
-decomp_copy_LDADD = ${top_builddir}/src/drivers/libe3sm_io_drivers.a ${top_builddir}/src/e3sm_io_profile.o
+decomp_copy_LDADD = ../src/drivers/libe3sm_io_drivers.la ../src/e3sm_io_profile.o
 
 datstat_SOURCES = datstat.cpp
 
@@ -86,3 +90,4 @@ SH_LOG_COMPILER =
 EXTRA_DIST = wrap_runs.sh
 
 DISTCLEANFILES = list_f_case.txt
+

@@ -1,3 +1,9 @@
+#
+# Copyright (C) 2021, Northwestern University and Argonne National Laboratory
+# See COPYRIGHT notice in top-level directory.
+#
+# @configure_input@
+
 AM_CPPFLAGS  = -I${top_srcdir}/src
 AM_CPPFLAGS += -I${top_srcdir}/src/drivers
 AM_CPPFLAGS += -I${top_srcdir}/src/cases
@@ -25,8 +31,8 @@ e3sm_io_SOURCES += $(H_SRCS) \
                    $(M4_SRCS:.m4=.cpp) \
                    $(M4H_SRCS:.m4h=.hpp)
 
-e3sm_io_LDADD = cases/libe3sm_io_cases.a \
-                drivers/libe3sm_io_drivers.a
+e3sm_io_LDADD = cases/libe3sm_io_cases.la \
+                drivers/libe3sm_io_drivers.la
 
 if ENABLE_LOGVOL
 e3sm_io_LDADD += -lH5VL_log
@@ -49,3 +55,4 @@ DIST_SUBDIRS = drivers cases
 EXTRA_DIST = $(M4H_SRCS) $(M4_SRCS)
 
 CLEANFILES = $(M4_SRCS:.m4=.cpp) $(M4H_SRCS:.m4h=.hpp)
+

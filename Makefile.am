@@ -1,3 +1,9 @@
+#
+# Copyright (C) 2021, Northwestern University and Argonne National Laboratory
+# See COPYRIGHT notice in top-level directory.
+#
+# @configure_input@
+
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = src datasets
@@ -60,5 +66,4 @@ clean-local:
 	-rm -rf test_output/
 
 .PHONY: ptest
-
 
