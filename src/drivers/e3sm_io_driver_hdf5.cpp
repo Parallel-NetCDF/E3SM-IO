@@ -308,7 +308,7 @@ err_out:;
 fn_exit:;
     if (pid != -1) H5Pclose (pid);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-    return 0;
+    return err;
 }
 
 int e3sm_io_driver_hdf5::inq_file_size (std::string path, MPI_Offset *size) {
