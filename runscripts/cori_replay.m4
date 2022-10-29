@@ -30,7 +30,7 @@ HDF5_LIB_PATH=VAR_HDF5_LIB_PATH
 HDF5_LIB_DATE="VAR_HDF5_LIB_DATE"
 ADIOS2_LIB_PATH=VAR_ADIOS2_LIB_PATH
 ADIOS2_LIB_DATE="VAR_ADIOS2_LIB_DATE"
-LOGVOL_LIB_PATH=VAR_LOGVOL_LIB_PATH
+LOGVOL_LIB_PATH=/global/cfs/cdirs/m844/khl7265/cori/.local/log_io_vol/read
 LOGVOL_LIB_DATE="VAR_LOGVOL_LIB_DATE"
 PNC_LIB_PATH=VAR_PNC_LIB_PATH
 NREC=VAR_RECS
@@ -85,7 +85,7 @@ do
 done
 
 sbcast -v /global/cfs/cdirs/m844/khl7265/cori/pio/eval_build/tools/adios2pio-nm/adios2pio-nm.exe /tmp/adios2pio-nm.exe
-sbcast -v /global/cfs/cdirs/m844/khl7265/cori/.local/log_io_vol/master_static/bin/h5lreplay /tmp/h5lreplay
+sbcast -v /global/cfs/cdirs/m844/khl7265/cori/.local/log_io_vol/read/bin/h5lreplay /tmp/h5lreplay
 sbcast -v ../utils/pnetcdf_blob_replay /tmp/pnetcdf_blob_replay
 sbcast -v ../src/e3sm_io /tmp/e3sm_io
 
