@@ -146,7 +146,7 @@ int bpstat_core (std::string inpath, config &cfg, bpstat &stat) {
     CHECK_APTR (adp)
     iop = adios2_declare_io (adp, "bpstat");
     CHECK_APTR (iop)
-    aerr = adios2_set_engine (iop, "BP3");
+    aerr = adios2_set_engine (iop, "BP5");
     CHECK_AERR
 
     ep = adios2_open (iop, inpath.c_str (), adios2_mode_read);
@@ -178,7 +178,7 @@ int bpstat_core (std::string inpath, config &cfg, bpstat &stat) {
         if (ndim == 0) /* scalar */
             nelem = 1;
         else {
-#if HAVE_ADIOS2_VARINFO
+#if 0 && HAVE_ADIOS2_VARINFO
             size_t step=0;
             adios2_varinfo *block_info = adios2_inquire_blockinfo(ep, *vp, step);
             assert(block_info != NULL);
@@ -312,73 +312,6 @@ err_out:;
     return err;
 }
 
-inline int get_n_sbufiles (config &cfg, std::string inpath) {
-    int fno, ret = -1;
-
-#ifdef HAVE_FTS_H
-    FTS *ftsp;
-    FTSENT *p, *chp;
-    int fts_options = FTS_COMFOLLOW | FTS_LOGICAL | FTS_NOCHDIR;
-    char *ext, *input_dir[2];
-
-    /* check if inpath is a regular file */
-    struct stat path_stat;
-    memset(&path_stat, 0, sizeof (path_stat));
-    stat(inpath.c_str(), &path_stat);
-    if (S_ISREG(path_stat.st_mode)) return 0;
-
-    input_dir[0] = (char*) malloc(inpath.length() + 5);
-    sprintf(input_dir[0], "%s.dir", inpath.c_str());
-    input_dir[1] = NULL;
-
-    if ((ftsp = fts_open(input_dir, fts_options, NULL)) == NULL) {
-        printf("Error in %s line %d: fts_open fails folder %s\n",__FILE__,__LINE__,input_dir[0]);
-        free(input_dir[0]);
-        return -1;
-    }
-    chp = fts_children(ftsp, 0);
-    if (chp == NULL) { /* no files to traverse */
-        printf("Error in %s line %d: fts_open fails no file in %s\n",__FILE__,__LINE__,input_dir[0]);
-        free(input_dir[0]);
-        fts_close(ftsp);
-        return -1;
-    }
-    while ((p = fts_read(ftsp)) != NULL) {
-        if (p->fts_info == FTS_F) { /* a file */
-            if (cfg.verbose) printf("Iterating subfile %s\n", p->fts_path);
-            ext = strrchr(p->fts_path, '.');
-            fno = atoi(ext + 1) + 1;
-            ret = (fno > ret) ? fno : ret;
-        }
-    }
-    free(input_dir[0]);
-    fts_close(ftsp);
-    return ret;
-#else
-    std::filesystem::path fname, subfname;
-
-    if (std::filesystem::is_directory (inpath + ".dir")) {
-        for (auto &f : std::filesystem::directory_iterator (inpath + ".dir")) {
-            fname    = std::filesystem::path (inpath).filename ();
-            subfname = f.path ().filename ();
-
-            if (cfg.verbose) { std::cout << "Iterating " << subfname << std::endl; }
-
-            fno = atoi (subfname.extension ().c_str () + 1);
-            if (fname == subfname.replace_extension ()) {  // replace_extension is in place, must
-                                                           // retrieve the value before its gone
-                if (ret < fno) { ret = fno; }
-            }
-        }
-        ret++;  // #subfile = largest subfile num + 1
-    } else if (std::filesystem::is_regular_file (inpath)) {
-        ret = 0;  // Single file
-    }
-
-    return ret;
-#endif
-}
-
 int main (int argc, char *argv[]) {
     int err = 0, nerrs = 0;
     int i;
@@ -408,46 +341,18 @@ int main (int argc, char *argv[]) {
     }
 
     inpath = std::string (argv[optind]);
-    if (cfg.rank == 0) {  // Rank 0 scan folder
-        nsub = get_n_sbufiles (cfg, inpath);
-        err  = MPI_Bcast (&nsub, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    } else {
-        err = MPI_Bcast (&nsub, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    }
+
+    err = bpstat_core (inpath, cfg, stat);
+    if (err != 0) { nerrs++; }
+
+    stat_all.nvar = stat.nvar;
+    stat_all.natt = stat.natt;
+    err = MPI_Reduce (&(stat.asize), &(stat_all.asize), 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0,
+                        MPI_COMM_WORLD);
     CHECK_MPIERR
-
-    if (nsub == 0) {  // Single file, rank 0 parse
-        if (cfg.rank == 0) {
-            err = bpstat_core (inpath, cfg, stat_all);
-            if (err != 0) { nerrs++; }
-        }
-    } else if (nsub > 0) {
-        for (i = cfg.rank; i < nsub; i += cfg.np) {
-#ifdef HAVE_FTS_H
-            std::string subfilename = inpath.substr(inpath.find_last_of("/\\") + 1);
-#else
-            std::string subfilename = std::filesystem::path (inpath).filename ().string ();
-#endif
-            err = bpstat_core (inpath + ".dir/"
-                                      + subfilename
-                                      + "."
-                                      + std::to_string (i),
-                               cfg, stat);
-            if (err != 0) { nerrs++; }
-        }
-
-        stat_all.nvar = stat.nvar;
-        stat_all.natt = stat.natt;
-        err = MPI_Reduce (&(stat.asize), &(stat_all.asize), 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0,
-                          MPI_COMM_WORLD);
-        CHECK_MPIERR
-        err = MPI_Reduce (&(stat.vsize), &(stat_all.vsize), 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0,
-                          MPI_COMM_WORLD);
-        CHECK_MPIERR
-    } else {
-        if (cfg.rank == 0) { std::cout << "Error, cannot open " << inpath << "." << std::endl; }
-        nerrs++;
-    }
+    err = MPI_Reduce (&(stat.vsize), &(stat_all.vsize), 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0,
+                        MPI_COMM_WORLD);
+    CHECK_MPIERR
 
     if (cfg.rank == 0) {
         std::cout << "Num subfiles: " << nsub << std::endl;
