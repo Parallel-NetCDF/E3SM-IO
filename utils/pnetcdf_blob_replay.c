@@ -811,12 +811,11 @@ int main (int argc, char **argv)
 
     /* write fixed-size variables */
     mark_t2 = MPI_Wtime();
-    /*
     buf_ptr = buf;
     for (i=0; i<nvars; i++) {
         if (var[i].varid == -1 || var[i].is_rec) continue;
-        if (var[i].dec_id == -1) { /* this variable is no partitioned *
-            /* root process writes this variable *
+        if (var[i].dec_id == -1) { /* this variable is no partitioned */
+            /* root process writes this variable */
             if (world_rank == 0) {
                 err = ncmpi_iput_var(out_ncid, var[i].varid, buf_ptr, 0,
                                      MPI_DATATYPE_NULL, NULL);
@@ -826,7 +825,7 @@ int main (int argc, char **argv)
             }
             continue;
         }
-        /* write partitioned variable *
+        /* write partitioned variable */
         io_decomp *dp = decomp + var[i].dec_id;
         err = ncmpi_iput_varn(out_ncid, var[i].varid, dp->nreqs,
                               dp->w_startx, dp->w_countx,
@@ -836,7 +835,6 @@ int main (int argc, char **argv)
         num_iputs++;
     }
     write_post_t += MPI_Wtime() - mark_t2;
-    */
 
     mark_t2 = MPI_Wtime();
     err = ncmpi_wait_all(out_ncid, NC_REQ_ALL, NULL, NULL);
@@ -891,13 +889,11 @@ int main (int argc, char **argv)
 
         /* write to output file */
         mark_t2 = MPI_Wtime();
-        /*
-        /* write to output file *
         buf_ptr = buf;
         for (i=0; i<nvars; i++) {
             if (var[i].varid == -1 || var[i].is_rec == 0) continue;
-            if (var[i].dec_id == -1) { /* this variable is no partitioned *
-                /* root process writes this variable *
+            if (var[i].dec_id == -1) { /* this variable is no partitioned */
+                /* root process writes this variable */
                 if (world_rank == 0) {
                     start[1] = 0;
                     err = ncmpi_iput_vara(out_ncid, var[i].varid, start,
@@ -909,11 +905,11 @@ int main (int argc, char **argv)
                 }
                 continue;
             }
-            /* set all starts[][0] to next record *
+            /* set all starts[][0] to next record */
             for (j=0; j<decomp[var[i].dec_id].nreqs; j++)
                 decomp[var[i].dec_id].w_starts[j][0] = rec;
 
-            /* write partitioned variable *
+            /* write partitioned variable */
             io_decomp *dp = decomp + var[i].dec_id;
             err = ncmpi_iput_varn(out_ncid, var[i].varid, dp->nreqs,
                                   dp->w_starts, dp->w_counts,
@@ -929,7 +925,6 @@ int main (int argc, char **argv)
         err = ncmpi_wait_all(out_ncid, NC_REQ_ALL, NULL, NULL);
         CHECK_NC_ERR
         write_wait_t += MPI_Wtime() - mark_t2;
-        */
 
         write_t += MPI_Wtime() - mark_t;
     }
