@@ -143,8 +143,10 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
+#if H5_VERSION_GE(1, 12, 0)
     herr = H5Pset_vol (faplid, this->log_vlid, NULL);
     CHECK_HERR
+#endif
     // Enlarge metadata cache
     mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
     herr         = H5Pget_mdc_config (faplid, &mdcc);
@@ -208,8 +210,10 @@ int e3sm_io_driver_hdf5_log::open (std::string path, MPI_Comm comm, MPI_Info inf
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
+#if H5_VERSION_GE(1, 12, 0)
     herr = H5Pset_vol (faplid, this->log_vlid, NULL);
     CHECK_HERR
+#endif
     // Enlarge metadata cache
     mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
     herr         = H5Pget_mdc_config (faplid, &mdcc);
