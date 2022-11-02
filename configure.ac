@@ -423,7 +423,7 @@ AC_ARG_WITH([hdf5],
       fi
    fi
    if test "x$have_hdf5" = xyes ; then
-      # Check whether HDF5 supprots H5S_BLOCK
+      # Check whether HDF5 supports H5S_BLOCK
       AC_CHECK_DECLS([H5S_BLOCK], [], [], [#include <hdf5.h>])
       if test "x$ac_cv_have_decl_H5S_BLOCK" = xyes ; then
          AC_DEFINE([HDF5_HAVE_H5SBLOCK], [1], [Whether HDF5 defines H5S_BLOCK])
