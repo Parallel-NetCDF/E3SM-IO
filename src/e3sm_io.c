@@ -313,11 +313,12 @@ int main (int argc, char **argv) {
     cfg.I_case_h1.nrecs = 1;  /* force only one record for I h1 case */
 
 #ifdef HDF5_HAVE_MULTI_DATASET_API
-    /* HDF5 multi-dataset APIs may have the following limitations.
-     * 1. Support same dataset appears twice or more times in a single call.
-     * 2. Support datasets some requiring type conversion and some don't.
-     *    In this case, the collective I/O mode will roll back to independent
-     *    mode internally.
+    /* In HDF5 1.13.3, multi-dataset APIs have the following limitations.
+     * 1. Do not support same dataset appears twice or more in a single call.
+     * 2. When some datasets requiring type conversion and some don't, the
+     *    collective I/O mode will roll back to independent mode internally.
+     *    Note F and I cases write some variables that need type conversion
+     *    from double to float, while G case does not.
      * See https://github.com/HDFGroup/hdf5/issues/1859
      */
 #warning TODO: HDF5 multi-dataset APIs do not support writing multiple time steps at a time. Setting flush freq to 1.
