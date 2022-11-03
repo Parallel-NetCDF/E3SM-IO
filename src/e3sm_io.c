@@ -369,7 +369,7 @@ int main (int argc, char **argv) {
                     break;
                 case log:;
                     if (!env || (strncmp (env, "LOG", 3) != 0)) {
-                        ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG\" (log-based VOL) for NetCDF 4 with log I/O strategy")
+                        ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG under_vol=0;under_info={}\" (log-based VOL) for NetCDF 4 with log I/O strategy")
                     }
                     break;
                 default:;
