@@ -15,10 +15,10 @@
 //
 #include <sys/stat.h>
 //
+#include <hdf5.h>
 #ifdef ENABLE_LOGVOL
 #include <H5VL_log.h>
 #endif
-#include <hdf5.h>
 //
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
@@ -162,10 +162,13 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
+#ifdef ENABLE_LOGVOL
     if (cfg->strategy == log) {
         herr = H5Pset_vol (faplid, this->log_vlid, NULL);
         CHECK_HERR
     }
+#endif
+
     // Enlarge metadata cache
     mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
     herr         = H5Pget_mdc_config (faplid, &mdcc);
@@ -216,10 +219,13 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
+#ifdef ENABLE_LOGVOL
     if (cfg->strategy == log) {
         herr = H5Pset_vol (faplid, this->log_vlid, NULL);
         CHECK_HERR
     }
+#endif
+
     // Enlarge metadata cache
     mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
     herr         = H5Pget_mdc_config (faplid, &mdcc);
