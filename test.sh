@@ -170,10 +170,10 @@ for API in "${APIS[@]}" ; do
         # check ADIOS BP files
         if test "x$BPSTAT" != x && test "x${ap[0]}" = xadios ; then
            if test $CONFIG = map_f_case_16p || test $CONFIG = map_i_case_16p ; then
-              CMD="${BPSTAT} ${OUT_FILE}_h0.${FILE_EXT}"
+              CMD="${BPSTAT} ${OUT_FILE_BASE}_h0.${FILE_EXT}"
               echo "CMD = ${CMD}"
               ${CMD}
-              CMD="${BPSTAT} ${OUT_FILE}_h1.${FILE_EXT}"
+              CMD="${BPSTAT} ${OUT_FILE_BASE}_h1.${FILE_EXT}"
               echo "CMD = ${CMD}"
               ${CMD}
            elif test $CONFIG = map_g_case_16p ; then
