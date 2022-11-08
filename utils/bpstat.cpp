@@ -342,6 +342,10 @@ int main (int argc, char *argv[]) {
 
     inpath = std::string (argv[optind]);
 
+    if (access(inpath.c_str(), F_OK) != 0){
+        ERR_OUT("Input file does not exist")
+    }
+
     err = bpstat_core (inpath, cfg, stat);
     if (err != 0) { nerrs++; }
 
