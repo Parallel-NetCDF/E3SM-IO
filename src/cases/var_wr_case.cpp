@@ -333,8 +333,8 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
             sleep ((unsigned int)(cfg.comp_time));
         }
 
-        if (((cfg.api == hdf5 || cfg.api == hdf5_md) && cfg.strategy != blob) ||
-            cfg.api == netcdf4) {
+        if (((cfg.api == hdf5 || cfg.api == hdf5_log || cfg.api == hdf5_md)
+             && cfg.strategy != blob) || cfg.api == netcdf4) {
             err = driver.expand_rec_size (ncid, rec_no + 1);
             CHECK_ERR
         }
