@@ -33,24 +33,41 @@ log-based layout in files.
   [![MPICH](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml)
   [![OpenMPI](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
 
-### Performance Results on Cori at NERSC
-Below shows the execution times of four log-layout based I/O methods collected on July 2022
-on [Cori](https://docs.nersc.gov/systems/cori/) at
-[NERSC](https://www.nersc.gov).
-<p align="center">
-<img align="center" src="./docs/cori_07192022.jpg" alt="Performance of log-layout based I/O methods on Cori" width="600">
-</p>
+### Run Options of Using Various I/O Libraries and Two Data Layouts
+There are several I/O methods implemented in this case study, including two
+data layouts (canonical vs. log) and five parallel I/O libraries of
+[PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF),
+[NetCDF-4](https://github.com/Unidata/netcdf-c),
+[HDF5](https://github.com/HDFGroup/hdf5),
+[Log VOL](https://github.com/DataLib-ECP/vol-log-based), and
+[ADIOS](https://github.com/ornladios/ADIOS2).
+Table below summarizes the supported combinations of libraries and data
+layouts. For the full list of I/O options and more detailed descriptions,
+readers are referring to [INSTALL.md](./docs/INSTALL.md).
 
-### Performance Results on Summit at OLCF
-Below shows the execution times of four log-layout based I/O methods collected in September 2022
-on [Summit at OLCF](https://www.olcf.ornl.gov/summit/).
-<p align="center">
-<img align="center" src="./docs/summit_09_2022.jpg" alt="Performance of log-layout based I/O methods on Summit" width="600">
-</p>
+| layout \ library | PnetCDF | HDF5 | Log VOL | NetCDF4  | ADIOS |
+|------------------|:-------:|:----:|:-------:|:--------:|:-----:|
+| canonical        | yes     | yes  | no      | yes      | no    |
+| log (blob)       | yes     | no   | yes     | no       | yes   |
+
+### Performance Results of Log-layout I/O Methods
+* Below shows the execution times of four log-layout based I/O methods
+  collected on July 2022 on [Cori](https://docs.nersc.gov/systems/cori/) at
+  [NERSC](https://www.nersc.gov).
+  <p align="center">
+  <img align="center" src="./docs/cori_07192022.jpg" alt="Performance of log-layout based I/O methods on Cori" width="600">
+  </p>
+
+* Below shows the execution times of four log-layout based I/O methods
+  collected in September 2022 on [Summit at OLCF](https://www.olcf.ornl.gov/summit/).
+  <p align="center">
+  <img align="center" src="./docs/summit_09_2022.jpg" alt="Performance of log-layout based I/O methods on Summit" width="600">
+  </p>
 
 ### Developers
 * Wei-keng Liao <<wkliao@northwestern.edu>>
 * Kai-yuan Hou <<kai-yuanhou2020@u.northwestern.edu>>
+* Zanhua Huang <<zanhua@u.northwestern.edu>>
 
 Copyright (C) 2021, Northwestern University.
 See [COPYRIGHT](COPYRIGHT) notice in top-level directory.
