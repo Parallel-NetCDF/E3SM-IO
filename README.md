@@ -34,18 +34,18 @@ log-based layout in files.
   [![OpenMPI](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
 
 ### Performance Results on Cori at NERSC
-Below shows the execution times of four blob I/O methods collected on July 2022
+Below shows the execution times of four log-layout based I/O methods collected on July 2022
 on [Cori](https://docs.nersc.gov/systems/cori/) at
 [NERSC](https://www.nersc.gov).
 <p align="center">
-<img align="center" src="./docs/cori_07192022.jpg" alt="Performance of blob I/O methods on Cori" width="600">
+<img align="center" src="./docs/cori_07192022.jpg" alt="Performance of log-layout based I/O methods on Cori" width="600">
 </p>
 
 ### Performance Results on Summit at OLCF
-Below shows the execution times of four blob I/O methods collected in September 2022
+Below shows the execution times of four log-layout based I/O methods collected in September 2022
 on [Summit at OLCF](https://www.olcf.ornl.gov/summit/).
 <p align="center">
-<img align="center" src="./docs/summit_09_2022.jpg" alt="Performance of blob I/O methods on Summit" width="600">
+<img align="center" src="./docs/summit_09_2022.jpg" alt="Performance of log-layout based I/O methods on Summit" width="600">
 </p>
 
 ### Developers
