@@ -132,6 +132,7 @@ static void usage (char *argv0) {
        [-v] Verbose mode\n\
        [-k] Keep the output files when program exits (default: deleted)\n\
        [-m] Run test using noncontiguous write buffer (default: contiguous)\n\
+       [-u] Fill missing elements in decomposition maps (default: no)\n\
        [-f num] Output history files h0 or h1: 0 for h0 only, 1 for h1 only,\n\
                 -1 for both. Affect only F and I cases. (default: -1)\n\
        [-r num] Number of time records/steps written in F case h1 file and I\n\
@@ -223,6 +224,7 @@ int main (int argc, char **argv) {
     cfg.io_stride      = 1;
     cfg.sub_comm       = MPI_COMM_NULL;
     cfg.comp_time      = 0;
+    cfg.fill_mode      = 0;
 
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
         cfg.G_case.nvars_D[i]    = 0;
@@ -245,13 +247,16 @@ int main (int argc, char **argv) {
     ffreq = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkr:s:o:i:dmf:ha:x:g:y:pt:")) != EOF)
+    while ((i = getopt (argc, argv, "vkur:s:o:i:dmf:ha:x:g:y:pt:")) != EOF)
         switch (i) {
             case 'v':
                 cfg.verbose = 1;
                 break;
             case 'k':
                 cfg.keep_outfile = 1;
+                break;
+            case 'u':
+                cfg.fill_mode = 1;
                 break;
             case 'r':
                 nrecs = atoi (optarg);
