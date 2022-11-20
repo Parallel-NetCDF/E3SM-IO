@@ -11,6 +11,7 @@ on:
       - '**/*.jpg'
       - '**/*.png'
       - 'tests/*'
+      - 'datasets/*'
   pull_request:
     branches: master
     paths-ignore:
@@ -19,6 +20,7 @@ on:
       - '**/*.jpg'
       - '**/*.png'
       - 'tests/*'
+      - 'datasets/*'
 
 env:
    PNETCDF_VERSION: 1.12.3
