@@ -230,22 +230,38 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         /* obtain the dimension lengths of this decomposition */
         err = driver->get_att (ncid, NC_GLOBAL, name, dims_int);
         CHECK_ERR
-        for (i = 0; i < 4; i++) decom->dims[id][i] = (MPI_Offset)dims_int[i];
+        for (i=0; i<decom->ndims[id]; i++)
+            decom->dims[id][i] = (MPI_Offset)dims_int[i];
 
-        /* obtain varid of request variable Dx.nreqs */
-        sprintf (name, "D%d.nreqs", id + 1);
-        err = driver->inq_varid (ncid, name, &varid);
-        CHECK_ERR
+        if (cfg->fill_mode && cfg->strategy == canonical) {
+            /* obtain varid of request variable Dx.nreqs. Note Dx.nreqs
+             * includes the missing elements to be filled if there is any
+             * missing elements and fill mode is enabled.
+             */
+            sprintf (name, "D%d.nreqs", id + 1);
+            err = driver->inq_varid (ncid, name, &varid);
+            CHECK_ERR
+        }
+        else {
+            /* obtain varid of request variable Dx.fill_starts, the starting
+             * index in offsets[] and lengths[] for elements to be filled with
+             * fill value. Note use Dx.fill_starts as the number of write
+             * requests, so writes stop at this index, without filling the
+             * missing elements.
+             */
+            sprintf (name, "D%d.fill_starts", id + 1);
+            err = driver->inq_varid (ncid, name, &varid);
+            CHECK_ERR
+        }
 
-        /* read all numbers of requests */
+        /* read all processes's numbers of requests */
         all_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
         err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, all_nreqs, coll);
         CHECK_ERR
 
         /* calculate start index in Dx.offsets for this process */
-        i     = 0;
         start = 0;
-        for (start = 0, i = 0; i < proc_start; i++) start += all_nreqs[i];
+        for (i=0; i<proc_start; i++) start += all_nreqs[i];
 
         /* calculate number of requests for this process */
         count = 0;
@@ -254,8 +270,8 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         free (all_nreqs);
 
         if (cfg->verbose)
-            printf ("D%d rank %d: proc_start=%d proc_count=%d start=%lld count=%lld\n", id + 1, rank,
-                    proc_start, proc_count, start, count);
+            printf ("D%d rank %d: proc_start=%d proc_count=%d start=%lld count=%lld\n",
+                    id + 1, rank, proc_start, proc_count, start, count);
 
         /* read starting offsets of requests into disps[] */
         decom->disps[id] = (int *)malloc (nreqs * sizeof (int));

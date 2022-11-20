@@ -92,6 +92,7 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("Input decomposition file           = %s\n", cfg->decomp_path);
         printf("Number of decompositions           = %d\n", ndecomp);
         printf("Output file/directory              = %s\n", cfg->out_path);
+        printf("Fill mode                          = %s\n", cfg->fill_mode ? "enabled" : "disabled");
         printf("Using noncontiguous write buffer   = %s\n", cfg->non_contig_buf ? "yes" : "no");
         printf("Variable write order: same as variables are defined\n");
 

@@ -158,6 +158,7 @@ typedef struct e3sm_io_config {
     history hist;
     int verbose;      /* verbose mode to print additional messages on screen */
     int keep_outfile; /* whether to keep the output files when exits */
+    int fill_mode;    /* fill missing elements in decomposition maps */
 
     int two_buf;
     int non_contig_buf;
