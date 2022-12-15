@@ -20,6 +20,9 @@ on:
       - '**/*.png'
       - 'tests/*'
 
+env:
+   HDF5_VERSION: 1.13.2
+   
 jobs:
     build:
       runs-on: ubuntu-latest
@@ -43,11 +46,9 @@ jobs:
             rm -rf HDF5
             mkdir HDF5
             cd HDF5
-            VERSION=1.13.2
-            rm -rf hdf5-${VERSION}.tar.gz hdf5-${VERSION}
-            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${VERSION}/src/hdf5-${VERSION}.tar.gz
-            tar -zxf hdf5-${VERSION}.tar.gz
-            cd hdf5-${VERSION}
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+            tar -zxf hdf5-${HDF5_VERSION}.tar.gz
+            cd hdf5-${HDF5_VERSION}
             ./configure --prefix=${WORKDIR}/HDF5 \
                         --silent \
                         --enable-hl \
@@ -63,6 +64,10 @@ jobs:
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
             cd ${WORKDIR}
+        - name: Dump HDF5 config.log file
+          if: ${{ failure() }}
+          run: |
+            cat ${GITHUB_WORKSPACE}/HDF5/hdf5-${HDF5_VERSION}/config.log
         - name: Install log VOL from its master branch
           if: ${{ success() }}
           run: |
