@@ -20,6 +20,14 @@ on:
       - '**/*.png'
       - 'tests/*'
 
+env:
+   MPICH_VERSION: 4.0.2
+   PNETCDF_VERSION: 1.12.3
+   HDF5_VERSION: 1.13.2
+   NETCDF4_VERSION: 4.9.0
+   ADIOS_VERSION: 2.8.3
+   LOG_VOL_VERSION: 1.3.0
+
 jobs:
     build:
       runs-on: ubuntu-latest
@@ -45,10 +53,9 @@ jobs:
             # cd mpich
             # git submodule update --init
             # ./autogen.sh
-            VERSION=4.0.2
-            wget -q https://www.mpich.org/static/downloads/${VERSION}/mpich-${VERSION}.tar.gz
-            gzip -dc mpich-${VERSION}.tar.gz | tar -xf -
-            cd mpich-${VERSION}
+            wget -q https://www.mpich.org/static/downloads/${MPICH_VERSION}/mpich-${MPICH_VERSION}.tar.gz
+            gzip -dc mpich-${MPICH_VERSION}.tar.gz | tar -xf -
+            cd mpich-${MPICH_VERSION}
             ./configure --prefix=${GITHUB_WORKSPACE}/MPICH \
                         --silent \
                         --enable-romio \
@@ -65,10 +72,9 @@ jobs:
             rm -rf PnetCDF
             mkdir PnetCDF
             cd PnetCDF
-            VERSION=1.12.3
-            wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-${VERSION}.tar.gz
-            tar -zxf pnetcdf-${VERSION}.tar.gz
-            cd pnetcdf-${VERSION}
+            wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz
+            tar -zxf pnetcdf-${PNETCDF_VERSION}.tar.gz
+            cd pnetcdf-${PNETCDF_VERSION}
             ./configure --prefix=${GITHUB_WORKSPACE}/PnetCDF \
                         --silent \
                         --disable-fortran \
@@ -85,10 +91,9 @@ jobs:
             rm -rf HDF5
             mkdir HDF5
             cd HDF5
-            VERSION=1.13.2
-            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${VERSION}/src/hdf5-${VERSION}.tar.gz
-            tar -zxf hdf5-${VERSION}.tar.gz
-            cd hdf5-${VERSION}
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+            tar -zxf hdf5-${HDF5_VERSION}.tar.gz
+            cd hdf5-${HDF5_VERSION}
             ./configure --prefix=${GITHUB_WORKSPACE}/HDF5 \
                         --silent \
                         --enable-hl \
@@ -112,10 +117,9 @@ jobs:
             rm -rf NetCDF
             mkdir NetCDF
             cd NetCDF
-            VERSION=4.9.0
-            wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v${VERSION}.tar.gz
-            tar -zxf v${VERSION}.tar.gz
-            cd netcdf-c-${VERSION}
+            wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v${NETCDF4_VERSION}.tar.gz
+            tar -zxf v${NETCDF4_VERSION}.tar.gz
+            cd netcdf-c-${NETCDF4_VERSION}
             # TODO: Always use an official release. E3SM-IO requires NetCDF-C 4.9.0 or later.
             # rm -rf netcdf-c
             # git clone -q https://github.com/Unidata/netcdf-c.git
@@ -143,9 +147,8 @@ jobs:
             rm -rf ADIOS
             mkdir ADIOS
             cd ADIOS
-            VERSION=2.8.1
-            wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v${VERSION}.tar.gz
-            tar -zxf v${VERSION}.tar.gz
+            wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v${ADIOS_VERSION}.tar.gz
+            tar -zxf v${ADIOS_VERSION}.tar.gz
             mkdir adios2_build
             cd adios2_build
             CC=${GITHUB_WORKSPACE}/MPICH/bin/mpicc \
@@ -168,7 +171,7 @@ jobs:
                   -DBUILD_SHARED_LIBS=OFF \
                   -DADIOS2_USE_SST=ON \
                   -DADIOS2_USE_BP5=ON \
-                  ../ADIOS2-${VERSION}
+                  ../ADIOS2-${ADIOS_VERSION}
             make -j 8 install > qout 2>&1
             make clean >> qout 2>&1
         - name: Install log VOL
@@ -179,10 +182,9 @@ jobs:
             rm -rf LOGVOL
             mkdir LOGVOL
             cd LOGVOL
-            VERSION=1.3.0
-            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.${VERSION}.tar.gz
-            tar -zxf logvol.${VERSION}.tar.gz
-            cd vol-log-based-logvol.${VERSION}
+            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.${LOG_VOL_VERSION}.tar.gz
+            tar -zxf logvol.${LOG_VOL_VERSION}.tar.gz
+            cd vol-log-based-logvol.${LOG_VOL_VERSION}
             autoreconf -i
             ./configure --prefix=${GITHUB_WORKSPACE}/LOGVOL \
                         --silent \
@@ -206,6 +208,7 @@ jobs:
         - name: Dump log files if E3SM_IO with PnetCDF-only test failed
           if: ${{ failure() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with HDF5 only
           if: ${{ success() }}
@@ -220,6 +223,7 @@ jobs:
         - name: Dump log files if E3SM_IO with HDF5-only test failed
           if: ${{ failure() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with HDF5 log-based VOL only
           if: ${{ success() }}
@@ -235,6 +239,7 @@ jobs:
         - name: Dump log files if E3SM_IO with HDF5 log-based VOL test failed
           if: ${{ failure() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with NetCDF4 only
           if: ${{ success() }}
@@ -249,6 +254,7 @@ jobs:
         - name: Dump log files if E3SM_IO with NetCDF4-only test failed
           if: ${{ failure() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with ADIOS only
           if: ${{ success() }}
@@ -263,6 +269,7 @@ jobs:
         - name: Dump log files if E3SM_IO with ADIOS-only test failed
           if: ${{ failure() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with all APIs
           if: ${{ success() }}
@@ -281,6 +288,7 @@ jobs:
         - name: Dump log files if E3SM_IO test failed
           if: ${{ failure() }}
           run: |
+            cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
             cat config.log
             ls -r ./test_output
