@@ -785,7 +785,9 @@ fi
 
 if test "x$have_hdf5" = xyes ; then
    # check for extra libraries used when building HDF5
+   extra_libs=
    if test -f $hdf5_lib/libhdf5.settings ; then
+      AC_MSG_CHECKING([extra libraries used by HDF5])
       extra_ldflags="`grep ' LDFLAGS:' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
       extra_H5_ldflags="`grep 'H5_LDFLAGS:' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
       extra_AM_ldflags="`grep 'AM_LDFLAGS:' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
@@ -796,6 +798,7 @@ if test "x$have_hdf5" = xyes ; then
          extra_ldflags+=$extra_AM_ldflags
       fi
       extra_libs="`grep 'Extra libraries' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
+      AC_MSG_RESULT([$extra_libs])
    fi
    if test "x$LIBS" = x ; then
       LIBS="-lhdf5 $extra_libs"
