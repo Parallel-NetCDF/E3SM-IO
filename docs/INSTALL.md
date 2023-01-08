@@ -18,9 +18,9 @@
 * MPI C and C++ compilers
   + Configured with a std 11 C++ compiler (supporting constant initializer)
 * (Optional) [PnetCDF 1.12.3](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz)
-* (Optional) [HDF5 1.13.2](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.2/src/hdf5-1.13.2.tar.gz)
+* (Optional) [HDF5 1.14.0](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.0/src/hdf5-1.14.0.tar.gz)
   + Configured with parallel I/O support (configured with `--enable-parallel` is required)
-* (Optional) [HDF5 Log-based VOL](https://github.com/DataLib-ECP/vol-log-based.git)
+* (Optional) [HDF5 Log VOL connector](https://github.com/DataLib-ECP/vol-log-based.git)
   + Experimental software developed as part of the Datalib project
 * (Optional) [ADIOS 2.8.1](https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.8.1.tar.gz)
   + Configured with parallel I/O support (cmake with `-DADIOS2_USE_MPI=ON` is required)
@@ -45,29 +45,29 @@
     % make -j 4 install
     ```
 * Build HDF5 with parallel I/O support
-  + Download an HDF5 official released software.
+  + Download an HDF5 official released software (version 1.13.0 and later is required).
   + Configure HDF5 with parallel I/O enabled.
   + Run `make install`
   + Example build commands are given below. This example will install
-    the HDF5 library under the folder `${HOME}/HDF5/1.13.2`.
+    the HDF5 library under the folder `${HOME}/HDF5/1.14.0`.
     ```
-    % wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-1.13.2/src/hdf5-1.13.2.tar.gz
-    % tar -zxf hdf5-1_13_0.tar.gz
-    % cd hdf5-1.13.2
-    % ./configure --prefix=${HOME}/HDF5/1.13.2 --enable-parallel CC=mpicc
+    % wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.0/src/hdf5-1.14.0.tar.gz
+    % tar -zxf hdf5-1.14.0.tar.gz
+    % cd hdf5-1.14.0
+    % ./configure --prefix=${HOME}/HDF5/1.14.0 --enable-parallel CC=mpicc
     % make -j 4 install
     ```
-* Build HDF5 log-based VOL plugin.
+* Build HDF5 Log VOL connector
   + Download the official released software.
-  + Configure log-based VOL 
+  + Configure  Log VOL connector
     + Enable shared library support (--enable-shared)
     + Compile with zlib library to enable metadata compression (--enable-zlib)
   + Example commands are given below.
     ```
-    % wget https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.2.0.tar.gz
-    % tar -zxf logvol.1.2.0.tar.gz
-    % cd vol-log-based-logvol.1.2.0
-    % ./configure --prefix=${HOME}/Log_VOL/1.2.0 --with-hdf5=${HOME}/HDF5/1.13.2 --enable-shared CC=mpicc
+    % wget https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.4.0.tar.gz
+    % tar -zxf logvol.1.4.0.tar.gz
+    % cd vol-log-based-logvol.1.4.0
+    % ./configure --prefix=${HOME}/Log_VOL/1.4.0 --with-hdf5=${HOME}/HDF5/1.14.0 --enable-shared CC=mpicc
     % make -j 4 install
     ```
 * Build ADIOS with parallel I/O support
@@ -85,7 +85,7 @@
     % make -j 4 install
     ```
 * Build NetCDF-C
-  + Download a NetCDF-C official released software.
+  + Download a NetCDF-C official released software (version 4.9.0 later is required).
   + Configure NetCDF-C with parallel HDF5 I/O enabled.
   + Run `make install`
   + Example build commands are given below. This example will install
@@ -96,8 +96,8 @@
     % cd netcdf-c-4.9.0
     % ./configure --prefix=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc \
-                  CPPFLAGS=-I${HOME}/HDF5/1.13.2/include \
-                  LDFLAGS=-L${HOME}/HDF5/1.13.2/lib \
+                  CPPFLAGS=-I${HOME}/HDF5/1.14.0/include \
+                  LDFLAGS=-L${HOME}/HDF5/1.14.0/lib \
                   LIBS=-lhdf5
     % make -j 4 install
     ```
@@ -112,7 +112,7 @@
     + Add HDF5 installation path (--with-hdf5=/path/to/implementation) that
       contains the HDF5 library. This is required when running the benchmark
       with HDF5 based I/O methods.
-    + Add HDF5 log-based VOL installation path
+    + Add the installation path of the Log VOL connector
       (--with-logvol=/path/to/implementation). This is required when running
       the benchmark with command-line option `-a hdf5_log -x log`.
     + Add ADIOS installation path (--with-adios2=/path/to/implementation) to
@@ -128,8 +128,8 @@
     % cd E3SM-IO
     % autoreconf -i
     % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.3 \
-                  --with-hdf5=${HOME}/HDF5/1.13.2 \
-                  --with-logvol=${HOME}/Log_VOL/1.2.0 \
+                  --with-hdf5=${HOME}/HDF5/1.14.0 \
+                  --with-logvol=${HOME}/Log_VOL/1.4.0 \
                   --with-adios2=${HOME}/ADIOS2/2.8.1 \
                   --with-netcdf4=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc CXX=mpicxx
@@ -199,7 +199,7 @@
            netcdf4:   NetCDF-4 library
            hdf5:      HDF5 library
            hdf5_md:   HDF5 library using multi-dataset I/O APIs
-           hdf5_log:  HDF5 library with Log-based VOL
+           hdf5_log:  HDF5 library with Log VOL connector
            adios:     ADIOS library using BP3 format
        [-x strategy] I/O strategy
            canonical: Store variables in the canonical layout (default).
@@ -216,20 +216,22 @@
   they will be appended at the end. See examples in "Output files" section
   below.
 * When using HDF5 API (i.e. "-a hdf5" or "-a hdf5_log"), the environment
-  variable `HDF5_VOL_CONNECTOR`, if used, must be set to match the I/O strategy
-  used.
-  + If I/O strategy is canonical, i.e. "-a hdf5 -x canonical"),
-    `HDF5_VOL_CONNECTOR` must not be set to use log-based VOL.
-  + If I/O strategy is log ("-x log"), `HDF5_VOL_CONNECTOR` must be set to use
-    log-based VOL.  
+  variable `HDF5_VOL_CONNECTOR` can be set to use a VOL connector, e.g. Cache
+  VOL, Async VOL, or Log VOL.
+  + If I/O strategy is canonical, i.e. "-a hdf5 -x canonical") and
+    `HDF5_VOL_CONNECTOR` is set to use Log VOL connector, then the output file
+    will be in log layout.
+  + If I/O strategy is log ("-x log"), `HDF5_VOL_CONNECTOR` does not have to
+    set to use the Log VOL connector. Internally, E3SM-IO will explicitly call
+    `H5Pset_vol()` to enable Log VOL.
 
 ### Current supported APIs (option `-a`) and I/O strategies (option `-x`)
   + Table below lists the supported combinations.
-     |           | pnetcdf | hdf5 | hdf5_log | netcdf4* | adios |
-     |-----------|:-------:|:----:|:--------:|:--------:|:-----:|
-     | canonical | yes     | yes  | no       | yes      | no    |
-     | log       | no      | yes  | yes      | yes      | no    |
-     | blob      | yes     | yes  | no       | no       | yes   |
+     |           | pnetcdf | hdf5 | hdf5_log | hdf5_md  | netcdf4* | adios |
+     |-----------|:-------:|:----:|:--------:|:--------:|:--------:|:-----:|
+     | canonical | yes     | yes  | no       | yes      | yes      | no    |
+     | log       | no      | yes  | yes      | no       | yes      | no    |
+     | blob      | yes     | yes  | no       | no       | no       | yes   |
      
      `*` NetCDF-C version 4.9.0 or newer is required.
 
@@ -265,39 +267,31 @@
       ```
   + **-a hdf5 -x canonical**
     * This option writes/reads data using HDF5 APIs `H5Dwrite`/`H5Dread`.
-    * The data layout of datasets store in the output file is in a canonical
-      order.
-    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and
-      `HDF5_PLUGIN_PATH`.
+    * If the environment variable `HDF5_VOL_CONNECTOR` is unset or set without
+      Log VOL, then the output file will be in the canonical layout and command
+      `h5ldump -k` will show the file kind of `HDF5`.
+    * If the environment variable `HDF5_VOL_CONNECTOR` is set to use Log VOL,
+      then the output file will be in the log layout and command `h5ldump -k`
+      will show the file kind of `HDF5-LogVOL`.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5 -x canonical -r 25
       ```
-  + **-a hdf5_md -x canonical**
-    * This option writes/reads data using HDF5 multi-dataset APIs
-      `H5Dwrite_multi`/`H5Dread_multi`.
-    * The data layout of datasets store in the output file is in a canonical
-      order.
-    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and
-      `HDF5_PLUGIN_PATH`.
-    * Example run command:
-      ```
-      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5_md -x canonical -r 25
-      ```
   + **-a hdf5 -x blob**
     * This is the blob I/O implementation using HDF5 library. Different from
-      the PnetCDF blob I/O, the implementation of uses the per-process based
-      blob I/O strategy, in which each process writes only one blob at file
-      close time, no matter how many data sets/variables are written. All
-      write requests to all variables by a process are first cached in memory
-      until file close time, in which they are packed into a contiguous buffer,
-      a blob, to be flushed out in a single write call. There is an additional
-      write for the header data blob written by the root process only. This
-      per-process based strategy is the same one used by ADIOS.
-    * Multiple subfiles in HDF5 format will be created.
+      the PnetCDF blob I/O, it uses the per-process based blob I/O strategy, in
+      which each process writes only one blob in the output file at file close
+      time, no matter how many data sets/variables are written. All write
+      requests to all variables by a process are first cached in memory until
+      file close time, at which time they are packed into a contiguous buffer,
+      and flushed out by a single write call. There is an additional write for
+      the header data blob written by the root process only. This per-process
+      based strategy is the same one used by ADIOS.
+    * Multiple subfiles will be created. Each subfile is also an HDF5 file.
     * There will be one subfile per compute node used.
-    * File name provided in option `-o` will be used as a base to create the
-      subfile names, which have the numerical IDs appended as the suffix.
+    * File name provided in the command-line option `-o` will be used as a base
+      to create the subfile names, which have the numerical IDs appended as the
+      suffix.
     * The HDF5 subfiles cannot be understood by the traditional HDF5 software.
       A utility tool program will be developed in the future to convert the
       subfiles into a single regular HDF5 file.
@@ -305,26 +299,53 @@
       ```
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o blob_F_out.h5 -a hdf5 -x blob -r 25
       ```
+    * If the environment variable HDF5_VOL_CONNECTOR is set to use Log VOL,
+      then the subfiles will also be in the log layout. Command `h5ldump -k`
+      will show the file kind of `HDF5-LogVOL`.
   + **-a hdf5 -x log**
-    * This option writes data using the HDF5 log-based VOL.
-    * API "H5Dwrite" is used to write the datasets.
-    * The log-based VOL stores data in a log layout, rather than a canonical
-      layout. The output file is a valid HDF5 file but requires the log-based
-      VOL to read and understand the data structures.
-    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH`.
+    * This option writes/reads data using HDF5 APIs `H5Dwrite`/`H5Dread`.
+    * E3SM-IO will explicitly call `H5Pset_vol()` to enable the HDF5 Log VOL
+      connector.
+    * The Log VOL connector stores data in a log layout, rather than a
+      canonical layout. The output file is a valid HDF5 file but requires the
+      Log VOL connector to read and understand the data structures.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5 -x log -r 25
       ```
+  + **-a hdf5_md -x canonical**
+    * This option writes/reads data using HDF5 multi-dataset APIs
+      `H5Dwrite_multi`/`H5Dread_multi`.
+    * If the environment variable `HDF5_VOL_CONNECTOR` containing Log VOL, the
+      environment variable will be unset.
+    * Warning! HDF5 versions 1.13.3 and 1.14.0 will switch collective I/O mode
+      to independent internally when one of the datasets requires data type
+      conversion. See https://github.com/HDFGroup/hdf5/issues/1859
+    * Example run command:
+      ```
+      mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5_md -x canonical -r 25
+      ```
+  + **-a hdf5_md -x log**
+    * This option is not supported.
+  + **-a hdf5_md -x blob**
+    * This option is not supported.
   + **-a hdf5_log -x log**
-    * This option writes data using the HDF5 log-based VOL and specifically
-      makes use of the new API, "H5Dwrite_n", to allow writing multiple
-      subarrays of a dataset in a single API call.
-    * This option will ignore environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH`.
+    * This option writes data using the HDF5 Log VOL connector by explicitly
+      calling `H5Pset_vol()` internally.
+    * For dataset I/O, this option calls the APIs `H5Dwrite_n()` and
+      `H5Dread_n()` created in the Log VOL, rather than the HDF5 `H5Dwrite()`
+      or `H5Dread()`. The two new APIs allow to write and read multiple
+      subarrays of a dataset in a single API call. They are expected to perform
+      better, as their computational costs and memory footprints for metadata
+      operations are smaller.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o log_F_out.h5 -a hdf5_log -x log -r 25
       ```
+  + **-a hdf5_log -x canonical**
+    * This option is not supported.
+  + **-a hdf5_log -x blob**
+    * This option is not supported.
   + **-a netcdf4 -x canonical**
     * This option writes data using the NetCDF-4 library.
     * The output files are in HDF5 format.
@@ -337,17 +358,17 @@
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.nc4 -k -o can_F_out.nc4 -a netcdf4 -x canonical -r 25
       ```
     * If environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH` are
-      set to use log-based VOL, then the execution will abort, as this option
-      is equivalent to the below one, i.e. `-a netcdf4 -x log`.
+      set to use Log VOL, then the execution will abort, as this option is
+      equivalent to `-a netcdf4 -x log`.
   + **-a netcdf4 -x log**
     * This option writes data using the NetCDF-4 library which calls the HDF5
-      log-based VOL underneath.
-    * The log-based VOL stores data in a log layout, rather than a canonical
-      layout. The output file is a valid HDF5 file but requires the log-based
-      VOL to read and understand the data structures.
+      Log VOL connector underneath.
+    * The Log VOL stores data in a log layout, rather than a canonical layout.
+      The output file is a valid HDF5 file but requires the Log VOL to read and
+      understand the data structures.
     * **Requirements** - The two environment variables `HDF5_VOL_CONNECTOR` and
-      `HDF5_PLUGIN_PATH` must be set to use log-based VOL in order to run. The
-      e3sm_io program will check and error out if they are not set.
+      `HDF5_PLUGIN_PATH` must be set to use Log VOL connector in order to run.
+      The e3sm_io program will check and error out if they are not set.
     * Example run command:
       ```
       export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/LOG_VOL/lib

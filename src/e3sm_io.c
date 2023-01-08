@@ -237,7 +237,7 @@ int main (int argc, char **argv) {
                 else if (strcmp (optarg, "adios") == 0)
                     cfg.api = adios;
                 else
-                    ERR_OUT ("Unknown API")
+                    ERR_OUT("Unknown API")
                 break;
                 /*
             case 'l':
@@ -246,7 +246,7 @@ int main (int argc, char **argv) {
                 else if (strcmp (optarg, "chunk") == 0)
                     cfg.layout = chunk;
                 else
-                    ERR_OUT ("Unknown layout")
+                    ERR_OUT("Unknown layout")
                 break;
                 */
             case 'x':
@@ -257,7 +257,7 @@ int main (int argc, char **argv) {
                 else if (strcmp (optarg, "blob") == 0)
                     cfg.strategy = blob;
                 else
-                    ERR_OUT ("Unknown I/O strategy")
+                    ERR_OUT("Unknown I/O strategy")
                 break;
 
             case 'o':
@@ -292,7 +292,7 @@ int main (int argc, char **argv) {
                 else if (strcmp (optarg, "zlib") == 0)
                     cfg.filter = deflate;
                 else
-                    ERR_OUT ("Unknown filter")
+                    ERR_OUT("Unknown filter")
                 break;
             case 'h':
             default:
@@ -302,7 +302,7 @@ int main (int argc, char **argv) {
 
     if (optind >= argc || argv[optind] == NULL) { /* input file is mandatory */
         if (!cfg.rank) usage (argv[0]);
-        ERR_OUT ("Decomposition file not provided")
+        ERR_OUT("Decomposition file not provided")
     }
     strncpy (cfg.decomp_path, argv[optind], E3SM_IO_MAX_PATH);
 
@@ -335,9 +335,9 @@ int main (int argc, char **argv) {
     if (!cfg.wr && !cfg.rd)
         ERR_OUT("Error: neither command-line option -i nor -o is used")
     if (cfg.out_path[0] == '-')
-        ERR_OUT ("Empty output file path")
+        ERR_OUT("Empty output file path")
     if (cfg.in_path[0] == '-')
-        ERR_OUT ("Empty input file path")
+        ERR_OUT("Empty input file path")
 
     /* check yet to support APIs and I/O strategies */
     if (cfg.strategy == undef_io) {
@@ -350,84 +350,108 @@ int main (int argc, char **argv) {
     }
     env = getenv ("HDF5_VOL_CONNECTOR");
     switch (cfg.api) {
-        case undef_api:;
+        case undef_api:
             cfg.api = pnetcdf;
-        case pnetcdf:;
+        case pnetcdf:
+#ifdef ENABLE_PNC
             if (cfg.strategy == log)
-                ERR_OUT ("PnetCDF with log I/O strategy is not supported yet")
+                ERR_OUT("Option PnetCDF does not support log strategy")
             break;
-        case netcdf4:;
+#else
+            ERR_OUT("Using PnetCDF was not enabled in this E3SM I/O build")
+#endif
+        case netcdf4:
 #ifdef ENABLE_NETCDF4
             switch (cfg.strategy) {
-                case canonical:;
+                case blob:
+                    ERR_OUT("Option NetCDF-4 does not support blob strategy")
+                case canonical:
                     if (env && (strncmp (env, "LOG", 3) == 0)) {
                         printf("Error: please unset HDF5_VOL_CONNECTOR to run \"-a netcdf4 -x canonical\"\n");
                         err = -1;
                         goto err_out;
-                        // ERR_OUT ("The VOL set in HDF5_VOL_CONNECTOR (%s) is not compatible with NetCDF 4 canonical I/O strategy")
+                        // ERR_OUT("The VOL set in HDF5_VOL_CONNECTOR (%s) is not compatible with NetCDF 4 canonical I/O strategy")
                     }
                     break;
-                case log:;
+                case log:
                     if (!env || (strncmp (env, "LOG", 3) != 0)) {
-                        ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG under_vol=0;under_info={}\" (log-based VOL) for NetCDF 4 with log I/O strategy")
+                        ERR_OUT("HDF5_VOL_CONNECTOR must be set to \"LOG under_vol=0;under_info={}\" (log-based VOL) for NetCDF 4 with log I/O strategy")
                     }
                     break;
-                default:;
-                    ERR_OUT ("NetCDF 4 only supports canonical and log strategies")
+                default:
+                    ERR_OUT("NetCDF 4 only supports canonical and log strategies")
             }
 #else
-            ERR_OUT ("NetCDF 4 was not enabled in this E3SM I/O build")
+            ERR_OUT("Using NetCDF-4 was not enabled in this E3SM I/O build")
 #endif
             break;
-        case hdf5_md:;
+        case hdf5_md:
 #ifdef HDF5_HAVE_MULTI_DATASET_API
-            if (cfg.strategy != canonical){
-                ERR_OUT ("HDF5 multi-dataset only support canonical strategy")
-            }
+            if (cfg.strategy != canonical)
+                ERR_OUT("HDF5 multi-dataset option only supports canonical strategy")
+            if (env && (strncmp (env, "LOG", 3) == 0))
+                unsetenv("HDF5_VOL_CONNECTOR");
+            if (cfg.rank == 0 && cfg.verbose)
+                printf("VERBOSE: I/O API: HDF5 multi-dataset, strategy: canonical\n");
+            break;
 #else
-            ERR_OUT("HDF5 used to build E3SM I/O does not support multi-dataset APIs")
+            ERR_OUT("Using HDF5 multi-dataset APIs was not enabled in this E3SM I/O build")
 #endif
-            // fall through
-        case hdf5:;
+        case hdf5:
 #ifdef ENABLE_HDF5
             switch (cfg.strategy) {
-                case blob:;
-                case canonical:;
-                    if (env && (strncmp (env, "LOG", 3) == 0)) {
-                        ERR_OUT ("The VOL set in HDF5_VOL_CONNECTOR (%s) is not compatible with HDF5 canonical I/O strategy")
+                case blob:
+                    /* output file layout will be blob, but if env
+                     * HDF5_VOL_CONNECTOR is set to Log VOL, then the file is
+                     * also using log layout
+                     */
+                    if (cfg.rank == 0 && cfg.verbose)
+                        printf("VERBOSE: I/O API: HDF5, strategy: blob\n");
+                    break;
+                case canonical:
+                    /* output file layout depends on env HDF5_VOL_CONNECTOR */
+                    if (cfg.rank == 0 && cfg.verbose) {
+                        if (env && (strncmp (env, "LOG", 3) == 0))
+                            /* output file will be in log layout */
+                            printf("VERBOSE: I/O API: HDF5, strategy: canonical, layout: log\n");
+                        else
+                            /* output file will be in canonical layout */
+                            printf("VERBOSE: I/O API: HDF5, strategy: canonical, layout: canonical\n");
                     }
                     break;
-                case log:;
-                    if (env && (strncmp (env, "LOG", 3) != 0)) {
-                        ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG\" (log-based VOL) for HDF5 with log I/O strategy")
-                    }
+                case log:
+                    /* output file layout will be log */
+                    if (cfg.rank == 0 && cfg.verbose)
+                        printf("VERBOSE: I/O API: HDF5, strategy: log\n");
+                    /* if HDF5_VOL_CONNECTOR is not set to use Log VOL, then
+                     * H5Pset_vol() will be called. Otherwise, no H5Pset_vol()
+                     * is called.
+                     */
                     break;
-                default:;
-                    ERR_OUT ("NetCDF 4 only supports canonical and log strategies")
+                default:
+                    ERR_OUT("No such I/O strategy")
+                    break;
             }
 #else
-            ERR_OUT ("HDF5 was not enabled in this E3SM I/O build")
+            ERR_OUT("Using HDF5 was not enabled in this E3SM I/O build")
 #endif
             break;
-        case hdf5_log:;
+        case hdf5_log:
 #ifdef ENABLE_LOGVOL
-            if (cfg.strategy != log){
-                ERR_OUT ("HDF5-logvol only support log strategy")
-            }
-            if (env && (strncmp (env, "LOG", 3) != 0)) {
-                ERR_OUT ("HDF5_VOL_CONNECTOR must be set to \"LOG\" (log-based VOL) for HDF5-logvol with log I/O strategy")
-            }
+            if (cfg.strategy != log)
+                ERR_OUT("Option hdf5_log only support log strategy")
+            if (cfg.rank == 0 && cfg.verbose)
+                printf("VERBOSE: I/O API: HDF5 Log VOL connector, strategy: log\n");
 #else
-            ERR_OUT ("Log-based VOL support was not enabled in this E3SM I/O build")
+            ERR_OUT("Using Log VOL connector was not enabled in this E3SM I/O build")
 #endif
             break;
         case adios:;
 #ifdef ENABLE_ADIOS2
-            if (cfg.strategy != blob){
-                ERR_OUT ("ADIOS only support blob strategy")
-            }
+            if (cfg.strategy != blob)
+                ERR_OUT("Option ADIOS only supports blob strategy")
 #else
-            ERR_OUT ("ADIOS was not enabled in this E3SM I/O build")
+            ERR_OUT("Using ADIOS was not enabled in this E3SM I/O build")
 #endif
             break;
         default:
