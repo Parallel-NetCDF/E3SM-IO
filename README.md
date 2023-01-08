@@ -8,10 +8,16 @@ top of [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF),
 [HDF5](https://www.hdfgroup.org/solutions/hdf5), and
 [ADIOS](https://github.com/ornladios/ADIOS2).
 The benchmark program in this repository is designed to evaluate the E3SM I/O
-kernel when using the above mentioned libraries to perform the I/O task. The
-challenge of E3SM I/O patterns is that the problem domain is represented by
-cubed sphere grids which produce long lists of small and noncontiguous requests
-in each of all MPI processes.
+kernel using the above mentioned libraries to perform the I/O task. The problem
+domain in E3SM simulation is represented by a cubed sphere grid which is
+partitioned among multiple processes along only X and Y axes that cover the
+surface of the problem domain. The partition pattern uses the
+[Hilbert space curve algorithm](https://en.wikipedia.org/wiki/Hilbert_curve)
+to divide the linearized 2D cubed sphere grid into subgrids where data points
+in a subgrid are physically closer to each other than other partitioning
+strategies. The I/O challenge is that such data partitioning strategy produces
+in each process a long list of noncontiguous write requests, in which any two
+consecutive requests may not be in an increasing order in the file space.
 
 The I/O patterns (describing the data decomposition of multi-dimensional arrays
 representing the problem domain among MPI processes) used in this case study
