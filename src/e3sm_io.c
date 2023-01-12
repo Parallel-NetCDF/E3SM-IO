@@ -21,6 +21,43 @@
 #include <e3sm_io_err.h>
 #include <e3sm_io_profile.hpp>
 
+static
+void check_connector_env(e3sm_io_config *cfg) {
+    char *env_str;
+
+    cfg->env_log          = 0;
+    cfg->env_log_passthru = 0;
+    cfg->env_log_info     = NULL;
+
+    env_str = getenv("H5VL_LOG_PASSTHRU");
+    if (env_str != NULL && env_str[0] == '1')
+        cfg->env_log_passthru = 1;
+
+    env_str = getenv("HDF5_VOL_CONNECTOR");
+    if (env_str == NULL)
+        /* env HDF5_VOL_CONNECTOR is not set */
+        return;
+
+    env_str = strdup(env_str);
+    char *connector = strtok(env_str, "  \t\n\r");
+    if (strcmp(connector, "LOG") == 0) {
+        /* if LOG is set in HDF5_VOL_CONNECTOR */
+        cfg->env_log = 1;
+    }
+    else if (strcmp(connector, "cache_ext") == 0) {
+        /* if cache_ext is the 1st in HDF5_VOL_CONNECTOR */
+        char *info_str = strtok(NULL, "  \t\n\r");
+        cfg->env_log_info = (char*) malloc(28 + strlen(info_str));
+        sprintf(cfg->env_log_info, "under_vol=513;under_info={%s}", info_str);
+    }
+    else if (strcmp(connector, "async") == 0) {
+        /* if async is the 1st in HDF5_VOL_CONNECTOR */
+        char *info_str = strtok(NULL, "  \t\n\r");
+        cfg->env_log_info = (char*) malloc(28 + strlen(info_str));
+        sprintf(cfg->env_log_info, "under_vol=512;under_info={%s}", info_str);
+    }
+}
+
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     int err;
     MPI_Offset estimated_nc_ibuf_size;
@@ -136,7 +173,6 @@ static void usage (char *argv0) {
 /*----< main() >-------------------------------------------------------------*/
 int main (int argc, char **argv) {
     int i, err, nrecs=1, ffreq;
-    char *env;  // HDF5_VOL_CONNECTOR environment variable
     double timing[3], max_t[3];
     e3sm_io_config cfg;
     e3sm_io_decom decom;
@@ -348,7 +384,7 @@ int main (int argc, char **argv) {
             cfg.strategy = canonical;
         }
     }
-    env = getenv ("HDF5_VOL_CONNECTOR");
+    check_connector_env(&cfg);
     switch (cfg.api) {
         case undef_api:
             cfg.api = pnetcdf;
@@ -366,7 +402,7 @@ int main (int argc, char **argv) {
                 case blob:
                     ERR_OUT("Option NetCDF-4 does not support blob strategy")
                 case canonical:
-                    if (env && (strncmp (env, "LOG", 3) == 0)) {
+                    if (cfg.env_log) {
                         printf("Error: please unset HDF5_VOL_CONNECTOR to run \"-a netcdf4 -x canonical\"\n");
                         err = -1;
                         goto err_out;
@@ -374,9 +410,8 @@ int main (int argc, char **argv) {
                     }
                     break;
                 case log:
-                    if (!env || (strncmp (env, "LOG", 3) != 0)) {
+                    if (cfg.env_log == 0)
                         ERR_OUT("HDF5_VOL_CONNECTOR must be set to \"LOG under_vol=0;under_info={}\" (log-based VOL) for NetCDF 4 with log I/O strategy")
-                    }
                     break;
                 default:
                     ERR_OUT("NetCDF 4 only supports canonical and log strategies")
@@ -389,7 +424,7 @@ int main (int argc, char **argv) {
 #ifdef HDF5_HAVE_MULTI_DATASET_API
             if (cfg.strategy != canonical)
                 ERR_OUT("HDF5 multi-dataset option only supports canonical strategy")
-            if (env && (strncmp (env, "LOG", 3) == 0))
+            if (cfg.env_log)
                 unsetenv("HDF5_VOL_CONNECTOR");
             if (cfg.rank == 0 && cfg.verbose)
                 printf("VERBOSE: I/O API: HDF5 multi-dataset, strategy: canonical\n");
@@ -411,7 +446,7 @@ int main (int argc, char **argv) {
                 case canonical:
                     /* output file layout depends on env HDF5_VOL_CONNECTOR */
                     if (cfg.rank == 0 && cfg.verbose) {
-                        if (env && (strncmp (env, "LOG", 3) == 0))
+                        if (cfg.env_log)
                             /* output file will be in log layout */
                             printf("VERBOSE: I/O API: HDF5, strategy: canonical, layout: log\n");
                         else
@@ -523,6 +558,8 @@ err_out:
         MPI_Info_free (&(cfg.info));
     if (cfg.io_comm != MPI_COMM_WORLD && cfg.io_comm != MPI_COMM_NULL)
         MPI_Comm_free (&(cfg.io_comm));
+    if (cfg.env_log_info != NULL)
+        free(cfg.env_log_info);
 
     /* Free decom */
     for (i = 0; i < MAX_NUM_DECOMP; i++) {

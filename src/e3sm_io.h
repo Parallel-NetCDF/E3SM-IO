@@ -180,6 +180,9 @@ typedef struct e3sm_io_config {
     case_meta I_case_h0;
     case_meta I_case_h1;
 
+    int   env_log;
+    int   env_log_passthru;
+    char *env_log_info;
 } e3sm_io_config;
 
 
