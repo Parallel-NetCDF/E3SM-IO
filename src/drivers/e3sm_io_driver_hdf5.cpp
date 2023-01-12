@@ -59,26 +59,22 @@ hid_t e3sm_io_type_mpi2hdf5(MPI_Datatype itype)
 }
 
 e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
-    char *env;
     int i, err = 0;
     herr_t herr = 0;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     // Register LOG VOL plugin
+    this->log_vlid = -1;
 #ifdef ENABLE_LOGVOL
-    if(cfg->strategy == log) {
+    if (cfg->strategy == log && cfg->env_log == 0) {
+        /* Set to use Log VOL connector only if the env HDF5_VOL_CONNECTOR has
+         * not been set to use Log VOL yet.
+         */
         this->log_vlid = H5VLregister_connector (&H5VL_log_g, H5P_DEFAULT);
         CHECK_HID (this->log_vlid)
     }
-    else
 #endif
-    {
-        this->log_vlid = -1;
-    }
-
-    env = getenv ("HDF5_VOL_CONNECTOR");
-    if (env && (strncmp (env, "LOG", 3) == 0)) this->isSetEnvLogVOL = true;
 
     this->nfixVars = 0;
     this->dxplid_coll = H5Pcreate (H5P_DATASET_XFER);
@@ -162,10 +158,26 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
+
 #ifdef ENABLE_LOGVOL
-    if (cfg->strategy == log) {
-        herr = H5Pset_vol (faplid, this->log_vlid, NULL);
-        CHECK_HERR
+    if (this->log_vlid >= 0) {
+        /* Set to use Log VOL connector only if the env HDF5_VOL_CONNECTOR has
+         * not been set to use Log VOL yet.
+         */
+        if (cfg->env_log_info != NULL) {
+            /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
+            void *log_info;
+            herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
+            CHECK_HERR
+            herr = H5Pset_vol(faplid, this->log_vlid, log_info);
+            CHECK_HERR
+            herr = H5VLfree_connector_info(this->log_vlid, log_info);
+            CHECK_HERR
+        }
+        else {
+            herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+            CHECK_HERR
+        }
     }
 #endif
 
@@ -219,10 +231,26 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
+
 #ifdef ENABLE_LOGVOL
-    if (cfg->strategy == log) {
-        herr = H5Pset_vol (faplid, this->log_vlid, NULL);
-        CHECK_HERR
+    if (this->log_vlid >= 0) {
+        /* Set to use Log VOL connector only if the env HDF5_VOL_CONNECTOR has
+         * not been set to use Log VOL yet.
+         */
+        if (cfg->env_log_info != NULL) {
+            /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
+            void *log_info;
+            herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
+            CHECK_HERR
+            herr = H5Pset_vol(faplid, this->log_vlid, log_info);
+            CHECK_HERR
+            herr = H5VLfree_connector_info(this->log_vlid, log_info);
+            CHECK_HERR
+        }
+        else {
+            herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+            CHECK_HERR
+        }
     }
 #endif
 
@@ -623,7 +651,7 @@ int e3sm_io_driver_hdf5::wait (int fid) {
         CHECK_ERR
     }
 #ifdef ENABLE_LOGVOL
-    else if (this->log_vlid >= 0 || this->isSetEnvLogVOL) {
+    else if (this->log_vlid >= 0) {
         herr_t herr = H5Fflush (fp->id, H5F_SCOPE_GLOBAL);
         CHECK_HERR
     }
@@ -927,15 +955,36 @@ int e3sm_io_driver_hdf5::varn_expand(int            fid,
     CHECK_HID (ndim)
 
     if (union_filespaces) {
+        /* WARNING: H5Sselect_hyperslab's H5S_SELECT_OR will flatten and sort
+         * the element offsets of the union into an increasing order. The
+         * filespace created may not match with the user's buffer.
+         */
+
         H5S_seloper_t op = H5S_SELECT_SET;
 
         // set filespace
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+#ifdef CHECK_INCREASING_ORDER
+static int print_once=0;
+long long off_start, off_end, prev_end, dim_len; prev_end=-1;
+#endif
         for (i = 0; i < nreq; i++) {
             rsize = 1;
             for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
             if (rsize == 0) continue;
             rsize_all += rsize;
+
+#ifdef CHECK_INCREASING_ORDER
+off_start=0; off_end=0; dim_len=1;
+for (j=ndim-1; j>=0; j--) {
+off_start += starts[i][j] * dim_len;
+off_end += (starts[i][j] + counts[i][j]-1) * dim_len;
+dim_len *= dims[j];
+}
+if (ndim==2 && prev_end >= 0 && prev_end > off_start) printf("Error: %s line %d: req=%d of nreq=%d starts[%d][0]=%lld %lld counts[%d][0]=%lld %lld prev_end=%lld > off_start=%lld off_end=%lld start[%d][0]=%lld %lld counts[%d][0]=%lld %lld (rsize=%ld, dims[]=%ld %ld, ndim=%d)\n",__FILE__,__LINE__,i,nreq,i-1,starts[i-1][0],starts[i-1][1],i-1,counts[i-1][0],counts[i-1][1],prev_end,off_start,off_end,i,starts[i][0],starts[i][1],i,counts[i][0],counts[i][1],rsize,dims[0],dims[1],ndim);
+else if (prev_end >= 0 && prev_end > off_start) printf("Error: %s line %d: req=%d of nreq=%d starts[%d][0]=%lld counts[%d][0]=%lld prev_end=%lld > off_start=%lld off_end=%lld start[%d][0]=%lld counts[%d][0]=%lld (rsize=%ld, dims[]=%ld %ld, ndim=%d)\n",__FILE__,__LINE__,i,nreq,i-1,starts[i-1][0],i-1,counts[i-1][0],prev_end,off_start,off_end,i,starts[i][0],i,counts[i][0],rsize,dims[0],dims[1],ndim);
+prev_end=off_end+1;
+#endif
 
             /* type cast from MPI_Offset to hsize_t */
             for (j = 0; j < ndim; j++) {

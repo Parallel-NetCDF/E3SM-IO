@@ -59,16 +59,16 @@ e3sm_io_driver_hdf5_log::e3sm_io_driver_hdf5_log (e3sm_io_config *cfg) : e3sm_io
 #endif
     }
 
-	this->dxplid_coll = H5Pcreate (H5P_DATASET_XFER);
-	CHECK_HID (this->dxplid_coll)
-	herr = H5Pset_dxpl_mpio (this->dxplid_coll, H5FD_MPIO_COLLECTIVE);
-	CHECK_HERR
-	this->dxplid_coll_nb = H5Pcreate (H5P_DATASET_XFER);
-	CHECK_HID (this->dxplid_coll_nb)
-	herr = H5Pset_dxpl_mpio (this->dxplid_coll_nb, H5FD_MPIO_COLLECTIVE);
-	CHECK_HERR
-	this->dxplid_indep_nb = H5Pcreate (H5P_DATASET_XFER);
-	CHECK_HID (this->dxplid_indep_nb)
+    this->dxplid_coll = H5Pcreate (H5P_DATASET_XFER);
+    CHECK_HID (this->dxplid_coll)
+    herr = H5Pset_dxpl_mpio (this->dxplid_coll, H5FD_MPIO_COLLECTIVE);
+    CHECK_HERR
+    this->dxplid_coll_nb = H5Pcreate (H5P_DATASET_XFER);
+    CHECK_HID (this->dxplid_coll_nb)
+    herr = H5Pset_dxpl_mpio (this->dxplid_coll_nb, H5FD_MPIO_COLLECTIVE);
+    CHECK_HERR
+    this->dxplid_indep_nb = H5Pcreate (H5P_DATASET_XFER);
+    CHECK_HID (this->dxplid_indep_nb)
 
 #ifdef LOGVOL_HAVE_H5PSET_BUFFERED
     herr = H5Pset_buffered (this->dxplid_coll, true);
@@ -143,8 +143,25 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
-    herr = H5Pset_vol (faplid, this->log_vlid, NULL);
-    CHECK_HERR
+
+    /* Set to use Log VOL connector only if the env HDF5_VOL_CONNECTOR has
+     * not been set to use Log VOL yet.
+     */
+    if (cfg->env_log_info != NULL) {
+        /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
+        void *log_info;
+        herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
+        CHECK_HERR
+        herr = H5Pset_vol(faplid, this->log_vlid, log_info);
+        CHECK_HERR
+        herr = H5VLfree_connector_info(this->log_vlid, log_info);
+        CHECK_HERR
+    }
+    else {
+        herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+        CHECK_HERR
+    }
+
     // Enlarge metadata cache
     mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
     herr         = H5Pget_mdc_config (faplid, &mdcc);
@@ -208,8 +225,25 @@ int e3sm_io_driver_hdf5_log::open (std::string path, MPI_Comm comm, MPI_Info inf
     CHECK_HERR
     herr = H5Pset_coll_metadata_write (faplid, true);
     CHECK_HERR
-    herr = H5Pset_vol (faplid, this->log_vlid, NULL);
-    CHECK_HERR
+
+    /* Set to use Log VOL connector only if the env HDF5_VOL_CONNECTOR has
+     * not been set to use Log VOL yet.
+     */
+    if (cfg->env_log_info != NULL) {
+        /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
+        void *log_info;
+        herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
+        CHECK_HERR
+        herr = H5Pset_vol(faplid, this->log_vlid, log_info);
+        CHECK_HERR
+        herr = H5VLfree_connector_info(this->log_vlid, log_info);
+        CHECK_HERR
+    }
+    else {
+        herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+        CHECK_HERR
+    }
+
     // Enlarge metadata cache
     mdcc.version = H5AC__CURR_CACHE_CONFIG_VERSION;
     herr         = H5Pget_mdc_config (faplid, &mdcc);

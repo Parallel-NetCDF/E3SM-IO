@@ -91,7 +91,6 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
    private:
     // Config
     bool use_dwrite_multi = false;
-    bool isSetEnvLogVOL = false;
 
    public:
     e3sm_io_driver_hdf5 (e3sm_io_config *cfg);
