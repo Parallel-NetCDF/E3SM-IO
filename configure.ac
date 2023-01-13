@@ -247,9 +247,12 @@ AM_CONDITIONAL(E3SM_IO_DEBUG, [test "x$debug" = xyes])
 
 AC_ARG_ENABLE([profiling],
    [AS_HELP_STRING([--enable-profiling],
-                   [Enable time profiling. @<:@default: disabled@:>@])],
+                   [Enable internal time profiling. @<:@default: disabled@:>@])],
    [enable_profiling=${enableval}], [enable_profiling=no]
 )
+if test "x$enable_profiling" = xyes; then
+   AC_DEFINE([E3SM_IO_PROFILING], [1], [Enable internal time profiling])
+fi
 AM_CONDITIONAL(E3SM_IO_PROFILING, [test x$enable_profiling = xyes])
 
 if test "x${debug}" = xyes; then
