@@ -65,6 +65,19 @@ int e3sm_io_print_profile(e3sm_io_config *cfg)
 
     if (cfg->rank == 0) {
         for (i = 0; i < E3SM_IO_NTIMER; i++) {
+            if (i > 5 &&
+                cfg->api == netcdf4 &&
+                strncmp(tname[i], "e3sm_io_timer_nc4", strlen("e3sm_io_timer_nc4")))
+                continue;
+            if (i > 5 &&
+                (cfg->api == hdf5 || cfg->api == hdf5_md || cfg->api == hdf5_log) &&
+                strncmp(tname[i], "e3sm_io_timer_hdf5", strlen("e3sm_io_timer_hdf5")))
+                continue;
+            if (i > 5 &&
+                cfg->api == adios &&
+                strncmp(tname[i], "e3sm_io_timer_adios", strlen("e3sm_io_timer_adios")))
+                continue;
+
             printf ("#%%$: %s_time_mean: %lf\n", tname[i], tmean[i]);
             printf ("#%%$: %s_time_max: %lf\n", tname[i], tmax[i]);
             printf ("#%%$: %s_time_min: %lf\n", tname[i], tmin[i]);
@@ -83,6 +96,19 @@ int e3sm_io_print_profile(e3sm_io_config *cfg)
 
     if (cfg->rank == 0) {
         for (i = 0; i < E3SM_IO_NTIMER; i++) {
+            if (i > 5 &&
+                cfg->api == netcdf4 &&
+                strncmp(tname[i], "e3sm_io_timer_nc4", strlen("e3sm_io_timer_nc4")))
+                continue;
+            if (i > 5 &&
+                (cfg->api == hdf5 || cfg->api == hdf5_md || cfg->api == hdf5_log) &&
+                strncmp(tname[i], "e3sm_io_timer_hdf5", strlen("e3sm_io_timer_hdf5")))
+                continue;
+            if (i > 5 &&
+                cfg->api == adios &&
+                strncmp(tname[i], "e3sm_io_timer_adios", strlen("e3sm_io_timer_adios")))
+                continue;
+
             printf ("#%%$: %s_count_mean: %lf\n", tname[i], tmean[i]);
             printf ("#%%$: %s_count_max: %lf\n", tname[i], tmax[i]);
             printf ("#%%$: %s_count_min: %lf\n", tname[i], tmin[i]);
