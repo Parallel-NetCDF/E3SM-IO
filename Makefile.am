@@ -6,7 +6,7 @@
 
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = src datasets
+SUBDIRS = src . datasets
 DIST_SUBDIRS = src datasets utils
 
 if BUILD_UTILS

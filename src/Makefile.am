@@ -37,8 +37,9 @@ M4_SRCS       = e3sm_io_profile.m4 \
                 e3sm_io_profile_timers.m4
 
 if E3SM_IO_PROFILING
-   AM_CPPFLAGS     += -DE3SM_IO_PROFILING
-   e3sm_io_SOURCES += $(M4_SRCS:.m4=.cpp)
+   noinst_LTLIBRARIES = libe3sm_io_profiling.la
+   libe3sm_io_profiling_la_SOURCES = $(M4_SRCS:.m4=.cpp)
+   e3sm_io_LDADD   += libe3sm_io_profiling.la
 endif
 
 .m4.cpp:

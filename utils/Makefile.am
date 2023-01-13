@@ -34,9 +34,15 @@ endif
 
 dat2decomp_SOURCES = dat2decomp.cpp 
 dat2decomp_LDADD = ../src/drivers/libe3sm_io_drivers.la
+if E3SM_IO_PROFILING
+   dat2decomp_LDADD += ../src/libe3sm_io_profiling.la
+endif
 
 decomp_copy_SOURCES = decomp_copy.cpp 
 decomp_copy_LDADD = ../src/drivers/libe3sm_io_drivers.la
+if E3SM_IO_PROFILING
+   decomp_copy_LDADD += ../src/libe3sm_io_profiling.la
+endif
 
 datstat_SOURCES = datstat.cpp
 
