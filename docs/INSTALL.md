@@ -239,9 +239,10 @@
     * A single NetCDF file in the classic CDF5 format will be created. All
       variables stored in the file are in the canonical order and
       understandable by NetCDF and its third-party software.
-    * If the output file systems allow users to customize the file striping
-      configuration, such as Lustre, users are recommended to write to a folder
-      with a high file striping count to obtain a good I/O performance.
+    * If the parallel file systems allow users to customize the file striping
+      configuration, such as Lustre, users are recommended to configure the
+      output folder with a high file striping count to obtain a good I/O
+      performance.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.nc -k -o can_F_out.nc -a pnetcdf -x canonical -r 25
@@ -271,8 +272,8 @@
       Log VOL, then the output file will be in the canonical layout and command
       `h5ldump -k` will show the file kind of `HDF5`.
     * If the environment variable `HDF5_VOL_CONNECTOR` is set to use Log VOL,
-      then the output file will be in the log layout and command `h5ldump -k`
-      will show the file kind of `HDF5-LogVOL`.
+      then the output file will be in the log layout.  Running command
+      `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5 -x canonical -r 25
@@ -300,22 +301,28 @@
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o blob_F_out.h5 -a hdf5 -x blob -r 25
       ```
     * If the environment variable HDF5_VOL_CONNECTOR is set to use Log VOL,
-      then the subfiles will also be in the log layout. Command `h5ldump -k`
-      will show the file kind of `HDF5-LogVOL`.
+      then the subfiles will also be in the log layout. Running command
+      `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
   + **-a hdf5 -x log**
+    * All datasets stored in the files will be in the log layout. Running
+      command `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
     * This option writes/reads data using HDF5 APIs `H5Dwrite`/`H5Dread`.
-    * E3SM-IO will explicitly call `H5Pset_vol()` to enable the HDF5 Log VOL
-      connector.
-    * The Log VOL connector stores data in a log layout, rather than a
-      canonical layout. The output file is a valid HDF5 file but requires the
-      Log VOL connector to read and understand the data structures.
+    * If the environment variable `HDF5_VOL_CONNECTOR` is unset or set without
+      Log VOL, then E3SM-IO will explicitly call `H5Pset_vol()` to enable the
+      HDF5 Log VOL connector.
+    * If the environment variable `HDF5_VOL_CONNECTOR` is set to use other VOL
+      connectors, such as Cache and Async VOLS, then E3SM-IO will stack the Log
+      VOL on top of those connectors.
+    * The output file is a valid HDF5 file but requires the Log VOL connector
+      to read and understand the data structures.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5 -x log -r 25
       ```
   + **-a hdf5_md -x canonical**
     * This option writes/reads data using HDF5 multi-dataset APIs
-      `H5Dwrite_multi`/`H5Dread_multi`.
+      `H5Dwrite_multi`/`H5Dread_multi`. Command `h5ldump -k` will show the file
+      kind of `HDF5`.
     * If the environment variable `HDF5_VOL_CONNECTOR` containing Log VOL, the
       environment variable will be unset.
     * Warning! HDF5 versions 1.13.3 and 1.14.0 will switch collective I/O mode
@@ -338,6 +345,8 @@
       subarrays of a dataset in a single API call. They are expected to perform
       better, as their computational costs and memory footprints for metadata
       operations are smaller.
+    * Datasets stored in the output will be in the log layout. Running command
+      `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
     * Example run command:
       ```
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o log_F_out.h5 -a hdf5_log -x log -r 25
@@ -348,7 +357,8 @@
     * This option is not supported.
   + **-a netcdf4 -x canonical**
     * This option writes data using the NetCDF-4 library.
-    * The output files are in HDF5 format.
+    * The output files are in the HDF5 format. Running command `h5ldump -k`
+      will show the file kind of `NetCDF-4`.
     * The data layout of datasets store in the output file is in a canonical
       order.
     * Because the number of write requests are different among processes, the
@@ -363,12 +373,13 @@
   + **-a netcdf4 -x log**
     * This option writes data using the NetCDF-4 library which calls the HDF5
       Log VOL connector underneath.
-    * The Log VOL stores data in a log layout, rather than a canonical layout.
-      The output file is a valid HDF5 file but requires the Log VOL to read and
-      understand the data structures.
     * **Requirements** - The two environment variables `HDF5_VOL_CONNECTOR` and
       `HDF5_PLUGIN_PATH` must be set to use Log VOL connector in order to run.
       The e3sm_io program will check and error out if they are not set.
+    * The Log VOL stores data in a log layout, rather than a canonical layout.
+      The output file is a valid HDF5 file but requires the Log VOL to read and
+      understand the data structures.
+    * Running command `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
     * Example run command:
       ```
       export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/LOG_VOL/lib
