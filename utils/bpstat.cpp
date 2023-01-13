@@ -315,7 +315,6 @@ err_out:;
 int main (int argc, char *argv[]) {
     int err = 0, nerrs = 0;
     int i;
-    int nsub;
     config cfg;
     bpstat stat;
     bpstat stat_all;
@@ -351,15 +350,16 @@ int main (int argc, char *argv[]) {
 
     stat_all.nvar = stat.nvar;
     stat_all.natt = stat.natt;
-    err = MPI_Reduce (&(stat.asize), &(stat_all.asize), 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0,
-                        MPI_COMM_WORLD);
+    err = MPI_Reduce(&stat.asize, &stat_all.asize, 1, MPI_UNSIGNED_LONG_LONG,
+                     MPI_SUM, 0, MPI_COMM_WORLD);
     CHECK_MPIERR
-    err = MPI_Reduce (&(stat.vsize), &(stat_all.vsize), 1, MPI_UNSIGNED_LONG_LONG, MPI_SUM, 0,
-                        MPI_COMM_WORLD);
+    err = MPI_Reduce(&stat.vsize, &stat_all.vsize, 1, MPI_UNSIGNED_LONG_LONG,
+                     MPI_SUM, 0, MPI_COMM_WORLD);
     CHECK_MPIERR
 
     if (cfg.rank == 0) {
-        std::cout << "Num subfiles: " << nsub << std::endl;
+        // Is there a way to query number of subfiles?
+        // std::cout << "Num subfiles: " << nsub << std::endl;
         std::cout << "Num variables: " << stat_all.nvar << std::endl;
         std::cout << "Total variable size: " << stat_all.vsize << std::endl;
         std::cout << "Num attributes: " << stat_all.natt << std::endl;
