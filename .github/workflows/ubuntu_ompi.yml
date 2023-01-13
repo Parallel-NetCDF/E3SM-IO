@@ -22,7 +22,8 @@ on:
 
 env:
    PNETCDF_VERSION: 1.12.3
-   HDF5_VERSION: 1.13.2
+   HDF5_VERSION_MAJOR: 1.14
+   HDF5_VERSION: 1.14.0
    NETCDF4_VERSION: 4.9.0
    ADIOS_VERSION: 2.8.3
    LOG_VOL_VERSION: 1.4.0
@@ -67,7 +68,7 @@ jobs:
             rm -rf HDF5
             mkdir HDF5
             cd HDF5
-            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.13/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION_MAJOR}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
             tar -zxf hdf5-${HDF5_VERSION}.tar.gz
             cd hdf5-${HDF5_VERSION}
             ./configure --prefix=${GITHUB_WORKSPACE}/HDF5 \
