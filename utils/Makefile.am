@@ -33,10 +33,10 @@ pnetcdf_blob_replay_LDADD = -lpnetcdf
 endif
 
 dat2decomp_SOURCES = dat2decomp.cpp 
-dat2decomp_LDADD = ../src/drivers/libe3sm_io_drivers.la ../src/e3sm_io_profile.o
+dat2decomp_LDADD = ../src/drivers/libe3sm_io_drivers.la
 
 decomp_copy_SOURCES = decomp_copy.cpp 
-decomp_copy_LDADD = ../src/drivers/libe3sm_io_drivers.la ../src/e3sm_io_profile.o
+decomp_copy_LDADD = ../src/drivers/libe3sm_io_drivers.la
 
 datstat_SOURCES = datstat.cpp
 
