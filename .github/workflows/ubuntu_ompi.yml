@@ -120,9 +120,8 @@ jobs:
             rm -rf ADIOS
             mkdir ADIOS
             cd ADIOS
-            VERSION=2.8.3
-            wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v${VERSION}.tar.gz
-            tar -zxf v${VERSION}.tar.gz
+            wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v${ADIOS_VERSION}.tar.gz
+            tar -zxf v${ADIOS_VERSION}.tar.gz
             mkdir adios2_build
             cd adios2_build
             cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/ADIOS \
