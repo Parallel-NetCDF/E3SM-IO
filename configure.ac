@@ -40,7 +40,7 @@ AC_SUBST(E3SM_IO_VERSION_SUB)
 AC_SUBST(E3SM_IO_VERSION)
 
 dnl Note that command 'date' is not portable across Unix platforms.
-dnl But release date matters only to e3sm_io developers who make the releases.
+dnl But release date matters only to E3SM-IO developers who make the releases.
 E3SM_IO_RELEASE_DATE="`date '+%B %-d, %Y'`"
 AC_SUBST(E3SM_IO_RELEASE_DATE)
 E3SM_IO_RELEASE_DATE_FULL="`date '+%Y-%m-%d'`"
@@ -63,14 +63,14 @@ AC_ARG_WITH(mpi,
    if test "x${withval}" = xno ; then
       AC_MSG_ERROR([
       -----------------------------------------------------------------------
-        e3sm_io is built on top of MPI. Configure option --without-mpi or
+        E3SM-IO is built on top of MPI. Configure option --without-mpi or
         --with-mpi=no should not be used. Abort.
       -----------------------------------------------------------------------])
    elif test "x${withval}" = x ; then
       AC_MSG_ERROR(--with-mpi is set but the value is NULL)
    elif test "x${withval}" != xyes && test ! -d "${withval}" ; then
       # user may use --with-mpi without an argument, which results in withval
-      # being "yes". This case is OK and we simply take no action, as e3sm_io
+      # being "yes". This case is OK and we simply take no action, as E3SM-IO
       # requires MPI compilers and will check them.
       AC_MSG_ERROR(Directory '${withval}' specified in --with-mpi does not exist or is not a directory)
    fi
@@ -139,7 +139,7 @@ if test "x${MPICC}" = x ; then
    AC_MSG_ERROR([
    -----------------------------------------------------------------------
      $ERR_MSG
-     e3sm_io requires a working MPI C compiler. Please specify the
+     E3SM-IO requires a working MPI C compiler. Please specify the
      location of an MPI C compiler, either in the MPICC environment
      variable (not CC variable) or through --with-mpi configure flag.
      Abort.
@@ -169,7 +169,7 @@ if test "x${MPICXX}" = x ; then
    AC_MSG_ERROR([
    -----------------------------------------------------------------------
      $ERR_MSG
-     e3sm_io requires a working MPI C++ compiler. Please specify the
+     E3SM-IO requires a working MPI C++ compiler. Please specify the
      location of an MPI C++ compiler, either in the MPICXX environment
      variable (not CXX variable) or through --with-mpi configure flag.
      Abort.
@@ -207,7 +207,7 @@ AC_CHECK_FUNC([MPI_File_open], [],
                    [AC_MSG_ERROR([
    -----------------------------------------------------------------------
      The underneath MPI implementation does not support MPI-IO.
-     e3sm_io requires MPI-IO support to work properly. Abort.
+     E3SM-IO requires MPI-IO support to work properly. Abort.
    -----------------------------------------------------------------------])
 ])])
 AC_LANG_POP(C++)
@@ -239,7 +239,7 @@ fi
 
 AC_ARG_ENABLE([debug],
     [AS_HELP_STRING([--enable-debug],
-                    [Enable e3sm_io internal debug mode.
+                    [Enable E3SM-IO internal debug mode.
                      @<:@default: disabled@:>@])],
     [debug=${enableval}], [debug=no]
 )
@@ -333,12 +333,12 @@ AC_ARG_WITH([pnetcdf],
 
    AC_CHECK_HEADER([pnetcdf.h], [have_pnc=yes], [have_pnc=no])
    if test "x$have_pnc" = xno ; then
-         AC_MSG_ERROR([
-         -----------------------------------------------------------------------
-         Missing PnetCDF-header files 'pnetcdf.h' required to build E3SM_IO. Use
-         configure command-line option --with-pnetcdf=/path/to/implementation
-         to specify the location of PnetCDF installation. Abort.
-         -----------------------------------------------------------------------])
+      AC_MSG_ERROR([
+      -----------------------------------------------------------------------
+      Missing PnetCDF-header files 'pnetcdf.h' required to build E3SM-IO. Use
+      configure command-line option --with-pnetcdf=/path/to/implementation
+      to specify the location of PnetCDF installation. Abort.
+      -----------------------------------------------------------------------])
    else
       dnl Check if PnetCDF version is 1.10.0 or later
       AC_MSG_CHECKING([whether PnetCDF version is 1.10.0 or later])
@@ -404,7 +404,7 @@ AC_ARG_WITH([hdf5],
    if test "x$have_hdf5" = xno ; then
       AC_MSG_ERROR([
       -----------------------------------------------------------------------
-      Missing HDF5-header files 'hdf5.h' required to build E3SM_IO. Use
+      Missing HDF5-header files 'hdf5.h' required to build E3SM-IO. Use
       configure command-line option --with-hdf5=/path/to/implementation
       to specify the location of HDF5 installation. Abort.
       -----------------------------------------------------------------------])
@@ -426,7 +426,7 @@ AC_ARG_WITH([hdf5],
       if test "x$hdf5_parallel_io" = xno ; then
          AC_MSG_ERROR([
          -----------------------------------------------------------------------
-         E3SM_IO requires parallel I/O feature enabled in HDF5. However, This
+         E3SM-IO requires parallel I/O feature enabled in HDF5. However, This
          version of HDF5 library, $hdf5_version, is not configured to support
          parallel I/O. Abort.
          -----------------------------------------------------------------------])
@@ -512,7 +512,7 @@ AC_ARG_WITH([netcdf4],
       AC_MSG_ERROR([
       -----------------------------------------------------------------------
       Missing NetCDF-header files 'netcdf.h' or 'netcdf_meta.h' which are
-      required to build E3SM_IO. Use configure command-line option
+      required to build E3SM-IO. Use configure command-line option
       --with-netcdf4=/path/to/implementation to specify the location of
       NetCDF-4 installation. Abort.
       -----------------------------------------------------------------------])
@@ -567,7 +567,7 @@ AM_CONDITIONAL(ENABLE_NETCDF4, [test "x$have_netcdf4" = xyes])
 have_logvol=no
 AC_ARG_WITH([logvol],
    [AS_HELP_STRING([--with-logvol@<:@=INC,LIB | =DIR@:>@],
-                   [Enable HDF5 log-based VOL feature and provide the VOL installation path(s):
+                   [Use HDF5 Log VOL connector and provide its installation path(s):
     --with-logvol=INC,LIB for include and lib paths separated by a comma.
     --with-logvol=DIR for the path containing include/ and lib/ subdirectories.
     @<:@default: disabled@:>@
@@ -575,8 +575,8 @@ AC_ARG_WITH([logvol],
    if test "x$have_hdf5" = xno ; then
       AC_MSG_ERROR([
       -----------------------------------------------------------------------
-      Enabling the log-based VOL option requires HDF5. Please add command-line
-      option '--with-hdf5=DIR' to indicate the HDF5 installation path. Abort.
+      Use Log VOL connector requires HDF5. Please add command-line option
+      '--with-hdf5=DIR' to indicate the HDF5 installation path. Abort.
       -----------------------------------------------------------------------])
    fi
    case $withval in
@@ -613,24 +613,25 @@ AC_ARG_WITH([logvol],
    if test "x$have_logvol" = xno ; then
       AC_MSG_ERROR([
       -----------------------------------------------------------------------
-      Missing logvol-header files 'H5VL_log.h' required to build E3SM_IO. Use
-      configure command-line option --with-logvol=/path/to/implementation
-      to specify the location of logvol installation. Abort.
+      Missing Log VOL connector's header files 'H5VL_log.h' which is required
+      to build E3SM-IO. Use configure command-line option
+      --with-logvol=/path/to/implementation to specify the location of Log
+      VOL installation. Abort.
       -----------------------------------------------------------------------])
    fi
 
-   dnl Check if logvol version is 1.3.0 or later
-   AC_MSG_CHECKING([whether logvol version is 1.3.0 or later])
+   dnl Check if Log VOL version is 1.4.0 or later
+   AC_MSG_CHECKING([whether logvol version is 1.4.0 or later])
    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
    #include <H5VL_log.h>
-   #if (H5VL_LOG_VERSION_MAJOR*1000000 + H5VL_LOG_VERSION_MINOR*1000 + H5VL_LOG_VERSION_PATCH < 1003000)
-   #error logvol version is older than 1.3.0
+   #if (H5VL_LOG_VERSION_MAJOR*1000000 + H5VL_LOG_VERSION_MINOR*1000 + H5VL_LOG_VERSION_PATCH < 1004000)
+   #error logvol version is older than 1.4.0
    #endif
-   ]])], [logvol_ge_1_3_0=yes], [logvol_ge_1_3_0=no])
-   AC_MSG_RESULT([$logvol_ge_1_3_0])
+   ]])], [logvol_ge_1_4_0=yes], [logvol_ge_1_4_0=no])
+   AC_MSG_RESULT([$logvol_ge_1_4_0])
 
-   if test x$logvol_ge_1_3_0 = xyes; then
-      AC_DEFINE([LOGVOL_GE_1003000], [1], [whether logvol version is 1.3.0 or later])
+   if test x$logvol_ge_1_4_0 = xyes; then
+      AC_DEFINE([LOGVOL_GE_1004000], [1], [whether logvol version is 1.4.0 or later])
    fi
 
    if test "x$have_logvol" = xyes ; then
@@ -737,7 +738,7 @@ AC_ARG_WITH([adios2],
    if test "x$have_adios2" = xno ; then
       AC_MSG_ERROR([
       -----------------------------------------------------------------------
-      Missing ADIOS2-header files 'adios2_c.h' required to build E3SM_IO. Use
+      Missing ADIOS2-header files 'adios2_c.h' required to build E3SM-IO. Use
       configure command-line option --with-adios2=/path/to/implementation
       to specify the location of ADIOS2 installation. Abort.
       -----------------------------------------------------------------------])
@@ -841,7 +842,7 @@ if test "x$have_logvol" = xyes ; then
    else
       LIBS="-lH5VL_log $LIBS"
    fi
-   AC_DEFINE([ENABLE_LOGVOL], [1], [Enable HDF5 Log-layout based VOL I/O method])
+   AC_DEFINE([ENABLE_LOGVOL], [1], [Enable HDF5 Log VOL I/O method])
 
    saved_CC=$CC
    CC=$MPICXX
