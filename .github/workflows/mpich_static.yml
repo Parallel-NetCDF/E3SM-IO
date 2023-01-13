@@ -26,7 +26,7 @@ env:
    HDF5_VERSION: 1.13.2
    NETCDF4_VERSION: 4.9.0
    ADIOS_VERSION: 2.8.3
-   LOG_VOL_VERSION: 1.3.0
+   LOG_VOL_VERSION: 1.4.0
 
 jobs:
     build:
