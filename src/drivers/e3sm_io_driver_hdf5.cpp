@@ -195,8 +195,12 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
     herr                  = H5Pset_mdc_config (faplid, &mdcc);
     CHECK_HERR
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_OPEN)
+
     fp->id = H5Fcreate (path.c_str (), H5F_ACC_TRUNC, H5P_DEFAULT, faplid);
     CHECK_HID (fp->id)
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_OPEN)
 
     *fid = this->files.size ();
     this->files.push_back (fp);
@@ -268,8 +272,12 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
     herr                  = H5Pset_mdc_config (faplid, &mdcc);
     CHECK_HERR
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_OPEN)
+
     fp->id = H5Fopen (path.c_str (), H5F_ACC_RDONLY, faplid);
     CHECK_HID (fp->id)
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_OPEN)
 
     *fid = this->files.size ();
     this->files.push_back (fp);
@@ -293,8 +301,12 @@ int e3sm_io_driver_hdf5::close (int fid) {
         CHECK_HERR
     }
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_CLOSE)
+
     herr = H5Fclose (fp->id);
     CHECK_HERR
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_CLOSE)
 
     MPI_Comm_free (&(fp->comm));
 
@@ -310,6 +322,8 @@ int e3sm_io_driver_hdf5::inq_file_info (int fid, MPI_Info *info) {
     herr_t herr;
     hdf5_file *fp = this->files[fid];
     hid_t pid = -1, fdid = -1;
+
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
     // disable HDF5 error message
     H5E_BEGIN_TRY{
@@ -381,11 +395,8 @@ int e3sm_io_driver_hdf5::inq_malloc_max_size (MPI_Offset *size) {
 int e3sm_io_driver_hdf5::inq_rec_size (int fid, MPI_Offset *size) {
     hdf5_file *fp = this->files[fid];
 
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
-
     *size = (MPI_Offset) (fp->recsize);
 
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return 0;
 }
 
@@ -418,8 +429,8 @@ int e3sm_io_driver_hdf5::expand_rec_size (int fid, MPI_Offset size) {
     }
 
 err_out:;
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_EXT_DIM)
     if (dsid >= 0) { H5Sclose (dsid); }
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_EXT_DIM)
     return err;
 }
 
@@ -496,8 +507,10 @@ int e3sm_io_driver_hdf5::def_var (
     sid = H5Screate_simple (ndim, dims, mdims);
     CHECK_HID (sid);
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_DEF_VAR)
     h5did = H5Dcreate2 (fp->id, name.c_str (), h5_xtype, sid, H5P_DEFAULT, dcplid, H5P_DEFAULT);
     CHECK_HID (h5did)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_DEF_VAR)
 
     *did = fp->dids.size ();
     fp->dids.push_back (h5did);
@@ -581,12 +594,16 @@ int e3sm_io_driver_hdf5::def_dim (int fid, std::string name, MPI_Offset size, in
     sid = H5Screate (H5S_SCALAR);
     CHECK_HID (sid)
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_DEF_DIM)
+
     sprintf (aname, "-DIM_%s", name.c_str ());
     aid = H5Acreate2 (fp->id, aname, H5T_NATIVE_HSIZE, sid, H5P_DEFAULT, H5P_DEFAULT);
     CHECK_HID (aid)
 
     herr = H5Awrite (aid, H5T_NATIVE_HSIZE, &hsize);
     CHECK_HERR
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_DEF_DIM)
 
     *dimid = fp->dsizes.size ();
     fp->dsizes.push_back (hsize);
@@ -627,11 +644,8 @@ err_out:;
 int e3sm_io_driver_hdf5::inq_dimlen (int fid, int dimid, MPI_Offset *size) {
     hdf5_file *fp = this->files[fid];
 
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
-
     *size = (MPI_Offset) (fp->dsizes[dimid]);
 
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return 0;
 }
 
@@ -699,6 +713,8 @@ int e3sm_io_driver_hdf5::put_att (
         h5_xtype = e3sm_io_type_nc2hdf5 (xtype);
     }
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_PUT_ATT)
+
     exists = H5Aexists (did, name.c_str ());
     if (!exists) {
         aid = H5Acreate2 (did, name.c_str (), h5_xtype, asid, H5P_DEFAULT, H5P_DEFAULT);
@@ -710,7 +726,7 @@ int e3sm_io_driver_hdf5::put_att (
     herr = H5Awrite (aid, h5_xtype, buf);
     CHECK_HERR
 
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_PUT_ATT)
 
     if (fp->rank == 0) {
         size_t esize = H5Tget_size (h5_xtype);
@@ -721,6 +737,8 @@ err_out:;
     if (asid >= 0) H5Sclose (asid);
     if (aid >= 0) H5Aclose (aid);
     if (xtype == NC_CHAR && h5_xtype >= 0) H5Tclose (h5_xtype); /* string attribute */
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 
     return err;
 }
@@ -749,8 +767,6 @@ int e3sm_io_driver_hdf5::get_att (int fid, int vid, std::string name, void *buf)
     herr = H5Aread (aid, tid, buf);
     CHECK_HERR
 
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-
     asid = H5Aget_space (aid);
     CHECK_HID (asid)
     herr = H5Sget_simple_extent_dims (asid, &asize, NULL);
@@ -762,6 +778,8 @@ err_out:;
     if (asid >= 0) H5Sclose (asid);
     if (aid >= 0) H5Aclose (aid);
     if (tid >= 0) H5Tclose (tid);
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 
     return err;
 }
@@ -793,10 +811,10 @@ int e3sm_io_driver_hdf5::inq_att (int fid, int vid, std::string name, MPI_Offset
     *size = (MPI_Offset) asize;
 
 err_out:;
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
-
     if (asid >= 0) H5Sclose (asid);
     if (aid >= 0) H5Aclose (aid);
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 
     return err;
 }
@@ -824,6 +842,8 @@ int e3sm_io_driver_hdf5::put_vara (int              fid,
     hid_t did, dsid;
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
+
     did = this->files[fid]->dids[vid];
 
     dsid = H5Dget_space (did);
@@ -836,6 +856,8 @@ int e3sm_io_driver_hdf5::put_vara (int              fid,
     if (this->use_dwrite_multi) {
         bool free_start = false;
         bool free_count = false;
+
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
 
         if (start == NULL) { /* var API: put the entire variable */
             start = (MPI_Offset*) malloc(2 * ndim * sizeof(MPI_Offset));
@@ -857,6 +879,8 @@ int e3sm_io_driver_hdf5::put_vara (int              fid,
 
         if (free_start) free(start);
         if (free_count) free(count);
+
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_SEL)
     }
     else {
         hid_t msid, tid;
@@ -864,8 +888,6 @@ int e3sm_io_driver_hdf5::put_vara (int              fid,
         hsize_t hstart[E3SM_IO_DRIVER_MAX_RANK];
         hsize_t hblock[E3SM_IO_DRIVER_MAX_RANK];
         MPI_Offset putsize;
-
-        E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
         /* type cast MPI_Offset to hsize_t */
         if (start) {
@@ -916,11 +938,12 @@ int e3sm_io_driver_hdf5::put_vara (int              fid,
         H5Tclose (tid);
         H5Sclose (msid);
 
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     }
 
 err_out:;
     if (dsid >= 0) H5Sclose (dsid);
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 
     return err;
 }
@@ -943,8 +966,6 @@ int e3sm_io_driver_hdf5::varn_expand(int            fid,
     hsize_t rsize, rsize_all = 0;
     hdf5_file *fp = this->files[fid];
 
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
-
     did = fp->dids[vid];
     mtype = e3sm_io_type_mpi2hdf5 (itype);
 
@@ -962,8 +983,9 @@ int e3sm_io_driver_hdf5::varn_expand(int            fid,
 
         H5S_seloper_t op = H5S_SELECT_SET;
 
-        // set filespace
         E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
+
+        // set filespace
 #ifdef CHECK_INCREASING_ORDER
 static int print_once=0;
 long long off_start, off_end, prev_end, dim_len; prev_end=-1;
@@ -1012,16 +1034,17 @@ prev_end=off_end+1;
            herr = H5Sselect_none (dsid);
            CHECK_ERR
         }
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_SEL)
 
         /* collective write/read, one per variable */
         if (isWrite) {
-            E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+            E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_WR)
             herr = H5Dwrite (did, mtype, msid, dsid, this->dxplid_coll, buf);
             CHECK_HERR
             E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
         }
         else {
-            E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
+            E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_RD)
             herr = H5Dread (did, mtype, msid, dsid, this->dxplid_coll, buf);
             CHECK_HERR
             E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
@@ -1038,6 +1061,8 @@ prev_end=off_end+1;
             rsize = 1;
             for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
             if (rsize == 0) continue;
+
+            E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
             rsize_all += rsize;
 
             /* type cast from MPI_Offset to hsize_t */
@@ -1054,19 +1079,19 @@ prev_end=off_end+1;
                 rsize_old = rsize;
             }
 
-            E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
             herr = H5Sselect_hyperslab (dsid, H5S_SELECT_SET, start, NULL, this->one, block);
             CHECK_HERR
+            E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_SEL)
 
             /* independent write/read, as nreq can be different among processes */
             if (isWrite) {
-                E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+                E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_WR)
                 herr = H5Dwrite (did, mtype, msid, dsid, this->dxplid_indep, bufp);
                 CHECK_HERR
                 E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
             }
             else {
-                E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
+                E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_RD)
                 herr = H5Dread (did, mtype, msid, dsid, this->dxplid_indep, bufp);
                 CHECK_HERR
                 E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
@@ -1087,7 +1112,7 @@ err_out:;
     if (tid >= 0) H5Tclose (tid);
     if (dsid >= 0) H5Sclose (dsid);
     if (msid >= 0) H5Sclose (msid);
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
+
     return err;
 }
 
@@ -1119,6 +1144,8 @@ int e3sm_io_driver_hdf5::get_vara (int              fid,
     hid_t did, dsid;
     hsize_t dims[E3SM_IO_DRIVER_MAX_RANK];
 
+    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
+
     did = this->files[fid]->dids[vid];
 
     dsid = H5Dget_space (did);
@@ -1131,6 +1158,8 @@ int e3sm_io_driver_hdf5::get_vara (int              fid,
     if (this->use_dwrite_multi) {
         bool free_start = false;
         bool free_count = false;
+
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
 
         if (start == NULL) { /* var API: get the entire variable */
             start = (MPI_Offset*) malloc(2 * ndim * sizeof(MPI_Offset));
@@ -1152,6 +1181,8 @@ int e3sm_io_driver_hdf5::get_vara (int              fid,
 
         if (free_start) free(start);
         if (free_count) free(count);
+
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_SEL)
     }
     else {
         hid_t msid, tid;
@@ -1160,7 +1191,7 @@ int e3sm_io_driver_hdf5::get_vara (int              fid,
         hsize_t hblock[E3SM_IO_DRIVER_MAX_RANK];
         MPI_Offset getsize;
 
-        E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
+        E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
 
         /* type cast MPI_Offset to hsize_t */
         if (start) {
@@ -1188,20 +1219,19 @@ int e3sm_io_driver_hdf5::get_vara (int              fid,
 
         h5_itype = e3sm_io_type_mpi2hdf5 (itype);
 
-        E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
         if (ndim > 0) {
             herr = H5Sselect_hyperslab(dsid, H5S_SELECT_SET, hstart, NULL,
                                        this->one, hblock);
             CHECK_HERR
         }
 
-        E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_WR)
+        E3SM_IO_TIMER_SWAP (E3SM_IO_TIMER_HDF5_SEL, E3SM_IO_TIMER_HDF5_RD)
 
         /* Call H5Dread - use MPI independent I/O to write */
         herr = H5Dread (did, h5_itype, msid, dsid, this->dxplid_indep, buf);
         CHECK_HERR
 
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_WR)
+        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_RD)
 
         tid     = H5Dget_type (did);
         getsize = H5Tget_size (tid);
@@ -1210,12 +1240,12 @@ int e3sm_io_driver_hdf5::get_vara (int              fid,
 
         H5Tclose (tid);
         H5Sclose (msid);
-
-        E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     }
 
 err_out:;
     if (dsid >= 0) H5Sclose (dsid);
+
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
 
     return err;
 }

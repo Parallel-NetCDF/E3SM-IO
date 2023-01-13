@@ -130,8 +130,6 @@ int e3sm_io_driver_hdf5::post_varn(int            fid,
     hdf5_file *fp = this->files[fid];
     H5S_seloper_t op = H5S_SELECT_SET;
 
-    E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_SEL)
-
     did = fp->dids[vid];
 
     dsid = H5Dget_space (did);
@@ -201,7 +199,6 @@ int e3sm_io_driver_hdf5::post_varn(int            fid,
         herr = H5Sclose(dsid);
         CHECK_HERR
     }
-    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_SEL)
 
 err_out:
     return err;

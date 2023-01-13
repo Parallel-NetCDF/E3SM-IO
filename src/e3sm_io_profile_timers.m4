@@ -5,6 +5,10 @@ define(`E3SM_IO_TIMERS', `( `total', dnl
                             `init_case', dnl
                             `init_driver', dnl
                             `hdf5', dnl
+                            `hdf5_open', dnl
+                            `hdf5_def_dim', dnl
+                            `hdf5_def_var', dnl
+                            `hdf5_put_att', dnl
                             `hdf5_wr', dnl
                             `hdf5_sel', dnl
                             `hdf5_ext_dim', dnl
@@ -13,6 +17,7 @@ define(`E3SM_IO_TIMERS', `( `total', dnl
                             `hdf5_rd', dnl
                             `hdf5_nslab', dnl
                             `hdf5_dsize', dnl
+                            `hdf5_close', dnl
                             `adios2', dnl
                             `adios2_enddef', dnl
                             `adios2_sel', dnl
