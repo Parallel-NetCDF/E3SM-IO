@@ -24,6 +24,8 @@ dnl
 #include <config.h>
 #endif
 
+#ifdef E3SM_IO_PROFILING
+
 /*
  * Report performance profiling
  */
@@ -76,6 +78,14 @@ extern double e3sm_io_profile_counts[E3SM_IO_NTIMER];
         e3sm_io_profile_counts[A] ++; \
     } \
 }
+#else
+#define E3SM_IO_TIMER_START(A)
+#define E3SM_IO_TIMER_PAUSE(A)
+#define E3SM_IO_TIMER_STOP(A)
+#define E3SM_IO_TIMER_SWAP(A, B)
+#define E3SM_IO_TIMER_STOPEX(A, B)
+#define E3SM_IO_TIMER_ADD(A, B)
+#endif
 
 #ifdef __cplusplus
 extern "C" {

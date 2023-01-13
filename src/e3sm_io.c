@@ -19,7 +19,10 @@
 
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
+
+#ifdef E3SM_IO_PROFILING
 #include <e3sm_io_profile.hpp>
+#endif
 
 static
 void check_connector_env(e3sm_io_config *cfg) {
@@ -542,8 +545,6 @@ int main (int argc, char **argv) {
         report_timing_WR(&cfg, &decom);
     }
 
-    if (cfg.profiling) e3sm_io_print_profile(&cfg);
-
     timing[0] = MPI_Wtime() - timing[0];
     MPI_Reduce(timing, max_t, 3, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (cfg.rank == 0) {
@@ -552,6 +553,13 @@ int main (int argc, char **argv) {
         printf("-----------------------------------------------------------\n");
         printf("\n\n");
     }
+
+#ifdef E3SM_IO_PROFILING
+    if (cfg.profiling) e3sm_io_print_profile(&cfg);
+#else
+    if (cfg.profiling && cfg.rank == 0)
+        printf("\nWarning: E3SM-IO internal time profiling was disabled at configure time\n\n");
+#endif
 
 err_out:
     if (cfg.info != MPI_INFO_NULL)

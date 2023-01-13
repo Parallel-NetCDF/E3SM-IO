@@ -245,6 +245,13 @@ AC_ARG_ENABLE([debug],
 )
 AM_CONDITIONAL(E3SM_IO_DEBUG, [test "x$debug" = xyes])
 
+AC_ARG_ENABLE([profiling],
+   [AS_HELP_STRING([--enable-profiling],
+                   [Enable time profiling. @<:@default: disabled@:>@])],
+   [enable_profiling=${enableval}], [enable_profiling=no]
+)
+AM_CONDITIONAL(E3SM_IO_PROFILING, [test x$enable_profiling = xyes])
+
 if test "x${debug}" = xyes; then
    dnl add -g flag if not presented
    dnl remove all -O and -fast flags
@@ -886,6 +893,7 @@ echo \
    ${PACKAGE_NAME} Version ${PACKAGE_VERSION}
 
    Features:  Internal debug mode         - ${debug}
+              Internal profiling mode     - ${enable_profiling}
               PnetCDF                     - ${have_pnc}
               NetCDF-4                    - ${have_netcdf4}
               HDF5                        - ${have_hdf5}
