@@ -50,47 +50,45 @@ foreach(`t', E3SM_IO_TIMERS, `"CONCATE(`e3sm_io_timer_', t)",
 ')dnl
 };
 
-int e3sm_io_print_profile(e3sm_io_config *cfg){
+int e3sm_io_print_profile(e3sm_io_config *cfg)
+{
     int i;
 
-	MPI_Reduce (e3sm_io_profile_times, tmax, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_MAX, 0, cfg->io_comm);
-	MPI_Reduce (e3sm_io_profile_times, tmin, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_MIN, 0, cfg->io_comm);
-	MPI_Allreduce (e3sm_io_profile_times, tmean, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_SUM, cfg->io_comm);
-	for (i = 0; i < E3SM_IO_NTIMER; i++) {
-		tmean[i] /= cfg->np;
-		tvar_local[i] = (e3sm_io_profile_times[i] - tmean[i]) * (e3sm_io_profile_times[i] - tmean[i]);
-	}
-	MPI_Reduce (tvar_local, tvar, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_SUM, 0, cfg->io_comm);
+    MPI_Reduce (e3sm_io_profile_times, tmax, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_MAX, 0, cfg->io_comm);
+    MPI_Reduce (e3sm_io_profile_times, tmin, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_MIN, 0, cfg->io_comm);
+    MPI_Allreduce (e3sm_io_profile_times, tmean, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_SUM, cfg->io_comm);
+    for (i = 0; i < E3SM_IO_NTIMER; i++) {
+        tmean[i] /= cfg->np;
+        tvar_local[i] = (e3sm_io_profile_times[i] - tmean[i]) * (e3sm_io_profile_times[i] - tmean[i]);
+    }
+    MPI_Reduce (tvar_local, tvar, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_SUM, 0, cfg->io_comm);
 
-	if (cfg->rank == 0) {
-		for (i = 0; i < E3SM_IO_NTIMER; i++) {
-			printf ("#%%$: %s_time_mean: %lf\n", tname[i], tmean[i]);
-			printf ("#%%$: %s_time_max: %lf\n", tname[i], tmax[i]);
-			printf ("#%%$: %s_time_min: %lf\n", tname[i], tmin[i]);
-			printf ("#%%$: %s_time_var: %lf\n\n", tname[i], tvar[i]);
-		}
-	}
+    if (cfg->rank == 0) {
+        for (i = 0; i < E3SM_IO_NTIMER; i++) {
+            printf ("#%%$: %s_time_mean: %lf\n", tname[i], tmean[i]);
+            printf ("#%%$: %s_time_max: %lf\n", tname[i], tmax[i]);
+            printf ("#%%$: %s_time_min: %lf\n", tname[i], tmin[i]);
+            printf ("#%%$: %s_time_var: %lf\n\n", tname[i], tvar[i]);
+        }
+    }
 
-	MPI_Reduce (e3sm_io_profile_counts, tmax, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_MAX, 0, cfg->io_comm);
-	MPI_Reduce (e3sm_io_profile_counts, tmin, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_MIN, 0, cfg->io_comm);
-	MPI_Allreduce (e3sm_io_profile_counts, tmean, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_SUM, cfg->io_comm);
-	for (i = 0; i < E3SM_IO_NTIMER; i++) {
-		tmean[i] /= cfg->np;
-		tvar_local[i] = (e3sm_io_profile_counts[i] - tmean[i]) * (e3sm_io_profile_counts[i] - tmean[i]);
-	}
-	MPI_Reduce (tvar_local, tvar, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_SUM, 0, cfg->io_comm);
+    MPI_Reduce (e3sm_io_profile_counts, tmax, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_MAX, 0, cfg->io_comm);
+    MPI_Reduce (e3sm_io_profile_counts, tmin, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_MIN, 0, cfg->io_comm);
+    MPI_Allreduce (e3sm_io_profile_counts, tmean, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_SUM, cfg->io_comm);
+    for (i = 0; i < E3SM_IO_NTIMER; i++) {
+        tmean[i] /= cfg->np;
+        tvar_local[i] = (e3sm_io_profile_counts[i] - tmean[i]) * (e3sm_io_profile_counts[i] - tmean[i]);
+    }
+    MPI_Reduce (tvar_local, tvar, E3SM_IO_NTIMER, MPI_DOUBLE, MPI_SUM, 0, cfg->io_comm);
 
-	if (cfg->rank == 0) {
-		for (i = 0; i < E3SM_IO_NTIMER; i++) {
-			printf ("#%%$: %s_count_mean: %lf\n", tname[i], tmean[i]);
-			printf ("#%%$: %s_count_max: %lf\n", tname[i], tmax[i]);
-			printf ("#%%$: %s_count_min: %lf\n", tname[i], tmin[i]);
-			printf ("#%%$: %s_count_var: %lf\n\n", tname[i], tvar[i]);
-		}
-	}  
-
-	return 0;        
+    if (cfg->rank == 0) {
+        for (i = 0; i < E3SM_IO_NTIMER; i++) {
+            printf ("#%%$: %s_count_mean: %lf\n", tname[i], tmean[i]);
+            printf ("#%%$: %s_count_max: %lf\n", tname[i], tmax[i]);
+            printf ("#%%$: %s_count_min: %lf\n", tname[i], tmin[i]);
+            printf ("#%%$: %s_count_var: %lf\n\n", tname[i], tvar[i]);
+        }
+    }
+    return 0;
 }
-
-
 
