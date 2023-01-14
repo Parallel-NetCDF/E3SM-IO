@@ -409,6 +409,7 @@ int e3sm_io_driver_hdf5::expand_rec_size (int fid, MPI_Offset size) {
     hsize_t dims[H5S_MAX_RANK];   // Dataspace dsid dimensions
     hsize_t mdims[H5S_MAX_RANK];  // Dataspace dsid maxdimensions
 
+    E3SM_IO_TIMER_START(E3SM_IO_TIMER_HDF5)
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_EXT_DIM)
 
     for (auto did : fp->dids) {
@@ -431,6 +432,7 @@ int e3sm_io_driver_hdf5::expand_rec_size (int fid, MPI_Offset size) {
 err_out:;
     if (dsid >= 0) { H5Sclose (dsid); }
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_EXT_DIM)
+    E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5)
     return err;
 }
 
@@ -1125,10 +1127,18 @@ int e3sm_io_driver_hdf5::put_varn (int               fid,
                                    void             *buf,
                                    e3sm_io_op_mode   mode)
 {
+    int err;
+
+    E3SM_IO_TIMER_START(E3SM_IO_TIMER_HDF5)
+
     if (this->use_dwrite_multi)
-        return this->post_varn (fid, vid, itype, nreq, starts, counts, buf, true);
+        err = this->post_varn(fid, vid, itype, nreq, starts, counts, buf, true);
     else
-        return varn_expand (fid, vid, itype, nreq, starts, counts, buf, true);
+        err = varn_expand(fid, vid, itype, nreq, starts, counts, buf, true);
+
+    E3SM_IO_TIMER_STOP(E3SM_IO_TIMER_HDF5)
+
+    return err;
 }
 
 int e3sm_io_driver_hdf5::get_vara (int              fid,
@@ -1259,9 +1269,17 @@ int e3sm_io_driver_hdf5::get_varn (int               fid,
                                    void             *buf,
                                    e3sm_io_op_mode   mode)
 {
+    int err;
+
+    E3SM_IO_TIMER_START(E3SM_IO_TIMER_HDF5)
+
     if (this->use_dwrite_multi)
-        return this->post_varn (fid, vid, itype, nreq, starts, counts, buf, false);
+        err = this->post_varn(fid, vid, itype, nreq, starts, counts, buf, false);
     else
-        return varn_expand (fid, vid, itype, nreq, starts, counts, buf, false);
+        err = varn_expand(fid, vid, itype, nreq, starts, counts, buf, false);
+
+    E3SM_IO_TIMER_STOP(E3SM_IO_TIMER_HDF5)
+
+    return err;
 }
 
