@@ -12,7 +12,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> /* strcpy(), strncpy() */
+#include <string.h> /* strcpy(), strncpy(), strstr() */
 #include <unistd.h> /* getopt() */
 
 #include <mpi.h>
@@ -31,6 +31,8 @@ void check_connector_env(e3sm_io_config *cfg) {
     cfg->env_log          = 0;
     cfg->env_log_passthru = 0;
     cfg->env_log_info     = NULL;
+    cfg->env_cache        = 0;
+    cfg->env_async        = 0;
 
     env_str = getenv("H5VL_LOG_PASSTHRU");
     if (env_str != NULL && env_str[0] == '1')
@@ -40,6 +42,11 @@ void check_connector_env(e3sm_io_config *cfg) {
     if (env_str == NULL)
         /* env HDF5_VOL_CONNECTOR is not set */
         return;
+
+    if (strstr(env_str, "under_vol=512") != NULL || strstr(env_str, "async ") != NULL)
+        cfg->env_async = 1;
+    if (strstr(env_str, "under_vol=513") != NULL || strstr(env_str, "cache_ext ") != NULL)
+        cfg->env_cache = 1;
 
     env_str = strdup(env_str);
     char *connector = strtok(env_str, "  \t\n\r");
@@ -52,12 +59,14 @@ void check_connector_env(e3sm_io_config *cfg) {
         char *info_str = strtok(NULL, "  \t\n\r");
         cfg->env_log_info = (char*) malloc(28 + strlen(info_str));
         sprintf(cfg->env_log_info, "under_vol=513;under_info={%s}", info_str);
+        cfg->env_cache = 1;
     }
     else if (strcmp(connector, "async") == 0) {
         /* if async is the 1st in HDF5_VOL_CONNECTOR */
         char *info_str = strtok(NULL, "  \t\n\r");
         cfg->env_log_info = (char*) malloc(28 + strlen(info_str));
         sprintf(cfg->env_log_info, "under_vol=512;under_info={%s}", info_str);
+        cfg->env_async = 1;
     }
 }
 

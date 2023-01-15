@@ -184,6 +184,8 @@ typedef struct e3sm_io_config {
     int   env_log;
     int   env_log_passthru;
     char *env_log_info;
+    int   env_cache;
+    int   env_async;
 } e3sm_io_config;
 
 
