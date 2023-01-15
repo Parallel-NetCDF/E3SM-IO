@@ -39,8 +39,8 @@ void check_connector_env(e3sm_io_config *cfg) {
         cfg->env_log_passthru = 1;
 
     env_str = getenv("HDF5_VOL_CONNECTOR");
-    if (env_str == NULL)
-        /* env HDF5_VOL_CONNECTOR is not set */
+    if (env_str == NULL || env_str[0] == '\0')
+        /* env HDF5_VOL_CONNECTOR is not set or set with ni value */
         return;
 
     if (strstr(env_str, "under_vol=512") != NULL || strstr(env_str, "async ") != NULL)
@@ -50,6 +50,8 @@ void check_connector_env(e3sm_io_config *cfg) {
 
     env_str = strdup(env_str);
     char *connector = strtok(env_str, "  \t\n\r");
+    if (connector == NULL) return;
+
     if (strcmp(connector, "LOG") == 0) {
         /* if LOG is set in HDF5_VOL_CONNECTOR */
         cfg->env_log = 1;

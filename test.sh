@@ -137,6 +137,7 @@ for API in "${APIS[@]}" ; do
         CMD="${RUN} ${EXEC} -k -a ${ap[0]} -r 2 -x ${ap[1]} -y 2 -o ${OUT_FILE} ${IN_FILE}"
         echo "CMD = ${CMD}"
         ${CMD}
+
         # run read operations (currently support pnetcdf, netcdf4 and canonical only)
         # Disable read for netcdf4 as it is extremely slow.
         if test "x${ap[1]}" = xcanonical && test "x${ap[0]}" == xpnetcdf ; then
