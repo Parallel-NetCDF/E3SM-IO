@@ -282,6 +282,14 @@ int e3sm_io_driver_h5blob::inq_file_info (int fid, MPI_Info *info) {
     h5blob_file *fp = this->files[fid];
     hid_t pid;
 
+    if (cfg->env_async == 1) {
+        /* Async VOL is currently having problem on H5Fget_access_plist()
+         * See https://github.com/hpc-io/vol-cache/issues/15
+         */
+        *info = MPI_INFO_NULL;
+        return 0;
+    }
+
     /* HDF5 currently has no function to obtain MPI info used by the system.
      * This inquire function just returns the I/O hints set by the user.
      */

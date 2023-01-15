@@ -325,6 +325,14 @@ int e3sm_io_driver_hdf5::inq_file_info (int fid, MPI_Info *info) {
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
+    if (cfg->env_async == 1) {
+        /* Async VOL is currently having problem on H5Fget_access_plist()
+         * See https://github.com/hpc-io/vol-cache/issues/15
+         */
+        *info = MPI_INFO_NULL;
+        return 0;
+    }
+
     // disable HDF5 error message
     H5E_BEGIN_TRY{
         // get file access property list
