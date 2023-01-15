@@ -1,0 +1,248 @@
+name: Stacking Log, Cache, Async VOLs
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.jpg'
+      - '**/*.png'
+      - 'tests/*'
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.jpg'
+      - '**/*.png'
+      - 'tests/*'
+
+env:
+   MPICH_VERSION: "4.0.2"
+   ARGOBOTS_VERSION: "1.1"
+   ASYNC_VOL_VERSION: "1.4"
+   HDF5_VERSION: "1.13.3"
+   LOG_VOL_VERSION: "1.4.0"
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      timeout-minutes: 60
+      steps:
+        - uses: actions/checkout@v3
+        - name: Set up dependencies
+          run: |
+            sudo apt-get update
+            sudo apt-get -y install automake autoconf libtool libtool-bin m4 cmake
+            # The MPICH installed on github actions is too slow
+            # sudo apt-get install mpich
+            # mpicc -v
+            # zlib
+            sudo apt-get -y install zlib1g-dev
+        - name: Add global env variables into GITHUB_ENV
+          run: |
+            set -x
+            echo "MPICH_DIR=${GITHUB_WORKSPACE}/MPICH" >> $GITHUB_ENV
+            echo "HDF5_ROOT=${GITHUB_WORKSPACE}/HDF5" >> $GITHUB_ENV
+            echo "ABT_DIR=${GITHUB_WORKSPACE}/Argobots" >> $GITHUB_ENV
+            echo "ASYNC_DIR=${GITHUB_WORKSPACE}/Async" >> $GITHUB_ENV
+            echo "HDF5_ASYNC_DISABLE_IMPLICIT_NON_DSET_RW=1" >> $GITHUB_ENV
+            echo "CACHE_DIR=${GITHUB_WORKSPACE}/Cache" >> $GITHUB_ENV
+            echo "LOGVOL_DIR=${GITHUB_WORKSPACE}/LOGVOL" >> $GITHUB_ENV
+            echo "HDF5_PLUGIN_PATH=${GITHUB_WORKSPACE}/LOGVOL/lib:${GITHUB_WORKSPACE}/Cache/lib:${GITHUB_WORKSPACE}/Async/lib" >> $GITHUB_ENV
+            echo "MPICH_MAX_THREAD_SAFETY=multiple" >> $GITHUB_ENV
+            echo "HDF5_USE_FILE_LOCKING=FALSE" >> $GITHUB_ENV
+            echo "HDF5_ASYNC_DISABLE_DSET_GET=0" >> $GITHUB_ENV
+            # Start async execution at file close time
+            echo "HDF5_ASYNC_EXE_FCLOSE=1" >> $GITHUB_ENV
+            # Start async execution at group close time
+            echo "HDF5_ASYNC_EXE_GCLOSE=1" >> $GITHUB_ENV
+            # Start async execution at dataset close time
+            echo "HDF5_ASYNC_EXE_DCLOSE=1" >> $GITHUB_ENV
+        - name: Build MPICH ${{ env.MPICH_VERSION }}
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ${MPICH_DIR} ; mkdir ${MPICH_DIR} ; cd ${MPICH_DIR}
+            wget -q https://www.mpich.org/static/downloads/${MPICH_VERSION}/mpich-${MPICH_VERSION}.tar.gz
+            gzip -dc mpich-${MPICH_VERSION}.tar.gz | tar -xf -
+            cd mpich-${MPICH_VERSION}
+            ./configure --prefix=${MPICH_DIR} \
+                        --silent \
+                        --enable-romio \
+                        --with-file-system=ufs \
+                        --with-device=ch3:sock \
+                        --disable-fortran \
+                        CC=gcc
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s -j 8 distclean >> qout 2>&1
+        - name: Install HDF5 ${{ env.HDF5_VERSION }}
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ${HDF5_ROOT} ; mkdir ${HDF5_ROOT} ; cd ${HDF5_ROOT}
+            VER_MAJOR=${HDF5_VERSION%.*}
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+            tar -zxf hdf5-${HDF5_VERSION}.tar.gz
+            cd hdf5-${HDF5_VERSION}
+            ./configure --prefix=${HDF5_ROOT} \
+                        --silent \
+                        --enable-parallel \
+                        --enable-build-mode=production \
+                        --enable-unsupported \
+                        --enable-threadsafe \
+                        --disable-doxygen-doc \
+                        --disable-doxygen-man \
+                        --disable-doxygen-html \
+                        --disable-tests \
+                        --disable-fortran \
+                        --disable-cxx \
+                        CC=${MPICH_DIR}/bin/mpicc
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s -j 8 distclean >> qout 2>&1
+        - name: Dump config.log file if build HDF5 failed
+          if: ${{ failure() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            cat ${HDF5_ROOT}/hdf5-${HDF5_VERSION}/config.log
+        - name: Install Argobots ${{ env.ARGOBOTS_VERSION }}
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ${ABT_DIR} ; mkdir ${ABT_DIR} ; cd ${ABT_DIR}
+            wget -qc https://github.com/pmodels/argobots/archive/refs/tags/v${ARGOBOTS_VERSION}.tar.gz
+            tar -xf v${ARGOBOTS_VERSION}.tar.gz
+            cd argobots-${ARGOBOTS_VERSION}
+            ./autogen.sh
+            ./configure --prefix=${ABT_DIR} \
+                        --silent \
+                        CC=${MPICH_DIR}/bin/mpicc \
+                        CXX=${MPICH_DIR}/bin/mpicxx
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s -j 8 distclean >> qout 2>&1
+        - name: Install Async VOL master branch
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ${ASYNC_DIR} ; mkdir ${ASYNC_DIR} ; cd ${ASYNC_DIR}
+            # wget -qc https://github.com/hpc-io/vol-async/archive/refs/tags/v${ASYNC_VOL_VERSION}.tar.gz
+            # tar -xf v${ASYNC_VOL_VERSION}.tar.gz
+            # cd vol-async-${ASYNC_VOL_VERSION}
+            git clone https://github.com/hpc-io/vol-async.git
+            cd vol-async
+            mkdir build ; cd build
+            CC=${MPICH_DIR}/bin/mpicc CXX=${MPICH_DIR}/bin/mpicxx \
+              cmake .. -DCMAKE_INSTALL_PREFIX=${ASYNC_DIR}
+            make -j 8 install > qout 2>&1
+        - name: Install Cache VOL master branch
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ${CACHE_DIR} ; mkdir ${CACHE_DIR} ; cd ${CACHE_DIR}
+            git clone https://github.com/hpc-io/vol-cache.git
+            cd vol-cache
+            mkdir build ; cd build
+            CC=${MPICH_DIR}/bin/mpicc CXX=${MPICH_DIR}/bin/mpicxx \
+              CFLAGS=-DNDEBUG \
+              HDF5_VOL_DIR=${ASYNC_DIR} \
+              cmake .. -DCMAKE_INSTALL_PREFIX=${CACHE_DIR}
+            make -j 8 install > qout 2>&1
+        - name: Install Log VOL
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ${LOGVOL_DIR} ; mkdir ${LOGVOL_DIR} ; cd ${LOGVOL_DIR}
+            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.${LOG_VOL_VERSION}.tar.gz
+            tar -zxf logvol.${LOG_VOL_VERSION}.tar.gz
+            cd vol-log-based-logvol.${LOG_VOL_VERSION}
+            autoreconf -i
+            ./configure --prefix=${LOGVOL_DIR} \
+                        --silent \
+                        --with-hdf5=${HDF5_ROOT} \
+                        --with-mpi=${MPICH_DIR}
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s -j 8 distclean >> qout 2>&1
+        - name: Build E3SM_IO with HDF5 and Log VOL
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ./test_output
+            autoreconf -i
+            ./configure --with-mpi=${MPICH_DIR} \
+                        --with-hdf5=${HDF5_ROOT} \
+                        --with-logvol=${LOGVOL_DIR} \
+                        --enable-threading \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 8
+        - name: Print config.log if error
+          if: ${{ failure() }}
+          run: |
+            cat ${GITHUB_WORKSPACE}/config.log
+        - name: Test Cache and Async VOL - make check
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            export LD_LIBRARY_PATH="${LOGVOL_DIR}/lib:${CACHE_DIR}/lib:${ASYNC_DIR}/lib:${ABT_DIR}/lib:${HDF5_ROOT}/lib:${LD_LIBRARY_PATH}"
+            export HDF5_VOL_CONNECTOR="cache_ext config=${GITHUB_WORKSPACE}/cache.cfg;under_vol=512;under_info={under_vol=0;under_info={}}"
+            make -s check
+        - name: Print log files
+          if: ${{ always() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            cat test.sh.log
+            cat utils/*.log
+        - name: Test Cache and Async VOL - make ptest
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            export LD_LIBRARY_PATH="${LOGVOL_DIR}/lib:${CACHE_DIR}/lib:${ASYNC_DIR}/lib:${ABT_DIR}/lib:${HDF5_ROOT}/lib:${LD_LIBRARY_PATH}"
+            export HDF5_VOL_CONNECTOR="cache_ext config=${GITHUB_WORKSPACE}/cache.cfg;under_vol=512;under_info={under_vol=0;under_info={}}"
+            make -s ptest
+        - name: Test stacking Log VOL on top of Cache VOL only - make check
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            export LD_LIBRARY_PATH="${LOGVOL_DIR}/lib:${CACHE_DIR}/lib:${ASYNC_DIR}/lib:${ABT_DIR}/lib:${HDF5_ROOT}/lib:${LD_LIBRARY_PATH}"
+            export HDF5_VOL_CONNECTOR="LOG under_vol=513;under_info={config=${GITHUB_WORKSPACE}/cache.cfg;under_vol=0;under_info={}}"
+            make -s check
+        - name: Print log files
+          if: ${{ always() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            cat test.sh.log
+            cat utils/*.log
+        - name: Test stacking Log VOL on top of Cache VOL only - make ptest
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            export LD_LIBRARY_PATH="${LOGVOL_DIR}/lib:${CACHE_DIR}/lib:${ASYNC_DIR}/lib:${ABT_DIR}/lib:${HDF5_ROOT}/lib:${LD_LIBRARY_PATH}"
+            export HDF5_VOL_CONNECTOR="LOG under_vol=513;under_info={config=${GITHUB_WORKSPACE}/cache.cfg;under_vol=0;under_info={}}"
+            make -s ptest
+        - name: Test stacking Log VOL on top of Cache and Async VOL - make check
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            export LD_LIBRARY_PATH="${LOGVOL_DIR}/lib:${CACHE_DIR}/lib:${ASYNC_DIR}/lib:${ABT_DIR}/lib:${HDF5_ROOT}/lib:${LD_LIBRARY_PATH}"
+            export HDF5_VOL_CONNECTOR="LOG under_vol=513;under_info={config=${GITHUB_WORKSPACE}/cache.cfg;under_vol=512;under_info={under_vol=0;under_info={}}}"
+            make -s check
+        - name: Print log files
+          if: ${{ always() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            cat test.sh.log
+            cat utils/*.log
+        - name: Test stacking Log VOL on top of Cache and Async VOL - make ptest
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            export LD_LIBRARY_PATH="${LOGVOL_DIR}/lib:${CACHE_DIR}/lib:${ASYNC_DIR}/lib:${ABT_DIR}/lib:${HDF5_ROOT}/lib:${LD_LIBRARY_PATH}"
+            export HDF5_VOL_CONNECTOR="LOG under_vol=513;under_info={config=${GITHUB_WORKSPACE}/cache.cfg;under_vol=512;under_info={under_vol=0;under_info={}}}"
+            make -s ptest
+        - name: make distclean
+          if: ${{ always() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            make -s distclean
+
