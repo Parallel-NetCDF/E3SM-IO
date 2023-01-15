@@ -147,19 +147,21 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
     /* Set to use Log VOL connector only if the env HDF5_VOL_CONNECTOR has
      * not been set to use Log VOL yet.
      */
-    if (cfg->env_log_info != NULL) {
-        /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
-        void *log_info;
-        herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
-        CHECK_HERR
-        herr = H5Pset_vol(faplid, this->log_vlid, log_info);
-        CHECK_HERR
-        herr = H5VLfree_connector_info(this->log_vlid, log_info);
-        CHECK_HERR
-    }
-    else {
-        herr = H5Pset_vol(faplid, this->log_vlid, NULL);
-        CHECK_HERR
+    if (this->log_vlid >= 0) {
+        if (cfg->env_log_info != NULL) {
+            /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
+            void *log_info;
+            herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
+            CHECK_HERR
+            herr = H5Pset_vol(faplid, this->log_vlid, log_info);
+            CHECK_HERR
+            herr = H5VLfree_connector_info(this->log_vlid, log_info);
+            CHECK_HERR
+        }
+        else {
+            herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+            CHECK_HERR
+        }
     }
 
     // Enlarge metadata cache
@@ -229,19 +231,21 @@ int e3sm_io_driver_hdf5_log::open (std::string path, MPI_Comm comm, MPI_Info inf
     /* Set to use Log VOL connector only if the env HDF5_VOL_CONNECTOR has
      * not been set to use Log VOL yet.
      */
-    if (cfg->env_log_info != NULL) {
-        /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
-        void *log_info;
-        herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
-        CHECK_HERR
-        herr = H5Pset_vol(faplid, this->log_vlid, log_info);
-        CHECK_HERR
-        herr = H5VLfree_connector_info(this->log_vlid, log_info);
-        CHECK_HERR
-    }
-    else {
-        herr = H5Pset_vol(faplid, this->log_vlid, NULL);
-        CHECK_HERR
+    if (this->log_vlid >= 0) {
+        if (cfg->env_log_info != NULL) {
+            /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
+            void *log_info;
+            herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
+            CHECK_HERR
+            herr = H5Pset_vol(faplid, this->log_vlid, log_info);
+            CHECK_HERR
+            herr = H5VLfree_connector_info(this->log_vlid, log_info);
+            CHECK_HERR
+        }
+        else {
+            herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+            CHECK_HERR
+        }
     }
 
     // Enlarge metadata cache
