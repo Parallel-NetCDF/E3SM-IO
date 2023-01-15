@@ -93,10 +93,6 @@ mkdir -p ${TESTOUTDIR}
 for API in "${APIS[@]}" ; do
     ap=($API)
 
-    # unset the two VOL environment variables, in case they have been set
-    unset HDF5_PLUGIN_PATH
-    unset HDF5_VOL_CONNECTOR
-
     for CONFIG in "${CONFIGS[@]}" ; do
         IN_FILE="${srcdir}/datasets/${CONFIG}"
         OUT_FILE_BASE="${TESTOUTDIR}/${ap[0]}_${ap[1]}_${CONFIG}"
@@ -105,6 +101,8 @@ for API in "${APIS[@]}" ; do
            IN_FILE+=".${FILE_EXT}"
         elif test "x${ap[0]}" = xnetcdf4 ; then
            FILE_EXT="nc4"
+           saved_HDF5_PLUGIN_PATH=$HDF5_PLUGIN_PATH
+           saved_HDF5_VOL_CONNECTOR=$HDF5_VOL_CONNECTOR
            if test "x${ap[1]}" = xlog ; then
               # This option requires the two VOL environment variables to be set.
               export HDF5_PLUGIN_PATH="$LOGVOL_LIB_PATH"
@@ -113,6 +111,8 @@ for API in "${APIS[@]}" ; do
               IN_FILE+=".nc"
            else
               IN_FILE+=".${FILE_EXT}"
+              unset HDF5_PLUGIN_PATH
+              unset HDF5_VOL_CONNECTOR
            fi
         elif test "x${ap[0]:0:4}" = xhdf5 ; then # hdf5, hdf5_log, or hdf5_md
            FILE_EXT="h5"
@@ -143,6 +143,11 @@ for API in "${APIS[@]}" ; do
            CMD="${RUN} ${EXEC} -k -a ${ap[0]} -r 2 -x ${ap[1]} -y 2 -i ${OUT_FILE} ${IN_FILE}"
            echo "CMD = ${CMD}"
            ${CMD}
+        fi
+
+        if test "x${ap[0]}" = xnetcdf4 ; then
+           export HDF5_PLUGIN_PATH=$saved_HDF5_PLUGIN_PATH
+           export HDF5_VOL_CONNECTOR=$saved_HDF5_VOL_CONNECTOR
         fi
 
         # test replay on blob files
@@ -185,8 +190,13 @@ for API in "${APIS[@]}" ; do
 
         # for log strategy, check if the output files are log-based VOL files
         if test "x${ap[1]}" = xlog ; then
-           unset HDF5_VOL_CONNECTOR
-           unset HDF5_PLUGIN_PATH
+
+           # disable all VOLs to avoid debug message messing with the output of h5ldump
+           saved_HDF5_VOL_CONNECTOR=
+           if test "x$HDF5_VOL_CONNECTOR" != x ; then
+              saved_HDF5_VOL_CONNECTOR=$HDF5_VOL_CONNECTOR
+              unset HDF5_VOL_CONNECTOR
+           fi
 
            for f in ${REAL_OUT_FILE} ; do
              echo "CMD = $H5LDUMP -k $f"
@@ -200,6 +210,11 @@ for API in "${APIS[@]}" ; do
                 echo ""
              fi
            done
+
+           # restore HDF5_VOL_CONNECTOR for next run
+           if test "x$saved_HDF5_VOL_CONNECTOR" != x ; then
+              export HDF5_VOL_CONNECTOR=$saved_HDF5_VOL_CONNECTOR
+           fi
         fi
 
         # delete the output files/folder
