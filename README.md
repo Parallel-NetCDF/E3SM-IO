@@ -1,14 +1,16 @@
 ## Parallel I/O Kernel Case Study -- E3SM
 
 This repository contains a case study of parallel I/O kernel from the
-[E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model. The E3SM
-I/O module, [Scorpio](https://github.com/E3SM-Project/scorpio), can be built on
-top of [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF),
+[E3SM](https://github.com/E3SM-Project/E3SM) climate simulation model.
+E3SM is one of the Department of Energy (DOE) mission applications designed to
+run on the DOE leadership parallel computers. The E3SM I/O module,
+[Scorpio](https://github.com/E3SM-Project/scorpio), can make use of existing
+I/O libraries, such as [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF),
 [NetCDF-4](http://www.unidata.ucar.edu/software/netcdf),
 [HDF5](https://www.hdfgroup.org/solutions/hdf5), and
 [ADIOS](https://github.com/ornladios/ADIOS2).
-The benchmark program in this repository is designed to evaluate the E3SM I/O
-kernel using the above mentioned libraries to perform the I/O task.
+The benchmark program in this repository is developed to evaluate the E3SM I/O
+kernel performance using the above mentioned libraries.
 
 ### Data Partitioning Pattern in E3SM
 The problem domain in E3SM simulation is represented by a cubed sphere grid
@@ -30,6 +32,7 @@ maps used by different variables. A data decomposition map records the
 positions (offsets) of array elements written by each MPI process. The access
 offsets are stored in a text file, referred to as the "decomposition map file".
 
+### Three Case Studies
 This benchmark currently studies three cases from E3SM, namely F, G and I
 cases, simulating the atmospheric, oceanic, and land components, respectively.
 Information about the climate variables written in these three case studies and
@@ -38,7 +41,7 @@ their decomposition maps can be found in [variables.md](./docs/variables.md).
 ### Compile and Run Instructions for E3SM-IO
 * See [INSTALL.md](./docs/INSTALL.md). It also describes the command-line run
   options in details.
-* Current build status:
+* Current build/test status:
   [![MPICH](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml)
   [![OpenMPI](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
 
