@@ -8,38 +8,41 @@ top of [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF),
 [HDF5](https://www.hdfgroup.org/solutions/hdf5), and
 [ADIOS](https://github.com/ornladios/ADIOS2).
 The benchmark program in this repository is designed to evaluate the E3SM I/O
-kernel using the above mentioned libraries to perform the I/O task. The problem
-domain in E3SM simulation is represented by a cubed sphere grid which is
-partitioned among multiple processes along only X and Y axes that cover the
-surface of the problem domain. The partition pattern uses the
+kernel using the above mentioned libraries to perform the I/O task.
+
+### Data Partitioning Pattern in E3SM
+The problem domain in E3SM simulation is represented by a cubed sphere grid
+which is partitioned among multiple processes along only X and Y axes that
+cover the surface of the problem domain. Domain partitioning among processes
+uses the
 [Hilbert space curve algorithm](https://en.wikipedia.org/wiki/Hilbert_curve)
-to divide the linearized 2D cubed sphere grid into subgrids where data points
-in a subgrid are physically closer to each other than other partitioning
-strategies. The I/O challenge is that such data partitioning strategy produces
-in each process a long list of noncontiguous write requests, in which any two
-consecutive requests may not be in an increasing order in the file space.
+to first linearize the 2D cubed sphere grid into subgrids where data points in
+a subgrid are physically closer to each other, and then divide the linearized
+subgrids evenly among the processes. This partitioning strategy produces in
+each process a long list of small, noncontiguous write requests and the file
+offsets of any two consecutive requests may not be in an increasing order in
+the file space.
 
-The I/O patterns (describing the data decomposition of multi-dimensional arrays
-representing the problem domain among MPI processes) used in this case study
-were captured by the Scorpio library during the E3SM production runs. A data
-decomposition file records the data access patterns at the array element level
-by each MPI process. The access offsets are stored in a text file, referred to
-as the "decomposition map file". This benchmark currently studies three cases
-from E3SM, namely F, G and I cases. Information about the climate variables
-written in these three case studies and their decomposition maps can be found
-in [variables.md](./docs/variables.md).
+The data partitioning patterns (describing the decomposition of the problem
+domain represented by multi-dimensional arrays) were captured by the Scorpio
+library during the E3SM production runs. There can be multiple decomposition
+maps used by different variables. A data decomposition map records the
+positions (offsets) of array elements written by each MPI process. The access
+offsets are stored in a text file, referred to as the "decomposition map file".
 
-[BLOB_IO.md](./docs/BLOB_IO.md) describes the designs of blob I/O methods
-implemented in this benchmark. Blob I/O methods store data in a timely
-log-based layout in files.
+This benchmark currently studies three cases from E3SM, namely F, G and I
+cases, simulating the atmospheric, oceanic, and land components, respectively.
+Information about the climate variables written in these three case studies and
+their decomposition maps can be found in [variables.md](./docs/variables.md).
 
 ### Compile and Run Instructions for E3SM-IO
-* See [INSTALL.md](./docs/INSTALL.md)
+* See [INSTALL.md](./docs/INSTALL.md). It also describes the command-line run
+  options in details.
 * Current build status:
   [![MPICH](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/mpich_static.yml)
   [![OpenMPI](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml/badge.svg)](https://github.com/Parallel-NetCDF/E3SM-IO/actions/workflows/ubuntu_ompi.yml)
 
-### Run Options of Using Various I/O Libraries and Two Data Layouts
+### Run Options Include Various I/O Libraries and Two Data Layouts
 There are several I/O methods implemented in this case study, including two
 data layouts (canonical vs. log) and five parallel I/O libraries of
 [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF),
@@ -49,7 +52,7 @@ data layouts (canonical vs. log) and five parallel I/O libraries of
 [ADIOS](https://github.com/ornladios/ADIOS2).
 Table below summarizes the supported combinations of libraries and data
 layouts. For the full list of I/O options and more detailed descriptions,
-readers are referring to [INSTALL.md](./docs/INSTALL.md).
+readers are referred to [INSTALL.md](./docs/INSTALL.md).
 
 | layout \ library | PnetCDF | HDF5 | Log VOL | NetCDF4  | ADIOS |
 |------------------|:-------:|:----:|:-------:|:--------:|:-----:|
@@ -57,6 +60,19 @@ readers are referring to [INSTALL.md](./docs/INSTALL.md).
 | log (blob)       | yes     | no   | yes     | no       | yes   |
 
 ### Performance Results of Log-layout I/O Methods
+For the log layout options available in this benchmark, users are referred to
+[BLOB_IO.md](./docs/BLOB_IO.md) for their designs and implementations. Log I/O
+methods store write requests by appending the write data one after another,
+like a time log, regardless the data's position relative to its global
+structure, e.g. a subarray of a multi-dimensional array. Thus data stored in
+the file does not follow the dimensional canonical order. On the other hand,
+storing data in the canonical order requires an expensive communication to
+organize the data among the processes. As the number of processes increases,
+the communication cost can become significant. All I/O methods that store data
+in the log layout defers the expensive inter-process communication to the data
+consumer applications. Usually, "replay" utility programs are made available
+for users to convert a file in the log layout to the canonical layout.
+
 * Below shows the execution times of four log-layout based I/O methods
   collected on July 2022 on [Cori](https://docs.nersc.gov/systems/cori/) at
   [NERSC](https://www.nersc.gov).
