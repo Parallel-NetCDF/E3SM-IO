@@ -83,7 +83,7 @@
     [src/cases/header_def_F_case.cpp](../src/cases/header_def_F_case.cpp)). For
     example, given 6 dimensions defined in a NetCDF file, variable `CLOUD` is
     originally defined as a 3D array of dimension `time` x `lev` x `ncol`.
-    ```
+    ```c
     time = UNLIMITED ; // (1 currently)
     nbnd = 2 ;
     chars = 8 ;
@@ -95,7 +95,7 @@
     ```
     Because variable `CLOUD` is decomposed using map D3 and D3 decomposes along
     dimension `lev` and `ncol`, definition of `CLOUD`is now changed to
-    ```
+    ```c
     float CLOUD(time, D3.nelems) ;
           CLOUD:decomposition_ID = 3 ;
           CLOUD:global_dimids = 0, 3, 5 ;
@@ -115,14 +115,14 @@
     always describe the starting offsets to a variable and number of array
     elements in the blob. `count` is first calculated based on the number of
     elements written by a process.
-    ```
+    ```c
     for (i=0; i<decom->num_decomp; i++) {
         for (j=0; j<decom->contig_nreqs[i]; j++)
             decom->count[i] += decom->blocklens[i][j];
     ```
     `count` is then used to calculate `start`. Note `start` of a process
     depends on the amounts decomposed to processes of lower ranks.
-    ```
+    ```c
     err = MPI_Exscan(decom->count, decom->start, decom->num_decomp, MPI_OFFSET,
                      MPI_SUM, cfg->sub_comm);
     ```
@@ -148,7 +148,7 @@
 * This I/O operation is triggered when the E3SM-IO command-line options "-a
   hdf5 -x blob" are used.
 * Each HDF5 (sub)file contains only two datasets. For example,
-  ```
+  ```console
   % h5ls -r blob_F_out_h0.h5.0000
   /                        Group
   /data_blob               Dataset {9612472}

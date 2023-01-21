@@ -55,7 +55,7 @@ file into the NetCDF file.
   * `piodecomp16tasks16io02dims_ioid_548.dat`  (decomposition along the fastest two dimensions)
 * The input file to `dat2nc` is a text file contains a list of decomposition map
   file names. An example is provided in [./input_files_f_case.txt](input_files_f_case.txt).
-  ```
+  ```console
   % cat ./input_files_f_case.txt
   ../datasets/piodecomp16tasks16io01dims_ioid_514.dat
   ../datasets/piodecomp16tasks16io01dims_ioid_516.dat
@@ -63,11 +63,11 @@ file into the NetCDF file.
   ```
 * The command to convert and combine the three `.dat` files from the small F case
   example to a NetCDF file is:
-  ```
+  ```console
   % ./dat2nc -i input_files_f_case.txt -o map_f_case_16p.nc
   ```
 * Full list of command-line options of `./dat2nc`:
-  ```
+  ```console
   % ./dat2nc -h
   Usage: dat2nc [-h|-v|-r|-f|-s|-l num] -i input_file -o out_file
   -h             Print help
@@ -84,7 +84,7 @@ file into the NetCDF file.
   decomposition `.dat` files is also provided in folder `../datasets`.
   Its metadata can be obtained from running NetCDF utility program `ncdump`
   or `ncmpidump` and is shown below.
-  ```
+  ```console
     % cd ./datasets
     % ncmpidump -h map_f_case_16p.nc
     netcdf map_f_case_16p {
@@ -185,11 +185,11 @@ format.
   + 
 * The command to combine the three `.dat` files for the small F case to a HDF5
   file is:
-  ```
+  ```console
   % ./dat2decomp -a hdf5 -i input_files_f_case.txt -o map_f_case_16p.nc
   ```
 * Command-line options of `./dat2decomp`:
-  ```
+  ```console
   % ./dat2decomp -h
   Usage: ./dat2decomp [-h|-v|-r|-f|-s|-l num] -a fmt -i input_file -o out_file
   -h             Print help
@@ -216,11 +216,11 @@ NetCDF4, or ADIOS BP format to a new file in a different format.
   corresponding input and output file formats. For instance, to convert a
   NetCDF CDF5 file to an HDF5 file, `e3sm_io` must be configured with
   `--with-pnetcdf` and `--with-hdf5`. Below is an example command.
-  ```
+  ```console
   % ./decomp_copy -a hdf5 -i map_f_case_16p.nc -o map_f_case_16p.h5
   ```
 * Command-line options of `./decomp_copy`:
-  ```
+  ```console
   % ./decomp_copy -h
   Usage: ./decomp_copy [-h|-v] -a fmt -i input_file -o out_file
      [-h]            Print help
@@ -240,7 +240,7 @@ NetCDF4, or ADIOS BP format to a new file in a different format.
 report some statistics of the decomposition.
 
 * Command-line options of `datstat`:
-  ```
+  ```console
   % ./datstat -h
   Usage: ./datstat [OPTION]...
          -h             Print help
@@ -248,7 +248,7 @@ report some statistics of the decomposition.
   ```
 
 * Example run:
-  ```
+  ```console
     % ./datstat -d ../datasets/piodecomp16tasks16io01dims_ioid_514.dat
     =========================================================================
     Deomposition file ../datasets/piodecomp16tasks16io01dims_ioid_514.dat
@@ -271,7 +271,7 @@ ADIOS2 BP3 file. If the input path name is a folder containing sub-files, the
 path name should be without the .dir extension.
 
 * Command-line options of `bpstat`:
-  ```
+  ```console
   % ./bpstat -h
   Usage: ./bpstat [OPTION]...
          -v    Verbose mode
@@ -280,7 +280,7 @@ path name should be without the .dir extension.
   ```
 
 * Example run:
-  ```
+  ```console
   % ./bpstat ./f_case_h0.bp
   Num subfiles: 1
   Num variables: 1203
@@ -300,7 +300,7 @@ the subfiles. The future work will remove such limitation to allow less number
 of MPI processes to convert.
 
 * Command-line options of `pnetcdf_blob_replay`:
-  ```
+  ```console
   % ./pnetcdf_blob_replay -h
   Usage: pnetcdf_blob_replay [OPTION]... FILE
       [-h] Print help
@@ -309,7 +309,7 @@ of MPI processes to convert.
       -o file  Output file name
   ```
 * Example run:
-  ```
+  ```console
     % mpiexec -n 16 ./pnetcdf_blob_replay -i blob_F_out_h0.nc -o F_out_h0.nc
       Input subfile base name            = blob_F_out_h0.nc
       Output file name                   = F_out_h0.nc

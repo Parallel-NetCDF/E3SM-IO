@@ -20,8 +20,8 @@
 * (Optional) [PnetCDF 1.12.3](https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz)
 * (Optional) [HDF5 1.14.0](https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.0/src/hdf5-1.14.0.tar.gz)
   + Configured with parallel I/O support (configured with `--enable-parallel` is required)
-* (Optional) [HDF5 Log VOL connector](https://github.com/DataLib-ECP/vol-log-based.git)
-  + Experimental software developed as part of the Datalib project
+* (Optional) [HDF5 Log VOL connector](https://github.com/DataLib-ECP/vol-log-based.git) 1.4.0
+  + Software developed as part of the Datalib project
 * (Optional) [ADIOS 2.8.3](https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.8.3.tar.gz)
   + Configured with parallel I/O support (cmake with `-DADIOS2_USE_MPI=ON` is required)
 * (Optional) [NetCDF-C 4.9.0](https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz)
@@ -37,7 +37,7 @@
   + Run `make install`
   + Example build commands are given below. This example will install
     the PnetCDF library under folder `${HOME}/PnetCDF/1.12.3`.
-    ```
+    ```console
     % wget https://parallel-netcdf.github.io/Release/pnetcdf-1.12.3.tar.gz
     % tar -zxf pnetcdf-1.12.3.tar.gz
     % cd pnetcdf-1.12.3
@@ -50,7 +50,7 @@
   + Run `make install`
   + Example build commands are given below. This example will install
     the HDF5 library under the folder `${HOME}/HDF5/1.14.0`.
-    ```
+    ```console
     % wget https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.14/hdf5-1.14.0/src/hdf5-1.14.0.tar.gz
     % tar -zxf hdf5-1.14.0.tar.gz
     % cd hdf5-1.14.0
@@ -63,7 +63,7 @@
     + Enable shared library support (--enable-shared)
     + Compile with zlib library to enable metadata compression (--enable-zlib)
   + Example commands are given below.
-    ```
+    ```console
     % wget https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.1.4.0.tar.gz
     % tar -zxf logvol.1.4.0.tar.gz
     % cd vol-log-based-logvol.1.4.0
@@ -76,7 +76,7 @@
   + Run `make install`
   + Example build commands are given below. This example will install
     the ADIOS2 library under the folder `${HOME}/ADIOS2/2.8.3`.
-    ```
+    ```console
     % wget https://github.com/ornladios/ADIOS2/archive/refs/tags/v2.8.3.tar.gz
     % tar -zxf v2.8.3.tar.gz
     % mkdir ADIOS2_BUILD
@@ -90,7 +90,7 @@
   + Run `make install`
   + Example build commands are given below. This example will install
     the NetCDF library under the folder `${HOME}/NetCDF/4.9.0`.
-    ```
+    ```console
     % wget https://github.com/Unidata/netcdf-c/archive/refs/tags/v4.9.0.tar.gz
     % tar -zxf v4.9.0.tar.gz
     % cd netcdf-c-4.9.0
@@ -123,13 +123,13 @@
       benchmark with NetCDF4 I/O methods.
   + Run `make`
   + Example commands are given below.
-    ```
+    ```console
     % git clone https://github.com/Parallel-NetCDF/E3SM-IO.git
     % cd E3SM-IO
     % autoreconf -i
     % ./configure --with-pnetcdf=${HOME}/PnetCDF/1.12.3 \
-                  --with-hdf5=${HOME}/HDF5/1.13.2 \
-                  --with-logvol=${HOME}/Log_VOL/1.2.0 \
+                  --with-hdf5=${HOME}/HDF5/1.14.0 \
+                  --with-logvol=${HOME}/Log_VOL/1.4.0 \
                   --with-adios2=${HOME}/ADIOS2/2.8.3 \
                   --with-netcdf4=${HOME}/NetCDF/4.9.0 \
                   CC=mpicc CXX=mpicxx
@@ -158,7 +158,7 @@
 * Example run commands using `mpiexec` and 16 MPI processes are given below.
   + Run the write test with default settings, i.e. using PnetCDF library and
     producing files storing variables in a canonical data layout.
-    ```
+    ```console
     % mpiexec -n 16 src/e3sm_io -o can_F_out.nc datasets/map_f_case_16p.nc
     ```
 * The number of MPI processes used to run this benchmark can be smaller than
@@ -173,7 +173,7 @@
   no data to write but still participate the collective I/O in the benchmark.
 
 * Command-line Options:
-  ```
+  ```console
     % ./e3sm_io -h
     Usage: ./e3sm_io [OPTION] FILE
        [-h] Print this help message
@@ -244,7 +244,7 @@
       output folder with a high file striping count to obtain a good I/O
       performance.
     * Example run command:
-      ```
+      ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.nc -k -o can_F_out.nc -a pnetcdf -x canonical -r 25
       ```
   + **-a pnetcdf -x blob**
@@ -263,7 +263,7 @@
       contiguous file space, called blob. Within that blob, data layout follows
       the process rank order.
     * Example run command:
-      ```
+      ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.nc -k -o blob_F_out.nc -a pnetcdf -x blob -r 25
       ```
   + **-a hdf5 -x canonical**
@@ -275,7 +275,7 @@
       then the output file will be in the log layout.  Running command
       `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
     * Example run command:
-      ```
+      ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5 -x canonical -r 25
       ```
   + **-a hdf5 -x blob**
@@ -297,7 +297,7 @@
       A utility tool program will be developed in the future to convert the
       subfiles into a single regular HDF5 file.
     * Example run command:
-      ```
+      ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o blob_F_out.h5 -a hdf5 -x blob -r 25
       ```
     * If the environment variable HDF5_VOL_CONNECTOR is set to use Log VOL,
@@ -316,7 +316,7 @@
     * The output file is a valid HDF5 file but requires the Log VOL connector
       to read and understand the data structures.
     * Example run command:
-      ```
+      ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5 -x log -r 25
       ```
   + **-a hdf5_md -x canonical**
@@ -329,7 +329,7 @@
       to independent internally when one of the datasets requires data type
       conversion. See https://github.com/HDFGroup/hdf5/issues/1859
     * Example run command:
-      ```
+      ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5_md -x canonical -r 25
       ```
   + **-a hdf5_md -x log**
@@ -348,7 +348,7 @@
     * Datasets stored in the output will be in the log layout. Running command
       `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
     * Example run command:
-      ```
+      ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o log_F_out.h5 -a hdf5_log -x log -r 25
       ```
   + **-a hdf5_log -x canonical**
@@ -364,7 +364,7 @@
     * Because the number of write requests are different among processes, the
       independent I/O mode is used when writing the data to files.
     * Example run command:
-      ```
+      ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.nc4 -k -o can_F_out.nc4 -a netcdf4 -x canonical -r 25
       ```
     * If environment variables `HDF5_VOL_CONNECTOR` and `HDF5_PLUGIN_PATH` are
@@ -381,7 +381,7 @@
       understand the data structures.
     * Running command `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
     * Example run command:
-      ```
+      ```console
       export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${HOME}/LOG_VOL/lib
       export HDF5_PLUGIN_PATH=${HOME}/LOG_VOL/lib
       export HDF5_VOL_CONNECTOR="LOG under_vol=0;under_info={}"
@@ -408,7 +408,7 @@
       by expanding the offset and length pairs in the converted decomposition
       map into list of offsets accessed.
     * Example run command:
-      ```
+      ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.bp -k -o blob_F_out -a adios -x blob -r 25
       ```
 ### Run E3SM-IO with Cache VOL and Async VOL:
@@ -442,7 +442,7 @@
   nodes, 64 MPI processes per node, is provided in [slurm.knl](./slurm.knl).
 
 ## Example Output Shown on Screen
-```
+```console
   % mpiexec -n 16 src/e3sm_io -o can_F_out.nc datasets/map_f_case_16p.nc
   ==== Benchmarking F case =============================
   Total number of MPI processes      = 16
