@@ -139,25 +139,24 @@ int e3sm_io_driver_hdf5::post_varn(int            fid,
     CHECK_HID (ndim)
 
     /* set filespace selection */
-    for (i=0; i<nreqs; i++) {
-        rsize = 1;
-        for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
-        if (rsize == 0) continue;
-        rsize_all += rsize;
+    if (ndim > 0) { /* select hyperslab filespace only for non-scalar datasets */
+        for (i=0; i<nreqs; i++) {
+            rsize = 1;
+            for (j = 0; j < ndim; j++) { rsize *= counts[i][j]; }
+            if (rsize == 0) continue;
+            rsize_all += rsize;
 
-        /* select hyperslab filespace only for non-scalar datasets */
-        if (ndim == 0) break;
+            /* type cast from MPI_Offset to hsize_t */
+            for (j = 0; j < ndim; j++) {
+                start[j] = (hsize_t)starts[i][j];
+                block[j] = (hsize_t)counts[i][j];
+            }
 
-        /* type cast from MPI_Offset to hsize_t */
-        for (j = 0; j < ndim; j++) {
-            start[j] = (hsize_t)starts[i][j];
-            block[j] = (hsize_t)counts[i][j];
+            /* union all nreqs hyperslabs */
+            herr = H5Sselect_hyperslab (dsid, op, start, NULL, this->one, block);
+            CHECK_HERR
+            op = H5S_SELECT_OR;
         }
-
-        /* union all nreqs hyperslabs */
-        herr = H5Sselect_hyperslab (dsid, op, start, NULL, this->one, block);
-        CHECK_HERR
-        op = H5S_SELECT_OR;
     }
 
     if (rsize_all > 0) {
@@ -185,6 +184,7 @@ int e3sm_io_driver_hdf5::post_varn(int            fid,
             fp->rbufs.push_back(buf);
         }
 
+        /* retrieve external data type */
         tid   = H5Dget_type (did);
         tsize = H5Tget_size (tid);
         if (isWrite)
