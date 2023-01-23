@@ -50,7 +50,10 @@ void check_connector_env(e3sm_io_config *cfg) {
 
     env_str = strdup(env_str);
     char *connector = strtok(env_str, "  \t\n\r");
-    if (connector == NULL) return;
+    if (connector == NULL) {
+        free(env_str);
+        return;
+    }
 
     if (strcmp(connector, "LOG") == 0) {
         /* if LOG is set in HDF5_VOL_CONNECTOR */
@@ -70,6 +73,7 @@ void check_connector_env(e3sm_io_config *cfg) {
         sprintf(cfg->env_log_info, "under_vol=512;under_info={%s}", info_str);
         cfg->env_async = 1;
     }
+    free(env_str);
 }
 
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
