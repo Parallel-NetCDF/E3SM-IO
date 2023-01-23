@@ -694,9 +694,8 @@ int e3sm_io_driver_hdf5::put_att (
     int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];
-    hid_t asid = -1, aid = -1;
-    hid_t did, h5_xtype  = -1;
-    hsize_t asize;
+    hid_t asid = -1, aid = -1, did, h5_xtype  = -1;
+    hsize_t asize, esize;
     htri_t exists;
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
@@ -717,10 +716,12 @@ int e3sm_io_driver_hdf5::put_att (
         CHECK_HERR
         herr = H5Tset_strpad (h5_xtype, H5T_STR_NULLTERM);
         CHECK_HERR
+        esize = 1;
     } else {
         asid = H5Screate_simple (1, &asize, &asize);
         CHECK_HID (asid)
         h5_xtype = e3sm_io_type_nc2hdf5 (xtype);
+        esize = H5Tget_size (h5_xtype);
     }
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5_PUT_ATT)
@@ -738,10 +739,8 @@ int e3sm_io_driver_hdf5::put_att (
 
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_HDF5_PUT_ATT)
 
-    if (fp->rank == 0) {
-        size_t esize = H5Tget_size (h5_xtype);
+    if (fp->rank == 0)
         this->amount_WR += asize * esize;
-    }
 
 err_out:;
     if (asid >= 0) H5Sclose (asid);
@@ -777,6 +776,9 @@ int e3sm_io_driver_hdf5::get_att (int fid, int vid, std::string name, void *buf)
     herr = H5Aread (aid, tid, buf);
     CHECK_HERR
 
+    /* For string attributes, asize must be 1 as E3SM writes only single string
+     * attributes. For other types, attributes are either scalars or 1D arrays.
+     */
     asid = H5Aget_space (aid);
     CHECK_HID (asid)
     herr = H5Sget_simple_extent_dims (asid, &asize, NULL);
