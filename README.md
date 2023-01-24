@@ -57,10 +57,10 @@ Table below summarizes the supported combinations of libraries and data
 layouts. For the full list of I/O options and more detailed descriptions,
 readers are referred to [INSTALL.md](./docs/INSTALL.md).
 
-| layout \ library | PnetCDF | HDF5 | Log VOL | NetCDF4  | ADIOS |
-|------------------|:-------:|:----:|:-------:|:--------:|:-----:|
-| canonical        | yes     | yes  | no      | yes      | no    |
-| log (blob)       | yes     | no   | yes     | no       | yes   |
+| layout \ library | PnetCDF | HDF5 | Log VOL | ADIOS | NetCDF4 |
+|------------------|:-------:|:----:|:-------:|:-----:|:-------:|
+| canonical        | yes     | yes  | no      | no    | yes     |
+| log (blob)       | yes     | yes  | yes     | yes   | no      |
 
 ### Performance Results of Log-layout I/O Methods
 For the log layout options available in this benchmark, users are referred to
