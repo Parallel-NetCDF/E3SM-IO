@@ -240,6 +240,7 @@ int main (int argc, char **argv) {
     cfg.sub_comm       = MPI_COMM_NULL;
     cfg.comp_time      = 0;
     cfg.fill_mode      = 0;
+    cfg.env_log_info   = NULL;
 
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
         cfg.G_case.nvars_D[i]    = 0;
