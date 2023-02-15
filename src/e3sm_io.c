@@ -479,12 +479,16 @@ int main (int argc, char **argv) {
                     }
                     break;
                 case log:
+#ifndef ENABLE_LOGVOL
+                    ERR_OUT("Option -a hdf5 -x log required Log VOL feature enabled at the configure time")
+#endif
                     /* output file layout will be log */
                     if (cfg.rank == 0 && cfg.verbose)
                         printf("VERBOSE: I/O API: HDF5, strategy: log\n");
                     /* if HDF5_VOL_CONNECTOR is not set to use Log VOL, then
                      * H5Pset_vol() will be called. Otherwise, no H5Pset_vol()
-                     * is called.
+                     * is called. This requires Log VOL feature enabled at the
+                     * configure time.
                      */
                     break;
                 default:

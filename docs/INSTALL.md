@@ -304,9 +304,11 @@
       then the subfiles will also be in the log layout. Running command
       `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
   + **-a hdf5 -x log**
+    * This option requires the Log VOL feature enabled at the configure time,
+      i.e. "`--with-logvol=${LOGVOL_DIR}`" used at the configure command line.
     * All datasets stored in the files will be in the log layout. Running
       command `h5ldump -k` will show the file kind of `HDF5-LogVOL`.
-    * This option writes/reads data using HDF5 APIs `H5Dwrite`/`H5Dread`.
+    * E3SM-IO will write/read data using HDF5 APIs `H5Dwrite`/`H5Dread`.
     * If the environment variable `HDF5_VOL_CONNECTOR` is unset or set without
       Log VOL, then E3SM-IO will explicitly call `H5Pset_vol()` to enable the
       HDF5 Log VOL connector.
