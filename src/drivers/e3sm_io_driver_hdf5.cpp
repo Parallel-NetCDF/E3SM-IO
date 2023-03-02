@@ -165,7 +165,9 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
          * not been set to use Log VOL yet.
          */
         if (cfg->env_log_info != NULL) {
-            /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
+            /* use VOL connector info string from env HDF5_VOL_CONNECTOR for
+             * case of stacking Log VOL on top of other VOLs
+             */
             void *log_info;
             herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
             CHECK_HERR
@@ -175,7 +177,13 @@ int e3sm_io_driver_hdf5::create (std::string path, MPI_Comm comm, MPI_Info info,
             CHECK_HERR
         }
         else {
-            herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+            /* HDF5_VOL_CONNECTOR is not set, use native VOL connector
+             * See https://github.com/HDFGroup/hdf5/issues/2417
+             */
+            H5VL_pass_through_info_t passthru_info;
+            passthru_info.under_vol_id   = H5VL_NATIVE;
+            passthru_info.under_vol_info = NULL;
+            herr = H5Pset_vol(faplid, this->log_vlid, &passthru_info);
             CHECK_HERR
         }
     }
@@ -242,7 +250,9 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
          * not been set to use Log VOL yet.
          */
         if (cfg->env_log_info != NULL) {
-            /* use VOL connector info string from env HDF5_VOL_CONNECTOR */
+            /* use VOL connector info string from env HDF5_VOL_CONNECTOR for
+             * case of stacking Log VOL on top of other VOLs
+             */
             void *log_info;
             herr = H5VLconnector_str_to_info(cfg->env_log_info, this->log_vlid, &log_info);
             CHECK_HERR
@@ -252,7 +262,13 @@ int e3sm_io_driver_hdf5::open (std::string path, MPI_Comm comm, MPI_Info info, i
             CHECK_HERR
         }
         else {
-            herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+            /* HDF5_VOL_CONNECTOR is not set, use native VOL connector
+             * See https://github.com/HDFGroup/hdf5/issues/2417
+             */
+            H5VL_pass_through_info_t passthru_info;
+            passthru_info.under_vol_id   = H5VL_NATIVE;
+            passthru_info.under_vol_info = NULL;
+            herr = H5Pset_vol(faplid, this->log_vlid, &passthru_info);
             CHECK_HERR
         }
     }

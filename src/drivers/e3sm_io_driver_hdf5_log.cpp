@@ -159,7 +159,13 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
             CHECK_HERR
         }
         else {
-            herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+            /* HDF5_VOL_CONNECTOR is not set, use native VOL connector
+             * See https://github.com/HDFGroup/hdf5/issues/2417
+             */
+            H5VL_pass_through_info_t passthru_info;
+            passthru_info.under_vol_id   = H5VL_NATIVE;
+            passthru_info.under_vol_info = NULL;
+            herr = H5Pset_vol(faplid, this->log_vlid, &passthru_info);
             CHECK_HERR
         }
     }
@@ -243,7 +249,13 @@ int e3sm_io_driver_hdf5_log::open (std::string path, MPI_Comm comm, MPI_Info inf
             CHECK_HERR
         }
         else {
-            herr = H5Pset_vol(faplid, this->log_vlid, NULL);
+            /* HDF5_VOL_CONNECTOR is not set, use native VOL connector
+             * See https://github.com/HDFGroup/hdf5/issues/2417
+             */
+            H5VL_pass_through_info_t passthru_info;
+            passthru_info.under_vol_id   = H5VL_NATIVE;
+            passthru_info.under_vol_info = NULL;
+            herr = H5Pset_vol(faplid, this->log_vlid, &passthru_info);
             CHECK_HERR
         }
     }
