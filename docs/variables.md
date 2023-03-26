@@ -5,12 +5,12 @@ F, G, and I cases. Both F and I cases create two history files, namely 'h0' and
 
 |           Case/History |    F/h0 |    F/h1 |     G  |   I/h0 |   I/h1 |
 |-----------------------:|--------:|--------:|-------:|-------:|-------:|
-|                Map 1   |       1 |      1  |      6 |    465 |    465 |
-|                Map 2   |     323 |      22 |      2 |     75 |     69 |
-|                Map 3   |      63 |       1 |     25 |      4 |      2 |
-|                Map 4   |         |         |      2 |      1 |      1 |
-|                Map 5   |         |         |      2 |      1 |      1 |
-|                Map 6   |         |         |      4 |        |        |
+|     # vars use Map 1   |       1 |      1  |      6 |    465 |    465 |
+|     # vars use Map 2   |     323 |      22 |      2 |     75 |     69 |
+|     # vars use Map 3   |      63 |       1 |     25 |      4 |      2 |
+|     # vars use Map 4   |         |         |      2 |      1 |      1 |
+|     # vars use Map 5   |         |         |      2 |      1 |      1 |
+|     # vars use Map 6   |         |         |      4 |        |        |
 | # partitioned vars     |     387 |      24 |     41 |    546 |    538 |
 | # non-partitioned vars |      27 |      27 |     11 |     14 |     14 |
 | Total # variables      |     414 |      51 |     52 |    560 |    552 |
