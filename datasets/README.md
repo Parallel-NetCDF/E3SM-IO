@@ -61,3 +61,7 @@
   |               |                     | ltype = 9    |
   |               |                     | natpft = 17  |
 
+* For information about the statistics of decomposition maps and variables that
+  are partitioned using the maps, readers are referred to
+  [../docs/variables.md](../docs/variables.md).
+
