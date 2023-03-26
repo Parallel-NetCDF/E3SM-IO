@@ -1,6 +1,27 @@
 ## Variables and Their Decomposition Maps Used in E3SM
-This E3SM I/O kernel benchmark includes three common simulation cases, namely F, G, and I cases.
+This E3SM I/O kernel benchmark includes three common simulation cases, namely
+F, G, and I cases. Both F and I cases create two history files, namely 'h0' and
+'h1'.
 
+|           Case/History |    F/h0 |    F/h1 |     G  |   I/h0 |   I/h1 |
+|-----------------------:|--------:|--------:|-------:|-------:|-------:|
+|                Map 1   |       1 |      1  |      6 |    465 |    465 |
+|                Map 2   |     323 |      22 |      2 |     75 |     69 |
+|                Map 3   |      63 |       1 |     25 |      4 |      2 |
+|                Map 4   |         |         |      2 |      1 |      1 |
+|                Map 5   |         |         |      2 |      1 |      1 |
+|                Map 6   |         |         |      4 |        |        |
+| # partitioned vars     |     387 |      24 |     41 |    546 |    538 |
+| # non-partitioned vars |      27 |      27 |     11 |     14 |     14 |
+| Total # variables      |     414 |      51 |     52 |    560 |    552 |
+| MAX # noncontig reqs   | 184,644 | 173,206 | 21,110 | 41,400 | 38,650 |
+| MIN # noncontig reqs   | 174,926 | 164,090 | 18,821 | 33,120 | 30,920 |
+
+`MAX # noncontig reqs` is the maximum number of noncontiguous write requests among all processes.
+
+`MIN # noncontig reqs` is the minimum number of noncontiguous write requests among all processes.
+
+## F case
 * **F case** uses 3 decomposition maps and produces 2 files.
   + **h0** file: There are 414 climate variables stored in the 'h0' file.
     + Among the 414 variables, 6 are scalar variables and 408 are array variables.
@@ -39,6 +60,7 @@ This E3SM I/O kernel benchmark includes three common simulation cases, namely F,
       * 22 use decomposition map 1, and
       * 1 uses decomposition map 2.
 
+## G case
 * **G case** uses 6 decomposition maps and produces one file.
   + There are 52 climate variables stored in the output file.
   + All 52 variables are array variables. None is scalar.
@@ -61,6 +83,7 @@ This E3SM I/O kernel benchmark includes three common simulation cases, namely F,
     * 2 use decomposition map 4, and
     * 4 use decomposition map 5.
 
+## I case
 * **I case** uses 5 decomposition maps and produces 2 files.
   + **h0** file: There are 560 climate variables stored in the 'h0' file.
     + All 560 variables are array variables. None is scalar.
@@ -106,10 +129,22 @@ This E3SM I/O kernel benchmark includes three common simulation cases, namely F,
       * 1 uses decomposition map 3, and
       * 1 uses decomposition map 4.
 
+## The decomposition maps
 * The decomposition map files from the E3SM production runs are available upon request.
   + `piodecomp21600tasks_F_case.nc` (266 MB) for F case produced from 21600
     processes.
   + `GMPAS-NYF_T62_oRRS18to6v3_9600p.nc` (303 MB) for G case produced from 9600
     processes.
   + `i_case_1344p.nc` (12 MB)for I case produced from 1344 processes.
+
+* The partitioning dimension sizes of each decomposition map are given below.
+
+| Case  |           F |              G  |               I |
+|------:|:-----------:|:---------------:|:---------------:|
+| Map 1 |      48,602 |  3,693,225      |       360 x 720 |
+| Map 2 |      48,602 | 11,135,652      |  15 x 360 x 720 |
+| Map 3 | 72 x 48,602 |  3,693,225 x 80 |  10 x 360 x 720 |
+| Map 4 |             | 11,135,652 x 80 |  19 x 360 x 720 |
+| Map 5 |             |  7,441,216 x 80 |  17 x 360 x 720 |
+| Map 6 |             |  3,693,225 x 81 |                 |
 
