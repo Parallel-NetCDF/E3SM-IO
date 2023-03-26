@@ -3,19 +3,19 @@ This E3SM I/O kernel benchmark includes three common simulation cases, namely
 F, G, and I cases. Both F and I cases create two history files, namely 'h0' and
 'h1'.
 
-|           Case/History |    F/h0 |    F/h1 |     G  |   I/h0 |   I/h1 |
-|-----------------------:|--------:|--------:|-------:|-------:|-------:|
-|     # vars use Map 1   |       1 |      1  |      6 |    465 |    465 |
-|     # vars use Map 2   |     323 |      22 |      2 |     75 |     69 |
-|     # vars use Map 3   |      63 |       1 |     25 |      4 |      2 |
-|     # vars use Map 4   |         |         |      2 |      1 |      1 |
-|     # vars use Map 5   |         |         |      2 |      1 |      1 |
-|     # vars use Map 6   |         |         |      4 |        |        |
-| # partitioned vars     |     387 |      24 |     41 |    546 |    538 |
-| # non-partitioned vars |      27 |      27 |     11 |     14 |     14 |
-| Total # variables      |     414 |      51 |     52 |    560 |    552 |
-| MAX # noncontig reqs   | 184,644 | 173,206 | 21,110 | 41,400 | 38,650 |
-| MIN # noncontig reqs   | 174,926 | 164,090 | 18,821 | 33,120 | 30,920 |
+|                 Case/History |    F/h0 |    F/h1 |     G  |   I/h0 |   I/h1 |
+|-----------------------------:|--------:|--------:|-------:|-------:|-------:|
+|           # vars use Map 1   |       1 |      1  |      6 |    465 |    465 |
+|           # vars use Map 2   |     323 |      22 |      2 |     75 |     69 |
+|           # vars use Map 3   |      63 |       1 |     25 |      4 |      2 |
+|           # vars use Map 4   |         |         |      2 |      1 |      1 |
+|           # vars use Map 5   |         |         |      2 |      1 |      1 |
+|           # vars use Map 6   |         |         |      4 |        |        |
+| Total # partitioned vars     |     387 |      24 |     41 |    546 |    538 |
+| Total # non-partitioned vars |      27 |      27 |     11 |     14 |     14 |
+|       Total # variables      |     414 |      51 |     52 |    560 |    552 |
+|       MAX # noncontig reqs   | 184,644 | 173,206 | 21,110 | 41,400 | 38,650 |
+|       MIN # noncontig reqs   | 174,926 | 164,090 | 18,821 | 33,120 | 30,920 |
 
 `MAX # noncontig reqs` is the maximum number of noncontiguous write requests among all processes.
 
