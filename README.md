@@ -11,6 +11,9 @@ I/O libraries, such as [PnetCDF](https://github.com/Parallel-NetCDF/PnetCDF),
 [ADIOS](https://github.com/ornladios/ADIOS2).
 The benchmark program in this repository is developed to evaluate the E3SM I/O
 kernel performance using the above mentioned libraries.
+Achieving a good I/O performance for E3SM on HPC systems is challenging
+because its data access pattern consists of a large number of small, unordered,
+non-contiguous write requests on each process.
 
 ### Data Partitioning Pattern in E3SM
 The problem domain in E3SM simulation is represented by a cubed sphere grid
