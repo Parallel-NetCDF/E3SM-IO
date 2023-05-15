@@ -23,7 +23,7 @@ on:
       - 'datasets/*'
 
 env:
-   HDF5_VERSION: 1.14.0
+   HDF5_VERSION: 1.14.1-2
    
 jobs:
     build:
@@ -48,7 +48,8 @@ jobs:
             cd ${GITHUB_WORKSPACE}
             rm -rf HDF5 ; mkdir HDF5 ; cd HDF5
             VER_MAJOR=${HDF5_VERSION%.*}
-            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+            VER_NOPATCH=${HDF5_VERSION%-*} # remove patch version
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
             tar -zxf hdf5-${HDF5_VERSION}.tar.gz
             cd hdf5-${HDF5_VERSION}
             ./configure --prefix=${GITHUB_WORKSPACE}/HDF5 \
