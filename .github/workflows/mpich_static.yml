@@ -25,8 +25,7 @@ on:
 env:
    MPICH_VERSION: 4.0.2
    PNETCDF_VERSION: 1.12.3
-   HDF5_VERSION_MAJOR: 1.14
-   HDF5_VERSION: 1.14.0
+   HDF5_VERSION: 1.14.1-2
    NETCDF4_VERSION: 4.9.0
    ADIOS_VERSION: 2.8.3
    LOG_VOL_VERSION: 1.4.0
@@ -91,10 +90,10 @@ jobs:
           run: |
             cd ${GITHUB_WORKSPACE}
             echo "Install HDF5 on ${GITHUB_WORKSPACE}/HDF5"
-            rm -rf HDF5
-            mkdir HDF5
-            cd HDF5
-            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${HDF5_VERSION_MAJOR}/hdf5-${HDF5_VERSION}/src/hdf5-${HDF5_VERSION}.tar.gz
+            rm -rf HDF5 ; mkdir HDF5 ; cd HDF5
+            VER_MAJOR=${HDF5_VERSION%.*}
+            VER_NOPATCH=${HDF5_VERSION%-*} # remove patch version
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
             tar -zxf hdf5-${HDF5_VERSION}.tar.gz
             cd hdf5-${HDF5_VERSION}
             ./configure --prefix=${GITHUB_WORKSPACE}/HDF5 \
