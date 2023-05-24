@@ -3,7 +3,7 @@ name: LogVOL-only
 on:
   push:
     branches:
-      - master
+      - github_action_logvol
     paths-ignore:
       - '**/*.md'
       - '**/*.txt'
@@ -69,7 +69,7 @@ jobs:
           if: ${{ failure() }}
           run: |
             cat ${GITHUB_WORKSPACE}/HDF5/hdf5-${HDF5_VERSION}/config.log
-        - name: Install Log VOL connector from its master branch
+        - name: Install Log VOL connector from its dev branch
           if: ${{ success() }}
           run: |
             cd ${GITHUB_WORKSPACE}
@@ -77,7 +77,7 @@ jobs:
             mkdir LOG_VOL
             cd LOG_VOL
             rm -rf vol-log-based
-            git clone -q https://github.com/DataLib-ECP/vol-log-based.git
+            git clone --single-branch --branch dev -q https://github.com/DataLib-ECP/vol-log-based.git
             cd vol-log-based
             autoreconf -i
             ./configure --prefix=${GITHUB_WORKSPACE}/LOGVOL \
