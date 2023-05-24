@@ -25,12 +25,20 @@ CONFIGS=("map_f_case_16p" "map_g_case_16p" "map_i_case_16p")
 APIS=()
 if test "x${ENABLE_PNC}" = x1 ; then
    APIS+=("pnetcdf canonical" "pnetcdf blob")
-   export LD_LIBRARY_PATH=${PNETCDF_LIB_PATH}:${LD_LIBRARY_PATH}
+   if test "x${LD_LIBRARY_PATH}" = x ; then
+      export LD_LIBRARY_PATH=${PNETCDF_LIB_PATH}
+   else
+      export LD_LIBRARY_PATH=${PNETCDF_LIB_PATH}:${LD_LIBRARY_PATH}
+   fi
 fi
 
 if test "x${ENABLE_HDF5}" = x1 ; then
    APIS+=("hdf5 canonical" "hdf5 blob")
-   export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${LD_LIBRARY_PATH}
+   if test "x${LD_LIBRARY_PATH}" = x ; then
+      export LD_LIBRARY_PATH=${HDF5_LIB_PATH}
+   else
+      export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${LD_LIBRARY_PATH}
+   fi
    if test "x${ENABLE_LOGVOL}" = x1 ; then
       APIS+=("hdf5_log log")
       if test "x${LOGVOL_LIB_SHARED}" = x1 ; then
@@ -46,13 +54,21 @@ fi
 
 if test "x${ENABLE_ADIOS2}" = x1 ; then
    APIS+=("adios blob")
-   export LD_LIBRARY_PATH=${ADIOS2_LIB_PATH}:${LD_LIBRARY_PATH}
+   if test "x${LD_LIBRARY_PATH}" = x ; then
+      export LD_LIBRARY_PATH=${ADIOS2_LIB_PATH}
+   else
+      export LD_LIBRARY_PATH=${ADIOS2_LIB_PATH}:${LD_LIBRARY_PATH}
+   fi
    DECOMPS+=("bp bp")
 fi
 
 if test "x${ENABLE_NETCDF4}" = x1 ; then
    APIS+=("netcdf4 canonical")
-   export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${NETCDF4_LIB_PATH}:${LD_LIBRARY_PATH}
+   if test "x${LD_LIBRARY_PATH}" = x ; then
+      export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${NETCDF4_LIB_PATH}
+   else
+      export LD_LIBRARY_PATH=${HDF5_LIB_PATH}:${NETCDF4_LIB_PATH}:${LD_LIBRARY_PATH}
+   fi
    if test "x${ENABLE_LOGVOL}" = x1 && test "x${LOGVOL_LIB_SHARED}" = x1 ; then
       APIS+=("netcdf4 log")
    fi
@@ -206,8 +222,11 @@ for API in "${APIS[@]}" ; do
                 echo "Error: Output file $f is not Log VOL, but ${FILE_KIND}"
                 exit 1
              else
-                ${H5LREPLAY} -i ${f} -o ${f}_replay.h5
                 echo "Success: Output file $f is ${FILE_KIND}"
+                # test h5lreplay
+                CMD="${H5LREPLAY} -i ${f} -o ${f}_replay.h5"
+                echo "CMD = ${CMD}"
+                echo "Success: test h5lreplay on file $f"
                 echo ""
              fi
            done
