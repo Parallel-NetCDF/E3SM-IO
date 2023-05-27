@@ -27,7 +27,7 @@ int print_timing_WR(e3sm_io_config *cfg,
 {
     int i, ndecomp;
     MPI_Offset off_msg[3], sum_off[3];
-    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs, min_nreqs;
+    MPI_Offset sum_nreqs, sum_amount_WR, max_nreqs, min_nreqs, max_wr, min_wr;
     MPI_Offset vlen, sum_decomp_varlen;
     double wTime;
     MPI_Comm comm=cfg->io_comm;
@@ -63,6 +63,8 @@ int print_timing_WR(e3sm_io_config *cfg,
 
     MPI_Reduce(&cmeta->my_nreqs, &max_nreqs, 1, MPI_OFFSET, MPI_MAX, 0, comm);
     MPI_Reduce(&cmeta->my_nreqs, &min_nreqs, 1, MPI_OFFSET, MPI_MIN, 0, comm);
+    MPI_Reduce(&cmeta->amount_WR, &max_wr,   1, MPI_OFFSET, MPI_MAX, 0, comm);
+    MPI_Reduce(&cmeta->amount_WR, &min_wr,   1, MPI_OFFSET, MPI_MIN, 0, comm);
 
     double dbl_tmp[7], max_dbl[7], min_dbl[7];
     dbl_tmp[0] = cmeta->pre_time;
@@ -183,8 +185,13 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("I/O flush frequency                = %6d\n", cmeta->ffreq);
         printf("No. I/O flush calls                = %6d\n", cmeta->num_flushes);
         printf("-----------------------------------------------------------\n");
-        printf("Total write amount                         = %.2f MiB = %.2f GiB\n",
+        printf("Indiv write amount MAX             = %.2f MiB = %.2f GiB\n",
+               (double)max_wr / 1048576, (double)max_wr / 1073741824);
+        printf("Indiv write amount MIN             = %.2f MiB = %.2f GiB\n",
+               (double)min_wr / 1048576, (double)min_wr / 1073741824);
+        printf("Total write amount                 = %.2f MiB = %.2f GiB\n",
                (double)sum_amount_WR / 1048576, (double)sum_amount_WR / 1073741824);
+        printf("-----------------------------------------------------------\n");
         printf("Time of I/O preparing              min/max = %8.4f / %8.4f\n", min_dbl[0], max_dbl[0]);
         printf("Time of file open/create           min/max = %8.4f / %8.4f\n", min_dbl[1], max_dbl[1]);
         printf("Time of define variables           min/max = %8.4f / %8.4f\n", min_dbl[2], max_dbl[2]);
