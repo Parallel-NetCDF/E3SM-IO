@@ -446,6 +446,10 @@ AC_ARG_WITH([hdf5],
          APIs. The 'hdf5_md' I/O option is thus disabled.
          ---------------------------------------------------------------])
       fi
+      AC_SEARCH_LIBS([H5Pset_selection_io], [hdf5])
+      if test "x$ac_cv_search_H5Pset_selection_io" = "xnone required" ; then
+         AC_DEFINE([HDF5_HAVE_SELECTION_IO], [1], [Whether HDF5 defines H5Pset_selection_io])
+      fi
       AC_SUBST(HDF5_LIB_PATH, [$hdf5_lib])
    fi
 ])

@@ -100,6 +100,20 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
     if (cfg->api == hdf5_md) {
 #ifdef HDF5_HAVE_MULTI_DATASET_API
         this->use_dwrite_multi = true;
+#ifdef HDF5_HAVE_SELECTION_IO
+        /* enable collective I/O in H5Dwrite_multi(). H5Pset_selection_io is
+         * first introduced in HDF5 1.14.1
+         */
+        herr = H5Pset_selection_io(this->dxplid_coll,
+                                   H5D_SELECTION_IO_MODE_ON);
+        CHECK_HERR
+        herr = H5Pset_dxpl_mpio_collective_opt(this->dxplid_coll,
+                                               H5FD_MPIO_COLLECTIVE_IO);
+        CHECK_HERR
+        /* give HDF5 32MB space for type conversion */
+        herr = H5Pset_buffer(this->dxplid_coll, 33554432, NULL, NULL);
+        CHECK_HERR
+#endif
 #else
         throw "The HDF5 used does not support multi-dataset write";
 #endif
