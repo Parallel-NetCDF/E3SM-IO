@@ -19,7 +19,7 @@ on:
       - 'tests/*'
 
 env:
-   MPICH_VERSION: 4.0.2
+   MPICH_VERSION: 4.1.1
    ARGOBOTS_VERSION: 1.1
    ASYNC_VOL_VERSION: 1.4
    HDF5_VERSION: 1.14.1-2

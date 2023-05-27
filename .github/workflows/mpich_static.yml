@@ -22,7 +22,7 @@ on:
       - 'datasets/*'
 
 env:
-   MPICH_VERSION: 4.0.2
+   MPICH_VERSION: 4.1.1
    PNETCDF_VERSION: 1.12.3
    HDF5_VERSION: 1.14.1-2
    NETCDF4_VERSION: 4.9.0
@@ -103,7 +103,6 @@ jobs:
                         --disable-doxygen-doc \
                         --disable-doxygen-man \
                         --disable-doxygen-html \
-                        --disable-hltools \
                         --disable-tools \
                         --disable-tests \
                         --disable-shared \

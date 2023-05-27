@@ -79,7 +79,6 @@ jobs:
                         --disable-doxygen-doc \
                         --disable-doxygen-man \
                         --disable-doxygen-html \
-                        --disable-hltools \
                         --disable-tools \
                         --disable-tests \
                         CC=mpicc
