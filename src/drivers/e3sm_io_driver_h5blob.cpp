@@ -46,6 +46,8 @@ int e3sm_io_driver_h5blob::create(std::string path,
 
     faplid = H5Pcreate (H5P_FILE_ACCESS);
     CHECK_HID (faplid)
+    herr = H5Pset_libver_bounds(faplid, H5F_LIBVER_LATEST, H5F_LIBVER_LATEST);
+    CHECK_HID (faplid)
     herr = H5Pset_fapl_mpio(faplid, fp->comm, info);
     CHECK_HERR
     /* make all HDF5 metadata operations collective */
