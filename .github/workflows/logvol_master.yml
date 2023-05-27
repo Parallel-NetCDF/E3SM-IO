@@ -1,4 +1,4 @@
-name: LogVOL-only
+name: LogVOL master branch only
 
 on:
   push:

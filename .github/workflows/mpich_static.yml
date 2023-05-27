@@ -1,4 +1,4 @@
-name: MPICH
+name: MPICH and static link
 
 on:
   push:
