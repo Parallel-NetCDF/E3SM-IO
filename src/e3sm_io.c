@@ -381,8 +381,11 @@ int main (int argc, char **argv) {
      *    from double to float, while G case does not.
      * See https://github.com/HDFGroup/hdf5/issues/1859
      */
-#warning TODO: HDF5 multi-dataset APIs do not support writing multiple time steps at a time. Setting flush freq to 1.
-    if (cfg.api == hdf5_md) ffreq = 1;
+    if (cfg.api == hdf5_md && ffreq > 1) {
+        if (cfg.rank == 0)
+            printf("Warning: HDF5 multi-dataset APIs do not support writing multiple time steps at a time. Re-set flush freq to 1.\n");
+        ffreq = 1;
+    }
 #endif
 
     cfg.F_case_h0.ffreq = ffreq;
