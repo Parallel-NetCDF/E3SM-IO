@@ -201,6 +201,10 @@ int e3sm_io_driver_hdf5_log::create (std::string path, MPI_Comm comm, MPI_Info i
     }
 #endif
 
+    /* obtain MPI file info right after file create */
+    herr = H5Pget_fapl_mpio(faplid, NULL, &fp->info_used);
+    CHECK_HERR
+
     *fid = this->files.size ();
     this->files.push_back (fp);
 
@@ -275,6 +279,10 @@ int e3sm_io_driver_hdf5_log::open (std::string path, MPI_Comm comm, MPI_Info inf
 
     fp->id = H5Fopen (path.c_str (), H5F_ACC_RDONLY, faplid);
     CHECK_HID (fp->id)
+
+    /* obtain MPI file info right after file open */
+    herr = H5Pget_fapl_mpio(faplid, NULL, &fp->info_used);
+    CHECK_HERR
 
     *fid = this->files.size ();
     this->files.push_back (fp);

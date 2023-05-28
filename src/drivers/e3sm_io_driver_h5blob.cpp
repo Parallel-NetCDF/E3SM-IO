@@ -60,6 +60,10 @@ int e3sm_io_driver_h5blob::create(std::string path,
     fp->id = H5Fcreate(path.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, faplid);
     CHECK_HID (fp->id)
 
+    /* obtain MPI file info right after file create */
+    herr = H5Pget_fapl_mpio(faplid, NULL, &fp->info_used);
+    CHECK_HERR
+
     *fid = this->files.size ();
 
     /* Use NetCDF header struct to store all metadata */
@@ -279,30 +283,8 @@ err_out:
 }
 
 int e3sm_io_driver_h5blob::inq_file_info (int fid, MPI_Info *info) {
-    int err = 0;
-    herr_t herr;
-    h5blob_file *fp = this->files[fid];
-    hid_t pid;
-
-    if (cfg->env_async == 1) {
-        /* Async VOL is currently having problem on H5Fget_access_plist()
-         * See https://github.com/hpc-io/vol-cache/issues/15
-         */
-        *info = MPI_INFO_NULL;
-        return 0;
-    }
-
-    /* HDF5 currently has no function to obtain MPI info used by the system.
-     * This inquire function just returns the I/O hints set by the user.
-     */
-    pid = H5Fget_access_plist (fp->id);
-    CHECK_HID (pid);
-    herr = H5Pget_fapl_mpio (pid, NULL, info);
-    CHECK_HERR
-
-err_out:
-    if (pid != -1) H5Pclose (pid);
-    return err;
+    MPI_Info_dup(this->files[fid]->info_used, info);
+    return 0;
 }
 
 int e3sm_io_driver_h5blob::inq_file_size (std::string path, MPI_Offset *size) {

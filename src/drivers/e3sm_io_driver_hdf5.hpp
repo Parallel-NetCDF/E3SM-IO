@@ -55,6 +55,7 @@ class e3sm_io_driver_hdf5 : public e3sm_io_driver {
         MPI_Offset recsize = 0;
         MPI_Offset putsize = 0;
         MPI_Offset getsize = 0;
+        MPI_Info info_used = MPI_INFO_NULL;
 
         std::vector<bool>  dset_isRec;      /* whether a dataset is a record variable */
         std::vector<hid_t> wdset_ids;       /* dataset ID */
