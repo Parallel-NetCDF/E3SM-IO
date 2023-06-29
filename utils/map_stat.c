@@ -47,8 +47,9 @@ static void usage (char *argv0) {
 int main (int argc, char **argv)
 {
     char name[64], filename[1024];
-    int i, j, k, n, err=0, rank, nprocs, ncid, dimid, varid;
-    int len, *nreqs, *wr_amount;
+    size_t i, j, k;
+    int err=0, rank, nprocs, ncid, dimid, varid, verbose=0;
+    int *nreqs, *wr_amount;
     MPI_Offset num_decomp, decomp_nprocs;
 
     MPI_Init(&argc, &argv);
@@ -99,6 +100,8 @@ int main (int argc, char **argv)
     wr_amount = (int*) malloc(decomp_nprocs * sizeof(int));
 
     for (i=0; i<num_decomp; i++) {
+        char *map;
+        size_t len;
 
         printf("Map %d\n", i);
 
@@ -118,15 +121,17 @@ int main (int argc, char **argv)
             printf(" x %d", dims[j]);
         }
         printf("\n");
-        printf("\tD%d.dim size        = %d\n", i+1, len);
+        printf("\tD%d.dim size        = %zd\n", i+1, len);
         free(dims);
 
+        /* number of requests per rank */
         sprintf(name, "D%d.nreqs", i+1);
         err = ncmpi_inq_varid(ncid, name, &varid);
         CHECK_NC_ERR
         err = ncmpi_get_var_int_all(ncid, varid, nreqs);
         CHECK_NC_ERR
 
+        /* total number of requests of all ranks */
         MPI_Offset total_nreqs;
         sprintf(name, "D%d.total_nreqs", i+1);
         err = ncmpi_inq_dimid(ncid, name, &dimid);
@@ -135,6 +140,16 @@ int main (int argc, char **argv)
         CHECK_NC_ERR
         printf("\tD%d.total_nreqs     = %d\n", i+1, total_nreqs);
 
+        /* array of request offsets per rank */
+        int *offsets;
+        offsets = (int*) malloc(total_nreqs * sizeof(int));
+        sprintf(name, "D%d.offsets", i+1);
+        err = ncmpi_inq_varid(ncid, name, &varid);
+        CHECK_NC_ERR
+        err = ncmpi_get_var_int_all(ncid, varid, offsets);
+        CHECK_NC_ERR
+
+        /* array of request lengths per rank */
         int *lengths;
         lengths = (int*) malloc(total_nreqs * sizeof(int));
         sprintf(name, "D%d.lengths", i+1);
@@ -143,18 +158,72 @@ int main (int argc, char **argv)
         err = ncmpi_get_var_int_all(ncid, varid, lengths);
         CHECK_NC_ERR
 
+        /* fill start array index per rank */
+        int *fill_starts;
+        fill_starts = (int*) malloc(decomp_nprocs * sizeof(int));
+        sprintf(name, "D%d.fill_starts", i+1);
+        err = ncmpi_inq_varid(ncid, name, &varid);
+        CHECK_NC_ERR
+        err = ncmpi_get_var_int_all(ncid, varid, fill_starts);
+        CHECK_NC_ERR
+
+        if (verbose) {
+            printf("D%d.nreqs       =",i+1);
+            for (j=0; j<decomp_nprocs; j++)
+                printf(" %4d", nreqs[j]);
+            printf("\n");
+
+            printf("D%d.fill_starts =",i+1);
+            for (j=0; j<decomp_nprocs; j++)
+                printf(" %4d", fill_starts[j]);
+            printf("\n");
+
+            int sub_decomp_nprocs = 4;
+            printf("D%d.nreqs       =",i+1);
+            for (j=0; j<sub_decomp_nprocs; j++)
+                printf(" %4d", nreqs[j]);
+            printf("\n");
+
+            printf("D%d.fill_starts =",i+1);
+            for (j=0; j<sub_decomp_nprocs; j++)
+                printf(" %4d", fill_starts[j]);
+            printf("\n");
+
+            for (j=0; j<total_nreqs; j++) {
+                if (offsets[j] == 0) {
+                    printf("------ offset 0 at index %zd\n", j);
+                    break;
+                }
+            }
+            if (j==total_nreqs) printf("------ No rank writes to offset 0\n");
+        }
+
+        /* check if this map is fully written */
+        map = (char*) calloc(len, 1);
+        for (j=0; j<total_nreqs; j++) {
+            for (k=0; k<lengths[j]; k++)
+                map[offsets[j] + k] = 1;
+        }
+        for (j=0; j<len; j++) {
+            if (map[j] == 0) {
+                printf("Error: map is not fully written at index j=%zd\n", j);
+                break;
+            }
+        }
+        free(map);
+
         for (j=0; j<decomp_nprocs; j++) wr_amount[j] = 0;
 
         int max_req=0;
-        n = 0;
+        int num = 0;
         j = 0;
         for (k=0; k<total_nreqs; k++) {
             max_req = MAX(max_req, lengths[k]);
             wr_amount[j] += lengths[k];
-            n++;
-            if (n == nreqs[j]) {
+            num++;
+            if (num == nreqs[j]) {
                 j++;
-                n = 0;
+                num = 0;
             }
         }
 
@@ -165,15 +234,17 @@ int main (int argc, char **argv)
         printf("\tD%d.lengths MAX req = %d\n", i+1, max_req);
         printf("\tD%d.lengths MAX sum = %d\n", i+1, max_amnt);
 
+        free(offsets);
         free(lengths);
+        free(fill_starts);
     }
     free(nreqs);
     free(wr_amount);
 
-err_out:
     err = ncmpi_close(ncid);
     CHECK_NC_ERR
 
+err_out:
     MPI_Finalize();
 
     return (err != 0);
