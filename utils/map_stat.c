@@ -48,7 +48,7 @@ int main (int argc, char **argv)
 {
     char name[64], filename[1024];
     size_t i, j, k;
-    int err=0, rank, nprocs, ncid, dimid, varid, verbose=0;
+    int err=0, rank, nprocs, ncid, dimid, varid, verbose=1;
     int *nreqs, *wr_amount;
     MPI_Offset num_decomp, decomp_nprocs;
 
@@ -168,48 +168,59 @@ int main (int argc, char **argv)
         CHECK_NC_ERR
 
         if (verbose) {
-            printf("D%d.nreqs       =",i+1);
-            for (j=0; j<decomp_nprocs; j++)
-                printf(" %4d", nreqs[j]);
-            printf("\n");
-
-            printf("D%d.fill_starts =",i+1);
-            for (j=0; j<decomp_nprocs; j++)
-                printf(" %4d", fill_starts[j]);
-            printf("\n");
-
             int sub_decomp_nprocs = 4;
-            printf("D%d.nreqs       =",i+1);
+            printf("\tD%d.nreqs       =",i+1);
             for (j=0; j<sub_decomp_nprocs; j++)
                 printf(" %4d", nreqs[j]);
             printf("\n");
 
-            printf("D%d.fill_starts =",i+1);
+            printf("\tD%d.fill_starts =",i+1);
             for (j=0; j<sub_decomp_nprocs; j++)
                 printf(" %4d", fill_starts[j]);
             printf("\n");
 
             for (j=0; j<total_nreqs; j++) {
-                if (offsets[j] == 0) {
-                    printf("------ offset 0 at index %zd\n", j);
+                if (offsets[j] == 0)
                     break;
-                }
             }
-            if (j==total_nreqs) printf("------ No rank writes to offset 0\n");
+            if (j==total_nreqs) printf("\t------ No rank writes to offset 0\n");
         }
 
         /* check if this map is fully written */
+        size_t last_owner=0, m=0, owner=0;
         map = (char*) calloc(len, 1);
         for (j=0; j<total_nreqs; j++) {
-            for (k=0; k<lengths[j]; k++)
+            if (m == nreqs[owner]) {
+                /* owner is the rank writes this request j */
+                owner++;
+                m = 0;
+            }
+            else
+                m++;
+
+            for (k=0; k<lengths[j]; k++) {
+                if (map[offsets[j] + k] == 1) {
+                    printf("\tError: map[%zd] already written\n", offsets[j]+k);
+                    break;
+                }
                 map[offsets[j] + k] = 1;
+
+                if (verbose) {
+                    if (offsets[j] + k == 0)
+                        printf("\t    rank %4d owns index 0\n", owner);
+
+                    if (offsets[j] + k == len-1)
+                        printf("\t    rank %4d owns the last index\n", owner);
+                }
+            }
         }
         for (j=0; j<len; j++) {
             if (map[j] == 0) {
-                printf("Error: map is not fully written at index j=%zd\n", j);
+                printf("\tError: map[%zd] is not written\n", j);
                 break;
             }
         }
+
         free(map);
 
         for (j=0; j<decomp_nprocs; j++) wr_amount[j] = 0;
