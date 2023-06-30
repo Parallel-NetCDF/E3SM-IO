@@ -112,7 +112,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     char name[128];
     int err, rank, nprocs, ncid, varid, proc_start, proc_count;
     int i, j, k, nreqs, *all_nreqs, *all_raw_nreqs, dimids[3], id;
-    int has_raw_decom;
+    int *fill_nreqs = NULL, has_raw_decom;
     size_t num, decomp_nprocs;
     MPI_Offset mpi_num, mpi_decomp_nprocs, start, count;
     MPI_Info info = MPI_INFO_NULL;
@@ -234,7 +234,21 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             decom->dims[id][i] = (MPI_Offset)dims_int[i];
 
         if (cfg->fill_mode && cfg->strategy == canonical) {
-            /* obtain varid of request variable Dx.nreqs. Note Dx.nreqs
+            /* Read variable Dx.fill_starts, which stores the index of Dx.nreqs
+             * pointing to the first request that needs to be filled with fill
+             * values. In other words, Dx.nreqs[i] is always bigger than
+             * Dx.fill_starts[i] and (Dx.nreqs[i] - Dx.fill_starts[i]) is the
+             * number of requests that need to be filled.
+             */
+            sprintf (name, "D%d.fill_starts", id + 1);
+            err = driver->inq_varid (ncid, name, &varid);
+            CHECK_ERR
+
+            fill_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
+            err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, fill_nreqs, coll);
+            CHECK_ERR
+
+            /* Obtain varid of request variable Dx.nreqs. Note Dx.nreqs
              * includes the missing elements to be filled if there is any
              * missing elements and fill mode is enabled.
              */
@@ -243,7 +257,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             CHECK_ERR
         }
         else {
-            /* obtain varid of request variable Dx.fill_starts, the starting
+            /* Obtain varid of request variable Dx.fill_starts, the starting
              * index in offsets[] and lengths[] for elements to be filled with
              * fill value. Note use Dx.fill_starts as the number of write
              * requests, so writes stop at this index, without filling the
@@ -254,10 +268,24 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             CHECK_ERR
         }
 
-        /* read all processes's numbers of requests */
+        /* read all process's numbers of requests */
         all_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
         err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, all_nreqs, coll);
         CHECK_ERR
+
+        if (cfg->fill_mode && cfg->strategy == canonical) {
+            for (i=0; i<decomp_nprocs; i++) {
+                if (all_nreqs[i] != fill_nreqs[i])
+                    break;
+            }
+            if (i < decomp_nprocs && decomp_nprocs != nprocs && rank == 0)
+                printf("Warning: fill mode is not supported when nprocs(%d) != decomp_nprocs(%d)\n",
+                       nprocs, decomp_nprocs);
+            else if (i < decomp_nprocs && rank == 0)
+                printf("Warning: fill mode is not yet supported\n",
+                       nprocs, decomp_nprocs);
+            free(fill_nreqs);
+        }
 
         /* calculate start index in Dx.offsets for this process */
         start = 0;
