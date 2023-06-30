@@ -187,16 +187,14 @@ int main (int argc, char **argv)
         }
 
         /* check if this map is fully written */
-        size_t last_owner=0, m=0, owner=0;
+        size_t m=0, owner=0;
         map = (char*) calloc(len, 1);
-        for (j=0; j<total_nreqs; j++) {
+        for (m=0,j=0; j<total_nreqs; j++,m++) {
             if (m == nreqs[owner]) {
                 /* owner is the rank writes this request j */
                 owner++;
                 m = 0;
             }
-            else
-                m++;
 
             for (k=0; k<lengths[j]; k++) {
                 if (map[offsets[j] + k] == 1) {
