@@ -248,22 +248,22 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     varp = vars + nvars_decomp - 1;
 
     /* float levgrnd(levgrnd) */
-    INQ_VAR("levgrnd", NC_FLOAT, 1, &dim_levgrnd, REC_ITYPE, -1)
+    INQ_VAR("levgrnd", REC_XTYPE, 1, &dim_levgrnd, REC_ITYPE, -1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
 
     /* float levlak(levlak) */
-    INQ_VAR("levlak", NC_FLOAT, 1, &dim_levlak, REC_ITYPE, -1)
+    INQ_VAR("levlak", REC_XTYPE, 1, &dim_levlak, REC_ITYPE, -1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
 
     /* float levdcmp(levdcmp) */
-    INQ_VAR("levdcmp", NC_FLOAT, 1, &dim_levdcmp, REC_ITYPE, -1)
+    INQ_VAR("levdcmp", REC_XTYPE, 1, &dim_levdcmp, REC_ITYPE, -1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
 
     /* float time(time) */
-    INQ_VAR("time", NC_FLOAT, 1, &dim_time, REC_ITYPE, -1)
+    INQ_VAR("time", REC_XTYPE, 1, &dim_time, REC_ITYPE, -1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("calendar", txtBuf)
@@ -307,14 +307,14 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     INQ_VAR("time_written", NC_CHAR, 2, dimids, MPI_CHAR, -1)
 
     /* float lon(lon) */
-    INQ_VAR("lon", NC_FLOAT, 1, &dim_lon, REC_ITYPE, -1)
+    INQ_VAR("lon", REC_XTYPE, 1, &dim_lon, REC_ITYPE, -1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
 
     /* float lat(lat) */
-    INQ_VAR("lat", NC_FLOAT, 1, &dim_lat, REC_ITYPE, -1)
+    INQ_VAR("lat", REC_XTYPE, 1, &dim_lat, REC_ITYPE, -1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_FILL(fillv)
@@ -323,7 +323,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     /* float area(lat, lon) */
     dimids[0] = dim_lat;
     dimids[1] = dim_lon;
-    INQ_VAR("area", NC_FLOAT, 2, dimids, REC_ITYPE, 0)
+    INQ_VAR("area", REC_XTYPE, 2, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_FILL(fillv)
@@ -332,7 +332,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     /* float topo(lat, lon) */
     dimids[0] = dim_lat;
     dimids[1] = dim_lon;
-    INQ_VAR("topo", NC_FLOAT, 2, dimids, REC_ITYPE, 0)
+    INQ_VAR("topo", REC_XTYPE, 2, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_FILL(fillv)
@@ -341,7 +341,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     /* float landfrac(lat, lon) */
     dimids[0] = dim_lat;
     dimids[1] = dim_lon;
-    INQ_VAR("landfrac", NC_FLOAT, 2, dimids, REC_ITYPE, 0)
+    INQ_VAR("landfrac", REC_XTYPE, 2, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -367,7 +367,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
         dimids[0] = dim_levgrnd;
         dimids[1] = dim_lat;
         dimids[2] = dim_lon;
-        INQ_VAR("ZSOI", NC_FLOAT, 3, dimids, REC_ITYPE, 1)
+        INQ_VAR("ZSOI", REC_XTYPE, 3, dimids, REC_ITYPE, 1)
         GET_ATTR_TXT("long_name", txtBuf)
         GET_ATTR_TXT("units", txtBuf)
         GET_ATTR_FILL(fillv)
@@ -377,7 +377,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
         dimids[0] = dim_levgrnd;
         dimids[1] = dim_lat;
         dimids[2] = dim_lon;
-        INQ_VAR("DZSOI", NC_FLOAT, 3, dimids, REC_ITYPE, 1)
+        INQ_VAR("DZSOI", REC_XTYPE, 3, dimids, REC_ITYPE, 1)
         GET_ATTR_TXT("long_name", txtBuf)
         GET_ATTR_TXT("units", txtBuf)
         GET_ATTR_FILL(fillv)
@@ -387,7 +387,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
         dimids[0] = dim_levgrnd;
         dimids[1] = dim_lat;
         dimids[2] = dim_lon;
-        INQ_VAR("WATSAT", NC_FLOAT, 3, dimids, REC_ITYPE, 1)
+        INQ_VAR("WATSAT", REC_XTYPE, 3, dimids, REC_ITYPE, 1)
         GET_ATTR_TXT("long_name", txtBuf)
         GET_ATTR_TXT("units", txtBuf)
         GET_ATTR_FILL(fillv)
@@ -397,7 +397,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
         dimids[0] = dim_levgrnd;
         dimids[1] = dim_lat;
         dimids[2] = dim_lon;
-        INQ_VAR("SUCSAT", NC_FLOAT, 3, dimids, REC_ITYPE, 1)
+        INQ_VAR("SUCSAT", REC_XTYPE, 3, dimids, REC_ITYPE, 1)
         GET_ATTR_TXT("long_name", txtBuf)
         GET_ATTR_TXT("units", txtBuf)
         GET_ATTR_FILL(fillv)
@@ -407,7 +407,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
         dimids[0] = dim_levgrnd;
         dimids[1] = dim_lat;
         dimids[2] = dim_lon;
-        INQ_VAR("BSW", NC_FLOAT, 3, dimids, REC_ITYPE, 1)
+        INQ_VAR("BSW", REC_XTYPE, 3, dimids, REC_ITYPE, 1)
         GET_ATTR_TXT("long_name", txtBuf)
         GET_ATTR_TXT("units", txtBuf)
         GET_ATTR_FILL(fillv)
@@ -417,7 +417,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
         dimids[0] = dim_levgrnd;
         dimids[1] = dim_lat;
         dimids[2] = dim_lon;
-        INQ_VAR("HKSAT", NC_FLOAT, 3, dimids, REC_ITYPE, 1)
+        INQ_VAR("HKSAT", REC_XTYPE, 3, dimids, REC_ITYPE, 1)
         GET_ATTR_TXT("long_name", txtBuf)
         GET_ATTR_TXT("units", txtBuf)
         GET_ATTR_FILL(fillv)
@@ -427,7 +427,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
         dimids[0] = dim_levlak;
         dimids[1] = dim_lat;
         dimids[2] = dim_lon;
-        INQ_VAR("ZLAKE", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+        INQ_VAR("ZLAKE", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
         GET_ATTR_TXT("long_name", txtBuf)
         GET_ATTR_TXT("units", txtBuf)
         GET_ATTR_FILL(fillv)
@@ -437,7 +437,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
         dimids[0] = dim_levlak;
         dimids[1] = dim_lat;
         dimids[2] = dim_lon;
-        INQ_VAR("DZLAKE", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+        INQ_VAR("DZLAKE", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
         GET_ATTR_TXT("long_name", txtBuf)
         GET_ATTR_TXT("units", txtBuf)
         GET_ATTR_FILL(fillv)
@@ -448,7 +448,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ACTUAL_IMMOB", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ACTUAL_IMMOB", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -459,7 +459,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ACTUAL_IMMOB_P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ACTUAL_IMMOB_P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -470,7 +470,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ADSORBTION_P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ADSORBTION_P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -481,7 +481,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("AGNPP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("AGNPP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -492,7 +492,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("AGWDNPP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("AGWDNPP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -503,7 +503,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ALT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ALT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -514,7 +514,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ALTMAX", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ALTMAX", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -525,7 +525,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ALTMAX_LASTYEAR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ALTMAX_LASTYEAR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -536,7 +536,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("AR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("AR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -547,7 +547,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("AVAILC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("AVAILC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -558,7 +558,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("AVAIL_RETRANSP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("AVAIL_RETRANSP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -569,7 +569,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("BAF_CROP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("BAF_CROP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -580,7 +580,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("BAF_PEATF", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("BAF_PEATF", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -591,7 +591,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("BCDEP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("BCDEP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -602,7 +602,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("BGNPP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("BGNPP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -613,7 +613,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("BIOCHEM_PMIN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("BIOCHEM_PMIN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -624,7 +624,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("BIOCHEM_PMIN_TO_PLANT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("BIOCHEM_PMIN_TO_PLANT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -635,7 +635,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("BTRAN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("BTRAN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -646,7 +646,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("BUILDHEAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("BUILDHEAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -657,7 +657,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CH4PROD", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CH4PROD", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -668,7 +668,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CH4_SURF_AERE_SAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CH4_SURF_AERE_SAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -679,7 +679,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CH4_SURF_AERE_UNSAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CH4_SURF_AERE_UNSAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -690,7 +690,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CH4_SURF_DIFF_SAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CH4_SURF_DIFF_SAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -701,7 +701,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CH4_SURF_DIFF_UNSAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CH4_SURF_DIFF_UNSAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -712,7 +712,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CH4_SURF_EBUL_SAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CH4_SURF_EBUL_SAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -723,7 +723,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CH4_SURF_EBUL_UNSAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CH4_SURF_EBUL_UNSAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -734,7 +734,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("COL_PTRUNC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("COL_PTRUNC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -746,7 +746,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("CONC_CH4_SAT", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("CONC_CH4_SAT", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -758,7 +758,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("CONC_CH4_UNSAT", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("CONC_CH4_UNSAT", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -770,7 +770,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("CONC_O2_SAT", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("CONC_O2_SAT", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -782,7 +782,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("CONC_O2_UNSAT", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("CONC_O2_UNSAT", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -793,7 +793,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CPOOL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CPOOL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -804,7 +804,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -815,7 +815,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDC_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDC_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -826,7 +826,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDC_LOSS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDC_LOSS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -837,7 +837,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDC_TO_LITR2C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDC_TO_LITR2C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -848,7 +848,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDC_TO_LITR3C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDC_TO_LITR3C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -860,7 +860,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("CWDC_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("CWDC_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -871,7 +871,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -882,7 +882,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDN_TO_LITR2N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDN_TO_LITR2N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -893,7 +893,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDN_TO_LITR3N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDN_TO_LITR3N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -905,7 +905,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("CWDN_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("CWDN_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -916,7 +916,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -927,7 +927,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDP_TO_LITR2P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDP_TO_LITR2P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -938,7 +938,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("CWDP_TO_LITR3P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("CWDP_TO_LITR3P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -950,7 +950,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("CWDP_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("CWDP_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -961,7 +961,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DEADCROOTC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DEADCROOTC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -972,7 +972,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DEADCROOTN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DEADCROOTN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -983,7 +983,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DEADCROOTP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DEADCROOTP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -994,7 +994,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DEADSTEMC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DEADSTEMC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1005,7 +1005,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DEADSTEMN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DEADSTEMN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1016,7 +1016,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DEADSTEMP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DEADSTEMP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1027,7 +1027,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DEFICIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DEFICIT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1038,7 +1038,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DENIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DENIT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1049,7 +1049,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DESORPTION_P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DESORPTION_P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1060,7 +1060,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DISPVEGC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DISPVEGC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1071,7 +1071,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DISPVEGN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DISPVEGN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1082,7 +1082,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DISPVEGP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DISPVEGP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1093,7 +1093,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DSTDEP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DSTDEP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1104,7 +1104,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DSTFLXT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DSTFLXT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1115,7 +1115,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DWB", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DWB", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1126,7 +1126,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DWT_CONV_CFLUX_DRIBBLED", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DWT_CONV_CFLUX_DRIBBLED", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1137,7 +1137,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DWT_CONV_CFLUX_GRC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DWT_CONV_CFLUX_GRC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1148,7 +1148,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DWT_CONV_NFLUX_GRC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DWT_CONV_NFLUX_GRC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1159,7 +1159,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DWT_CONV_PFLUX_GRC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DWT_CONV_PFLUX_GRC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1170,7 +1170,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DWT_SLASH_CFLUX", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DWT_SLASH_CFLUX", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1181,7 +1181,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DWT_SLASH_NFLUX", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DWT_SLASH_NFLUX", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1192,7 +1192,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("DWT_SLASH_PFLUX", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("DWT_SLASH_PFLUX", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1203,7 +1203,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("EFLX_DYNBAL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("EFLX_DYNBAL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1214,7 +1214,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("EFLX_GRND_LAKE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("EFLX_GRND_LAKE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1225,7 +1225,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("EFLX_LH_TOT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("EFLX_LH_TOT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1236,7 +1236,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("EFLX_LH_TOT_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("EFLX_LH_TOT_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1247,7 +1247,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("EFLX_LH_TOT_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("EFLX_LH_TOT_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1258,7 +1258,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ELAI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ELAI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1269,7 +1269,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ER", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ER", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1280,7 +1280,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ERRH2O", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ERRH2O", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1291,7 +1291,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ERRH2OSNO", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ERRH2OSNO", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1302,7 +1302,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ERRSEB", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ERRSEB", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1313,7 +1313,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ERRSOI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ERRSOI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1324,7 +1324,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ERRSOL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ERRSOL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1335,7 +1335,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ESAI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ESAI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1346,7 +1346,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FAREA_BURNED", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FAREA_BURNED", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1357,7 +1357,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FCEV", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FCEV", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1368,7 +1368,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FCH4", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FCH4", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1379,7 +1379,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FCH4TOCO2", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FCH4TOCO2", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1390,7 +1390,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FCH4_DFSAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FCH4_DFSAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1401,7 +1401,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FCOV", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FCOV", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1412,7 +1412,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FCTR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FCTR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1423,7 +1423,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FGEV", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FGEV", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1434,7 +1434,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FGR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FGR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1445,7 +1445,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FGR12", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FGR12", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1456,7 +1456,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FGR_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FGR_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1467,7 +1467,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FGR_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FGR_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1478,7 +1478,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FH2OSFC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FH2OSFC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1489,7 +1489,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FINUNDATED", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FINUNDATED", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1500,7 +1500,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FINUNDATED_LAG", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FINUNDATED_LAG", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1511,7 +1511,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FIRA", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FIRA", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1522,7 +1522,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FIRA_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FIRA_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1533,7 +1533,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FIRA_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FIRA_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1544,7 +1544,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FIRE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FIRE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1555,7 +1555,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FIRE_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FIRE_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1566,7 +1566,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FIRE_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FIRE_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1577,7 +1577,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FLDS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FLDS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1588,7 +1588,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FPG", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FPG", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1599,7 +1599,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FPG_P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FPG_P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1610,7 +1610,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FPI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FPI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1621,7 +1621,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FPI_P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FPI_P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1633,7 +1633,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("FPI_P_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("FPI_P_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1645,7 +1645,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("FPI_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("FPI_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1656,7 +1656,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FPSN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FPSN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1667,7 +1667,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FPSN_WC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FPSN_WC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1678,7 +1678,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FPSN_WJ", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FPSN_WJ", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1689,7 +1689,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FPSN_WP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FPSN_WP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1700,7 +1700,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FROOTC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FROOTC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1711,7 +1711,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FROOTC_ALLOC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FROOTC_ALLOC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1722,7 +1722,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FROOTC_LOSS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FROOTC_LOSS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1733,7 +1733,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FROOTN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FROOTN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1744,7 +1744,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FROOTP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FROOTP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1755,7 +1755,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FROST_TABLE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FROST_TABLE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1766,7 +1766,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSA", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSA", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1777,7 +1777,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1788,7 +1788,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSA_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSA_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1799,7 +1799,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSA_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSA_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1810,7 +1810,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSDS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSDS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1821,7 +1821,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSDSND", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSDSND", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1832,7 +1832,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSDSNDLN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSDSNDLN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1843,7 +1843,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSDSNI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSDSNI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1854,7 +1854,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSDSVD", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSDSVD", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1865,7 +1865,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSDSVDLN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSDSVDLN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1876,7 +1876,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSDSVI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSDSVI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1887,7 +1887,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSDSVILN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSDSVILN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1898,7 +1898,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSH", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSH", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1909,7 +1909,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSH_G", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSH_G", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1920,7 +1920,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSH_NODYNLNDUSE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSH_NODYNLNDUSE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1931,7 +1931,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSH_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSH_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1942,7 +1942,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSH_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSH_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1953,7 +1953,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSH_V", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSH_V", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1964,7 +1964,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSM", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSM", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1975,7 +1975,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSM_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSM_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1986,7 +1986,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSM_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSM_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1997,7 +1997,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSNO", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSNO", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2008,7 +2008,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSNO_EFF", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSNO_EFF", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2019,7 +2019,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2030,7 +2030,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSRND", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSRND", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2041,7 +2041,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSRNDLN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSRNDLN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2052,7 +2052,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSRNI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSRNI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2063,7 +2063,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSRVD", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSRVD", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2074,7 +2074,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSRVDLN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSRVDLN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2085,7 +2085,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("FSRVI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("FSRVI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2096,7 +2096,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("F_CO2_SOIL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("F_CO2_SOIL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2108,7 +2108,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("F_CO2_SOIL_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("F_CO2_SOIL_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2119,7 +2119,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("F_DENIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("F_DENIT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2131,7 +2131,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("F_DENIT_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("F_DENIT_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2142,7 +2142,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("F_N2O_DENIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("F_N2O_DENIT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2153,7 +2153,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("F_N2O_NIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("F_N2O_NIT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2164,7 +2164,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("F_NIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("F_NIT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2176,7 +2176,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("F_NIT_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("F_NIT_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2187,7 +2187,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("GC_HEAT1", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("GC_HEAT1", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2198,7 +2198,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("GC_ICE1", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("GC_ICE1", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2209,7 +2209,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("GC_LIQ1", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("GC_LIQ1", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2220,7 +2220,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("GPP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("GPP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2231,7 +2231,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("GR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("GR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2242,7 +2242,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("GROSS_NMIN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("GROSS_NMIN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2253,7 +2253,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("GROSS_PMIN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("GROSS_PMIN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2264,7 +2264,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("H2OCAN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("H2OCAN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2275,7 +2275,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("H2OSFC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("H2OSFC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2286,7 +2286,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("H2OSNO", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("H2OSNO", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2297,7 +2297,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("H2OSNO_TOP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("H2OSNO_TOP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2309,7 +2309,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("H2OSOI", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("H2OSOI", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2320,7 +2320,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("HC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("HC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2331,7 +2331,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("HCSOI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("HCSOI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2342,7 +2342,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("HEAT_FROM_AC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("HEAT_FROM_AC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2353,7 +2353,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2365,7 +2365,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("HR_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("HR_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2376,7 +2376,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("HTOP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("HTOP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2387,7 +2387,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("INT_SNOW", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("INT_SNOW", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2398,7 +2398,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LABILEP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LABILEP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2409,7 +2409,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LABILEP_TO_SECONDP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LABILEP_TO_SECONDP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2421,7 +2421,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LABILEP_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LABILEP_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2432,7 +2432,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LAISHA", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LAISHA", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2443,7 +2443,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LAISUN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LAISUN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2455,7 +2455,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levlak;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LAKEICEFRAC", NC_FLOAT, 4, dimids, REC_ITYPE, 2)
+    INQ_VAR("LAKEICEFRAC", REC_XTYPE, 4, dimids, REC_ITYPE, 2)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2466,7 +2466,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LAKEICETHICK", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LAKEICETHICK", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2477,7 +2477,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LAND_UPTAKE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LAND_UPTAKE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2488,7 +2488,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LAND_USE_FLUX", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LAND_USE_FLUX", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2499,7 +2499,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LEAFC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LEAFC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2510,7 +2510,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LEAFC_ALLOC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LEAFC_ALLOC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2521,7 +2521,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LEAFC_LOSS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LEAFC_LOSS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2532,7 +2532,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LEAFC_TO_LITTER", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LEAFC_TO_LITTER", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2543,7 +2543,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LEAFN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LEAFN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2554,7 +2554,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LEAFP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LEAFP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2565,7 +2565,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LEAF_MR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LEAF_MR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2576,7 +2576,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LFC2", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LFC2", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2587,7 +2587,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITFALL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITFALL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2598,7 +2598,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITHR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITHR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2609,7 +2609,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR1C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR1C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2620,7 +2620,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR1C_TO_SOIL1C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR1C_TO_SOIL1C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2632,7 +2632,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR1C_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR1C_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2643,7 +2643,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR1N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR1N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2655,7 +2655,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR1N_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR1N_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2666,7 +2666,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR1N_TO_SOIL1N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR1N_TO_SOIL1N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2678,7 +2678,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR1N_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR1N_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2689,7 +2689,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR1P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR1P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2701,7 +2701,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR1P_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR1P_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2712,7 +2712,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR1P_TO_SOIL1P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR1P_TO_SOIL1P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2724,7 +2724,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR1P_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR1P_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2735,7 +2735,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR1_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR1_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2746,7 +2746,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR2C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR2C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2757,7 +2757,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR2C_TO_SOIL2C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR2C_TO_SOIL2C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2769,7 +2769,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR2C_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR2C_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2780,7 +2780,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR2N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR2N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2792,7 +2792,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR2N_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR2N_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2803,7 +2803,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR2N_TO_SOIL2N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR2N_TO_SOIL2N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2815,7 +2815,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR2N_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR2N_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2826,7 +2826,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR2P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR2P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2838,7 +2838,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR2P_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR2P_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2849,7 +2849,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR2P_TO_SOIL2P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR2P_TO_SOIL2P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2861,7 +2861,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR2P_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR2P_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2872,7 +2872,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR2_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR2_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2883,7 +2883,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR3C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR3C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2894,7 +2894,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR3C_TO_SOIL3C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR3C_TO_SOIL3C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2906,7 +2906,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR3C_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR3C_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2917,7 +2917,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR3N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR3N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2929,7 +2929,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR3N_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR3N_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2940,7 +2940,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR3N_TO_SOIL3N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR3N_TO_SOIL3N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2952,7 +2952,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR3N_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR3N_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2963,7 +2963,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR3P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR3P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2975,7 +2975,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR3P_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR3P_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2986,7 +2986,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR3P_TO_SOIL3P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR3P_TO_SOIL3P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2998,7 +2998,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("LITR3P_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("LITR3P_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3009,7 +3009,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITR3_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITR3_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3020,7 +3020,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITTERC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITTERC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3031,7 +3031,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITTERC_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITTERC_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3042,7 +3042,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LITTERC_LOSS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LITTERC_LOSS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3053,7 +3053,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LIVECROOTC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LIVECROOTC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3064,7 +3064,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LIVECROOTN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LIVECROOTN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3075,7 +3075,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LIVECROOTP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LIVECROOTP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3086,7 +3086,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LIVESTEMC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LIVESTEMC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3097,7 +3097,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LIVESTEMN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LIVESTEMN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3108,7 +3108,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("LIVESTEMP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("LIVESTEMP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3119,7 +3119,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("MR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("MR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3130,7 +3130,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("M_LITR1C_TO_LEACHING", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("M_LITR1C_TO_LEACHING", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3141,7 +3141,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("M_LITR2C_TO_LEACHING", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("M_LITR2C_TO_LEACHING", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3152,7 +3152,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("M_LITR3C_TO_LEACHING", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("M_LITR3C_TO_LEACHING", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3163,7 +3163,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("M_SOIL1C_TO_LEACHING", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("M_SOIL1C_TO_LEACHING", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3174,7 +3174,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("M_SOIL2C_TO_LEACHING", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("M_SOIL2C_TO_LEACHING", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3185,7 +3185,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("M_SOIL3C_TO_LEACHING", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("M_SOIL3C_TO_LEACHING", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3196,7 +3196,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("M_SOIL4C_TO_LEACHING", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("M_SOIL4C_TO_LEACHING", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3207,7 +3207,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NBP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NBP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3218,7 +3218,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NDEPLOY", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NDEPLOY", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3229,7 +3229,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NDEP_TO_SMINN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NDEP_TO_SMINN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3240,7 +3240,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NEE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NEE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3251,7 +3251,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NEM", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NEM", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3262,7 +3262,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NEP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NEP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3273,7 +3273,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NET_NMIN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NET_NMIN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3284,7 +3284,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NET_PMIN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NET_PMIN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3295,7 +3295,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NFIRE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NFIRE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3306,7 +3306,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NFIX_TO_SMINN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NFIX_TO_SMINN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3317,7 +3317,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("NPP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("NPP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3328,7 +3328,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("OCCLP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("OCCLP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3340,7 +3340,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("OCCLP_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("OCCLP_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3351,7 +3351,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("OCDEP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("OCDEP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3363,7 +3363,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("O_SCALAR", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("O_SCALAR", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3374,7 +3374,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PARVEGLN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PARVEGLN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3385,7 +3385,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PBOT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PBOT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3396,7 +3396,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PCH4", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PCH4", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3407,7 +3407,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PCO2", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PCO2", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3419,7 +3419,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_ltype;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("PCT_LANDUNIT", NC_FLOAT, 4, dimids, REC_ITYPE, 3)
+    INQ_VAR("PCT_LANDUNIT", REC_XTYPE, 4, dimids, REC_ITYPE, 3)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3431,7 +3431,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_natpft;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("PCT_NAT_PFT", NC_FLOAT, 4, dimids, REC_ITYPE, 4)
+    INQ_VAR("PCT_NAT_PFT", REC_XTYPE, 4, dimids, REC_ITYPE, 4)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3442,7 +3442,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PDEPLOY", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PDEPLOY", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3453,7 +3453,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PDEP_TO_SMINP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PDEP_TO_SMINP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3464,7 +3464,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PFT_FIRE_CLOSS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PFT_FIRE_CLOSS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3475,7 +3475,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PFT_FIRE_NLOSS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PFT_FIRE_NLOSS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3486,7 +3486,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PLANT_CALLOC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PLANT_CALLOC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3497,7 +3497,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PLANT_NDEMAND", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PLANT_NDEMAND", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3508,7 +3508,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PLANT_NDEMAND_COL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PLANT_NDEMAND_COL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3519,7 +3519,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PLANT_PALLOC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PLANT_PALLOC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3530,7 +3530,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PLANT_PDEMAND", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PLANT_PDEMAND", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3541,7 +3541,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PLANT_PDEMAND_COL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PLANT_PDEMAND_COL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3552,7 +3552,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("POTENTIAL_IMMOB", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("POTENTIAL_IMMOB", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3563,7 +3563,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("POTENTIAL_IMMOB_P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("POTENTIAL_IMMOB_P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3574,7 +3574,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("POT_F_DENIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("POT_F_DENIT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3585,7 +3585,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("POT_F_NIT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("POT_F_NIT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3596,7 +3596,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PRIMP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PRIMP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3607,7 +3607,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PRIMP_TO_LABILEP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PRIMP_TO_LABILEP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3619,7 +3619,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("PRIMP_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("PRIMP_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3630,7 +3630,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PROD1P_LOSS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PROD1P_LOSS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3641,7 +3641,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PSNSHA", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PSNSHA", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3652,7 +3652,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PSNSHADE_TO_CPOOL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PSNSHADE_TO_CPOOL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3663,7 +3663,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PSNSUN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PSNSUN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3674,7 +3674,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("PSNSUN_TO_CPOOL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("PSNSUN_TO_CPOOL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3685,7 +3685,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("Q2M", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("Q2M", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3696,7 +3696,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QBOT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QBOT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3707,7 +3707,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QCHARGE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QCHARGE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3718,7 +3718,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QDRAI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QDRAI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3729,7 +3729,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QDRAI_PERCH", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QDRAI_PERCH", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3740,7 +3740,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QDRAI_XS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QDRAI_XS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3751,7 +3751,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QDRIP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QDRIP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3762,7 +3762,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QFLOOD", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QFLOOD", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3773,7 +3773,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QFLX_ICE_DYNBAL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QFLX_ICE_DYNBAL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3784,7 +3784,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QFLX_LIQ_DYNBAL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QFLX_LIQ_DYNBAL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3795,7 +3795,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QH2OSFC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QH2OSFC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3806,7 +3806,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QINFL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QINFL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3817,7 +3817,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QINTR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QINTR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3828,7 +3828,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QIRRIG_GRND", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QIRRIG_GRND", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3839,7 +3839,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QIRRIG_ORIG", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QIRRIG_ORIG", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3850,7 +3850,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QIRRIG_REAL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QIRRIG_REAL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3861,7 +3861,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QIRRIG_SURF", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QIRRIG_SURF", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3872,7 +3872,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QIRRIG_WM", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QIRRIG_WM", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3883,7 +3883,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QOVER", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QOVER", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3894,7 +3894,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QOVER_LAG", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QOVER_LAG", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3905,7 +3905,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QRGWL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QRGWL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3916,7 +3916,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QRUNOFF", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QRUNOFF", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3927,7 +3927,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QRUNOFF_NODYNLNDUSE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QRUNOFF_NODYNLNDUSE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3938,7 +3938,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QRUNOFF_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QRUNOFF_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3949,7 +3949,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QRUNOFF_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QRUNOFF_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3960,7 +3960,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QSNOMELT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QSNOMELT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3971,7 +3971,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QSNWCPICE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QSNWCPICE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3982,7 +3982,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QSNWCPICE_NODYNLNDUSE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QSNWCPICE_NODYNLNDUSE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3993,7 +3993,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QSOIL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QSOIL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4004,7 +4004,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QVEGE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QVEGE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4015,7 +4015,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("QVEGT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("QVEGT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4026,7 +4026,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("RAIN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("RAIN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4037,7 +4037,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("RETRANSN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("RETRANSN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4048,7 +4048,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("RETRANSN_TO_NPOOL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("RETRANSN_TO_NPOOL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4059,7 +4059,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("RETRANSP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("RETRANSP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4070,7 +4070,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("RETRANSP_TO_PPOOL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("RETRANSP_TO_PPOOL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4081,7 +4081,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("RH2M", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("RH2M", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4092,7 +4092,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("RH2M_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("RH2M_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4103,7 +4103,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("RH2M_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("RH2M_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4114,7 +4114,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("RR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("RR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4125,7 +4125,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SABG", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SABG", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4136,7 +4136,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SABG_PEN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SABG_PEN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4147,7 +4147,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SABV", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SABV", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4159,7 +4159,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SCALARAVG_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SCALARAVG_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4170,7 +4170,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SECONDP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SECONDP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4181,7 +4181,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SECONDP_TO_LABILEP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SECONDP_TO_LABILEP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4192,7 +4192,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SECONDP_TO_OCCLP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SECONDP_TO_OCCLP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4204,7 +4204,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SECONDP_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SECONDP_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4215,7 +4215,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SEEDC_GRC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SEEDC_GRC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4226,7 +4226,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4237,7 +4237,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINN_TO_NPOOL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINN_TO_NPOOL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4248,7 +4248,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINN_TO_PLANT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINN_TO_PLANT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4259,7 +4259,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINN_TO_SOIL1N_L1", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINN_TO_SOIL1N_L1", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4270,7 +4270,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINN_TO_SOIL2N_L2", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINN_TO_SOIL2N_L2", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4281,7 +4281,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINN_TO_SOIL2N_S1", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINN_TO_SOIL2N_S1", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4292,7 +4292,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINN_TO_SOIL3N_L3", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINN_TO_SOIL3N_L3", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4303,7 +4303,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINN_TO_SOIL3N_S2", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINN_TO_SOIL3N_S2", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4314,7 +4314,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINN_TO_SOIL4N_S3", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINN_TO_SOIL4N_S3", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4325,7 +4325,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4336,7 +4336,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP_LEACHED", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP_LEACHED", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4347,7 +4347,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP_TO_PLANT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP_TO_PLANT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4358,7 +4358,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP_TO_PPOOL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP_TO_PPOOL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4369,7 +4369,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP_TO_SOIL1P_L1", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP_TO_SOIL1P_L1", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4380,7 +4380,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP_TO_SOIL2P_L2", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP_TO_SOIL2P_L2", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4391,7 +4391,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP_TO_SOIL2P_S1", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP_TO_SOIL2P_S1", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4402,7 +4402,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP_TO_SOIL3P_L3", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP_TO_SOIL3P_L3", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4413,7 +4413,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP_TO_SOIL3P_S2", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP_TO_SOIL3P_S2", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4424,7 +4424,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMINP_TO_SOIL4P_S3", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMINP_TO_SOIL4P_S3", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4436,7 +4436,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SMINP_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SMINP_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4447,7 +4447,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMIN_NH4", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMIN_NH4", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4459,7 +4459,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SMIN_NH4_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SMIN_NH4_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4470,7 +4470,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMIN_NO3", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMIN_NO3", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4481,7 +4481,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMIN_NO3_LEACHED", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMIN_NO3_LEACHED", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4492,7 +4492,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SMIN_NO3_RUNOFF", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SMIN_NO3_RUNOFF", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4504,7 +4504,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SMIN_NO3_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SMIN_NO3_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4515,7 +4515,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOBCMCL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOBCMCL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4526,7 +4526,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOBCMSL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOBCMSL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4537,7 +4537,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNODSTMCL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNODSTMCL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4548,7 +4548,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNODSTMSL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNODSTMSL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4559,7 +4559,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOINTABS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOINTABS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4570,7 +4570,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOOCMCL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOOCMCL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4581,7 +4581,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOOCMSL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOOCMSL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4592,7 +4592,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOW", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOW", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4603,7 +4603,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOWDP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOWDP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4614,7 +4614,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOWICE", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOWICE", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4625,7 +4625,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOWLIQ", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOWLIQ", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4636,7 +4636,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOW_DEPTH", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOW_DEPTH", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4647,7 +4647,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOW_SINKS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOW_SINKS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4658,7 +4658,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SNOW_SOURCES", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SNOW_SOURCES", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4669,7 +4669,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL1C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL1C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4680,7 +4680,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL1C_TO_SOIL2C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL1C_TO_SOIL2C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4692,7 +4692,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL1C_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL1C_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4703,7 +4703,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL1N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL1N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4715,7 +4715,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL1N_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL1N_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4726,7 +4726,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL1N_TO_SOIL2N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL1N_TO_SOIL2N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4738,7 +4738,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL1N_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL1N_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4749,7 +4749,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL1P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL1P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4761,7 +4761,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL1P_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL1P_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4772,7 +4772,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL1P_TO_SOIL2P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL1P_TO_SOIL2P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4784,7 +4784,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL1P_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL1P_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4795,7 +4795,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL1_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL1_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4806,7 +4806,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL2C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL2C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4817,7 +4817,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL2C_TO_SOIL3C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL2C_TO_SOIL3C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4829,7 +4829,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL2C_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL2C_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4840,7 +4840,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL2N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL2N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4852,7 +4852,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL2N_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL2N_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4863,7 +4863,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL2N_TO_SOIL3N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL2N_TO_SOIL3N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4875,7 +4875,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL2N_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL2N_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4886,7 +4886,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL2P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL2P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4898,7 +4898,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL2P_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL2P_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4909,7 +4909,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL2P_TO_SOIL3P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL2P_TO_SOIL3P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4921,7 +4921,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL2P_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL2P_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4932,7 +4932,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL2_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL2_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4943,7 +4943,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL3C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL3C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4954,7 +4954,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL3C_TO_SOIL4C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL3C_TO_SOIL4C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4966,7 +4966,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL3C_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL3C_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4977,7 +4977,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL3N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL3N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -4989,7 +4989,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL3N_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL3N_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5000,7 +5000,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL3N_TO_SOIL4N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL3N_TO_SOIL4N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5012,7 +5012,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL3N_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL3N_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5023,7 +5023,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL3P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL3P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5035,7 +5035,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL3P_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL3P_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5046,7 +5046,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL3P_TO_SOIL4P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL3P_TO_SOIL4P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5058,7 +5058,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL3P_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL3P_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5069,7 +5069,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL3_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL3_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5080,7 +5080,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL4C", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL4C", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5092,7 +5092,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL4C_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL4C_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5103,7 +5103,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL4N", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL4N", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5115,7 +5115,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL4N_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL4N_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5126,7 +5126,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL4N_TO_SMINN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL4N_TO_SMINN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5138,7 +5138,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL4N_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL4N_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5149,7 +5149,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL4P", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL4P", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5161,7 +5161,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL4P_TNDNCY_VERT_TRANS", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL4P_TNDNCY_VERT_TRANS", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5172,7 +5172,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL4P_TO_SMINP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL4P_TO_SMINP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5184,7 +5184,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOIL4P_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOIL4P_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5195,7 +5195,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOIL4_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOIL4_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5206,7 +5206,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOILC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOILC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5217,7 +5217,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOILC_HR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOILC_HR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5228,7 +5228,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOILC_LOSS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOILC_LOSS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5240,7 +5240,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOILICE", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOILICE", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5252,7 +5252,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOILICE_ICE", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOILICE_ICE", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5264,7 +5264,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOILLIQ", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOILLIQ", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5276,7 +5276,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOILLIQ_ICE", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOILLIQ_ICE", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5288,7 +5288,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOILPSI", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOILPSI", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5299,7 +5299,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOILWATER_10CM", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOILWATER_10CM", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
@@ -5311,7 +5311,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOLUTIONP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOLUTIONP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5323,7 +5323,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("SOLUTIONP_vr", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOLUTIONP_vr", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5334,7 +5334,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOMHR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOMHR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5345,7 +5345,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SOM_C_LEACHED", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SOM_C_LEACHED", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5356,7 +5356,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5367,7 +5367,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("STORVEGC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("STORVEGC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5378,7 +5378,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("STORVEGN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("STORVEGN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5389,7 +5389,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("STORVEGP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("STORVEGP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5400,7 +5400,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SUPPLEMENT_TO_SMINN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SUPPLEMENT_TO_SMINN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5411,7 +5411,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SUPPLEMENT_TO_SMINP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SUPPLEMENT_TO_SMINP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5422,7 +5422,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SUPPLY", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SUPPLY", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5433,7 +5433,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SoilAlpha", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SoilAlpha", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5444,7 +5444,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("SoilAlpha_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("SoilAlpha_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5455,7 +5455,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TAUX", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TAUX", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5466,7 +5466,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TAUY", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TAUY", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5477,7 +5477,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TBOT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TBOT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5488,7 +5488,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TBUILD", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TBUILD", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5499,7 +5499,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TCS_MONTH_BEGIN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TCS_MONTH_BEGIN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5510,7 +5510,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TCS_MONTH_END", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TCS_MONTH_END", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5521,7 +5521,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TG", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TG", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5532,7 +5532,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TG_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TG_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5543,7 +5543,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TG_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TG_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5554,7 +5554,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TH2OSFC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TH2OSFC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5565,7 +5565,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("THBOT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("THBOT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5576,7 +5576,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TKE1", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TKE1", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5587,7 +5587,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TLAI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TLAI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5599,7 +5599,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levlak;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("TLAKE", NC_FLOAT, 4, dimids, REC_ITYPE, 2)
+    INQ_VAR("TLAKE", REC_XTYPE, 4, dimids, REC_ITYPE, 2)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5610,7 +5610,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTCOLC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTCOLC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5621,7 +5621,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTCOLCH4", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTCOLCH4", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5632,7 +5632,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTCOLN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTCOLN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5643,7 +5643,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTCOLP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTCOLP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5654,7 +5654,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTECOSYSC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTECOSYSC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5665,7 +5665,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTECOSYSN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTECOSYSN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5676,7 +5676,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTECOSYSP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTECOSYSP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5687,7 +5687,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTLITC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTLITC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5698,7 +5698,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTLITC_1m", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTLITC_1m", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5709,7 +5709,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTLITN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTLITN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5720,7 +5720,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTLITP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTLITP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5731,7 +5731,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTLITP_1m", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTLITP_1m", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5742,7 +5742,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTPFTC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTPFTC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5753,7 +5753,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTPFTN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTPFTN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5764,7 +5764,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTPFTP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTPFTP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5775,7 +5775,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTSOMC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTSOMC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5786,7 +5786,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTSOMC_1m", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTSOMC_1m", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5797,7 +5797,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTSOMN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTSOMN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5808,7 +5808,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTSOMP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTSOMP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5819,7 +5819,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTSOMP_1m", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTSOMP_1m", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5830,7 +5830,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTVEGC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTVEGC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5841,7 +5841,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTVEGC_ABG", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTVEGC_ABG", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5852,7 +5852,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTVEGN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTVEGN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5863,7 +5863,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TOTVEGP", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TOTVEGP", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5874,7 +5874,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TREFMNAV", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TREFMNAV", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5885,7 +5885,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TREFMNAV_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TREFMNAV_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5896,7 +5896,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TREFMNAV_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TREFMNAV_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5907,7 +5907,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TREFMXAV", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TREFMXAV", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5918,7 +5918,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TREFMXAV_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TREFMXAV_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5929,7 +5929,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TREFMXAV_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TREFMXAV_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5940,7 +5940,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TSA", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TSA", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5951,7 +5951,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TSAI", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TSAI", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5962,7 +5962,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TSA_R", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TSA_R", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5973,7 +5973,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TSA_U", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TSA_U", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -5985,7 +5985,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("TSOI", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("TSOI", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
@@ -5997,7 +5997,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TSOI_10CM", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TSOI_10CM", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6009,7 +6009,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("TSOI_ICE", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("TSOI_ICE", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6020,7 +6020,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TV", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TV", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6031,7 +6031,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TWS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TWS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6042,7 +6042,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TWS_MONTH_BEGIN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TWS_MONTH_BEGIN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6053,7 +6053,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("TWS_MONTH_END", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("TWS_MONTH_END", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6065,7 +6065,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("T_SCALAR", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("T_SCALAR", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6076,7 +6076,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("U10", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("U10", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6087,7 +6087,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("URBAN_AC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("URBAN_AC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6098,7 +6098,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("URBAN_HEAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("URBAN_HEAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6109,7 +6109,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("VOLR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("VOLR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6120,7 +6120,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("VOLRMCH", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("VOLRMCH", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6131,7 +6131,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WA", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WA", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6142,7 +6142,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WASTEHEAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WASTEHEAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6153,7 +6153,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WF", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WF", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6164,7 +6164,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WIND", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WIND", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6175,7 +6175,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WOODC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WOODC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6186,7 +6186,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WOODC_ALLOC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WOODC_ALLOC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6197,7 +6197,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WOODC_LOSS", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WOODC_LOSS", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6208,7 +6208,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WOOD_HARVESTC", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WOOD_HARVESTC", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6219,7 +6219,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WOOD_HARVESTN", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WOOD_HARVESTN", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6230,7 +6230,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("WTGQ", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("WTGQ", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6242,7 +6242,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levdcmp;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("W_SCALAR", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("W_SCALAR", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6253,7 +6253,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("XR", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("XR", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6264,7 +6264,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("XSMRPOOL", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("XSMRPOOL", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6275,7 +6275,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ZBOT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ZBOT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6286,7 +6286,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ZWT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ZWT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6297,7 +6297,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ZWT_CH4_UNSAT", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ZWT_CH4_UNSAT", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6308,7 +6308,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("ZWT_PERCH", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("ZWT_PERCH", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6319,7 +6319,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("cn_scalar", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("cn_scalar", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6330,7 +6330,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("cp_scalar", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("cp_scalar", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6341,7 +6341,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("leaf_npimbalance", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("leaf_npimbalance", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6352,7 +6352,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("nlim_m", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("nlim_m", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6364,7 +6364,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[1] = dim_levgrnd;
     dimids[2] = dim_lat;
     dimids[3] = dim_lon;
-    INQ_VAR("o2_decomp_depth_unsat", NC_FLOAT, 4, dimids, REC_ITYPE, 1)
+    INQ_VAR("o2_decomp_depth_unsat", REC_XTYPE, 4, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -6375,7 +6375,7 @@ int e3sm_io_case::inq_I_case(e3sm_io_config   &cfg,
     dimids[0] = dim_time;
     dimids[1] = dim_lat;
     dimids[2] = dim_lon;
-    INQ_VAR("plim_m", NC_FLOAT, 3, dimids, REC_ITYPE, 0)
+    INQ_VAR("plim_m", REC_XTYPE, 3, dimids, REC_ITYPE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)

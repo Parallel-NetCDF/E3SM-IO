@@ -471,7 +471,7 @@ if (cfg.hist == h0) {
     /* float AEROD_v(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AEROD_v", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AEROD_v", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "1")
@@ -482,7 +482,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("ANRAIN", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("ANRAIN", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m-3")
     PUT_ATTR_TXT("long_name", "Average rain number conc")
@@ -492,7 +492,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("ANSNOW", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("ANSNOW", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m-3")
     PUT_ATTR_TXT("long_name", "Average snow number conc")
@@ -501,7 +501,7 @@ if (cfg.hist == h0) {
     /* float AODABS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODABS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODABS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol absorption optical depth 550 nm")
@@ -511,7 +511,7 @@ if (cfg.hist == h0) {
     /* float AODABSBC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODABSBC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODABSBC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol absorption optical depth 550 nm from BC")
@@ -520,7 +520,7 @@ if (cfg.hist == h0) {
     /* float AODALL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODALL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODALL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "AOD 550 nm for all time and species")
@@ -529,7 +529,7 @@ if (cfg.hist == h0) {
     /* float AODBC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODBC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODBC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from BC")
@@ -538,7 +538,7 @@ if (cfg.hist == h0) {
     /* float AODDUST(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODDUST", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODDUST", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from dust")
@@ -547,7 +547,7 @@ if (cfg.hist == h0) {
     /* float AODDUST1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODDUST1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODDUST1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm model 1 from dust")
@@ -556,7 +556,7 @@ if (cfg.hist == h0) {
     /* float AODDUST3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODDUST3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODDUST3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm model 3 from dust")
@@ -565,7 +565,7 @@ if (cfg.hist == h0) {
     /* float AODDUST4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODDUST4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODDUST4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm model 4 from dust")
@@ -574,7 +574,7 @@ if (cfg.hist == h0) {
     /* float AODMODE1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODMODE1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODMODE1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm mode 1")
@@ -583,7 +583,7 @@ if (cfg.hist == h0) {
     /* float AODMODE2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODMODE2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODMODE2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm mode 2")
@@ -592,7 +592,7 @@ if (cfg.hist == h0) {
     /* float AODMODE3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODMODE3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODMODE3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm mode 3")
@@ -601,7 +601,7 @@ if (cfg.hist == h0) {
     /* float AODMODE4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODMODE4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODMODE4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm mode 4")
@@ -610,7 +610,7 @@ if (cfg.hist == h0) {
     /* float AODNIR(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODNIR", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODNIR", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 850 nm")
@@ -619,7 +619,7 @@ if (cfg.hist == h0) {
     /* float AODPOM(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODPOM", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODPOM", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from POM")
@@ -628,7 +628,7 @@ if (cfg.hist == h0) {
     /* float AODSO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODSO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODSO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from SO4")
@@ -637,7 +637,7 @@ if (cfg.hist == h0) {
     /* float AODSOA(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODSOA", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODSOA", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from SOA")
@@ -646,7 +646,7 @@ if (cfg.hist == h0) {
     /* float AODSS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODSS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODSS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm from seasalt")
@@ -655,7 +655,7 @@ if (cfg.hist == h0) {
     /* float AODUV(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODUV", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODUV", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 350 nm")
@@ -664,7 +664,7 @@ if (cfg.hist == h0) {
     /* float AODVIS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AODVIS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AODVIS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol optical depth 550 nm")
@@ -675,7 +675,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("AQRAIN", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("AQRAIN", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "Average rain mixing ratio")
@@ -685,7 +685,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("AQSNOW", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("AQSNOW", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "Average snow mixing ratio")
@@ -694,7 +694,7 @@ if (cfg.hist == h0) {
     /* float AQ_DMS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AQ_DMS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AQ_DMS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "DMS aqueous chemistry (for gas species)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -702,7 +702,7 @@ if (cfg.hist == h0) {
     /* float AQ_H2O2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AQ_H2O2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AQ_H2O2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "H2O2 aqueous chemistry (for gas species)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -710,7 +710,7 @@ if (cfg.hist == h0) {
     /* float AQ_H2SO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AQ_H2SO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AQ_H2SO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "H2SO4 aqueous chemistry (for gas species)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -718,7 +718,7 @@ if (cfg.hist == h0) {
     /* float AQ_O3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AQ_O3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AQ_O3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "O3 aqueous chemistry (for gas species)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -726,7 +726,7 @@ if (cfg.hist == h0) {
     /* float AQ_SO2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AQ_SO2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AQ_SO2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "SO2 aqueous chemistry (for gas species)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -734,7 +734,7 @@ if (cfg.hist == h0) {
     /* float AQ_SOAG(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("AQ_SOAG", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("AQ_SOAG", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "SOAG aqueous chemistry (for gas species)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -743,7 +743,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("AREI", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("AREI", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "Micron")
     PUT_ATTR_TXT("long_name", "Average ice effective radius")
@@ -753,7 +753,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("AREL", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("AREL", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "Micron")
     PUT_ATTR_TXT("long_name", "Average droplet effective radius")
@@ -763,7 +763,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("AWNC", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("AWNC", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m-3")
     PUT_ATTR_TXT("long_name", "Average cloud water number conc")
@@ -773,7 +773,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("AWNI", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("AWNI", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m-3")
     PUT_ATTR_TXT("long_name", "Average cloud ice number conc")
@@ -782,7 +782,7 @@ if (cfg.hist == h0) {
     /* float BURDEN1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("BURDEN1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("BURDEN1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "kg/m2")
@@ -792,7 +792,7 @@ if (cfg.hist == h0) {
     /* float BURDEN2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("BURDEN2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("BURDEN2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "kg/m2")
@@ -802,7 +802,7 @@ if (cfg.hist == h0) {
     /* float BURDEN3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("BURDEN3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("BURDEN3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "kg/m2")
@@ -812,7 +812,7 @@ if (cfg.hist == h0) {
     /* float BURDEN4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("BURDEN4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("BURDEN4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "kg/m2")
@@ -823,7 +823,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("CCN3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("CCN3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1/cm3")
     PUT_ATTR_TXT("long_name", "CCN concentration at S=0.1%")
@@ -832,7 +832,7 @@ if (cfg.hist == h0) {
     /* float CDNUMC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("CDNUMC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("CDNUMC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1/m2")
     PUT_ATTR_TXT("long_name", "Vertically-integrated droplet concentration")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -840,7 +840,7 @@ if (cfg.hist == h0) {
     /* float CLDHGH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("CLDHGH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("CLDHGH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Vertically-integrated high cloud")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -850,7 +850,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("CLDICE", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("CLDICE", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("mixing_ratio", "wet")
@@ -861,7 +861,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("CLDLIQ", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("CLDLIQ", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("mixing_ratio", "wet")
@@ -871,7 +871,7 @@ if (cfg.hist == h0) {
     /* float CLDLOW(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("CLDLOW", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("CLDLOW", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Vertically-integrated low cloud")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -879,7 +879,7 @@ if (cfg.hist == h0) {
     /* float CLDMED(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("CLDMED", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("CLDMED", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Vertically-integrated mid-level cloud")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -888,7 +888,7 @@ if (cfg.hist == h0) {
     /* float CLDTOT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("CLDTOT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("CLDTOT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Vertically-integrated total cloud")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -897,7 +897,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("CLOUD", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("CLOUD", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Cloud fraction")
@@ -907,7 +907,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("CLOUDFRAC_CLUBB", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("CLOUDFRAC_CLUBB", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Cloud Fraction")
@@ -917,7 +917,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("CONCLD", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("CONCLD", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "fraction")
     PUT_ATTR_TXT("long_name", "Convective cloud cover")
@@ -927,7 +927,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("DCQ", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("DCQ", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg/s")
     PUT_ATTR_TXT("long_name", "Q tendency due to moist processes")
@@ -936,7 +936,7 @@ if (cfg.hist == h0) {
     /* float DF_DMS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DF_DMS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DF_DMS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dry deposition flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -944,7 +944,7 @@ if (cfg.hist == h0) {
     /* float DF_H2O2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DF_H2O2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DF_H2O2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dry deposition flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -952,7 +952,7 @@ if (cfg.hist == h0) {
     /* float DF_H2SO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DF_H2SO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DF_H2SO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dry deposition flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -960,7 +960,7 @@ if (cfg.hist == h0) {
     /* float DF_O3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DF_O3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DF_O3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dry deposition flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -968,7 +968,7 @@ if (cfg.hist == h0) {
     /* float DF_SO2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DF_SO2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DF_SO2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dry deposition flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -976,7 +976,7 @@ if (cfg.hist == h0) {
     /* float DF_SOAG(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DF_SOAG", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DF_SOAG", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dry deposition flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -984,7 +984,7 @@ if (cfg.hist == h0) {
     /* float DMS_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DMS_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DMS_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "mol/mol")
     PUT_ATTR_TXT("long_name", "DMS in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -992,7 +992,7 @@ if (cfg.hist == h0) {
     /* float DP_KCLDBASE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DP_KCLDBASE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DP_KCLDBASE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Deep conv. cloudbase level index")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1000,7 +1000,7 @@ if (cfg.hist == h0) {
     /* float DP_MFUP_MAX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DP_MFUP_MAX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DP_MFUP_MAX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Deep conv. column-max updraft mass flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1008,7 +1008,7 @@ if (cfg.hist == h0) {
     /* float DP_WCLDBASE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DP_WCLDBASE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DP_WCLDBASE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Deep conv. cloudbase vertical velocity")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1016,7 +1016,7 @@ if (cfg.hist == h0) {
     /* float DSTSFMBL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DSTSFMBL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DSTSFMBL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Mobilization flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1025,7 +1025,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("DTCOND", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("DTCOND", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "K/s")
     PUT_ATTR_TXT("long_name", "T tendency - moist processes")
@@ -1034,7 +1034,7 @@ if (cfg.hist == h0) {
     /* float DTENDTH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DTENDTH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DTENDTH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Dynamic Tendency of Total (vertically integrated) moist static energy")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1042,7 +1042,7 @@ if (cfg.hist == h0) {
     /* float DTENDTQ(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("DTENDTQ", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("DTENDTQ", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Dynamic Tendency of Total (vertically integrated) specific humidity")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1051,7 +1051,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("EXTINCT", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("EXTINCT", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1063,7 +1063,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("FICE", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("FICE", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Fractional ice content within cloud")
@@ -1072,7 +1072,7 @@ if (cfg.hist == h0) {
     /* float FLDS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FLDS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FLDS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1084,7 +1084,7 @@ if (cfg.hist == h0) {
     /* float FLNS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FLNS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FLNS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1095,7 +1095,7 @@ if (cfg.hist == h0) {
     /* float FLNSC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FLNSC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FLNSC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1106,7 +1106,7 @@ if (cfg.hist == h0) {
     /* float FLNT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FLNT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FLNT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1118,7 +1118,7 @@ if (cfg.hist == h0) {
     /* float FLNTC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FLNTC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FLNTC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1129,7 +1129,7 @@ if (cfg.hist == h0) {
     /* float FLUT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FLUT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FLUT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1140,7 +1140,7 @@ if (cfg.hist == h0) {
     /* float FLUTC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FLUTC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FLUTC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1153,7 +1153,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("FREQI", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("FREQI", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Fractional occurrence of ice")
@@ -1163,7 +1163,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("FREQL", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("FREQL", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Fractional occurrence of liquid")
@@ -1173,7 +1173,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("FREQR", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("FREQR", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Fractional occurrence of rain")
@@ -1183,7 +1183,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("FREQS", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("FREQS", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Fractional occurrence of snow")
@@ -1192,7 +1192,7 @@ if (cfg.hist == h0) {
     /* float FSDS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSDS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSDS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1204,7 +1204,7 @@ if (cfg.hist == h0) {
     /* float FSDSC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSDSC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSDSC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1216,7 +1216,7 @@ if (cfg.hist == h0) {
     /* float FSNS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSNS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSNS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1227,7 +1227,7 @@ if (cfg.hist == h0) {
     /* float FSNSC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSNSC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSNSC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1238,7 +1238,7 @@ if (cfg.hist == h0) {
     /* float FSNT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSNT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSNT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1249,7 +1249,7 @@ if (cfg.hist == h0) {
     /* float FSNTC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSNTC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSNTC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1260,7 +1260,7 @@ if (cfg.hist == h0) {
     /* float FSNTOA(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSNTOA", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSNTOA", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1271,7 +1271,7 @@ if (cfg.hist == h0) {
     /* float FSNTOAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSNTOAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSNTOAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1282,7 +1282,7 @@ if (cfg.hist == h0) {
     /* float FSUTOA(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSUTOA", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSUTOA", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1294,7 +1294,7 @@ if (cfg.hist == h0) {
     /* float FSUTOAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("FSUTOAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("FSUTOAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1306,7 +1306,7 @@ if (cfg.hist == h0) {
     /* float F_eff(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("F_eff", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("F_eff", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Effective enrichment factor of marine organic matter")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1314,7 +1314,7 @@ if (cfg.hist == h0) {
     /* float H2O2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("H2O2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("H2O2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "mol/mol")
     PUT_ATTR_TXT("long_name", "H2O2 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1322,7 +1322,7 @@ if (cfg.hist == h0) {
     /* float H2SO4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("H2SO4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("H2SO4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "mol/mol")
     PUT_ATTR_TXT("long_name", "H2SO4 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1330,7 +1330,7 @@ if (cfg.hist == h0) {
     /* float H2SO4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("H2SO4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("H2SO4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "H2SO4 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1338,7 +1338,7 @@ if (cfg.hist == h0) {
     /* float ICEFRAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ICEFRAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ICEFRAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Fraction of sfc area covered by sea-ice")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1347,7 +1347,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("ICIMR", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("ICIMR", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "Prognostic in-cloud ice mixing ratio")
@@ -1357,7 +1357,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("ICWMR", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("ICWMR", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "Prognostic in-cloud water mixing ratio")
@@ -1367,7 +1367,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("IWC", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("IWC", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/m3")
     PUT_ATTR_TXT("long_name", "Grid box average ice water content")
@@ -1376,7 +1376,7 @@ if (cfg.hist == h0) {
     /* float LANDFRAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("LANDFRAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("LANDFRAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Fraction of sfc area covered by land")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1384,7 +1384,7 @@ if (cfg.hist == h0) {
     /* float LHFLX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("LHFLX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("LHFLX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Surface latent heat flux")
     PUT_ATTR_TXT("standard_name", "surface_upward_latent_heat_flux")
@@ -1394,7 +1394,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("LINOZ_DO3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("LINOZ_DO3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1/s")
     PUT_ATTR_TXT("long_name", "ozone vmr tendency by linearized ozone chemistry")
@@ -1404,7 +1404,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("LINOZ_DO3_PSC", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("LINOZ_DO3_PSC", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1/s")
     PUT_ATTR_TXT("long_name", "ozone vmr loss by PSCs using Carille et al. (1990)")
@@ -1414,7 +1414,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("LINOZ_O3CLIM", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("LINOZ_O3CLIM", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "mol/mol")
     PUT_ATTR_TXT("long_name", "climatology of ozone in LINOZ")
@@ -1424,7 +1424,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("LINOZ_O3COL", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("LINOZ_O3COL", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "DU")
     PUT_ATTR_TXT("long_name", "ozone column above")
@@ -1433,7 +1433,7 @@ if (cfg.hist == h0) {
     /* float LINOZ_SFCSINK(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("LINOZ_SFCSINK", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("LINOZ_SFCSINK", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "Tg/yr/m2")
     PUT_ATTR_TXT("long_name", "surface o3 sink in LINOZ with an e-fold to a fixed concentration")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1442,7 +1442,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("LINOZ_SSO3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("LINOZ_SSO3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg")
     PUT_ATTR_TXT("long_name", "steady state ozone in LINOZ")
@@ -1451,7 +1451,7 @@ if (cfg.hist == h0) {
     /* float LINOZ_SZA(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("LINOZ_SZA", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("LINOZ_SZA", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "degrees")
     PUT_ATTR_TXT("long_name", "solar zenith angle in LINOZ")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1459,7 +1459,7 @@ if (cfg.hist == h0) {
     /* float LND_MBL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("LND_MBL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("LND_MBL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Soil erodibility factor")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1467,7 +1467,7 @@ if (cfg.hist == h0) {
     /* float LWCF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("LWCF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("LWCF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -1481,7 +1481,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("Mass_bc", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("Mass_bc", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "sum of bc mass concentration bc_a1+bc_c1+bc_a3+bc_c3+bc_a4+bc_c4")
@@ -1491,7 +1491,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("Mass_dst", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("Mass_dst", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "sum of dst mass concentration dst_a1+dst_c1+dst_a3+dst_c3")
@@ -1501,7 +1501,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("Mass_mom", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("Mass_mom", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "sum of mom mass concentration mom_a1+mom_c1+mom_a2+mom_c2+mom_a3+mom_c3+mom_a4+mom_c4")
@@ -1511,7 +1511,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("Mass_ncl", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("Mass_ncl", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "sum of ncl mass concentration ncl_a1+ncl_c1+ncl_a2+ncl_c2+ncl_a3+ncl_c3")
@@ -1521,7 +1521,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("Mass_pom", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("Mass_pom", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "sum of pom mass concentration pom_a1+pom_c1+pom_a3+pom_c3+pom_a4+pom_c4")
@@ -1531,7 +1531,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("Mass_so4", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("Mass_so4", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "sum of so4 mass concentration so4_a1+so4_c1+so4_a2+so4_c2+so4_a3+so4_c3")
@@ -1541,7 +1541,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("Mass_soa", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("Mass_soa", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "sum of soa mass concentration soa_a1+soa_c1+soa_a2+soa_c2+soa_a3+soa_c3")
@@ -1551,7 +1551,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("NUMICE", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("NUMICE", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1/kg")
     PUT_ATTR_TXT("mixing_ratio", "wet")
@@ -1562,7 +1562,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("NUMLIQ", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("NUMLIQ", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1/kg")
     PUT_ATTR_TXT("mixing_ratio", "wet")
@@ -1573,7 +1573,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("NUMRAI", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("NUMRAI", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1/kg")
     PUT_ATTR_TXT("mixing_ratio", "wet")
@@ -1584,7 +1584,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("NUMSNO", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("NUMSNO", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "1/kg")
     PUT_ATTR_TXT("mixing_ratio", "wet")
@@ -1595,7 +1595,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("O3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("O3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "mol/mol")
     PUT_ATTR_TXT("mixing_ratio", "dry")
@@ -1605,7 +1605,7 @@ if (cfg.hist == h0) {
     /* float O3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("O3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("O3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "mol/mol")
     PUT_ATTR_TXT("long_name", "O3 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1613,7 +1613,7 @@ if (cfg.hist == h0) {
     /* float OCNFRAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("OCNFRAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("OCNFRAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Fraction of sfc area covered by ocean")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1622,7 +1622,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("OMEGA", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("OMEGA", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "Pa/s")
     PUT_ATTR_TXT("long_name", "Vertical velocity (pressure)")
@@ -1633,7 +1633,7 @@ if (cfg.hist == h0) {
     /* float OMEGA500(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("OMEGA500", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("OMEGA500", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "Pa/s")
     PUT_ATTR_TXT("long_name", "Vertical velocity at 500 mbar pressure surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1643,7 +1643,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("OMEGAT", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("OMEGAT", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "K Pa/s")
     PUT_ATTR_TXT("long_name", "Vertical heat flux")
@@ -1652,7 +1652,7 @@ if (cfg.hist == h0) {
     /* float PBLH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("PBLH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("PBLH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "PBL height")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1660,7 +1660,7 @@ if (cfg.hist == h0) {
     /* float PHIS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("PHIS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("PHIS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m2/s2")
     PUT_ATTR_TXT("long_name", "Surface geopotential")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -1668,7 +1668,7 @@ if (cfg.hist == h0) {
     /* float PRECC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("PRECC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("PRECC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Convective precipitation rate (liq + ice)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1676,7 +1676,7 @@ if (cfg.hist == h0) {
     /* float PRECL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("PRECL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("PRECL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Large-scale (stable) precipitation rate (liq + ice)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1684,7 +1684,7 @@ if (cfg.hist == h0) {
     /* float PRECSC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("PRECSC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("PRECSC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Convective snow rate (water equivalent)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1692,7 +1692,7 @@ if (cfg.hist == h0) {
     /* float PRECSL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("PRECSL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("PRECSL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Large-scale (stable) snow rate (water equivalent)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1701,7 +1701,7 @@ else {
     /* float OMEGA850(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("OMEGA850", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("OMEGA850", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "Pa/s")
     PUT_ATTR_TXT("long_name", "Vertical velocity at 850 mbar pressure surface")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -1709,7 +1709,7 @@ else {
     /* float PRECT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("PRECT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("PRECT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Total (convective and large-scale) precipitation rate (liq + ice)")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -1718,7 +1718,7 @@ else {
     /* float PS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("PS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("PS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "Pa")
     PUT_ATTR_TXT("long_name", "Surface pressure")
     PUT_ATTR_TXT("standard_name", "surface_air_pressure")
@@ -1728,7 +1728,7 @@ if (cfg.hist == h0) {
     /* float PSL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("PSL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("PSL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "Pa")
     PUT_ATTR_TXT("long_name", "Sea level pressure")
     PUT_ATTR_TXT("standard_name", "air_pressure_at_mean_sea_level")
@@ -1738,7 +1738,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("Q", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("Q", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("mixing_ratio", "wet")
@@ -1748,7 +1748,7 @@ if (cfg.hist == h0) {
     /* float QFLX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("QFLX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("QFLX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Surface water flux")
     PUT_ATTR_TXT("standard_name", "water_evapotranspiration_flux")
@@ -1757,7 +1757,7 @@ if (cfg.hist == h0) {
     /* float QREFHT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("QREFHT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("QREFHT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "Reference height humidity")
     PUT_ATTR_TXT("standard_name", "specific_humidity")
@@ -1767,7 +1767,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("QRL", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("QRL", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
@@ -1780,7 +1780,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("QRS", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("QRS", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
@@ -1793,7 +1793,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("RAINQM", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("RAINQM", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("mixing_ratio", "wet")
@@ -1803,7 +1803,7 @@ if (cfg.hist == h0) {
     /* float RAM1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("RAM1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("RAM1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "frac")
     PUT_ATTR_TXT("long_name", "RAM1")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1812,7 +1812,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("RELHUM", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("RELHUM", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "percent")
     PUT_ATTR_TXT("long_name", "Relative humidity")
@@ -1822,7 +1822,7 @@ if (cfg.hist == h0) {
     /* float SFDMS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFDMS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFDMS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "DMS surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1830,7 +1830,7 @@ if (cfg.hist == h0) {
     /* float SFH2O2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFH2O2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFH2O2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "H2O2 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1838,7 +1838,7 @@ if (cfg.hist == h0) {
     /* float SFH2SO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFH2SO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFH2SO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "H2SO4 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1846,7 +1846,7 @@ if (cfg.hist == h0) {
     /* float SFO3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFO3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFO3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "O3 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1854,7 +1854,7 @@ if (cfg.hist == h0) {
     /* float SFSO2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFSO2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFSO2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "SO2 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1862,7 +1862,7 @@ if (cfg.hist == h0) {
     /* float SFSOAG(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFSOAG", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFSOAG", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "SOAG surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1870,7 +1870,7 @@ if (cfg.hist == h0) {
     /* float SFbc_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFbc_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFbc_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_a1 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1878,7 +1878,7 @@ if (cfg.hist == h0) {
     /* float SFbc_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFbc_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFbc_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_a3 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1886,7 +1886,7 @@ if (cfg.hist == h0) {
     /* float SFbc_a4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFbc_a4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFbc_a4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_a4 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1894,7 +1894,7 @@ if (cfg.hist == h0) {
     /* float SFdst_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFdst_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFdst_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_a1 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1902,7 +1902,7 @@ if (cfg.hist == h0) {
     /* float SFdst_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFdst_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFdst_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_a3 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1910,7 +1910,7 @@ if (cfg.hist == h0) {
     /* float SFmom_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFmom_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFmom_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a1 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1918,7 +1918,7 @@ if (cfg.hist == h0) {
     /* float SFmom_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFmom_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFmom_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a2 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1926,7 +1926,7 @@ if (cfg.hist == h0) {
     /* float SFmom_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFmom_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFmom_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a3 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1934,7 +1934,7 @@ if (cfg.hist == h0) {
     /* float SFmom_a4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFmom_a4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFmom_a4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a4 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1942,7 +1942,7 @@ if (cfg.hist == h0) {
     /* float SFncl_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFncl_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFncl_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_a1 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1950,7 +1950,7 @@ if (cfg.hist == h0) {
     /* float SFncl_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFncl_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFncl_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_a2 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1958,7 +1958,7 @@ if (cfg.hist == h0) {
     /* float SFncl_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFncl_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFncl_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_a3 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1966,7 +1966,7 @@ if (cfg.hist == h0) {
     /* float SFnum_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFnum_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFnum_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_a1 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1974,7 +1974,7 @@ if (cfg.hist == h0) {
     /* float SFnum_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFnum_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFnum_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_a2 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1982,7 +1982,7 @@ if (cfg.hist == h0) {
     /* float SFnum_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFnum_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFnum_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_a3 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1990,7 +1990,7 @@ if (cfg.hist == h0) {
     /* float SFnum_a4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFnum_a4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFnum_a4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_a4 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -1998,7 +1998,7 @@ if (cfg.hist == h0) {
     /* float SFpom_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFpom_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFpom_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_a1 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2006,7 +2006,7 @@ if (cfg.hist == h0) {
     /* float SFpom_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFpom_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFpom_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_a3 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2014,7 +2014,7 @@ if (cfg.hist == h0) {
     /* float SFpom_a4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFpom_a4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFpom_a4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_a4 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2022,7 +2022,7 @@ if (cfg.hist == h0) {
     /* float SFso4_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFso4_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFso4_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_a1 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2030,7 +2030,7 @@ if (cfg.hist == h0) {
     /* float SFso4_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFso4_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFso4_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_a2 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2038,7 +2038,7 @@ if (cfg.hist == h0) {
     /* float SFso4_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFso4_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFso4_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_a3 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2046,7 +2046,7 @@ if (cfg.hist == h0) {
     /* float SFsoa_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFsoa_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFsoa_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_a1 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2054,7 +2054,7 @@ if (cfg.hist == h0) {
     /* float SFsoa_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFsoa_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFsoa_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_a2 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2062,7 +2062,7 @@ if (cfg.hist == h0) {
     /* float SFsoa_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SFsoa_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SFsoa_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_a3 surface flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2070,7 +2070,7 @@ if (cfg.hist == h0) {
     /* float SHFLX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SHFLX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SHFLX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "W/m2")
     PUT_ATTR_TXT("long_name", "Surface sensible heat flux")
     PUT_ATTR_TXT("standard_name", "surface_upward_sensible_heat_flux")
@@ -2079,7 +2079,7 @@ if (cfg.hist == h0) {
     /* float SH_KCLDBASE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SH_KCLDBASE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SH_KCLDBASE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "1")
     PUT_ATTR_TXT("long_name", "Shallow conv. cloudbase level index")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2087,7 +2087,7 @@ if (cfg.hist == h0) {
     /* float SH_MFUP_MAX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SH_MFUP_MAX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SH_MFUP_MAX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Shallow conv. column-max updraft mass flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2095,7 +2095,7 @@ if (cfg.hist == h0) {
     /* float SH_WCLDBASE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SH_WCLDBASE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SH_WCLDBASE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Shallow conv. cloudbase vertical velocity")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2103,7 +2103,7 @@ if (cfg.hist == h0) {
     /* float SNOWHICE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SNOWHICE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SNOWHICE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "Snow depth over ice")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2111,7 +2111,7 @@ if (cfg.hist == h0) {
     /* float SNOWHLND(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SNOWHLND", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SNOWHLND", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "Water equivalent snow depth")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2120,7 +2120,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("SNOWQM", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("SNOWQM", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("mixing_ratio", "wet")
@@ -2131,7 +2131,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("SO2", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("SO2", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "mol/mol")
     PUT_ATTR_TXT("mixing_ratio", "dry")
@@ -2141,7 +2141,7 @@ if (cfg.hist == h0) {
     /* float SO2_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SO2_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SO2_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "molec/cm2/s")
     PUT_ATTR_TXT("long_name", "vertically intergrated external forcing for SO2")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2149,7 +2149,7 @@ if (cfg.hist == h0) {
     /* float SO2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SO2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SO2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "mol/mol")
     PUT_ATTR_TXT("long_name", "SO2 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2157,7 +2157,7 @@ if (cfg.hist == h0) {
     /* float SOAG_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SOAG_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SOAG_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "molec/cm2/s")
     PUT_ATTR_TXT("long_name", "vertically intergrated external forcing for SOAG")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2165,7 +2165,7 @@ if (cfg.hist == h0) {
     /* float SOAG_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SOAG_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SOAG_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "mol/mol")
     PUT_ATTR_TXT("long_name", "SOAG in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2173,7 +2173,7 @@ if (cfg.hist == h0) {
     /* float SOAG_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SOAG_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SOAG_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "SOAG gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2181,7 +2181,7 @@ if (cfg.hist == h0) {
     /* float SOLIN(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SOLIN", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SOLIN", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -2193,7 +2193,7 @@ if (cfg.hist == h0) {
     /* float SSAVIS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SSAVIS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SSAVIS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("long_name", "Aerosol singel-scatter albedo")
@@ -2202,7 +2202,7 @@ if (cfg.hist == h0) {
     /* float SSTSFMBL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SSTSFMBL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SSTSFMBL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Mobilization flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2210,7 +2210,7 @@ if (cfg.hist == h0) {
     /* float SSTSFMBL_OM(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SSTSFMBL_OM", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SSTSFMBL_OM", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Mobilization flux of marine organic matter at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2218,7 +2218,7 @@ if (cfg.hist == h0) {
     /* float SWCF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("SWCF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("SWCF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("Sampling_Sequence", "rad_lwsw")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
@@ -2232,7 +2232,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("T", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("T", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "K")
     PUT_ATTR_TXT("long_name", "Temperature")
@@ -2242,7 +2242,7 @@ if (cfg.hist == h0) {
     /* float TAUGWX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TAUGWX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TAUGWX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "N/m2")
     PUT_ATTR_TXT("long_name", "Zonal gravity wave surface stress")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2250,7 +2250,7 @@ if (cfg.hist == h0) {
     /* float TAUGWY(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TAUGWY", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TAUGWY", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "N/m2")
     PUT_ATTR_TXT("long_name", "Meridional gravity wave surface stress")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2258,7 +2258,7 @@ if (cfg.hist == h0) {
     /* float TAUX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TAUX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TAUX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "N/m2")
     PUT_ATTR_TXT("long_name", "Zonal surface stress")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2266,7 +2266,7 @@ if (cfg.hist == h0) {
     /* float TAUY(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TAUY", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TAUY", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "N/m2")
     PUT_ATTR_TXT("long_name", "Meridional surface stress")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2274,7 +2274,7 @@ if (cfg.hist == h0) {
     /* float TGCLDCWP(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TGCLDCWP", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TGCLDCWP", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Total grid-box cloud water path (liquid and ice)")
     PUT_ATTR_TXT("standard_name", "atmosphere_mass_content_of_cloud_condensed_water")
@@ -2283,7 +2283,7 @@ if (cfg.hist == h0) {
     /* float TGCLDIWP(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TGCLDIWP", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TGCLDIWP", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Total grid-box cloud ice water path")
     PUT_ATTR_TXT("standard_name", "atmosphere_mass_content_of_cloud_ice")
@@ -2292,7 +2292,7 @@ if (cfg.hist == h0) {
     /* float TGCLDLWP(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TGCLDLWP", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TGCLDLWP", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Total grid-box cloud liquid water path")
     PUT_ATTR_TXT("standard_name", "atmosphere_mass_content_of_cloud_liquid_water")
@@ -2301,7 +2301,7 @@ if (cfg.hist == h0) {
     /* float TH7001000(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TH7001000", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TH7001000", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "K")
     PUT_ATTR_TXT("long_name", "Theta difference 700 mb - 1000 mb")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2310,7 +2310,7 @@ else {
     /* float T850(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("T850", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("T850", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "K")
     PUT_ATTR_TXT("long_name", "Temperature at 850 mbar pressure surface")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -2319,7 +2319,7 @@ else {
     /* float TMQ(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TMQ", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TMQ", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2")
     PUT_ATTR_TXT("long_name", "Total (vertically integrated) precipitable water")
     PUT_ATTR_TXT("standard_name", "atmosphere_mass_content_of_water_vapor")
@@ -2329,7 +2329,7 @@ if (cfg.hist == h0) {
     /* float TREFHT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TREFHT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TREFHT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "K")
     PUT_ATTR_TXT("long_name", "Reference height temperature")
     PUT_ATTR_TXT("standard_name", "air_temperature")
@@ -2338,7 +2338,7 @@ if (cfg.hist == h0) {
     /* float TROP_P(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TROP_P", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TROP_P", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "Pa")
@@ -2348,7 +2348,7 @@ if (cfg.hist == h0) {
     /* float TROP_T(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TROP_T", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TROP_T", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
     PUT_ATTR_TXT("units", "K")
@@ -2359,7 +2359,7 @@ if (cfg.hist == h0) {
     /* float TS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "K")
     PUT_ATTR_TXT("long_name", "Surface temperature (radiative)")
     PUT_ATTR_TXT("standard_name", "surface_temperature")
@@ -2369,7 +2369,7 @@ if (cfg.hist == h0) {
     /* float TSMN(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TSMN", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TSMN", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "K")
     PUT_ATTR_TXT("long_name", "Minimum surface temperature over output period")
     PUT_ATTR_TXT("cell_methods", "time: minimum")
@@ -2377,7 +2377,7 @@ if (cfg.hist == h0) {
     /* float TSMX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TSMX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TSMX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "K")
     PUT_ATTR_TXT("long_name", "Maximum surface temperature over output period")
     PUT_ATTR_TXT("cell_methods", "time: maximum")
@@ -2385,7 +2385,7 @@ if (cfg.hist == h0) {
     /* float TUH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TUH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TUH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "W/m")
     PUT_ATTR_TXT("long_name", "Total (vertically integrated) zonal MSE flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2393,7 +2393,7 @@ if (cfg.hist == h0) {
     /* float TUQ(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TUQ", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TUQ", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m/s")
     PUT_ATTR_TXT("long_name", "Total (vertically integrated) zonal water flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2401,7 +2401,7 @@ if (cfg.hist == h0) {
     /* float TVH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TVH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TVH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "W/m")
     PUT_ATTR_TXT("long_name", "Total (vertically integrated) meridional MSE flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2409,7 +2409,7 @@ if (cfg.hist == h0) {
     /* float TVQ(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("TVQ", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("TVQ", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m/s")
     PUT_ATTR_TXT("long_name", "Total (vertically integrated) meridional water flux")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2419,7 +2419,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("U", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("U", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Zonal wind")
@@ -2430,7 +2430,7 @@ if (cfg.hist == h0) {
     /* float U10(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("U10", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("U10", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "10m wind speed")
     PUT_ATTR_TXT("standard_name", "wind_speed")
@@ -2440,7 +2440,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("UU", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("UU", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m2/s2")
     PUT_ATTR_TXT("long_name", "Zonal velocity squared")
@@ -2450,7 +2450,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("V", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("V", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Meridional wind")
@@ -2461,7 +2461,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("VQ", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("VQ", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m/s kg/kg")
     PUT_ATTR_TXT("long_name", "Meridional water transport")
@@ -2471,7 +2471,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("VT", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("VT", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "K m/s")
     PUT_ATTR_TXT("long_name", "Meridional heat transport")
@@ -2481,7 +2481,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("VU", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("VU", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m2/s2")
     PUT_ATTR_TXT("long_name", "Meridional flux of zonal momentum")
@@ -2491,7 +2491,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("VV", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("VV", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m2/s2")
     PUT_ATTR_TXT("long_name", "Meridional velocity squared")
@@ -2500,7 +2500,7 @@ if (cfg.hist == h0) {
     /* float WD_H2O2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("WD_H2O2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("WD_H2O2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/s")
     PUT_ATTR_TXT("long_name", "H2O2             wet deposition")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2508,7 +2508,7 @@ if (cfg.hist == h0) {
     /* float WD_H2SO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("WD_H2SO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("WD_H2SO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/s")
     PUT_ATTR_TXT("long_name", "H2SO4            wet deposition")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2516,7 +2516,7 @@ if (cfg.hist == h0) {
     /* float WD_SO2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("WD_SO2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("WD_SO2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/s")
     PUT_ATTR_TXT("long_name", "SO2              wet deposition")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2525,7 +2525,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("WSUB", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("WSUB", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Diagnostic sub-grid vertical velocity")
@@ -2535,7 +2535,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("Z3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("Z3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "Geopotential Height (above sea level)")
@@ -2546,7 +2546,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("aero_water", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("aero_water", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "sum of aerosol water of interstitial modes wat_a1+wat_a2+wat_a3+wat_a4")
@@ -2555,7 +2555,7 @@ if (cfg.hist == h0) {
     /* float airFV(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("airFV", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("airFV", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "frac")
     PUT_ATTR_TXT("long_name", "FV")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2563,7 +2563,7 @@ if (cfg.hist == h0) {
     /* float bc_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_a1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2571,7 +2571,7 @@ if (cfg.hist == h0) {
     /* float bc_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2579,7 +2579,7 @@ if (cfg.hist == h0) {
     /* float bc_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "bc_a1 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2587,7 +2587,7 @@ if (cfg.hist == h0) {
     /* float bc_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_a1 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2595,7 +2595,7 @@ if (cfg.hist == h0) {
     /* float bc_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_a3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2603,7 +2603,7 @@ if (cfg.hist == h0) {
     /* float bc_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2611,7 +2611,7 @@ if (cfg.hist == h0) {
     /* float bc_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "bc_a3 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2619,7 +2619,7 @@ if (cfg.hist == h0) {
     /* float bc_a4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_a4 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2627,7 +2627,7 @@ if (cfg.hist == h0) {
     /* float bc_a4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2635,7 +2635,7 @@ if (cfg.hist == h0) {
     /* float bc_a4_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a4_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a4_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "molec/cm2/s")
     PUT_ATTR_TXT("long_name", "vertically intergrated external forcing for bc_a4")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2643,7 +2643,7 @@ if (cfg.hist == h0) {
     /* float bc_a4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "bc_a4 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2651,7 +2651,7 @@ if (cfg.hist == h0) {
     /* float bc_a4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_a4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_a4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_a4 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2659,7 +2659,7 @@ if (cfg.hist == h0) {
     /* float bc_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_c1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2667,7 +2667,7 @@ if (cfg.hist == h0) {
     /* float bc_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_c1 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2675,7 +2675,7 @@ if (cfg.hist == h0) {
     /* float bc_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_c3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2683,7 +2683,7 @@ if (cfg.hist == h0) {
     /* float bc_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_c3 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2691,7 +2691,7 @@ if (cfg.hist == h0) {
     /* float bc_c4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_c4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_c4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_c4 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2699,7 +2699,7 @@ if (cfg.hist == h0) {
     /* float bc_c4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("bc_c4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("bc_c4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "bc_c4 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2707,7 +2707,7 @@ if (cfg.hist == h0) {
     /* float chla(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("chla", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("chla", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "mg L-1")
     PUT_ATTR_TXT("long_name", "ocean input data: chla")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2715,7 +2715,7 @@ if (cfg.hist == h0) {
     /* float dst_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_a1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2723,7 +2723,7 @@ if (cfg.hist == h0) {
     /* float dst_a1SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_a1SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_a1SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_a1 dust surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2731,7 +2731,7 @@ if (cfg.hist == h0) {
     /* float dst_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2739,7 +2739,7 @@ if (cfg.hist == h0) {
     /* float dst_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "dst_a1 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2747,7 +2747,7 @@ if (cfg.hist == h0) {
     /* float dst_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_a3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2755,7 +2755,7 @@ if (cfg.hist == h0) {
     /* float dst_a3SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_a3SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_a3SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_a3 dust surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2763,7 +2763,7 @@ if (cfg.hist == h0) {
     /* float dst_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2771,7 +2771,7 @@ if (cfg.hist == h0) {
     /* float dst_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "dst_a3 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2779,7 +2779,7 @@ if (cfg.hist == h0) {
     /* float dst_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_c1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2787,7 +2787,7 @@ if (cfg.hist == h0) {
     /* float dst_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_c1 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2795,7 +2795,7 @@ if (cfg.hist == h0) {
     /* float dst_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_c3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2803,7 +2803,7 @@ if (cfg.hist == h0) {
     /* float dst_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("dst_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("dst_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "dst_c3 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2812,7 +2812,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    DEF_VAR("hstobie_linoz", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    DEF_VAR("hstobie_linoz", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_INT("mdims", 1, &mdims)
     PUT_ATTR_TXT("units", "fraction of model time")
     PUT_ATTR_TXT("long_name", "Lowest possible Linoz level")
@@ -2821,7 +2821,7 @@ if (cfg.hist == h0) {
     /* float mlip(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mlip", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mlip", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "uM C")
     PUT_ATTR_TXT("long_name", "ocean input data: mlip")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2829,7 +2829,7 @@ if (cfg.hist == h0) {
     /* float mom_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2837,7 +2837,7 @@ if (cfg.hist == h0) {
     /* float mom_a1SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a1SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a1SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a1 seasalt surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2845,7 +2845,7 @@ if (cfg.hist == h0) {
     /* float mom_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2853,7 +2853,7 @@ if (cfg.hist == h0) {
     /* float mom_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "mom_a1 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2861,7 +2861,7 @@ if (cfg.hist == h0) {
     /* float mom_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a1 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2869,7 +2869,7 @@ if (cfg.hist == h0) {
     /* float mom_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2877,7 +2877,7 @@ if (cfg.hist == h0) {
     /* float mom_a2SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a2SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a2SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a2 seasalt surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2885,7 +2885,7 @@ if (cfg.hist == h0) {
     /* float mom_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2893,7 +2893,7 @@ if (cfg.hist == h0) {
     /* float mom_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "mom_a2 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2901,7 +2901,7 @@ if (cfg.hist == h0) {
     /* float mom_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2909,7 +2909,7 @@ if (cfg.hist == h0) {
     /* float mom_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2917,7 +2917,7 @@ if (cfg.hist == h0) {
     /* float mom_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "mom_a3 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2925,7 +2925,7 @@ if (cfg.hist == h0) {
     /* float mom_a4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a4 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2933,7 +2933,7 @@ if (cfg.hist == h0) {
     /* float mom_a4SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a4SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a4SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a4 seasalt surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2941,7 +2941,7 @@ if (cfg.hist == h0) {
     /* float mom_a4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2949,7 +2949,7 @@ if (cfg.hist == h0) {
     /* float mom_a4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "mom_a4 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2957,7 +2957,7 @@ if (cfg.hist == h0) {
     /* float mom_a4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_a4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_a4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_a4 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2965,7 +2965,7 @@ if (cfg.hist == h0) {
     /* float mom_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_c1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2973,7 +2973,7 @@ if (cfg.hist == h0) {
     /* float mom_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_c1 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2981,7 +2981,7 @@ if (cfg.hist == h0) {
     /* float mom_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_c2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2989,7 +2989,7 @@ if (cfg.hist == h0) {
     /* float mom_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_c2 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -2997,7 +2997,7 @@ if (cfg.hist == h0) {
     /* float mom_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_c3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3005,7 +3005,7 @@ if (cfg.hist == h0) {
     /* float mom_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_c3 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3013,7 +3013,7 @@ if (cfg.hist == h0) {
     /* float mom_c4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_c4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_c4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_c4 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3021,7 +3021,7 @@ if (cfg.hist == h0) {
     /* float mom_c4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mom_c4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mom_c4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "mom_c4 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3029,7 +3029,7 @@ if (cfg.hist == h0) {
     /* float mpoly(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mpoly", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mpoly", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "uM C")
     PUT_ATTR_TXT("long_name", "ocean input data: mpoly")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3037,7 +3037,7 @@ if (cfg.hist == h0) {
     /* float mprot(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("mprot", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("mprot", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "uM C")
     PUT_ATTR_TXT("long_name", "ocean input data: mprot")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3045,7 +3045,7 @@ if (cfg.hist == h0) {
     /* float ncl_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_a1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3053,7 +3053,7 @@ if (cfg.hist == h0) {
     /* float ncl_a1SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a1SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a1SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_a1 seasalt surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3061,7 +3061,7 @@ if (cfg.hist == h0) {
     /* float ncl_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3069,7 +3069,7 @@ if (cfg.hist == h0) {
     /* float ncl_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "ncl_a1 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3077,7 +3077,7 @@ if (cfg.hist == h0) {
     /* float ncl_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_a2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3085,7 +3085,7 @@ if (cfg.hist == h0) {
     /* float ncl_a2SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a2SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a2SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_a2 seasalt surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3093,7 +3093,7 @@ if (cfg.hist == h0) {
     /* float ncl_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3101,7 +3101,7 @@ if (cfg.hist == h0) {
     /* float ncl_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "ncl_a2 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3109,7 +3109,7 @@ if (cfg.hist == h0) {
     /* float ncl_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_a3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3117,7 +3117,7 @@ if (cfg.hist == h0) {
     /* float ncl_a3SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a3SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a3SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_a3 seasalt surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3125,7 +3125,7 @@ if (cfg.hist == h0) {
     /* float ncl_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3133,7 +3133,7 @@ if (cfg.hist == h0) {
     /* float ncl_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "ncl_a3 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3141,7 +3141,7 @@ if (cfg.hist == h0) {
     /* float ncl_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_c1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3149,7 +3149,7 @@ if (cfg.hist == h0) {
     /* float ncl_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_c1 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3157,7 +3157,7 @@ if (cfg.hist == h0) {
     /* float ncl_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_c2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3165,7 +3165,7 @@ if (cfg.hist == h0) {
     /* float ncl_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_c2 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3173,7 +3173,7 @@ if (cfg.hist == h0) {
     /* float ncl_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_c3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3181,7 +3181,7 @@ if (cfg.hist == h0) {
     /* float ncl_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("ncl_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("ncl_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "ncl_c3 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3189,7 +3189,7 @@ if (cfg.hist == h0) {
     /* float num_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_a1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3197,7 +3197,7 @@ if (cfg.hist == h0) {
     /* float num_a1SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a1SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a1SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "num_a1 dust surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3205,7 +3205,7 @@ if (cfg.hist == h0) {
     /* float num_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3213,7 +3213,7 @@ if (cfg.hist == h0) {
     /* float num_a1_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a1_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a1_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "molec/cm2/s")
     PUT_ATTR_TXT("long_name", "vertically intergrated external forcing for num_a1")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3221,7 +3221,7 @@ if (cfg.hist == h0) {
     /* float num_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/kg")
     PUT_ATTR_TXT("long_name", "num_a1 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3229,7 +3229,7 @@ if (cfg.hist == h0) {
     /* float num_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "num_a1 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3237,7 +3237,7 @@ if (cfg.hist == h0) {
     /* float num_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_a2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3245,7 +3245,7 @@ if (cfg.hist == h0) {
     /* float num_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3253,7 +3253,7 @@ if (cfg.hist == h0) {
     /* float num_a2_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a2_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a2_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "molec/cm2/s")
     PUT_ATTR_TXT("long_name", "vertically intergrated external forcing for num_a2")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3261,7 +3261,7 @@ if (cfg.hist == h0) {
     /* float num_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/kg")
     PUT_ATTR_TXT("long_name", "num_a2 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3269,7 +3269,7 @@ if (cfg.hist == h0) {
     /* float num_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_a3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3277,7 +3277,7 @@ if (cfg.hist == h0) {
     /* float num_a3SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a3SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a3SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "num_a3 dust surface emission")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3285,7 +3285,7 @@ if (cfg.hist == h0) {
     /* float num_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3293,7 +3293,7 @@ if (cfg.hist == h0) {
     /* float num_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/kg")
     PUT_ATTR_TXT("long_name", "num_a3 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3301,7 +3301,7 @@ if (cfg.hist == h0) {
     /* float num_a4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_a4 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3309,7 +3309,7 @@ if (cfg.hist == h0) {
     /* float num_a4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3317,7 +3317,7 @@ if (cfg.hist == h0) {
     /* float num_a4_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a4_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a4_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "molec/cm2/s")
     PUT_ATTR_TXT("long_name", "vertically intergrated external forcing for num_a4")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3325,7 +3325,7 @@ if (cfg.hist == h0) {
     /* float num_a4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/kg")
     PUT_ATTR_TXT("long_name", "num_a4 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3333,7 +3333,7 @@ if (cfg.hist == h0) {
     /* float num_a4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_a4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_a4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "num_a4 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3341,7 +3341,7 @@ if (cfg.hist == h0) {
     /* float num_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_c1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3349,7 +3349,7 @@ if (cfg.hist == h0) {
     /* float num_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_c1 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3357,7 +3357,7 @@ if (cfg.hist == h0) {
     /* float num_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_c2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3365,7 +3365,7 @@ if (cfg.hist == h0) {
     /* float num_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_c2 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3373,7 +3373,7 @@ if (cfg.hist == h0) {
     /* float num_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_c3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3381,7 +3381,7 @@ if (cfg.hist == h0) {
     /* float num_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_c3 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3389,7 +3389,7 @@ if (cfg.hist == h0) {
     /* float num_c4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_c4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_c4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_c4 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3397,7 +3397,7 @@ if (cfg.hist == h0) {
     /* float num_c4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("num_c4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("num_c4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", " 1/m2/s")
     PUT_ATTR_TXT("long_name", "num_c4 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3405,7 +3405,7 @@ if (cfg.hist == h0) {
     /* float pom_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_a1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3413,7 +3413,7 @@ if (cfg.hist == h0) {
     /* float pom_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3421,7 +3421,7 @@ if (cfg.hist == h0) {
     /* float pom_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "pom_a1 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3429,7 +3429,7 @@ if (cfg.hist == h0) {
     /* float pom_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_a1 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3437,7 +3437,7 @@ if (cfg.hist == h0) {
     /* float pom_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_a3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3445,7 +3445,7 @@ if (cfg.hist == h0) {
     /* float pom_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3453,7 +3453,7 @@ if (cfg.hist == h0) {
     /* float pom_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "pom_a3 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3461,7 +3461,7 @@ if (cfg.hist == h0) {
     /* float pom_a4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_a4 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3469,7 +3469,7 @@ if (cfg.hist == h0) {
     /* float pom_a4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3477,7 +3477,7 @@ if (cfg.hist == h0) {
     /* float pom_a4_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a4_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a4_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "molec/cm2/s")
     PUT_ATTR_TXT("long_name", "vertically intergrated external forcing for pom_a4")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3485,7 +3485,7 @@ if (cfg.hist == h0) {
     /* float pom_a4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "pom_a4 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3493,7 +3493,7 @@ if (cfg.hist == h0) {
     /* float pom_a4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_a4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_a4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_a4 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3501,7 +3501,7 @@ if (cfg.hist == h0) {
     /* float pom_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_c1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3509,7 +3509,7 @@ if (cfg.hist == h0) {
     /* float pom_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_c1 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3517,7 +3517,7 @@ if (cfg.hist == h0) {
     /* float pom_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_c3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3525,7 +3525,7 @@ if (cfg.hist == h0) {
     /* float pom_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_c3 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3533,7 +3533,7 @@ if (cfg.hist == h0) {
     /* float pom_c4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_c4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_c4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_c4 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3541,7 +3541,7 @@ if (cfg.hist == h0) {
     /* float pom_c4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("pom_c4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("pom_c4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "pom_c4 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3549,7 +3549,7 @@ if (cfg.hist == h0) {
     /* float so4_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_a1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3557,7 +3557,7 @@ if (cfg.hist == h0) {
     /* float so4_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3565,7 +3565,7 @@ if (cfg.hist == h0) {
     /* float so4_a1_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a1_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a1_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "molec/cm2/s")
     PUT_ATTR_TXT("long_name", "vertically intergrated external forcing for so4_a1")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3573,7 +3573,7 @@ if (cfg.hist == h0) {
     /* float so4_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "so4_a1 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3581,7 +3581,7 @@ if (cfg.hist == h0) {
     /* float so4_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_a1 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3589,7 +3589,7 @@ if (cfg.hist == h0) {
     /* float so4_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_a2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3597,7 +3597,7 @@ if (cfg.hist == h0) {
     /* float so4_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3605,7 +3605,7 @@ if (cfg.hist == h0) {
     /* float so4_a2_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a2_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a2_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "molec/cm2/s")
     PUT_ATTR_TXT("long_name", "vertically intergrated external forcing for so4_a2")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3613,7 +3613,7 @@ if (cfg.hist == h0) {
     /* float so4_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "so4_a2 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3621,7 +3621,7 @@ if (cfg.hist == h0) {
     /* float so4_a2_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a2_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a2_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_a2 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3629,7 +3629,7 @@ if (cfg.hist == h0) {
     /* float so4_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_a3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3637,7 +3637,7 @@ if (cfg.hist == h0) {
     /* float so4_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3645,7 +3645,7 @@ if (cfg.hist == h0) {
     /* float so4_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "so4_a3 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3653,7 +3653,7 @@ if (cfg.hist == h0) {
     /* float so4_a3_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_a3_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_a3_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_a3 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3661,7 +3661,7 @@ if (cfg.hist == h0) {
     /* float so4_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_c1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3669,7 +3669,7 @@ if (cfg.hist == h0) {
     /* float so4_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_c1 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3677,7 +3677,7 @@ if (cfg.hist == h0) {
     /* float so4_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_c2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3685,7 +3685,7 @@ if (cfg.hist == h0) {
     /* float so4_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_c2 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3693,7 +3693,7 @@ if (cfg.hist == h0) {
     /* float so4_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_c3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3701,7 +3701,7 @@ if (cfg.hist == h0) {
     /* float so4_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("so4_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("so4_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "so4_c3 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3709,7 +3709,7 @@ if (cfg.hist == h0) {
     /* float soa_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_a1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3717,7 +3717,7 @@ if (cfg.hist == h0) {
     /* float soa_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3725,7 +3725,7 @@ if (cfg.hist == h0) {
     /* float soa_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "soa_a1 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3733,7 +3733,7 @@ if (cfg.hist == h0) {
     /* float soa_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_a1 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3741,7 +3741,7 @@ if (cfg.hist == h0) {
     /* float soa_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_a2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3749,7 +3749,7 @@ if (cfg.hist == h0) {
     /* float soa_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3757,7 +3757,7 @@ if (cfg.hist == h0) {
     /* float soa_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "soa_a2 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3765,7 +3765,7 @@ if (cfg.hist == h0) {
     /* float soa_a2_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a2_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a2_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_a2 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3773,7 +3773,7 @@ if (cfg.hist == h0) {
     /* float soa_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_a3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3781,7 +3781,7 @@ if (cfg.hist == h0) {
     /* float soa_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "Wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3789,7 +3789,7 @@ if (cfg.hist == h0) {
     /* float soa_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/kg")
     PUT_ATTR_TXT("long_name", "soa_a3 in bottom layer")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3797,7 +3797,7 @@ if (cfg.hist == h0) {
     /* float soa_a3_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_a3_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_a3_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_a3 gas-aerosol-exchange primary column tendency")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3805,7 +3805,7 @@ if (cfg.hist == h0) {
     /* float soa_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_c1 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3813,7 +3813,7 @@ if (cfg.hist == h0) {
     /* float soa_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_c1 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3821,7 +3821,7 @@ if (cfg.hist == h0) {
     /* float soa_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_c2 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3829,7 +3829,7 @@ if (cfg.hist == h0) {
     /* float soa_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_c2 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3837,7 +3837,7 @@ if (cfg.hist == h0) {
     /* float soa_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_c3 dry deposition flux at bottom (grav + turb)")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3845,7 +3845,7 @@ if (cfg.hist == h0) {
     /* float soa_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("soa_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("soa_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "kg/m2/s")
     PUT_ATTR_TXT("long_name", "soa_c3 wet deposition flux at surface")
     PUT_ATTR_TXT("cell_methods", "time: mean")
@@ -3854,7 +3854,7 @@ else {
     /* float U250(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("U250", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("U250", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Zonal wind at 250 mbar pressure surface")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -3862,7 +3862,7 @@ else {
     /* float U850(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("U850", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("U850", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Zonal wind at 850 mbar pressure surface")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -3870,7 +3870,7 @@ else {
     /* float UBOT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("UBOT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("UBOT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Lowest model level zonal wind")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -3878,7 +3878,7 @@ else {
     /* float V250(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("V250", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("V250", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Meridional wind at 250 mbar pressure surface")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -3886,7 +3886,7 @@ else {
     /* float V850(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("V850", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("V850", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Meridional wind at 850 mbar pressure surface")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -3894,7 +3894,7 @@ else {
     /* float VBOT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("VBOT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("VBOT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m/s")
     PUT_ATTR_TXT("long_name", "Lowest model level meridional wind")
     PUT_ATTR_TXT("cell_methods", "time: point")
@@ -3902,7 +3902,7 @@ else {
     /* float Z500(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    DEF_VAR("Z500", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    DEF_VAR("Z500", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "Geopotential Z at 500 mbar pressure surface")
     PUT_ATTR_TXT("cell_methods", "time: point")

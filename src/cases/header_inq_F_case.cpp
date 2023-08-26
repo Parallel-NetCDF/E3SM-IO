@@ -460,7 +460,7 @@ if (cfg.hist == h0) {
     /* float AEROD_v(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AEROD_v", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AEROD_v", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("units", txtBuf)
@@ -471,7 +471,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("ANRAIN", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("ANRAIN", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -481,7 +481,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("ANSNOW", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("ANSNOW", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -490,7 +490,7 @@ if (cfg.hist == h0) {
     /* float AODABS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODABS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODABS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -500,7 +500,7 @@ if (cfg.hist == h0) {
     /* float AODABSBC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODABSBC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODABSBC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -509,7 +509,7 @@ if (cfg.hist == h0) {
     /* float AODALL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODALL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODALL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -518,7 +518,7 @@ if (cfg.hist == h0) {
     /* float AODBC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODBC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODBC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -527,7 +527,7 @@ if (cfg.hist == h0) {
     /* float AODDUST(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODDUST", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODDUST", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -536,7 +536,7 @@ if (cfg.hist == h0) {
     /* float AODDUST1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODDUST1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODDUST1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -545,7 +545,7 @@ if (cfg.hist == h0) {
     /* float AODDUST3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODDUST3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODDUST3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -554,7 +554,7 @@ if (cfg.hist == h0) {
     /* float AODDUST4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODDUST4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODDUST4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -563,7 +563,7 @@ if (cfg.hist == h0) {
     /* float AODMODE1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODMODE1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODMODE1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -572,7 +572,7 @@ if (cfg.hist == h0) {
     /* float AODMODE2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODMODE2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODMODE2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -581,7 +581,7 @@ if (cfg.hist == h0) {
     /* float AODMODE3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODMODE3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODMODE3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -590,7 +590,7 @@ if (cfg.hist == h0) {
     /* float AODMODE4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODMODE4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODMODE4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -599,7 +599,7 @@ if (cfg.hist == h0) {
     /* float AODNIR(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODNIR", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODNIR", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -608,7 +608,7 @@ if (cfg.hist == h0) {
     /* float AODPOM(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODPOM", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODPOM", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -617,7 +617,7 @@ if (cfg.hist == h0) {
     /* float AODSO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODSO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODSO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -626,7 +626,7 @@ if (cfg.hist == h0) {
     /* float AODSOA(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODSOA", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODSOA", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -635,7 +635,7 @@ if (cfg.hist == h0) {
     /* float AODSS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODSS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODSS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -644,7 +644,7 @@ if (cfg.hist == h0) {
     /* float AODUV(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODUV", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODUV", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -653,7 +653,7 @@ if (cfg.hist == h0) {
     /* float AODVIS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AODVIS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AODVIS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -664,7 +664,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("AQRAIN", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("AQRAIN", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -674,7 +674,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("AQSNOW", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("AQSNOW", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -683,7 +683,7 @@ if (cfg.hist == h0) {
     /* float AQ_DMS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AQ_DMS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AQ_DMS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -691,7 +691,7 @@ if (cfg.hist == h0) {
     /* float AQ_H2O2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AQ_H2O2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AQ_H2O2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -699,7 +699,7 @@ if (cfg.hist == h0) {
     /* float AQ_H2SO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AQ_H2SO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AQ_H2SO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -707,7 +707,7 @@ if (cfg.hist == h0) {
     /* float AQ_O3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AQ_O3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AQ_O3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -715,7 +715,7 @@ if (cfg.hist == h0) {
     /* float AQ_SO2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AQ_SO2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AQ_SO2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -723,7 +723,7 @@ if (cfg.hist == h0) {
     /* float AQ_SOAG(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("AQ_SOAG", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("AQ_SOAG", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -732,7 +732,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("AREI", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("AREI", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -742,7 +742,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("AREL", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("AREL", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -752,7 +752,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("AWNC", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("AWNC", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -762,7 +762,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("AWNI", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("AWNI", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -771,7 +771,7 @@ if (cfg.hist == h0) {
     /* float BURDEN1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("BURDEN1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("BURDEN1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("units", txtBuf)
@@ -781,7 +781,7 @@ if (cfg.hist == h0) {
     /* float BURDEN2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("BURDEN2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("BURDEN2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("units", txtBuf)
@@ -791,7 +791,7 @@ if (cfg.hist == h0) {
     /* float BURDEN3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("BURDEN3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("BURDEN3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("units", txtBuf)
@@ -801,7 +801,7 @@ if (cfg.hist == h0) {
     /* float BURDEN4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("BURDEN4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("BURDEN4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("units", txtBuf)
@@ -812,7 +812,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("CCN3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("CCN3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -821,7 +821,7 @@ if (cfg.hist == h0) {
     /* float CDNUMC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("CDNUMC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("CDNUMC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -829,7 +829,7 @@ if (cfg.hist == h0) {
     /* float CLDHGH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("CLDHGH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("CLDHGH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -839,7 +839,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("CLDICE", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("CLDICE", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -850,7 +850,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("CLDLIQ", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("CLDLIQ", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -860,7 +860,7 @@ if (cfg.hist == h0) {
     /* float CLDLOW(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("CLDLOW", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("CLDLOW", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -868,7 +868,7 @@ if (cfg.hist == h0) {
     /* float CLDMED(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("CLDMED", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("CLDMED", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -877,7 +877,7 @@ if (cfg.hist == h0) {
     /* float CLDTOT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("CLDTOT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("CLDTOT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -886,7 +886,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("CLOUD", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("CLOUD", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -896,7 +896,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("CLOUDFRAC_CLUBB", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("CLOUDFRAC_CLUBB", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -906,7 +906,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("CONCLD", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("CONCLD", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -916,7 +916,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("DCQ", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("DCQ", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -925,7 +925,7 @@ if (cfg.hist == h0) {
     /* float DF_DMS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DF_DMS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DF_DMS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -933,7 +933,7 @@ if (cfg.hist == h0) {
     /* float DF_H2O2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DF_H2O2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DF_H2O2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -941,7 +941,7 @@ if (cfg.hist == h0) {
     /* float DF_H2SO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DF_H2SO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DF_H2SO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -949,7 +949,7 @@ if (cfg.hist == h0) {
     /* float DF_O3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DF_O3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DF_O3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -957,7 +957,7 @@ if (cfg.hist == h0) {
     /* float DF_SO2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DF_SO2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DF_SO2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -965,7 +965,7 @@ if (cfg.hist == h0) {
     /* float DF_SOAG(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DF_SOAG", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DF_SOAG", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -973,7 +973,7 @@ if (cfg.hist == h0) {
     /* float DMS_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DMS_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DMS_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -981,7 +981,7 @@ if (cfg.hist == h0) {
     /* float DP_KCLDBASE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DP_KCLDBASE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DP_KCLDBASE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -989,7 +989,7 @@ if (cfg.hist == h0) {
     /* float DP_MFUP_MAX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DP_MFUP_MAX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DP_MFUP_MAX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -997,7 +997,7 @@ if (cfg.hist == h0) {
     /* float DP_WCLDBASE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DP_WCLDBASE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DP_WCLDBASE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1005,7 +1005,7 @@ if (cfg.hist == h0) {
     /* float DSTSFMBL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DSTSFMBL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DSTSFMBL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1014,7 +1014,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("DTCOND", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("DTCOND", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1023,7 +1023,7 @@ if (cfg.hist == h0) {
     /* float DTENDTH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DTENDTH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DTENDTH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1031,7 +1031,7 @@ if (cfg.hist == h0) {
     /* float DTENDTQ(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("DTENDTQ", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("DTENDTQ", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1040,7 +1040,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("EXTINCT", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("EXTINCT", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1052,7 +1052,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("FICE", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("FICE", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1061,7 +1061,7 @@ if (cfg.hist == h0) {
     /* float FLDS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FLDS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FLDS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1073,7 +1073,7 @@ if (cfg.hist == h0) {
     /* float FLNS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FLNS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FLNS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1084,7 +1084,7 @@ if (cfg.hist == h0) {
     /* float FLNSC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FLNSC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FLNSC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1095,7 +1095,7 @@ if (cfg.hist == h0) {
     /* float FLNT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FLNT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FLNT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1107,7 +1107,7 @@ if (cfg.hist == h0) {
     /* float FLNTC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FLNTC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FLNTC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1118,7 +1118,7 @@ if (cfg.hist == h0) {
     /* float FLUT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FLUT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FLUT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1129,7 +1129,7 @@ if (cfg.hist == h0) {
     /* float FLUTC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FLUTC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FLUTC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1142,7 +1142,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("FREQI", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("FREQI", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1152,7 +1152,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("FREQL", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("FREQL", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1162,7 +1162,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("FREQR", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("FREQR", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1172,7 +1172,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("FREQS", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("FREQS", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1181,7 +1181,7 @@ if (cfg.hist == h0) {
     /* float FSDS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSDS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSDS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1193,7 +1193,7 @@ if (cfg.hist == h0) {
     /* float FSDSC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSDSC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSDSC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1205,7 +1205,7 @@ if (cfg.hist == h0) {
     /* float FSNS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSNS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSNS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1216,7 +1216,7 @@ if (cfg.hist == h0) {
     /* float FSNSC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSNSC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSNSC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1227,7 +1227,7 @@ if (cfg.hist == h0) {
     /* float FSNT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSNT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSNT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1238,7 +1238,7 @@ if (cfg.hist == h0) {
     /* float FSNTC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSNTC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSNTC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1249,7 +1249,7 @@ if (cfg.hist == h0) {
     /* float FSNTOA(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSNTOA", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSNTOA", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1260,7 +1260,7 @@ if (cfg.hist == h0) {
     /* float FSNTOAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSNTOAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSNTOAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1271,7 +1271,7 @@ if (cfg.hist == h0) {
     /* float FSUTOA(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSUTOA", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSUTOA", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1283,7 +1283,7 @@ if (cfg.hist == h0) {
     /* float FSUTOAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("FSUTOAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("FSUTOAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1295,7 +1295,7 @@ if (cfg.hist == h0) {
     /* float F_eff(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("F_eff", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("F_eff", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1303,7 +1303,7 @@ if (cfg.hist == h0) {
     /* float H2O2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("H2O2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("H2O2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1311,7 +1311,7 @@ if (cfg.hist == h0) {
     /* float H2SO4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("H2SO4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("H2SO4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1319,7 +1319,7 @@ if (cfg.hist == h0) {
     /* float H2SO4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("H2SO4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("H2SO4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1327,7 +1327,7 @@ if (cfg.hist == h0) {
     /* float ICEFRAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ICEFRAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ICEFRAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1336,7 +1336,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("ICIMR", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("ICIMR", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1346,7 +1346,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("ICWMR", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("ICWMR", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1356,7 +1356,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("IWC", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("IWC", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1365,7 +1365,7 @@ if (cfg.hist == h0) {
     /* float LANDFRAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("LANDFRAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("LANDFRAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1373,7 +1373,7 @@ if (cfg.hist == h0) {
     /* float LHFLX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("LHFLX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("LHFLX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -1383,7 +1383,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("LINOZ_DO3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("LINOZ_DO3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1393,7 +1393,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("LINOZ_DO3_PSC", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("LINOZ_DO3_PSC", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1403,7 +1403,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("LINOZ_O3CLIM", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("LINOZ_O3CLIM", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1413,7 +1413,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("LINOZ_O3COL", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("LINOZ_O3COL", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1422,7 +1422,7 @@ if (cfg.hist == h0) {
     /* float LINOZ_SFCSINK(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("LINOZ_SFCSINK", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("LINOZ_SFCSINK", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1431,7 +1431,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("LINOZ_SSO3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("LINOZ_SSO3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1440,7 +1440,7 @@ if (cfg.hist == h0) {
     /* float LINOZ_SZA(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("LINOZ_SZA", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("LINOZ_SZA", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1448,7 +1448,7 @@ if (cfg.hist == h0) {
     /* float LND_MBL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("LND_MBL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("LND_MBL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1456,7 +1456,7 @@ if (cfg.hist == h0) {
     /* float LWCF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("LWCF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("LWCF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -1470,7 +1470,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("Mass_bc", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("Mass_bc", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1480,7 +1480,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("Mass_dst", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("Mass_dst", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1490,7 +1490,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("Mass_mom", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("Mass_mom", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1500,7 +1500,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("Mass_ncl", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("Mass_ncl", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1510,7 +1510,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("Mass_pom", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("Mass_pom", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1520,7 +1520,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("Mass_so4", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("Mass_so4", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1530,7 +1530,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("Mass_soa", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("Mass_soa", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1540,7 +1540,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("NUMICE", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("NUMICE", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -1551,7 +1551,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("NUMLIQ", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("NUMLIQ", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -1562,7 +1562,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("NUMRAI", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("NUMRAI", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -1573,7 +1573,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("NUMSNO", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("NUMSNO", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -1584,7 +1584,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("O3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("O3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -1594,7 +1594,7 @@ if (cfg.hist == h0) {
     /* float O3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("O3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("O3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1602,7 +1602,7 @@ if (cfg.hist == h0) {
     /* float OCNFRAC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("OCNFRAC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("OCNFRAC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1611,7 +1611,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("OMEGA", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("OMEGA", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1622,7 +1622,7 @@ if (cfg.hist == h0) {
     /* float OMEGA500(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("OMEGA500", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("OMEGA500", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1632,7 +1632,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("OMEGAT", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("OMEGAT", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1641,7 +1641,7 @@ if (cfg.hist == h0) {
     /* float PBLH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("PBLH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("PBLH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1649,7 +1649,7 @@ if (cfg.hist == h0) {
     /* float PHIS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("PHIS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("PHIS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1657,7 +1657,7 @@ if (cfg.hist == h0) {
     /* float PRECC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("PRECC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("PRECC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1665,7 +1665,7 @@ if (cfg.hist == h0) {
     /* float PRECL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("PRECL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("PRECL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1673,7 +1673,7 @@ if (cfg.hist == h0) {
     /* float PRECSC(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("PRECSC", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("PRECSC", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1681,7 +1681,7 @@ if (cfg.hist == h0) {
     /* float PRECSL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("PRECSL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("PRECSL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1690,7 +1690,7 @@ else {
     /* float OMEGA850(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("OMEGA850", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("OMEGA850", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1698,7 +1698,7 @@ else {
     /* float PRECT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("PRECT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("PRECT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1707,7 +1707,7 @@ else {
     /* float PS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("PS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("PS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -1717,7 +1717,7 @@ if (cfg.hist == h0) {
     /* float PSL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("PSL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("PSL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -1727,7 +1727,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("Q", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("Q", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -1737,7 +1737,7 @@ if (cfg.hist == h0) {
     /* float QFLX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("QFLX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("QFLX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -1746,7 +1746,7 @@ if (cfg.hist == h0) {
     /* float QREFHT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("QREFHT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("QREFHT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -1756,7 +1756,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("QRL", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("QRL", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
@@ -1769,7 +1769,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("QRS", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("QRS", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
@@ -1782,7 +1782,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("RAINQM", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("RAINQM", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -1792,7 +1792,7 @@ if (cfg.hist == h0) {
     /* float RAM1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("RAM1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("RAM1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1801,7 +1801,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("RELHUM", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("RELHUM", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -1811,7 +1811,7 @@ if (cfg.hist == h0) {
     /* float SFDMS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFDMS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFDMS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1819,7 +1819,7 @@ if (cfg.hist == h0) {
     /* float SFH2O2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFH2O2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFH2O2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1827,7 +1827,7 @@ if (cfg.hist == h0) {
     /* float SFH2SO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFH2SO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFH2SO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1835,7 +1835,7 @@ if (cfg.hist == h0) {
     /* float SFO3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFO3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFO3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1843,7 +1843,7 @@ if (cfg.hist == h0) {
     /* float SFSO2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFSO2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFSO2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1851,7 +1851,7 @@ if (cfg.hist == h0) {
     /* float SFSOAG(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFSOAG", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFSOAG", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1859,7 +1859,7 @@ if (cfg.hist == h0) {
     /* float SFbc_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFbc_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFbc_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1867,7 +1867,7 @@ if (cfg.hist == h0) {
     /* float SFbc_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFbc_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFbc_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1875,7 +1875,7 @@ if (cfg.hist == h0) {
     /* float SFbc_a4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFbc_a4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFbc_a4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1883,7 +1883,7 @@ if (cfg.hist == h0) {
     /* float SFdst_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFdst_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFdst_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1891,7 +1891,7 @@ if (cfg.hist == h0) {
     /* float SFdst_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFdst_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFdst_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1899,7 +1899,7 @@ if (cfg.hist == h0) {
     /* float SFmom_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFmom_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFmom_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1907,7 +1907,7 @@ if (cfg.hist == h0) {
     /* float SFmom_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFmom_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFmom_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1915,7 +1915,7 @@ if (cfg.hist == h0) {
     /* float SFmom_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFmom_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFmom_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1923,7 +1923,7 @@ if (cfg.hist == h0) {
     /* float SFmom_a4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFmom_a4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFmom_a4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1931,7 +1931,7 @@ if (cfg.hist == h0) {
     /* float SFncl_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFncl_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFncl_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1939,7 +1939,7 @@ if (cfg.hist == h0) {
     /* float SFncl_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFncl_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFncl_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1947,7 +1947,7 @@ if (cfg.hist == h0) {
     /* float SFncl_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFncl_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFncl_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1955,7 +1955,7 @@ if (cfg.hist == h0) {
     /* float SFnum_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFnum_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFnum_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1963,7 +1963,7 @@ if (cfg.hist == h0) {
     /* float SFnum_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFnum_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFnum_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1971,7 +1971,7 @@ if (cfg.hist == h0) {
     /* float SFnum_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFnum_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFnum_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1979,7 +1979,7 @@ if (cfg.hist == h0) {
     /* float SFnum_a4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFnum_a4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFnum_a4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1987,7 +1987,7 @@ if (cfg.hist == h0) {
     /* float SFpom_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFpom_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFpom_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -1995,7 +1995,7 @@ if (cfg.hist == h0) {
     /* float SFpom_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFpom_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFpom_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2003,7 +2003,7 @@ if (cfg.hist == h0) {
     /* float SFpom_a4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFpom_a4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFpom_a4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2011,7 +2011,7 @@ if (cfg.hist == h0) {
     /* float SFso4_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFso4_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFso4_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2019,7 +2019,7 @@ if (cfg.hist == h0) {
     /* float SFso4_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFso4_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFso4_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2027,7 +2027,7 @@ if (cfg.hist == h0) {
     /* float SFso4_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFso4_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFso4_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2035,7 +2035,7 @@ if (cfg.hist == h0) {
     /* float SFsoa_a1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFsoa_a1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFsoa_a1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2043,7 +2043,7 @@ if (cfg.hist == h0) {
     /* float SFsoa_a2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFsoa_a2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFsoa_a2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2051,7 +2051,7 @@ if (cfg.hist == h0) {
     /* float SFsoa_a3(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SFsoa_a3", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SFsoa_a3", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2059,7 +2059,7 @@ if (cfg.hist == h0) {
     /* float SHFLX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SHFLX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SHFLX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -2068,7 +2068,7 @@ if (cfg.hist == h0) {
     /* float SH_KCLDBASE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SH_KCLDBASE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SH_KCLDBASE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2076,7 +2076,7 @@ if (cfg.hist == h0) {
     /* float SH_MFUP_MAX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SH_MFUP_MAX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SH_MFUP_MAX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2084,7 +2084,7 @@ if (cfg.hist == h0) {
     /* float SH_WCLDBASE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SH_WCLDBASE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SH_WCLDBASE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2092,7 +2092,7 @@ if (cfg.hist == h0) {
     /* float SNOWHICE(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SNOWHICE", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SNOWHICE", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2100,7 +2100,7 @@ if (cfg.hist == h0) {
     /* float SNOWHLND(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SNOWHLND", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SNOWHLND", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2109,7 +2109,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("SNOWQM", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("SNOWQM", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -2120,7 +2120,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("SO2", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("SO2", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("mixing_ratio", txtBuf)
@@ -2130,7 +2130,7 @@ if (cfg.hist == h0) {
     /* float SO2_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SO2_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SO2_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2138,7 +2138,7 @@ if (cfg.hist == h0) {
     /* float SO2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SO2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SO2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2146,7 +2146,7 @@ if (cfg.hist == h0) {
     /* float SOAG_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SOAG_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOAG_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2154,7 +2154,7 @@ if (cfg.hist == h0) {
     /* float SOAG_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SOAG_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOAG_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2162,7 +2162,7 @@ if (cfg.hist == h0) {
     /* float SOAG_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SOAG_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOAG_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2170,7 +2170,7 @@ if (cfg.hist == h0) {
     /* float SOLIN(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SOLIN", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SOLIN", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -2182,7 +2182,7 @@ if (cfg.hist == h0) {
     /* float SSAVIS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SSAVIS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SSAVIS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2191,7 +2191,7 @@ if (cfg.hist == h0) {
     /* float SSTSFMBL(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SSTSFMBL", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SSTSFMBL", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2199,7 +2199,7 @@ if (cfg.hist == h0) {
     /* float SSTSFMBL_OM(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SSTSFMBL_OM", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SSTSFMBL_OM", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2207,7 +2207,7 @@ if (cfg.hist == h0) {
     /* float SWCF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("SWCF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("SWCF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("Sampling_Sequence", txtBuf)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
@@ -2221,7 +2221,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("T", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("T", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2231,7 +2231,7 @@ if (cfg.hist == h0) {
     /* float TAUGWX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TAUGWX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TAUGWX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2239,7 +2239,7 @@ if (cfg.hist == h0) {
     /* float TAUGWY(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TAUGWY", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TAUGWY", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2247,7 +2247,7 @@ if (cfg.hist == h0) {
     /* float TAUX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TAUX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TAUX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2255,7 +2255,7 @@ if (cfg.hist == h0) {
     /* float TAUY(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TAUY", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TAUY", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2263,7 +2263,7 @@ if (cfg.hist == h0) {
     /* float TGCLDCWP(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TGCLDCWP", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TGCLDCWP", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -2272,7 +2272,7 @@ if (cfg.hist == h0) {
     /* float TGCLDIWP(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TGCLDIWP", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TGCLDIWP", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -2281,7 +2281,7 @@ if (cfg.hist == h0) {
     /* float TGCLDLWP(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TGCLDLWP", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TGCLDLWP", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -2290,7 +2290,7 @@ if (cfg.hist == h0) {
     /* float TH7001000(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TH7001000", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TH7001000", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2299,7 +2299,7 @@ else {
     /* float T850(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("T850", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("T850", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2308,7 +2308,7 @@ else {
     /* float TMQ(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TMQ", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TMQ", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -2318,7 +2318,7 @@ if (cfg.hist == h0) {
     /* float TREFHT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TREFHT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TREFHT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -2327,7 +2327,7 @@ if (cfg.hist == h0) {
     /* float TROP_P(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TROP_P", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TROP_P", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("units", txtBuf)
@@ -2337,7 +2337,7 @@ if (cfg.hist == h0) {
     /* float TROP_T(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TROP_T", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TROP_T", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_FILL(fillv)
     GET_ATTR_FLT1("missing_value", &missv)
     GET_ATTR_TXT("units", txtBuf)
@@ -2348,7 +2348,7 @@ if (cfg.hist == h0) {
     /* float TS(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TS", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TS", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -2358,7 +2358,7 @@ if (cfg.hist == h0) {
     /* float TSMN(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TSMN", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TSMN", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2366,7 +2366,7 @@ if (cfg.hist == h0) {
     /* float TSMX(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TSMX", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TSMX", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2374,7 +2374,7 @@ if (cfg.hist == h0) {
     /* float TUH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TUH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TUH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2382,7 +2382,7 @@ if (cfg.hist == h0) {
     /* float TUQ(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TUQ", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TUQ", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2390,7 +2390,7 @@ if (cfg.hist == h0) {
     /* float TVH(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TVH", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TVH", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2398,7 +2398,7 @@ if (cfg.hist == h0) {
     /* float TVQ(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("TVQ", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("TVQ", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2408,7 +2408,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("U", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("U", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2419,7 +2419,7 @@ if (cfg.hist == h0) {
     /* float U10(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("U10", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("U10", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("standard_name", txtBuf)
@@ -2429,7 +2429,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("UU", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("UU", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2439,7 +2439,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("V", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("V", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2450,7 +2450,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("VQ", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("VQ", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2460,7 +2460,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("VT", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("VT", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2470,7 +2470,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("VU", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("VU", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2480,7 +2480,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("VV", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("VV", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2489,7 +2489,7 @@ if (cfg.hist == h0) {
     /* float WD_H2O2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("WD_H2O2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("WD_H2O2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2497,7 +2497,7 @@ if (cfg.hist == h0) {
     /* float WD_H2SO4(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("WD_H2SO4", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("WD_H2SO4", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2505,7 +2505,7 @@ if (cfg.hist == h0) {
     /* float WD_SO2(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("WD_SO2", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("WD_SO2", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2514,7 +2514,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("WSUB", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("WSUB", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2524,7 +2524,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("Z3", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("Z3", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2535,7 +2535,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("aero_water", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("aero_water", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2544,7 +2544,7 @@ if (cfg.hist == h0) {
     /* float airFV(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("airFV", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("airFV", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2552,7 +2552,7 @@ if (cfg.hist == h0) {
     /* float bc_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2560,7 +2560,7 @@ if (cfg.hist == h0) {
     /* float bc_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2568,7 +2568,7 @@ if (cfg.hist == h0) {
     /* float bc_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2576,7 +2576,7 @@ if (cfg.hist == h0) {
     /* float bc_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2584,7 +2584,7 @@ if (cfg.hist == h0) {
     /* float bc_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2592,7 +2592,7 @@ if (cfg.hist == h0) {
     /* float bc_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2600,7 +2600,7 @@ if (cfg.hist == h0) {
     /* float bc_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2608,7 +2608,7 @@ if (cfg.hist == h0) {
     /* float bc_a4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2616,7 +2616,7 @@ if (cfg.hist == h0) {
     /* float bc_a4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2624,7 +2624,7 @@ if (cfg.hist == h0) {
     /* float bc_a4_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a4_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a4_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2632,7 +2632,7 @@ if (cfg.hist == h0) {
     /* float bc_a4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2640,7 +2640,7 @@ if (cfg.hist == h0) {
     /* float bc_a4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_a4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_a4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2648,7 +2648,7 @@ if (cfg.hist == h0) {
     /* float bc_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2656,7 +2656,7 @@ if (cfg.hist == h0) {
     /* float bc_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2664,7 +2664,7 @@ if (cfg.hist == h0) {
     /* float bc_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2672,7 +2672,7 @@ if (cfg.hist == h0) {
     /* float bc_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2680,7 +2680,7 @@ if (cfg.hist == h0) {
     /* float bc_c4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_c4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_c4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2688,7 +2688,7 @@ if (cfg.hist == h0) {
     /* float bc_c4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("bc_c4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("bc_c4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2696,7 +2696,7 @@ if (cfg.hist == h0) {
     /* float chla(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("chla", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("chla", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2704,7 +2704,7 @@ if (cfg.hist == h0) {
     /* float dst_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2712,7 +2712,7 @@ if (cfg.hist == h0) {
     /* float dst_a1SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_a1SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_a1SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2720,7 +2720,7 @@ if (cfg.hist == h0) {
     /* float dst_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2728,7 +2728,7 @@ if (cfg.hist == h0) {
     /* float dst_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2736,7 +2736,7 @@ if (cfg.hist == h0) {
     /* float dst_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2744,7 +2744,7 @@ if (cfg.hist == h0) {
     /* float dst_a3SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_a3SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_a3SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2752,7 +2752,7 @@ if (cfg.hist == h0) {
     /* float dst_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2760,7 +2760,7 @@ if (cfg.hist == h0) {
     /* float dst_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2768,7 +2768,7 @@ if (cfg.hist == h0) {
     /* float dst_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2776,7 +2776,7 @@ if (cfg.hist == h0) {
     /* float dst_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2784,7 +2784,7 @@ if (cfg.hist == h0) {
     /* float dst_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2792,7 +2792,7 @@ if (cfg.hist == h0) {
     /* float dst_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("dst_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("dst_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2801,7 +2801,7 @@ if (cfg.hist == h0) {
     dimids[0] = dim_time;
     dimids[1] = dim_lev;
     dimids[2] = dim_ncol;
-    INQ_VAR("hstobie_linoz", NC_FLOAT, 3, dimids, REC_ITYPE, 2)
+    INQ_VAR("hstobie_linoz", REC_XTYPE, 3, dimids, REC_ITYPE, 2)
     GET_ATTR_INT("mdims", 1, &mdims)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
@@ -2810,7 +2810,7 @@ if (cfg.hist == h0) {
     /* float mlip(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mlip", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mlip", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2818,7 +2818,7 @@ if (cfg.hist == h0) {
     /* float mom_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2826,7 +2826,7 @@ if (cfg.hist == h0) {
     /* float mom_a1SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a1SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a1SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2834,7 +2834,7 @@ if (cfg.hist == h0) {
     /* float mom_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2842,7 +2842,7 @@ if (cfg.hist == h0) {
     /* float mom_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2850,7 +2850,7 @@ if (cfg.hist == h0) {
     /* float mom_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2858,7 +2858,7 @@ if (cfg.hist == h0) {
     /* float mom_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2866,7 +2866,7 @@ if (cfg.hist == h0) {
     /* float mom_a2SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a2SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a2SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2874,7 +2874,7 @@ if (cfg.hist == h0) {
     /* float mom_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2882,7 +2882,7 @@ if (cfg.hist == h0) {
     /* float mom_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2890,7 +2890,7 @@ if (cfg.hist == h0) {
     /* float mom_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2898,7 +2898,7 @@ if (cfg.hist == h0) {
     /* float mom_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2906,7 +2906,7 @@ if (cfg.hist == h0) {
     /* float mom_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2914,7 +2914,7 @@ if (cfg.hist == h0) {
     /* float mom_a4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2922,7 +2922,7 @@ if (cfg.hist == h0) {
     /* float mom_a4SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a4SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a4SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2930,7 +2930,7 @@ if (cfg.hist == h0) {
     /* float mom_a4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2938,7 +2938,7 @@ if (cfg.hist == h0) {
     /* float mom_a4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2946,7 +2946,7 @@ if (cfg.hist == h0) {
     /* float mom_a4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_a4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_a4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2954,7 +2954,7 @@ if (cfg.hist == h0) {
     /* float mom_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2962,7 +2962,7 @@ if (cfg.hist == h0) {
     /* float mom_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2970,7 +2970,7 @@ if (cfg.hist == h0) {
     /* float mom_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2978,7 +2978,7 @@ if (cfg.hist == h0) {
     /* float mom_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2986,7 +2986,7 @@ if (cfg.hist == h0) {
     /* float mom_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -2994,7 +2994,7 @@ if (cfg.hist == h0) {
     /* float mom_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3002,7 +3002,7 @@ if (cfg.hist == h0) {
     /* float mom_c4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_c4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_c4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3010,7 +3010,7 @@ if (cfg.hist == h0) {
     /* float mom_c4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mom_c4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mom_c4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3018,7 +3018,7 @@ if (cfg.hist == h0) {
     /* float mpoly(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mpoly", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mpoly", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3026,7 +3026,7 @@ if (cfg.hist == h0) {
     /* float mprot(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("mprot", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("mprot", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3034,7 +3034,7 @@ if (cfg.hist == h0) {
     /* float ncl_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3042,7 +3042,7 @@ if (cfg.hist == h0) {
     /* float ncl_a1SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a1SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a1SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3050,7 +3050,7 @@ if (cfg.hist == h0) {
     /* float ncl_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3058,7 +3058,7 @@ if (cfg.hist == h0) {
     /* float ncl_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3066,7 +3066,7 @@ if (cfg.hist == h0) {
     /* float ncl_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3074,7 +3074,7 @@ if (cfg.hist == h0) {
     /* float ncl_a2SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a2SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a2SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3082,7 +3082,7 @@ if (cfg.hist == h0) {
     /* float ncl_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3090,7 +3090,7 @@ if (cfg.hist == h0) {
     /* float ncl_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3098,7 +3098,7 @@ if (cfg.hist == h0) {
     /* float ncl_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3106,7 +3106,7 @@ if (cfg.hist == h0) {
     /* float ncl_a3SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a3SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a3SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3114,7 +3114,7 @@ if (cfg.hist == h0) {
     /* float ncl_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3122,7 +3122,7 @@ if (cfg.hist == h0) {
     /* float ncl_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3130,7 +3130,7 @@ if (cfg.hist == h0) {
     /* float ncl_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3138,7 +3138,7 @@ if (cfg.hist == h0) {
     /* float ncl_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3146,7 +3146,7 @@ if (cfg.hist == h0) {
     /* float ncl_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3154,7 +3154,7 @@ if (cfg.hist == h0) {
     /* float ncl_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3162,7 +3162,7 @@ if (cfg.hist == h0) {
     /* float ncl_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3170,7 +3170,7 @@ if (cfg.hist == h0) {
     /* float ncl_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("ncl_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("ncl_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3178,7 +3178,7 @@ if (cfg.hist == h0) {
     /* float num_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3186,7 +3186,7 @@ if (cfg.hist == h0) {
     /* float num_a1SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a1SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a1SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3194,7 +3194,7 @@ if (cfg.hist == h0) {
     /* float num_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3202,7 +3202,7 @@ if (cfg.hist == h0) {
     /* float num_a1_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a1_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a1_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3210,7 +3210,7 @@ if (cfg.hist == h0) {
     /* float num_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3218,7 +3218,7 @@ if (cfg.hist == h0) {
     /* float num_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3226,7 +3226,7 @@ if (cfg.hist == h0) {
     /* float num_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3234,7 +3234,7 @@ if (cfg.hist == h0) {
     /* float num_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3242,7 +3242,7 @@ if (cfg.hist == h0) {
     /* float num_a2_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a2_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a2_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3250,7 +3250,7 @@ if (cfg.hist == h0) {
     /* float num_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3258,7 +3258,7 @@ if (cfg.hist == h0) {
     /* float num_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3266,7 +3266,7 @@ if (cfg.hist == h0) {
     /* float num_a3SF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a3SF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a3SF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3274,7 +3274,7 @@ if (cfg.hist == h0) {
     /* float num_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3282,7 +3282,7 @@ if (cfg.hist == h0) {
     /* float num_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3290,7 +3290,7 @@ if (cfg.hist == h0) {
     /* float num_a4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3298,7 +3298,7 @@ if (cfg.hist == h0) {
     /* float num_a4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3306,7 +3306,7 @@ if (cfg.hist == h0) {
     /* float num_a4_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a4_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a4_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3314,7 +3314,7 @@ if (cfg.hist == h0) {
     /* float num_a4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3322,7 +3322,7 @@ if (cfg.hist == h0) {
     /* float num_a4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_a4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_a4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3330,7 +3330,7 @@ if (cfg.hist == h0) {
     /* float num_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3338,7 +3338,7 @@ if (cfg.hist == h0) {
     /* float num_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3346,7 +3346,7 @@ if (cfg.hist == h0) {
     /* float num_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3354,7 +3354,7 @@ if (cfg.hist == h0) {
     /* float num_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3362,7 +3362,7 @@ if (cfg.hist == h0) {
     /* float num_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3370,7 +3370,7 @@ if (cfg.hist == h0) {
     /* float num_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3378,7 +3378,7 @@ if (cfg.hist == h0) {
     /* float num_c4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_c4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_c4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3386,7 +3386,7 @@ if (cfg.hist == h0) {
     /* float num_c4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("num_c4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("num_c4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3394,7 +3394,7 @@ if (cfg.hist == h0) {
     /* float pom_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3402,7 +3402,7 @@ if (cfg.hist == h0) {
     /* float pom_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3410,7 +3410,7 @@ if (cfg.hist == h0) {
     /* float pom_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3418,7 +3418,7 @@ if (cfg.hist == h0) {
     /* float pom_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3426,7 +3426,7 @@ if (cfg.hist == h0) {
     /* float pom_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3434,7 +3434,7 @@ if (cfg.hist == h0) {
     /* float pom_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3442,7 +3442,7 @@ if (cfg.hist == h0) {
     /* float pom_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3450,7 +3450,7 @@ if (cfg.hist == h0) {
     /* float pom_a4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3458,7 +3458,7 @@ if (cfg.hist == h0) {
     /* float pom_a4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3466,7 +3466,7 @@ if (cfg.hist == h0) {
     /* float pom_a4_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a4_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a4_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3474,7 +3474,7 @@ if (cfg.hist == h0) {
     /* float pom_a4_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a4_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a4_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3482,7 +3482,7 @@ if (cfg.hist == h0) {
     /* float pom_a4_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_a4_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_a4_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3490,7 +3490,7 @@ if (cfg.hist == h0) {
     /* float pom_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3498,7 +3498,7 @@ if (cfg.hist == h0) {
     /* float pom_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3506,7 +3506,7 @@ if (cfg.hist == h0) {
     /* float pom_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3514,7 +3514,7 @@ if (cfg.hist == h0) {
     /* float pom_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3522,7 +3522,7 @@ if (cfg.hist == h0) {
     /* float pom_c4DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_c4DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_c4DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3530,7 +3530,7 @@ if (cfg.hist == h0) {
     /* float pom_c4SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("pom_c4SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("pom_c4SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3538,7 +3538,7 @@ if (cfg.hist == h0) {
     /* float so4_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3546,7 +3546,7 @@ if (cfg.hist == h0) {
     /* float so4_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3554,7 +3554,7 @@ if (cfg.hist == h0) {
     /* float so4_a1_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a1_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a1_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3562,7 +3562,7 @@ if (cfg.hist == h0) {
     /* float so4_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3570,7 +3570,7 @@ if (cfg.hist == h0) {
     /* float so4_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3578,7 +3578,7 @@ if (cfg.hist == h0) {
     /* float so4_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3586,7 +3586,7 @@ if (cfg.hist == h0) {
     /* float so4_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3594,7 +3594,7 @@ if (cfg.hist == h0) {
     /* float so4_a2_CLXF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a2_CLXF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a2_CLXF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3602,7 +3602,7 @@ if (cfg.hist == h0) {
     /* float so4_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3610,7 +3610,7 @@ if (cfg.hist == h0) {
     /* float so4_a2_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a2_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a2_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3618,7 +3618,7 @@ if (cfg.hist == h0) {
     /* float so4_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3626,7 +3626,7 @@ if (cfg.hist == h0) {
     /* float so4_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3634,7 +3634,7 @@ if (cfg.hist == h0) {
     /* float so4_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3642,7 +3642,7 @@ if (cfg.hist == h0) {
     /* float so4_a3_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_a3_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_a3_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3650,7 +3650,7 @@ if (cfg.hist == h0) {
     /* float so4_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3658,7 +3658,7 @@ if (cfg.hist == h0) {
     /* float so4_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3666,7 +3666,7 @@ if (cfg.hist == h0) {
     /* float so4_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3674,7 +3674,7 @@ if (cfg.hist == h0) {
     /* float so4_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3682,7 +3682,7 @@ if (cfg.hist == h0) {
     /* float so4_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3690,7 +3690,7 @@ if (cfg.hist == h0) {
     /* float so4_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("so4_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("so4_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3698,7 +3698,7 @@ if (cfg.hist == h0) {
     /* float soa_a1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3706,7 +3706,7 @@ if (cfg.hist == h0) {
     /* float soa_a1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3714,7 +3714,7 @@ if (cfg.hist == h0) {
     /* float soa_a1_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a1_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a1_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3722,7 +3722,7 @@ if (cfg.hist == h0) {
     /* float soa_a1_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a1_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a1_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3730,7 +3730,7 @@ if (cfg.hist == h0) {
     /* float soa_a2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3738,7 +3738,7 @@ if (cfg.hist == h0) {
     /* float soa_a2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3746,7 +3746,7 @@ if (cfg.hist == h0) {
     /* float soa_a2_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a2_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a2_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3754,7 +3754,7 @@ if (cfg.hist == h0) {
     /* float soa_a2_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a2_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a2_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3762,7 +3762,7 @@ if (cfg.hist == h0) {
     /* float soa_a3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3770,7 +3770,7 @@ if (cfg.hist == h0) {
     /* float soa_a3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3778,7 +3778,7 @@ if (cfg.hist == h0) {
     /* float soa_a3_SRF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a3_SRF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a3_SRF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3786,7 +3786,7 @@ if (cfg.hist == h0) {
     /* float soa_a3_sfgaex1(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_a3_sfgaex1", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_a3_sfgaex1", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3794,7 +3794,7 @@ if (cfg.hist == h0) {
     /* float soa_c1DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_c1DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_c1DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3802,7 +3802,7 @@ if (cfg.hist == h0) {
     /* float soa_c1SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_c1SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_c1SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3810,7 +3810,7 @@ if (cfg.hist == h0) {
     /* float soa_c2DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_c2DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_c2DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3818,7 +3818,7 @@ if (cfg.hist == h0) {
     /* float soa_c2SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_c2SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_c2SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3826,7 +3826,7 @@ if (cfg.hist == h0) {
     /* float soa_c3DDF(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_c3DDF", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_c3DDF", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3834,7 +3834,7 @@ if (cfg.hist == h0) {
     /* float soa_c3SFWET(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("soa_c3SFWET", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("soa_c3SFWET", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3843,7 +3843,7 @@ else {
     /* float U250(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("U250", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("U250", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3851,7 +3851,7 @@ else {
     /* float U850(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("U850", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("U850", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3859,7 +3859,7 @@ else {
     /* float UBOT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("UBOT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("UBOT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3867,7 +3867,7 @@ else {
     /* float V250(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("V250", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("V250", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3875,7 +3875,7 @@ else {
     /* float V850(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("V850", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("V850", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3883,7 +3883,7 @@ else {
     /* float VBOT(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("VBOT", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("VBOT", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
@@ -3891,7 +3891,7 @@ else {
     /* float Z500(time, ncol) */
     dimids[0] = dim_time;
     dimids[1] = dim_ncol;
-    INQ_VAR("Z500", NC_FLOAT, 2, dimids, REC_ITYPE, 1)
+    INQ_VAR("Z500", REC_XTYPE, 2, dimids, REC_ITYPE, 1)
     GET_ATTR_TXT("units", txtBuf)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("cell_methods", txtBuf)
