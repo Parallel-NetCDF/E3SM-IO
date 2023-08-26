@@ -164,6 +164,8 @@ int set_starts_counts(e3sm_io_decom *dp)
     for (i=0; i<dp->num_decomp; i++) {
         int nreqs = dp->contig_nreqs[i];
 
+        if (nreqs == 0) continue;
+
         /* construct starts[] and counts[] for iput_varn */
         dp->w_starts[i] = (MPI_Offset**) malloc(nreqs * 4 *
                                                 sizeof(MPI_Offset*));
