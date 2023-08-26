@@ -317,7 +317,13 @@ int e3sm_io_case::def_var(e3sm_io_config            &cfg,
         printf("Error in %s line %d: def_var %s\n", __FILE__, __LINE__,varp->_name);
         return err;
     }
+
     /* increment I/O buffer sizes */
+
+    if (decomid < 0 && cfg.rank != 0)
+        /* non-partitioned variables are written by rank 0 only */
+        goto err_out;
+
     if (varp->isRecVar) {
         if (varp->iType == MPI_DOUBLE)
             wr_buf.rec_dbl_buflen += varp->vlen + wr_buf.gap;
@@ -363,7 +369,6 @@ int e3sm_io_case::inq_var(e3sm_io_config &cfg,
     int err=0, j;
 
     err = driver.inq_varid(ncid, name, &varp->vid);
-if (err != 0) printf("name=%s\n",name);
     CHECK_ERR
 
     varp->_name = strdup(name);
