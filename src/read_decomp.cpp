@@ -112,8 +112,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     char name[128];
     int err, rank, nprocs, ncid, varid, proc_start, proc_count;
     int i, j, k, nreqs, *all_nreqs, *all_raw_nreqs, dimids[3], id;
-    int *fill_nreqs = NULL, has_raw_decom;
-    size_t num, decomp_nprocs;
+    int *fill_nreqs = NULL, has_raw_decom, decomp_nprocs;
     MPI_Offset mpi_num, mpi_decomp_nprocs, start, count;
     MPI_Info info = MPI_INFO_NULL;
     e3sm_io_config decom_cfg;
@@ -125,7 +124,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     MPI_Comm_size (cfg->io_comm, &nprocs);
 
     // Set up config for read driver
-    decom_cfg.io_comm        = MPI_COMM_WORLD;
+    decom_cfg.io_comm        = cfg->io_comm;
     decom_cfg.info           = MPI_INFO_NULL;
     decom_cfg.num_iotasks    = nprocs;
     decom_cfg.num_subfiles   = 0;
@@ -173,8 +172,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     CHECK_ERR
     err = driver->inq_dimlen (ncid, dimids[0], &mpi_num);
     CHECK_ERR
-    num = (size_t)mpi_num;
-    decom->num_decomp = (int)num;
+    decom->num_decomp = (int)mpi_num;
 
     /* number of processes used when the decomposition was produced */
     err = driver->inq_dim (ncid, "decomp_nprocs", &dimids[0]);
@@ -225,7 +223,6 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         /* obtain the number of dimensions of this decomposition */
         err = driver->inq_att (ncid, NC_GLOBAL, name, &mpi_num);
         CHECK_ERR
-        num = (size_t)mpi_num;
         decom->ndims[id] = (int)mpi_num;
         /* obtain the dimension lengths of this decomposition */
         err = driver->get_att (ncid, NC_GLOBAL, name, dims_int);
@@ -282,8 +279,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 printf("Warning: fill mode is not supported when nprocs(%d) != decomp_nprocs(%d)\n",
                        nprocs, decomp_nprocs);
             else if (i < decomp_nprocs && rank == 0)
-                printf("Warning: fill mode is not yet supported\n",
-                       nprocs, decomp_nprocs);
+                printf("Warning: fill mode is not yet supported\n");
             free(fill_nreqs);
         }
 
