@@ -813,7 +813,7 @@ int e3sm_io_case::inq_G_case(e3sm_io_config   &cfg,
     int dim_time, dim_nCells, dim_nEdges, dim_nVertices, dim_StrLen;
     int dim_nVertLevels, dim_nVertLevelsP1, dim_nblobs;
     int dim_nelems[MAX_NUM_DECOMP], dim_max_nreqs[MAX_NUM_DECOMP];
-    int g_dimids[MAX_NUM_DECOMP][4];
+    int g_dimids[MAX_NUM_DECOMP][MAX_NDIMS];
     std::map<int, std::string> dnames;
     var_meta *varp;
     case_meta *cmeta;

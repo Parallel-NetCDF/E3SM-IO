@@ -97,7 +97,7 @@ int e3sm_io_case::def_I_case(e3sm_io_config   &cfg,
     int dim_month, dim_levsno, dim_ltype, dim_nvegwcs, dim_natpft, dim_nblobs;
     int dim_string_length, dim_levdcmp, dim_levtrc, dim_hist_interval;
     int dim_nelems[MAX_NUM_DECOMP], dim_max_nreqs[MAX_NUM_DECOMP];
-    int g_dimids[MAX_NUM_DECOMP][4];
+    int g_dimids[MAX_NUM_DECOMP][MAX_NDIMS];
     MPI_Offset lat, lon, levgrnd, levdcmp, levlak, ltype, natpft;
     MPI_Offset string_length, hist_interval;
     float fillv = 1.e+36f, missv = 1.e+36f;
