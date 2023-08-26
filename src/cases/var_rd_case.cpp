@@ -412,7 +412,7 @@ int e3sm_io_case::var_rd_case(e3sm_io_config &cfg,
     FILE_CLOSE
 
     /* free up allocated heap memory for write buffers */
-    wr_buf_free();
+    wr_buf_free(cfg);
     if (vars != NULL) {
         for (i=0; i<nvars; i++)
             if (vars[i]._name != NULL)
