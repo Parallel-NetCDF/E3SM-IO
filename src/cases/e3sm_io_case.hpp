@@ -128,7 +128,7 @@ class e3sm_io_case {
         int wr_buf_malloc(e3sm_io_config &cfg,
                           int ffreq);
 
-        void wr_buf_free(void);
+        void wr_buf_free(e3sm_io_config &cfg);
 
         int def_var_decomp(e3sm_io_config &cfg,
                            e3sm_io_decom  &decom,
