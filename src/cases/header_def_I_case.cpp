@@ -241,6 +241,24 @@ int e3sm_io_case::def_I_case(e3sm_io_config   &cfg,
      */
     varp = vars + nvars_decomp - 1;
 
+    /* define fixed-size variables */
+
+    /* int landmask(lat, lon) */
+    dimids[0] = dim_lat;
+    dimids[1] = dim_lon;
+    DEF_VAR("landmask", NC_INT, 2, dimids, MPI_INT, 0)
+    PUT_ATTR_TXT("long_name", "land/ocean mask (0.=ocean and 1.=land)")
+    PUT_ATTR_FILL(-9999)
+    PUT_ATTR_INT1("missing_value", -9999)
+
+    /* int pftmask(lat, lon) */
+    dimids[0] = dim_lat;
+    dimids[1] = dim_lon;
+    DEF_VAR("pftmask", NC_INT, 2, dimids, MPI_INT, 0)
+    PUT_ATTR_TXT("long_name", "pft real/fake mask (0.=fake and 1.=real)")
+    PUT_ATTR_FILL(-9999)
+    PUT_ATTR_INT1("missing_value", -9999)
+
     /* float levgrnd(levgrnd) */
     DEF_VAR("levgrnd", REC_XTYPE, 1, &dim_levgrnd, REC_ITYPE, -1)
     PUT_ATTR_TXT("long_name", "coordinate soil levels")
@@ -255,50 +273,6 @@ int e3sm_io_case::def_I_case(e3sm_io_config   &cfg,
     DEF_VAR("levdcmp", REC_XTYPE, 1, &dim_levdcmp, REC_ITYPE, -1)
     PUT_ATTR_TXT("long_name", "coordinate soil levels")
     PUT_ATTR_TXT("units", "m")
-
-    /* float time(time) */
-    DEF_VAR("time", REC_XTYPE, 1, &dim_time, REC_ITYPE, -1)
-    PUT_ATTR_TXT("long_name", "time")
-    PUT_ATTR_TXT("units", "days since 0001-01-01 00:00:00")
-    PUT_ATTR_TXT("calendar", "noleap")
-    PUT_ATTR_TXT("bounds", "time_bounds")
-
-    /* int mcdate(time) */
-    DEF_VAR("mcdate", NC_INT, 1, &dim_time, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "current date (YYYYMMDD)")
-
-    /* int mcsec(time) */
-    DEF_VAR("mcsec", NC_INT, 1, &dim_time, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "current seconds of current date")
-    PUT_ATTR_TXT("units", "s")
-
-    /* int mdcur(time) */
-    DEF_VAR("mdcur", NC_INT, 1, &dim_time, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "current day (from base day)")
-
-    /* int mscur(time) */
-    DEF_VAR("mscur", NC_INT, 1, &dim_time, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "current seconds of current day")
-
-    /* int nstep(time) */
-    DEF_VAR("nstep", NC_INT, 1, &dim_time, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "time step")
-
-    /* double time_bounds(time, hist_interval) */
-    dimids[0] = dim_time;
-    dimids[1] = dim_hist_interval;
-    DEF_VAR("time_bounds", NC_DOUBLE, 2, dimids, MPI_DOUBLE, -1)
-    PUT_ATTR_TXT("long_name", "history time interval endpoints")
-
-    /* char date_written(time, string_length) */
-    dimids[0] = dim_time;
-    dimids[1] = dim_string_length;
-    DEF_VAR("date_written", NC_CHAR, 2, dimids, MPI_CHAR, -1)
-
-    /* char time_written(time, string_length) */
-    dimids[0] = dim_time;
-    dimids[1] = dim_string_length;
-    DEF_VAR("time_written", NC_CHAR, 2, dimids, MPI_CHAR, -1)
 
     /* float lon(lon) */
     DEF_VAR("lon", REC_XTYPE, 1, &dim_lon, REC_ITYPE, -1)
@@ -339,22 +313,6 @@ int e3sm_io_case::def_I_case(e3sm_io_config   &cfg,
     PUT_ATTR_TXT("long_name", "land fraction")
     PUT_ATTR_FILL(fillv)
     PUT_ATTR_FLT1("missing_value", missv)
-
-    /* int landmask(lat, lon) */
-    dimids[0] = dim_lat;
-    dimids[1] = dim_lon;
-    DEF_VAR("landmask", NC_INT, 2, dimids, MPI_INT, 0)
-    PUT_ATTR_TXT("long_name", "land/ocean mask (0.=ocean and 1.=land)")
-    PUT_ATTR_FILL(-9999)
-    PUT_ATTR_INT1("missing_value", -9999)
-
-    /* int pftmask(lat, lon) */
-    dimids[0] = dim_lat;
-    dimids[1] = dim_lon;
-    DEF_VAR("pftmask", NC_INT, 2, dimids, MPI_INT, 0)
-    PUT_ATTR_TXT("long_name", "pft real/fake mask (0.=fake and 1.=real)")
-    PUT_ATTR_FILL(-9999)
-    PUT_ATTR_INT1("missing_value", -9999)
 
     if (cfg.hist == h0) {  /* h0 only */
         /* float ZSOI(levgrnd, lat, lon) */
@@ -437,6 +395,52 @@ int e3sm_io_case::def_I_case(e3sm_io_config   &cfg,
         PUT_ATTR_FILL(fillv)
         PUT_ATTR_FLT1("missing_value", missv)
     }
+
+    /* define record variables */
+
+    /* char date_written(time, string_length) */
+    dimids[0] = dim_time;
+    dimids[1] = dim_string_length;
+    DEF_VAR("date_written", NC_CHAR, 2, dimids, MPI_CHAR, -1)
+
+    /* char time_written(time, string_length) */
+    dimids[0] = dim_time;
+    dimids[1] = dim_string_length;
+    DEF_VAR("time_written", NC_CHAR, 2, dimids, MPI_CHAR, -1)
+
+    /* int mcdate(time) */
+    DEF_VAR("mcdate", NC_INT, 1, &dim_time, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "current date (YYYYMMDD)")
+
+    /* int mcsec(time) */
+    DEF_VAR("mcsec", NC_INT, 1, &dim_time, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "current seconds of current date")
+    PUT_ATTR_TXT("units", "s")
+
+    /* int mdcur(time) */
+    DEF_VAR("mdcur", NC_INT, 1, &dim_time, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "current day (from base day)")
+
+    /* int mscur(time) */
+    DEF_VAR("mscur", NC_INT, 1, &dim_time, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "current seconds of current day")
+
+    /* int nstep(time) */
+    DEF_VAR("nstep", NC_INT, 1, &dim_time, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "time step")
+
+    /* double time_bounds(time, hist_interval) */
+    dimids[0] = dim_time;
+    dimids[1] = dim_hist_interval;
+    DEF_VAR("time_bounds", NC_DOUBLE, 2, dimids, MPI_DOUBLE, -1)
+    PUT_ATTR_TXT("long_name", "history time interval endpoints")
+
+    /* float time(time) */
+    DEF_VAR("time", REC_XTYPE, 1, &dim_time, REC_ITYPE, -1)
+    PUT_ATTR_TXT("long_name", "time")
+    PUT_ATTR_TXT("units", "days since 0001-01-01 00:00:00")
+    PUT_ATTR_TXT("calendar", "noleap")
+    PUT_ATTR_TXT("bounds", "time_bounds")
 
     /* float ACTUAL_IMMOB(time, lat, lon) */
     dimids[0] = dim_time;

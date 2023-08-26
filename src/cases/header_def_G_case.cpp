@@ -908,6 +908,112 @@ int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
 
     varp = vars + nvars_decomp - 1;
 
+    /* define 7 partitioned fixed-size variables */
+
+    /* int maxLevelEdgeTop(nEdges) */
+    DEF_VAR("maxLevelEdgeTop", NC_INT, 1, &dim_nEdges, MPI_INT, 1)
+    PUT_ATTR_TXT("units", "unitless")
+    PUT_ATTR_TXT("long_name", "Index to the last edge in a column with active ocean cells on both sides of it.")
+
+    /* int edgeMask(nEdges, nVertLevels) */
+    dimids[0] = dim_nEdges;
+    dimids[1] = dim_nVertLevels;
+    DEF_VAR("edgeMask", NC_INT, 2, dimids, MPI_INT, 3)
+    PUT_ATTR_TXT("units", "unitless")
+    PUT_ATTR_TXT("long_name", "Mask on edges that determines if computations should be done on edges.")
+
+    /* int cellMask(nCells, nVertLevels) */
+    dimids[0] = dim_nCells;
+    dimids[1] = dim_nVertLevels;
+    DEF_VAR("cellMask", NC_INT, 2, dimids, MPI_INT, 2)
+    PUT_ATTR_TXT("units", "unitless")
+    PUT_ATTR_TXT("long_name", "Mask on cells that determines if computations should be done on cells.")
+
+    /* int vertexMask(nVertices, nVertLevels) */
+    dimids[0] = dim_nVertices;
+    dimids[1] = dim_nVertLevels;
+    DEF_VAR("vertexMask", NC_INT, 2, dimids, MPI_INT, 4)
+    PUT_ATTR_TXT("units", "unitless")
+    PUT_ATTR_TXT("long_name", "Mask on vertices that determines if computations should be done on vertices.")
+
+    /* int maxLevelCell(nCells) */
+    DEF_VAR("maxLevelCell", NC_INT, 1, &dim_nCells, MPI_INT, 0)
+    PUT_ATTR_TXT("units", "unitless")
+    PUT_ATTR_TXT("long_name", "Index to the last active ocean cell in each column.")
+
+    /* int maxLevelEdgeBot(nEdges) */
+    DEF_VAR("maxLevelEdgeBot", NC_INT, 1, &dim_nEdges, MPI_INT, 1)
+    PUT_ATTR_TXT("units", "unitless")
+    PUT_ATTR_TXT("long_name", "Index to the last edge in a column with at least one active ocean cell on either side of it.")
+
+    /* double bottomDepth(nCells) */
+    DEF_VAR("bottomDepth", NC_DOUBLE, 1, &dim_nCells, REC_ITYPE, 0)
+    PUT_ATTR_TXT("units", "m")
+    PUT_ATTR_TXT("long_name", "Depth of the bottom of the ocean. Given as a positive distance from sea level.")
+
+    /* define 4 not-partitioned fixed-size variables */
+
+    /* double vertCoordMovementWeights(nVertLevels) */
+    DEF_VAR("vertCoordMovementWeights", NC_DOUBLE, 1, &dim_nVertLevels, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "unitless")
+    PUT_ATTR_TXT("long_name", "Weights used for distribution of sea surface height perturbations through multiple vertical levels.")
+
+    /* double refZMid(nVertLevels) */
+    DEF_VAR("refZMid", NC_DOUBLE, 1, &dim_nVertLevels, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "m")
+    PUT_ATTR_TXT("long_name", "Reference mid z-coordinate of ocean for each vertical level. This has a negative value.")
+
+    /* double refLayerThickness(nVertLevels) */
+    DEF_VAR("refLayerThickness", NC_DOUBLE, 1, &dim_nVertLevels, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "m")
+    PUT_ATTR_TXT("long_name", "Reference layerThickness of ocean for each vertical level.")
+
+    /* double refBottomDepth(nVertLevels) */
+    DEF_VAR("refBottomDepth", NC_DOUBLE, 1, &dim_nVertLevels, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "m")
+    PUT_ATTR_TXT("long_name", "Reference depth of ocean for each vertical level. Used in \'z-level\' type runs.")
+
+    /* define 7 not-partitioned record variables */
+
+    /* char xtime(Time, StrLen) */
+    dimids[0] = dim_time;
+    dimids[1] = dim_StrLen;
+    DEF_VAR("xtime", NC_CHAR, 2, dimids, MPI_CHAR, -1)
+    PUT_ATTR_TXT("units", "unitless")
+    PUT_ATTR_TXT("long_name", "model time, with format \'YYYY-MM-DD_HH:MM:SS\'")
+
+    /* double areaCellGlobal(Time) */
+    DEF_VAR("areaCellGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "m^2")
+    PUT_ATTR_TXT("long_name", "sum of the areaCell variable over the full domain, used to normalize global statistics")
+
+    /* double areaEdgeGlobal(Time) */
+    DEF_VAR("areaEdgeGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "m^2")
+    PUT_ATTR_TXT("long_name", "sum of the areaEdge variable over the full domain, used to normalize global statistics")
+
+    /* double areaTriangleGlobal(Time) */
+    DEF_VAR("areaTriangleGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "m^2")
+    PUT_ATTR_TXT("long_name", "sum of the areaTriangle variable over the full domain, used to normalize global statistics")
+
+    /* double volumeCellGlobal(Time) */
+    DEF_VAR("volumeCellGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "m^3")
+    PUT_ATTR_TXT("long_name", "sum of the volumeCell variable over the full domain, used to normalize global statistics")
+
+    /* double volumeEdgeGlobal(Time) */
+    DEF_VAR("volumeEdgeGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "m^3")
+    PUT_ATTR_TXT("long_name", "sum of the volumeEdge variable over the full domain, used to normalize global statistics")
+
+    /* double CFLNumberGlobal(Time) */
+    DEF_VAR("CFLNumberGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
+    PUT_ATTR_TXT("units", "unitless")
+    PUT_ATTR_TXT("long_name", "maximum CFL number over the full domain")
+
+    /* define 34 partitioned record variables */
+
     /* double salinitySurfaceRestoringTendency(Time, nCells) */
     dimids[0] = dim_time;
     dimids[1] = dim_nCells;
@@ -969,54 +1075,6 @@ int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "sea surface height")
 
-    /* int maxLevelEdgeTop(nEdges) */
-    DEF_VAR("maxLevelEdgeTop", NC_INT, 1, &dim_nEdges, MPI_INT, 1)
-    PUT_ATTR_TXT("units", "unitless")
-    PUT_ATTR_TXT("long_name", "Index to the last edge in a column with active ocean cells on both sides of it.")
-
-    /* double vertCoordMovementWeights(nVertLevels) */
-    DEF_VAR("vertCoordMovementWeights", NC_DOUBLE, 1, &dim_nVertLevels, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "unitless")
-    PUT_ATTR_TXT("long_name", "Weights used for distribution of sea surface height perturbations through multiple vertical levels.")
-
-    /* int edgeMask(nEdges, nVertLevels) */
-    dimids[0] = dim_nEdges;
-    dimids[1] = dim_nVertLevels;
-    DEF_VAR("edgeMask", NC_INT, 2, dimids, MPI_INT, 3)
-    PUT_ATTR_TXT("units", "unitless")
-    PUT_ATTR_TXT("long_name", "Mask on edges that determines if computations should be done on edges.")
-
-    /* int cellMask(nCells, nVertLevels) */
-    dimids[0] = dim_nCells;
-    dimids[1] = dim_nVertLevels;
-    DEF_VAR("cellMask", NC_INT, 2, dimids, MPI_INT, 2)
-    PUT_ATTR_TXT("units", "unitless")
-    PUT_ATTR_TXT("long_name", "Mask on cells that determines if computations should be done on cells.")
-
-    /* int vertexMask(nVertices, nVertLevels) */
-    dimids[0] = dim_nVertices;
-    dimids[1] = dim_nVertLevels;
-    DEF_VAR("vertexMask", NC_INT, 2, dimids, MPI_INT, 4)
-    PUT_ATTR_TXT("units", "unitless")
-    PUT_ATTR_TXT("long_name", "Mask on vertices that determines if computations should be done on vertices.")
-
-    /* double refZMid(nVertLevels) */
-    DEF_VAR("refZMid", NC_DOUBLE, 1, &dim_nVertLevels, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "m")
-    PUT_ATTR_TXT("long_name", "Reference mid z-coordinate of ocean for each vertical level. This has a negative value.")
-
-    /* double refLayerThickness(nVertLevels) */
-    DEF_VAR("refLayerThickness", NC_DOUBLE, 1, &dim_nVertLevels, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "m")
-    PUT_ATTR_TXT("long_name", "Reference layerThickness of ocean for each vertical level.")
-
-    /* char xtime(Time, StrLen) */
-    dimids[0] = dim_time;
-    dimids[1] = dim_StrLen;
-    DEF_VAR("xtime", NC_CHAR, 2, dimids, MPI_CHAR, -1)
-    PUT_ATTR_TXT("units", "unitless")
-    PUT_ATTR_TXT("long_name", "model time, with format \'YYYY-MM-DD_HH:MM:SS\'")
-
     /* double kineticEnergyCell(Time, nCells, nVertLevels) */
     dimids[0] = dim_time;
     dimids[1] = dim_nCells;
@@ -1048,36 +1106,6 @@ int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
     DEF_VAR("divergence", NC_DOUBLE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_TXT("units", "s^{-1}")
     PUT_ATTR_TXT("long_name", "divergence of horizontal velocity")
-
-    /* double areaCellGlobal(Time) */
-    DEF_VAR("areaCellGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "m^2")
-    PUT_ATTR_TXT("long_name", "sum of the areaCell variable over the full domain, used to normalize global statistics")
-
-    /* double areaEdgeGlobal(Time) */
-    DEF_VAR("areaEdgeGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "m^2")
-    PUT_ATTR_TXT("long_name", "sum of the areaEdge variable over the full domain, used to normalize global statistics")
-
-    /* double areaTriangleGlobal(Time) */
-    DEF_VAR("areaTriangleGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "m^2")
-    PUT_ATTR_TXT("long_name", "sum of the areaTriangle variable over the full domain, used to normalize global statistics")
-
-    /* double volumeCellGlobal(Time) */
-    DEF_VAR("volumeCellGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "m^3")
-    PUT_ATTR_TXT("long_name", "sum of the volumeCell variable over the full domain, used to normalize global statistics")
-
-    /* double volumeEdgeGlobal(Time) */
-    DEF_VAR("volumeEdgeGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "m^3")
-    PUT_ATTR_TXT("long_name", "sum of the volumeEdge variable over the full domain, used to normalize global statistics")
-
-    /* double CFLNumberGlobal(Time) */
-    DEF_VAR("CFLNumberGlobal", NC_DOUBLE, 1, &dim_time, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "unitless")
-    PUT_ATTR_TXT("long_name", "maximum CFL number over the full domain")
 
     /* double BruntVaisalaFreqTop(Time, nCells, nVertLevels) */
     dimids[0] = dim_time;
@@ -1135,11 +1163,6 @@ int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
     PUT_ATTR_TXT("units", "N m^{-2}")
     PUT_ATTR_TXT("long_name", "pressure used in the momentum equation")
 
-    /* double refBottomDepth(nVertLevels) */
-    DEF_VAR("refBottomDepth", NC_DOUBLE, 1, &dim_nVertLevels, REC_ITYPE, -1)
-    PUT_ATTR_TXT("units", "m")
-    PUT_ATTR_TXT("long_name", "Reference depth of ocean for each vertical level. Used in \'z-level\' type runs.")
-
     /* double zMid(Time, nCells, nVertLevels) */
     dimids[0] = dim_time;
     dimids[1] = dim_nCells;
@@ -1147,21 +1170,6 @@ int e3sm_io_case::def_G_case(e3sm_io_config   &cfg,
     DEF_VAR("zMid", NC_DOUBLE, 3, dimids, REC_ITYPE, 2)
     PUT_ATTR_TXT("units", "m")
     PUT_ATTR_TXT("long_name", "z-coordinate of the mid-depth of the layer")
-
-    /* double bottomDepth(nCells) */
-    DEF_VAR("bottomDepth", NC_DOUBLE, 1, &dim_nCells, REC_ITYPE, 0)
-    PUT_ATTR_TXT("units", "m")
-    PUT_ATTR_TXT("long_name", "Depth of the bottom of the ocean. Given as a positive distance from sea level.")
-
-    /* int maxLevelCell(nCells) */
-    DEF_VAR("maxLevelCell", NC_INT, 1, &dim_nCells, MPI_INT, 0)
-    PUT_ATTR_TXT("units", "unitless")
-    PUT_ATTR_TXT("long_name", "Index to the last active ocean cell in each column.")
-
-    /* int maxLevelEdgeBot(nEdges) */
-    DEF_VAR("maxLevelEdgeBot", NC_INT, 1, &dim_nEdges, MPI_INT, 1)
-    PUT_ATTR_TXT("units", "unitless")
-    PUT_ATTR_TXT("long_name", "Index to the last edge in a column with at least one active ocean cell on either side of it.")
 
     /* double columnIntegratedSpeed(Time, nCells) */
     dimids[0] = dim_time;

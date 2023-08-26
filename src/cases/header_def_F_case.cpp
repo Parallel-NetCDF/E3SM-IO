@@ -319,21 +319,37 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
      */
     varp = vars + nvars_decomp - 1;
 
-    /* below 10 are fixed-size climate variables ---------------------------*/
+    /* The order of defining variables must follow the rule below in order to
+     * support the feature of using a single contiguous user buffers for all
+     * variables.
+     * 1. Define fixed-size variables before record variables.
+     * 2. Define variables of types: char, int, double, float.
+     */
 
-    /* double lat(ncol) */
-    DEF_VAR("lat", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 1)
-    PUT_ATTR_TXT("long_name", "latitude")
-    PUT_ATTR_TXT("units", "degrees_north")
+    /* below 5 are fixed-size scalar climate variables of type int ---------*/
 
-    /* double lon(ncol) */
-    DEF_VAR("lon", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 1)
-    PUT_ATTR_TXT("long_name", "longitude")
-    PUT_ATTR_TXT("units", "degrees_east")
+    /* int ndbase */
+    DEF_VAR("ndbase", NC_INT, 0, NULL, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "base day")
 
-    /* double area(ncol) */
-    DEF_VAR("area", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 0)
-    PUT_ATTR_TXT("long_name", "gll grid areas")
+    /* int nsbase */
+    DEF_VAR("nsbase", NC_INT, 0, NULL, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "seconds of base day")
+
+    /* int nbdate */
+    DEF_VAR("nbdate", NC_INT, 0, NULL, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "base date (YYYYMMDD)")
+
+    /* int nbsec */
+    DEF_VAR("nbsec", NC_INT, 0, NULL, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "seconds of base date")
+
+    /* int mdt */
+    DEF_VAR("mdt", NC_INT, 0, NULL, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "timestep")
+    PUT_ATTR_TXT("units", "s")
+
+    /* below 7 are fixed-size not-partitioned variables of type double -----*/
 
     /* double lev(lev) */
     DEF_VAR("lev", NC_DOUBLE, 1, &dim_lev, MPI_DOUBLE, -1)
@@ -372,28 +388,23 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
     DEF_VAR("hybi", NC_DOUBLE, 1, &dim_ilev, MPI_DOUBLE, -1)
     PUT_ATTR_TXT("long_name", "hybrid B coefficient at layer interfaces")
 
-    /* below 6 are record climate variables --------------------------------*/
+    /* below 3 are fixed-size partitioned variables of type double ------------*/
 
-    /* double time(time) */
-    DEF_VAR("time", NC_DOUBLE, 1, &dim_time, MPI_DOUBLE, -1)
-    PUT_ATTR_TXT("long_name", "time")
-    PUT_ATTR_TXT("units", "days since 0001-01-01 00:00:00")
-    PUT_ATTR_TXT("calendar", "noleap")
-    PUT_ATTR_TXT("bounds", "time_bnds")
+    /* double lat(ncol) */
+    DEF_VAR("lat", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 1)
+    PUT_ATTR_TXT("long_name", "latitude")
+    PUT_ATTR_TXT("units", "degrees_north")
 
-    /* int date(time) */
-    DEF_VAR("date", NC_INT, 1, &dim_time, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "current date (YYYYMMDD)")
+    /* double lon(ncol) */
+    DEF_VAR("lon", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 1)
+    PUT_ATTR_TXT("long_name", "longitude")
+    PUT_ATTR_TXT("units", "degrees_east")
 
-    /* int datesec(time) */
-    DEF_VAR("datesec", NC_INT, 1, &dim_time, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "current seconds of current date")
+    /* double area(ncol) */
+    DEF_VAR("area", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 0)
+    PUT_ATTR_TXT("long_name", "gll grid areas")
 
-    /* double time_bnds(time, nbnd) */
-    dimids[0] = dim_time;
-    dimids[1] = dim_nbnd;
-    DEF_VAR("time_bnds", NC_DOUBLE, 2, dimids, MPI_DOUBLE, -1)
-    PUT_ATTR_TXT("long_name", "time interval endpoints")
+    /* below 2 are record climate variables of type char -------------------*/
 
     /* char date_written(time, chars) */
     dimids[0] = dim_time;
@@ -405,30 +416,15 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
     dimids[1] = dim_chars;
     DEF_VAR("time_written", NC_CHAR, 2, dimids, MPI_CHAR, -1)
 
-    /* below 5 are fixed-size climate variables ----------------------------*/
+    /* below 5 are record climate variables of type int -------------------*/
 
-    /* int ndbase */
-    DEF_VAR("ndbase", NC_INT, 0, NULL, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "base day")
+    /* int date(time) */
+    DEF_VAR("date", NC_INT, 1, &dim_time, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "current date (YYYYMMDD)")
 
-    /* int nsbase */
-    DEF_VAR("nsbase", NC_INT, 0, NULL, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "seconds of base day")
-
-    /* int nbdate */
-    DEF_VAR("nbdate", NC_INT, 0, NULL, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "base date (YYYYMMDD)")
-
-    /* int nbsec */
-    DEF_VAR("nbsec", NC_INT, 0, NULL, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "seconds of base date")
-
-    /* int mdt */
-    DEF_VAR("mdt", NC_INT, 0, NULL, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "timestep")
-    PUT_ATTR_TXT("units", "s")
-
-    /* below 393 are record climate variables ------------------------------*/
+    /* int datesec(time) */
+    DEF_VAR("datesec", NC_INT, 1, &dim_time, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "current seconds of current date")
 
     /* int ndcur(time) */
     DEF_VAR("ndcur", NC_INT, 1, &dim_time, MPI_INT, -1)
@@ -437,6 +433,25 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
     /* int nscur(time) */
     DEF_VAR("nscur", NC_INT, 1, &dim_time, MPI_INT, -1)
     PUT_ATTR_TXT("long_name", "current seconds of current day")
+
+    /* int nsteph(time) */
+    DEF_VAR("nsteph", NC_INT, 1, &dim_time, MPI_INT, -1)
+    PUT_ATTR_TXT("long_name", "current timestep")
+
+    /* below 8 are record climate variables of type double ---------------*/
+
+    /* double time(time) */
+    DEF_VAR("time", NC_DOUBLE, 1, &dim_time, MPI_DOUBLE, -1)
+    PUT_ATTR_TXT("long_name", "time")
+    PUT_ATTR_TXT("units", "days since 0001-01-01 00:00:00")
+    PUT_ATTR_TXT("calendar", "noleap")
+    PUT_ATTR_TXT("bounds", "time_bnds")
+
+    /* double time_bnds(time, nbnd) */
+    dimids[0] = dim_time;
+    dimids[1] = dim_nbnd;
+    DEF_VAR("time_bnds", NC_DOUBLE, 2, dimids, MPI_DOUBLE, -1)
+    PUT_ATTR_TXT("long_name", "time interval endpoints")
 
     /* double co2vmr(time) */
     DEF_VAR("co2vmr", NC_DOUBLE, 1, &dim_time, MPI_DOUBLE, -1)
@@ -463,9 +478,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
     PUT_ATTR_TXT("long_name", "total solar irradiance")
     PUT_ATTR_TXT("units", "W/m2")
 
-    /* int nsteph(time) */
-    DEF_VAR("nsteph", NC_INT, 1, &dim_time, MPI_INT, -1)
-    PUT_ATTR_TXT("long_name", "current timestep")
+    /* below 384 are record climate variables of type float ----------------*/
 
 if (cfg.hist == h0) {
     /* float AEROD_v(time, ncol) */
