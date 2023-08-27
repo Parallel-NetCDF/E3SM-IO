@@ -165,7 +165,7 @@
 #define ASSIGN_BUF(A) *(A##p) = A
 
 /*----< run_varn_G_case_rd() >-----------------------------------------------*/
-int run_varn_G_case_rd (e3sm_io_config &cfg,
+int e3sm_io_case::run_varn_G_case_rd (e3sm_io_config &cfg,
                         e3sm_io_decom &decom,
                         e3sm_io_driver &driver,
                         int **D1_fix_int_bufp,    /* D1 fix int buffer */

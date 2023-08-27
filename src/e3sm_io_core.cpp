@@ -31,6 +31,7 @@ extern "C" int e3sm_io_core (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     /* Select test case */
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_INIT_CASE)
     tcase = new e3sm_io_case();
+    tcase->set_rec_xtype(cfg->xtype);
     E3SM_IO_TIMER_STOP (E3SM_IO_TIMER_INIT_CASE)
 
     /* perform read */

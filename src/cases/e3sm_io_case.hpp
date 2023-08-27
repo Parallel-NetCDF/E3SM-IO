@@ -17,6 +17,10 @@
 
 #define BUF_GAP 10
 
+/* in-memory buffer type for record variables are always double */
+#define REC_ITYPE MPI_DOUBLE
+typedef double vtype; /* internal data type of buffer in memory */
+
 typedef struct {
     size_t  gap;
 
@@ -79,6 +83,17 @@ class e3sm_io_case {
 
         io_buffers  wr_buf;  /* write buffers and their length metadata */
         var_meta   *vars;    /* variable metadata */
+
+        /* In E3SM, there are two type of data outputs: historical checkpoint
+         * and restart. For historical checkpoint, the external data types are
+         * all of type NC_FLOAT. For restart, it is NC_DOUBLE. The internal
+         * user buffers are all of type double. When the internal and external
+         * data types do not match, I/O libraries, such as PnetCDF, will have
+         * to perform type conversion. The E3SM-IO benchmark has a command-line
+         * option "-j" to change the default restart writes to historical
+         * checkpoint writes.
+         */
+        int REC_XTYPE=NC_DOUBLE;
 
         int var_wr_case(e3sm_io_config &cfg,
                         e3sm_io_decom  &decom,
@@ -177,6 +192,54 @@ class e3sm_io_case {
                     int                         decomid,
                     var_meta                   *varp);
 
+        /*---- functions for F case -------------------------------------------------*/
+        int inq_F_case_h0(e3sm_io_driver &driver,
+                          int ncid,           /* file ID */
+                          MPI_Offset dims[2], /* dimension sizes */
+                          int nvars,          /* number of variables */
+                          int *varids);       /* variable IDs */
+
+        int inq_F_case_h1(e3sm_io_driver &driver,
+                          int ncid,           /* file ID */
+                          MPI_Offset dims[2], /* dimension sizes */
+                          int nvars,          /* number of variables */
+                          int *varids);       /* variable IDs */
+
+        int run_varn_F_case_rd(e3sm_io_config &cfg,
+                          e3sm_io_decom &decom,
+                          e3sm_io_driver &driver,
+                          double **dbl_bufp,   /* buffer for fixed size double var */
+                          vtype **rec_bufp,    /* buffer for rec floating point var */
+                          char *txt_buf,       /* buffer for char var */
+                          int *int_buf);       /* buffer for int var */
+
+        /*---- functions for G case -------------------------------------------------*/
+        int inq_G_case(e3sm_io_driver &driver,
+                          int ncid,              /* file ID */
+                          MPI_Offset dims_D1[1], /* dimension sizes of decomposition 1 */
+                          MPI_Offset dims_D2[1], /* dimension sizes of decomposition 2 */
+                          MPI_Offset dims_D3[2], /* dimension sizes of decomposition 3 */
+                          MPI_Offset dims_D4[2], /* dimension sizes of decomposition 4 */
+                          MPI_Offset dims_D5[2], /* dimension sizes of decomposition 5 */
+                          MPI_Offset dims_D6[2], /* dimension sizes of decomposition 6 */
+                          int nvars,             /* number of variables */
+                          int *varids);          /* variable IDs */
+
+        int run_varn_G_case_rd(e3sm_io_config &cfg,
+                          e3sm_io_decom &decom,
+                          e3sm_io_driver &driver,
+                          int **D1_fix_int_bufp,     /* D1 fix int buffer */
+                          int **D2_fix_int_bufp,     /* D2 fix int buffer */
+                          int **D3_fix_int_bufp,     /* D3 fix int buffer */
+                          int **D4_fix_int_bufp,     /* D4 fix int buffer */
+                          int **D5_fix_int_bufp,     /* D5 fix int buffer */
+                          double **D1_rec_dbl_bufp,  /* D1 rec double buffer */
+                          double **D3_rec_dbl_bufp,  /* D3 rec double buffer */
+                          double **D4_rec_dbl_bufp,  /* D4 rec double buffer */
+                          double **D5_rec_dbl_bufp,  /* D5 rec double buffer */
+                          double **D6_rec_dbl_bufp,  /* D6 rec double buffer */
+                          double **D1_fix_dbl_bufp); /* D1 fix double buffer */
+
     public:
          e3sm_io_case();
         ~e3sm_io_case();
@@ -188,61 +251,9 @@ class e3sm_io_case {
         int rd_test(e3sm_io_config &cfg,
                     e3sm_io_decom  &decom,
                     e3sm_io_driver &driver);
+
+        void set_rec_xtype(nc_type xtype) { REC_XTYPE = xtype; };
 };
-
-/*---- functions for F case -------------------------------------------------*/
-extern
-int inq_F_case_h0(e3sm_io_driver &driver,
-                  int ncid,           /* file ID */
-                  MPI_Offset dims[2], /* dimension sizes */
-                  int nvars,          /* number of variables */
-                  int *varids);       /* variable IDs */
-
-extern
-int inq_F_case_h1(e3sm_io_driver &driver,
-                  int ncid,           /* file ID */
-                  MPI_Offset dims[2], /* dimension sizes */
-                  int nvars,          /* number of variables */
-                  int *varids);       /* variable IDs */
-
-extern int
-run_varn_F_case_rd(e3sm_io_config &cfg,
-                   e3sm_io_decom &decom,
-                   e3sm_io_driver &driver,
-                   double **dbl_bufp,   /* buffer for fixed size double var */
-                   vtype **rec_bufp,    /* buffer for rec floating point var */
-                   char *txt_buf,       /* buffer for char var */
-                   int *int_buf);       /* buffer for int var */
-
-
-/*---- functions for G case -------------------------------------------------*/
-extern int
-inq_G_case(e3sm_io_driver &driver,
-              int ncid,              /* file ID */
-              MPI_Offset dims_D1[1], /* dimension sizes of decomposition 1 */
-              MPI_Offset dims_D2[1], /* dimension sizes of decomposition 2 */
-              MPI_Offset dims_D3[2], /* dimension sizes of decomposition 3 */
-              MPI_Offset dims_D4[2], /* dimension sizes of decomposition 4 */
-              MPI_Offset dims_D5[2], /* dimension sizes of decomposition 5 */
-              MPI_Offset dims_D6[2], /* dimension sizes of decomposition 6 */
-              int nvars,             /* number of variables */
-              int *varids);          /* variable IDs */
-
-extern int
-run_varn_G_case_rd(e3sm_io_config &cfg,
-                   e3sm_io_decom &decom,
-                   e3sm_io_driver &driver,
-                   int **D1_fix_int_bufp,     /* D1 fix int buffer */
-                   int **D2_fix_int_bufp,     /* D2 fix int buffer */
-                   int **D3_fix_int_bufp,     /* D3 fix int buffer */
-                   int **D4_fix_int_bufp,     /* D4 fix int buffer */
-                   int **D5_fix_int_bufp,     /* D5 fix int buffer */
-                   double **D1_rec_dbl_bufp,  /* D1 rec double buffer */
-                   double **D3_rec_dbl_bufp,  /* D3 rec double buffer */
-                   double **D4_rec_dbl_bufp,  /* D4 rec double buffer */
-                   double **D5_rec_dbl_bufp,  /* D5 rec double buffer */
-                   double **D6_rec_dbl_bufp,  /* D6 rec double buffer */
-                   double **D1_fix_dbl_bufp); /* D1 fix double buffer */
 
 /*---- wrapper functions for adios driver -----------------------------------*/
 extern

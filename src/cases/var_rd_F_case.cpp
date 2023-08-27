@@ -354,13 +354,13 @@ err_out:
 }
 
 /*----< run_varn_F_case_rd() >-----------------------------------------------*/
-int run_varn_F_case_rd (e3sm_io_config &cfg,
-                        e3sm_io_decom &decom,
-                        e3sm_io_driver &driver,
-                        double **dbl_bufp,   /* buffer for fixed size double var */
-                        vtype **rec_bufp,    /* buffer for rec floating point var */
-                        char *txt_buf,       /* buffer for char var */
-                        int *int_buf)        /* buffer for int var */
+int e3sm_io_case::run_varn_F_case_rd (e3sm_io_config &cfg,
+                                      e3sm_io_decom &decom,
+                                      e3sm_io_driver &driver,
+                                      double **dbl_bufp,   /* buffer for fixed size double var */
+                                      vtype **rec_bufp,    /* buffer for rec floating point var */
+                                      char *txt_buf,       /* buffer for char var */
+                                      int *int_buf)        /* buffer for int var */
 {
     char *txt_buf_ptr;
     int i, j, k, err, rank, ncid, *varids, nflushes=0;
