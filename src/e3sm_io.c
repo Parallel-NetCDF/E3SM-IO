@@ -146,6 +146,7 @@ static void usage (char *argv0) {
        [-h] Print this help message\n\
        [-v] Verbose mode\n\
        [-k] Keep the output files when program exits (default: deleted)\n\
+       [-j] Set the external data type to NC_FLOAT (default: NC_DOUBLE)\n\
        [-m] Run test using noncontiguous write buffer (default: contiguous)\n\
        [-u] Fill missing elements in decomposition maps (default: no)\n\
        [-f num] Output history files h0 or h1: 0 for h0 only, 1 for h1 only,\n\
@@ -241,6 +242,7 @@ int main (int argc, char **argv) {
     cfg.comp_time      = 0;
     cfg.fill_mode      = 0;
     cfg.env_log_info   = NULL;
+    cfg.xtype          = NC_DOUBLE;
 
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
         cfg.G_case.nvars_D[i]    = 0;
@@ -263,7 +265,7 @@ int main (int argc, char **argv) {
     ffreq = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkur:s:o:i:dmf:ha:x:g:y:pt:")) != EOF)
+    while ((i = getopt (argc, argv, "vkur:s:o:i:jmf:ha:x:g:y:pt:")) != EOF)
         switch (i) {
             case 'v':
                 cfg.verbose = 1;
@@ -330,6 +332,9 @@ int main (int argc, char **argv) {
                 break;
             case 'm':
                 cfg.non_contig_buf = 1;
+                break;
+            case 'j':
+                cfg.xtype = NC_FLOAT;
                 break;
             case 'f':
                 cfg.hx = atoi (optarg);

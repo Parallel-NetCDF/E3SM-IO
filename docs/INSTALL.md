@@ -179,6 +179,7 @@
        [-h] Print this help message
        [-v] Verbose mode
        [-k] Keep the output files when program exits (default: deleted)
+       [-j] Set the external data type to NC_FLOAT (default: NC_DOUBLE)
        [-m] Run test using noncontiguous write buffer (default: contiguous)
        [-f num] Output history files h0 or h1: 0 for h0 only, 1 for h1 only,
                 -1 for both. Affect only F and I cases. (default: -1)
@@ -330,6 +331,7 @@
     * Warning! HDF5 versions 1.13.3 and 1.14.0 will switch collective I/O mode
       to independent internally when one of the datasets requires data type
       conversion. See https://github.com/HDFGroup/hdf5/issues/1859
+    * HDF5 1.14.1 and later is recommended.
     * Example run command:
       ```console
       mpiexec -n 16 src/e3sm_io datasets/map_f_case_16p.h5 -k -o can_F_out.h5 -a hdf5_md -x canonical -r 25

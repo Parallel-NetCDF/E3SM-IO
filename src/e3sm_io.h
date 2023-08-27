@@ -64,23 +64,6 @@
 typedef int nc_type;
 #endif
 
-/* In E3SM production runs, the write buffers are of type double in memory,
- * and the variables stored in NetCDF files are of type NC_FLOAT. This default
- * behavior can be changed (i.e. memory buffer of type float) by removing the
- * line "#define _DOUBLE_TYPE_" below.
- */
-#define _DOUBLE_TYPE_
-
-#ifdef _DOUBLE_TYPE_
-typedef double vtype; /* internal data type of buffer in memory */
-#define REC_ITYPE MPI_DOUBLE
-#define REC_XTYPE NC_DOUBLE
-#else
-typedef float vtype; /* internal data type of buffer in memory */
-#define REC_ITYPE MPI_FLOAT
-#define REC_XTYPE NC_FLOAT
-#endif
-
 typedef enum e3sm_io_api {
     pnetcdf,
     netcdf4,
@@ -148,6 +131,7 @@ typedef struct e3sm_io_config {
     int wr;
     int rd;
     int nvars;  /* number of climate variables */
+    int xtype;  /* external data type for record variables */
 
     e3sm_io_strategy strategy;
     e3sm_io_api api;
