@@ -328,7 +328,41 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
     fix_flt_buf_ptr = wr_buf.fix_flt_buf;
     fix_dbl_buf_ptr = wr_buf.fix_dbl_buf;
 
+    /* write fix-sized climate variables before record variables */
+    for (j=num_decomp_vars; j<nvars; j++) {
+
+        if (vars[j].isRecVar) continue;
+
+        int          dp    = vars[j].decomp_id;
+        MPI_Datatype itype = vars[j].iType;
+        size_t       adv   = vars[j].vlen + gap;
+
+        if (vars[j].decomp_id >= 0) { /* this variable is partitioned */
+            if (itype == MPI_DOUBLE)
+                FIX_VAR_IPUT(vars[j], dp, itype, fix_dbl_buf_ptr)
+            else if (itype == MPI_INT)
+                FIX_VAR_IPUT(vars[j], dp, itype, fix_int_buf_ptr)
+            else if (itype == MPI_CHAR)
+                FIX_VAR_IPUT(vars[j], dp, itype, fix_txt_buf_ptr)
+            else if (itype == MPI_FLOAT)
+                FIX_VAR_IPUT(vars[j], dp, itype, fix_flt_buf_ptr)
+        }
+        else if (sub_rank == 0) {
+            /* not-partitioned variables are written by root only */
+            if (itype == MPI_DOUBLE)
+                IPUT_VAR(vars[j], itype, adv, fix_dbl_buf_ptr)
+            else if (itype == MPI_INT)
+                IPUT_VAR(vars[j], itype, adv, fix_int_buf_ptr)
+            else if (itype == MPI_CHAR)
+                IPUT_VAR(vars[j], itype, adv, fix_txt_buf_ptr)
+            else if (itype == MPI_FLOAT)
+                IPUT_VAR(vars[j], itype, adv, fix_flt_buf_ptr)
+        }
+    }
+
+    /* write record climate variables */
     for (rec_no=0; rec_no<cmeta->nrecs; rec_no++) {
+
         if (cfg.comp_time > 0) {
             sleep ((unsigned int)(cfg.comp_time));
         }
@@ -365,61 +399,39 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
             }
         }
 
-        /* write all climate variables */
+        /* write all climate record variables */
         for (j=num_decomp_vars; j<nvars; j++) {
+
+            if (!vars[j].isRecVar) continue;
+
             int          dp    = vars[j].decomp_id;
             MPI_Datatype itype = vars[j].iType;
             size_t       adv   = vars[j].vlen + gap;
 
             if (vars[j].decomp_id >= 0) { /* this variable is partitioned */
-                if (vars[j].isRecVar) { /* this is a record variable */
-                    if (itype == MPI_DOUBLE)
-                        REC_VAR_IPUT(vars[j], dp, itype, rec_dbl_buf_ptr)
-                    else if (itype == MPI_INT)
-                        REC_VAR_IPUT(vars[j], dp, itype, rec_int_buf_ptr)
-                    else if (itype == MPI_CHAR)
-                        REC_VAR_IPUT(vars[j], dp, itype, rec_txt_buf_ptr)
-                    else if (itype == MPI_FLOAT)
-                        REC_VAR_IPUT(vars[j], dp, itype, rec_flt_buf_ptr)
-                }
-                else if (rec_no == 0) { /* this is a fixed-size variable */
-                    if (itype == MPI_DOUBLE)
-                        FIX_VAR_IPUT(vars[j], dp, itype, fix_dbl_buf_ptr)
-                    else if (itype == MPI_INT)
-                        FIX_VAR_IPUT(vars[j], dp, itype, fix_int_buf_ptr)
-                    else if (itype == MPI_CHAR)
-                        FIX_VAR_IPUT(vars[j], dp, itype, fix_txt_buf_ptr)
-                    else if (itype == MPI_FLOAT)
-                        FIX_VAR_IPUT(vars[j], dp, itype, fix_flt_buf_ptr)
-                }
+                if (itype == MPI_DOUBLE)
+                    REC_VAR_IPUT(vars[j], dp, itype, rec_dbl_buf_ptr)
+                else if (itype == MPI_INT)
+                    REC_VAR_IPUT(vars[j], dp, itype, rec_int_buf_ptr)
+                else if (itype == MPI_CHAR)
+                    REC_VAR_IPUT(vars[j], dp, itype, rec_txt_buf_ptr)
+                else if (itype == MPI_FLOAT)
+                    REC_VAR_IPUT(vars[j], dp, itype, rec_flt_buf_ptr)
             }
             else if (sub_rank == 0) {
                 /* not-partitioned variables are written by root only */
-
-                if (vars[j].isRecVar) { /* this is a record variable */
-                    start[0] = rec_no;
-                    start[1] = 0;
-                    count[0] = 1;
-                    count[1] = vars[j].vlen;
-                    if (itype == MPI_DOUBLE)
-                        IPUT_VARA(vars[j], itype, adv, rec_dbl_buf_ptr)
-                    else if (itype == MPI_INT)
-                        IPUT_VARA(vars[j], itype, adv, rec_int_buf_ptr)
-                    else if (itype == MPI_CHAR)
-                        IPUT_VARA(vars[j], itype, adv, rec_txt_buf_ptr)
-                    else if (itype == MPI_FLOAT)
-                        IPUT_VARA(vars[j], itype, adv, rec_flt_buf_ptr)
-                }
-                else if (rec_no == 0) { /* this is a fixed-size variable */
-                    if (itype == MPI_DOUBLE)
-                        IPUT_VAR(vars[j], itype, adv, fix_dbl_buf_ptr)
-                    else if (itype == MPI_INT)
-                        IPUT_VAR(vars[j], itype, adv, fix_int_buf_ptr)
-                    else if (itype == MPI_CHAR)
-                        IPUT_VAR(vars[j], itype, adv, fix_txt_buf_ptr)
-                    else if (itype == MPI_FLOAT)
-                        IPUT_VAR(vars[j], itype, adv, fix_flt_buf_ptr)
-                }
+                start[0] = rec_no;
+                start[1] = 0;
+                count[0] = 1;
+                count[1] = vars[j].vlen;
+                if (itype == MPI_DOUBLE)
+                    IPUT_VARA(vars[j], itype, adv, rec_dbl_buf_ptr)
+                else if (itype == MPI_INT)
+                    IPUT_VARA(vars[j], itype, adv, rec_int_buf_ptr)
+                else if (itype == MPI_CHAR)
+                    IPUT_VARA(vars[j], itype, adv, rec_txt_buf_ptr)
+                else if (itype == MPI_FLOAT)
+                    IPUT_VARA(vars[j], itype, adv, rec_flt_buf_ptr)
             }
         }
 
