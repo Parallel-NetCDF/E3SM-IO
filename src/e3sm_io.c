@@ -95,6 +95,13 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         /* set PnetCDF I/O hints */
 
+        /* if all write buffers are in a contiguous space, then disable PnetCDF
+         * internal buffering */
+        if (cfg->xtype == NC_DOUBLE && cfg->non_contig_buf == 0) {
+            err = MPI_Info_set (cfg->info, "nc_ibuf_size", "0");
+            CHECK_MPIERR
+        }
+
         /* no gap between variables */
         err = MPI_Info_set (cfg->info, "nc_var_align_size", "1");
         CHECK_MPIERR
