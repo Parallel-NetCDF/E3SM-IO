@@ -181,6 +181,9 @@
        [-k] Keep the output files when program exits (default: deleted)
        [-j] Set the external data type to NC_FLOAT (default: NC_DOUBLE)
        [-m] Run test using noncontiguous write buffer (default: contiguous)
+       [-q] Do not sort write requests based on their file offsets into an
+            increasing order (default: yes)
+       [-u] Fill missing elements in decomposition maps (default: no)
        [-f num] Output history files h0 or h1: 0 for h0 only, 1 for h1 only,
                 -1 for both. Affect only F and I cases. (default: -1)
        [-r num] Number of time records/steps written in F case h1 file and I
@@ -189,10 +192,14 @@
                 and -1: flush once for all time steps. (No effect on ADIOS
                 and HDF5 blob I/O options, which always flushes at file close).
        [-s num] Stride interval of ranks for selecting MPI processes to perform
-                I/O tasks (default: 1, i.e. all MPI processes).\n\
-       [-g num] Number of subfiles, used by ADIOS I/O only (default: 1).
+                I/O tasks (default: 1, i.e. all MPI processes).
+       [-g num] Number of subfiles, used by Log VOL and ADIOS I/O options only,
+                -1 for one subfile per compute node, 0 to disable subfiling,
+                (default: 0).
        [-t time] Add sleep time to emulate the computation in order to 
                  overlapping I/O when Async VOL is used.
+       [-i path] Input file path (folder name when subfiling is used, file
+                 name otherwise).
        [-o path] Output file path (folder name when subfiling is used, file
                  name otherwise).
        [-a api]  I/O library name
@@ -207,7 +214,7 @@
            log:       Store variables in the log-based storage layout.
            blob:      Pack and store all data written locally in a contiguous
                       block (blob), ignoring variable's canonical order.
-       FILE: Name of input file storing data decomposition maps
+       FILE: Name of input file storing data decomposition maps.
   ```
 * Both F and I cases create two history files, referred to as 'h0' and 'h1'
   files. The supplied file name in option `-o` will be used to construct the

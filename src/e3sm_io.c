@@ -155,6 +155,8 @@ static void usage (char *argv0) {
        [-k] Keep the output files when program exits (default: deleted)\n\
        [-j] Set the external data type to NC_FLOAT (default: NC_DOUBLE)\n\
        [-m] Run test using noncontiguous write buffer (default: contiguous)\n\
+       [-q] Do not sort write requests based on their file offsets into an\n\
+            increasing order (default: yes)\n\
        [-u] Fill missing elements in decomposition maps (default: no)\n\
        [-f num] Output history files h0 or h1: 0 for h0 only, 1 for h1 only,\n\
                 -1 for both. Affect only F and I cases. (default: -1)\n\
@@ -179,7 +181,7 @@ static void usage (char *argv0) {
            netcdf4:   NetCDF-4 library\n\
            hdf5:      HDF5 library\n\
            hdf5_md:   HDF5 library using multi-dataset I/O APIs\n\
-           hdf5_log:  HDF5 library with Log-based VOL\n\
+           hdf5_log:  HDF5 library with Log VOL connector\n\
            adios:     ADIOS library using BP3 format\n\
        [-x strategy] I/O strategy\n\
            canonical: Store variables in the canonical layout (default).\n\
@@ -250,6 +252,7 @@ int main (int argc, char **argv) {
     cfg.fill_mode      = 0;
     cfg.env_log_info   = NULL;
     cfg.xtype          = NC_DOUBLE;
+    cfg.sort_reqs      = 1;
 
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
         cfg.G_case.nvars_D[i]    = 0;
@@ -272,7 +275,7 @@ int main (int argc, char **argv) {
     ffreq = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkur:s:o:i:jmf:ha:x:g:y:pt:")) != EOF)
+    while ((i = getopt (argc, argv, "vkur:s:o:i:jmqf:ha:x:g:y:pt:")) != EOF)
         switch (i) {
             case 'v':
                 cfg.verbose = 1;
@@ -339,6 +342,9 @@ int main (int argc, char **argv) {
                 break;
             case 'm':
                 cfg.non_contig_buf = 1;
+                break;
+            case 'q':
+                cfg.sort_reqs = 0;
                 break;
             case 'j':
                 cfg.xtype = NC_FLOAT;
