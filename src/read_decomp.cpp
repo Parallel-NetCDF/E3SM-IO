@@ -98,7 +98,7 @@ static int compare (const void *p1, const void *p2) {
  *   decom->dims:      (OUT) global array dimension lengths of decompositions
  *   decom->contig_nreqs: (OUT) number of noncontiguous requests assigned to
  *                     this process. May be zero.
- *   decom->disps:     (OUT) starting offsets of individual requests (sorted)
+ *   decom->disps:     (OUT) starting offsets of individual requests.
  *                     Memory space will be allocated in this subroutine
  *                     and must be freed by the caller. Any pair of
  *                     disps[][i] and blocklens[][i] is within the size of
@@ -427,6 +427,41 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
                          k++)
                         decom->raw_offsets[id][j++] = k + 1;
             }
+        }
+        else if (cfg->sort_reqs) {
+            /* sort all disps[] of all responsible requests into an increasing
+             * order (this is to satisfy the MPI fileview or monotonically
+             * nondecreasing file offset requirement)
+             */
+            struct off_len *myreqs;
+            myreqs = (struct off_len *)malloc(nreqs * sizeof(struct off_len));
+            for (i = 0; i < nreqs; i++) {
+                myreqs[i].off = decom->disps[id][i];
+                myreqs[i].len = decom->blocklens[id][i];
+            }
+            qsort((void *)myreqs, nreqs, sizeof(struct off_len), compare);
+            for (i = 0; i < nreqs; i++) {
+                decom->disps[id][i]     = myreqs[i].off;
+                decom->blocklens[id][i] = myreqs[i].len;
+            }
+            free(myreqs);
+
+            /* coalesce offset-length pairs */
+            j = 0;
+            for (i = 1; i < nreqs; i++) {
+                if (decom->disps[id][i] % decom->dims[id][decom->ndims[id] - 1] == 0 ||
+                    decom->disps[id][i] > decom->disps[id][j] + decom->blocklens[id][j]) {
+                    /* break contiguity at dimension boundaries or noncontiguous */
+                    j++;
+                    if (j < i) {
+                        decom->disps[id][j]     = decom->disps[id][i];
+                        decom->blocklens[id][j] = decom->blocklens[id][i];
+                    }
+                } else
+                    decom->blocklens[id][j] += decom->blocklens[id][i];
+            }
+            /* update number of true noncontiguous requests */
+            if (nreqs > 0) decom->contig_nreqs[id] = j + 1;
         }
 
         if (cfg->verbose) {
