@@ -268,22 +268,22 @@ int e3sm_io_case::def_var(e3sm_io_config            &cfg,
                           int                        xtype,
                           int                        nDims,
                           int                        dim_time,
-                          int                       *dimids,
+                          const int                 *dimids,
                           MPI_Datatype               itype,
                           int                        decomid,
                           var_meta                  *varp)
 {
     /* nDims and dimids are canonical dimensions */
-    int err=0, j, *_dimids = dimids;
+    int err=0, j, rank;
     varp->_name     = strdup(name.c_str());
     varp->ndims     = nDims;   /* number of dimensions */
     varp->iType     = itype;   /* internal data type of write buffer */
     varp->xType     = xtype;   /* external data type of variable in file */
     varp->decomp_id = decomid; /* decomposition map ID */
-    varp->isRecVar  = (nDims != 0 && *_dimids == dim_time);
+    varp->isRecVar  = (nDims != 0 && dimids[0] == dim_time);
     /* calculate variable size */
     for (varp->vlen=1, j=0; j<nDims; j++) {
-        err = driver.inq_dimlen(ncid, _dimids[j], &varp->dims[j]);
+        err = driver.inq_dimlen(ncid, dimids[j], &varp->dims[j]);
         CHECK_ERR
         if (j == 0 && varp->isRecVar) varp->dims[j] = 1;
         varp->vlen *= varp->dims[j];
@@ -295,7 +295,7 @@ int e3sm_io_case::def_var(e3sm_io_config            &cfg,
         if (decomid >= 0) varp->vlen = decom.raw_nreqs[decomid];
     } else if (cfg.strategy == blob && decomid >= 0) {
         /* use blob dimensions to define blob variables */
-        int ival, _ndims;
+        int ival, _ndims, *_dimids;
         if (varp->isRecVar) {
             _ndims = 2;  /* all blob record variables are 2D */
             _dimids = rec_dimids[decomid];
@@ -320,7 +320,9 @@ int e3sm_io_case::def_var(e3sm_io_config            &cfg,
 
     /* increment I/O buffer sizes */
 
-    if (decomid < 0 && cfg.rank != 0)
+    rank = (cfg.strategy == blob) ? cfg.sub_rank : cfg.rank;
+
+    if (decomid < 0 && rank != 0)
         /* non-partitioned variables are written by rank 0 only */
         goto err_out;
 

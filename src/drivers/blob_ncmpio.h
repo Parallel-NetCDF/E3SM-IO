@@ -198,7 +198,7 @@ typedef struct {
 extern int blob_ncmpio_create_NC(NC *ncp);
 extern int blob_ncmpio_free_NC(NC *ncp);
 extern int blob_ncmpio_add_var(NC *ncp, const char *name, nc_type xtype,
-                               int ndims, int *dimids, int *varidp);
+                               int ndims, const int *dimids, int *varidp);
 extern int blob_ncmpio_add_dim(NC *ncp, const char *name, MPI_Offset size,
                                int *dimidp);
 extern int blob_ncmpio_put_att(NC *ncp, int varid, const char *name,

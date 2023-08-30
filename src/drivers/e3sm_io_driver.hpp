@@ -30,7 +30,7 @@ class e3sm_io_driver {
     virtual int inq_rec_size (int fid, MPI_Offset *size)                          = 0;
     virtual int expand_rec_size (int fid, MPI_Offset size)                        = 0;
     virtual int def_var (
-        int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did) = 0;
+        int fid, std::string name, nc_type xtype, int ndim, const int *dimids, int *did) = 0;
     virtual int def_local_var (
         int fid, std::string name, nc_type xtype, int ndim, MPI_Offset *dsize, int *did) = 0;
     virtual int inq_varid(int fid, const char *name, int *did) = 0;

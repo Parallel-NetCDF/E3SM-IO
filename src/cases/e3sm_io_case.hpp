@@ -175,7 +175,7 @@ class e3sm_io_case {
                     int                         xtype,
                     int                         nDims,
                     int                         dim_time,
-                    int                        *dimids,
+                    const int                  *dimids,
                     MPI_Datatype                itype,
                     int                         decomid,
                     var_meta                   *varp);
@@ -266,7 +266,7 @@ int scorpio_define_var(e3sm_io_config &cfg,
                        std::string name,
                        nc_type xtype,
                        int ndims,
-                       int *dimids,
+                       const int *dimids,
                        var_meta *var);
 
 extern

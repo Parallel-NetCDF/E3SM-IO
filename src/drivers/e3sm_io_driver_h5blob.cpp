@@ -335,7 +335,7 @@ int e3sm_io_driver_h5blob::def_var(int          fid,
                                    std::string  name,
                                    nc_type      xtype,
                                    int          ndims,
-                                   int         *dimids,
+                                   const int   *dimids,
                                    int         *varidp)
 {
     /* add a variable object in the NC header object */

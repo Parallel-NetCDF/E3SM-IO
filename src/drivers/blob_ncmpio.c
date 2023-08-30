@@ -844,7 +844,7 @@ int blob_ncmpio_add_var(NC         *ncp,
                         const char *name,
                         nc_type     xtype,
                         int         ndims,
-                        int        *dimids,
+                        const int  *dimids,
                         int        *varidp)
 {
     /* add a variable object in NC */

@@ -35,7 +35,7 @@ int scorpio_define_var(e3sm_io_config &cfg,
                        std::string name,
                        nc_type xtype,
                        int ndims,
-                       int *dimids,
+                       const int *dimids,
                        var_meta *var)
 {
 #ifdef ENABLE_ADIOS2
