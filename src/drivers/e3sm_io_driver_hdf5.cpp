@@ -441,7 +441,7 @@ err_out:;
 }
 
 int e3sm_io_driver_hdf5::def_var (
-    int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did) {
+    int fid, std::string name, nc_type xtype, int ndim, const int *dimids, int *did) {
     int err = 0;
     herr_t herr;
     hdf5_file *fp = this->files[fid];

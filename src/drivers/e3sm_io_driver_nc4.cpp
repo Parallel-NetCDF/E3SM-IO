@@ -228,7 +228,7 @@ err_out:
 }
 
 int e3sm_io_driver_nc4::def_var (
-    int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *varid) {
+    int fid, std::string name, nc_type xtype, int ndim, const int *dimids, int *varid) {
     int err;
     int i;
     int esize;           // Size of var type element

@@ -370,7 +370,7 @@ int e3sm_io_driver_adios2::expand_rec_size (int fid, MPI_Offset size) {
 }
 
 int e3sm_io_driver_adios2::def_var (
-    int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *did) {
+    int fid, std::string name, nc_type xtype, int ndim, const int *dimids, int *did) {
     int err = 0;
     adios2_error aerr;
     adios2_file *fp = this->files[fid];

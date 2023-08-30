@@ -186,7 +186,7 @@ int e3sm_io_driver_pnc::expand_rec_size (int fid, MPI_Offset size) {
 }
 
 int e3sm_io_driver_pnc::def_var (
-    int fid, std::string name, nc_type xtype, int ndim, int *dimids, int *varid) {
+    int fid, std::string name, nc_type xtype, int ndim, const int *dimids, int *varid) {
     int err;
 
     err = ncmpi_def_var (fid, name.c_str (), xtype, ndim, dimids, varid);
