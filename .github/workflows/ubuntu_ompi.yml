@@ -37,6 +37,7 @@ jobs:
         - uses: actions/checkout@v3
         - name: Set up dependencies
           run: |
+            set -x
             sudo apt-get update
             sudo apt-get install automake autoconf libtool libtool-bin m4
             # zlib
@@ -47,12 +48,11 @@ jobs:
             which mpicc
         - name: Install PnetCDF
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             echo "Install PnetCDF on ${GITHUB_WORKSPACE}/PnetCDF"
-            rm -rf PnetCDF
-            mkdir PnetCDF
-            cd PnetCDF
-            wget -cq https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz
+            rm -rf PnetCDF ; mkdir PnetCDF ; cd PnetCDF
+            curl -LO https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz
             tar -zxf pnetcdf-${PNETCDF_VERSION}.tar.gz
             cd pnetcdf-${PNETCDF_VERSION}
             ./configure --prefix=${GITHUB_WORKSPACE}/PnetCDF \
@@ -61,15 +61,22 @@ jobs:
                         --disable-cxx
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
+        - name: Dump PnetCDF log file
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/PnetCDF/pnetcdf-${PNETCDF_VERSION}/qout
+            cat ${GITHUB_WORKSPACE}/PnetCDF/pnetcdf-${PNETCDF_VERSION}/config.log
         - name: Install HDF5
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             echo "Install HDF5 on ${GITHUB_WORKSPACE}/HDF5"
             rm -rf HDF5 ; mkdir HDF5 ; cd HDF5
             VER_MAJOR=${HDF5_VERSION%.*}
             VER_NOPATCH=${HDF5_VERSION%-*} # remove patch version
-            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
+            curl -LO https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
             tar -zxf hdf5-${HDF5_VERSION}.tar.gz
             cd hdf5-${HDF5_VERSION}
             ./configure --prefix=${GITHUB_WORKSPACE}/HDF5 \
@@ -87,15 +94,20 @@ jobs:
                         CC=mpicc
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
+        - name: Dump HDF5 log file
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/HDF5/hdf5-${HDF5_VERSION}/qout
+            cat ${GITHUB_WORKSPACE}/HDF5/hdf5-${HDF5_VERSION}/config.log
         - name: Install NetCDF-C
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             echo "Install NetCDF-C on ${GITHUB_WORKSPACE}/NetCDF"
-            rm -rf NetCDF
-            mkdir NetCDF
-            cd NetCDF
-            wget -cq https://github.com/Unidata/netcdf-c/archive/refs/tags/v${NETCDF4_VERSION}.tar.gz
+            rm -rf NetCDF ; mkdir NetCDF ; cd NetCDF
+            curl -LO https://github.com/Unidata/netcdf-c/archive/refs/tags/v${NETCDF4_VERSION}.tar.gz
             tar -zxf v${NETCDF4_VERSION}.tar.gz
             cd netcdf-c-${NETCDF4_VERSION}
             # TODO: Always use an official release. E3SM-IO requires NetCDF-C 4.9.0 or later.
@@ -115,15 +127,20 @@ jobs:
                         LIBS="-lhdf5"
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
+        - name: Dump NetCDF-C log file
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/NetCDF/netcdf-c-${NETCDF4_VERSION}/qout
+            cat ${GITHUB_WORKSPACE}/NetCDF/netcdf-c-${NETCDF4_VERSION}/config.log
         - name: Install ADIOS2
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             echo "Install ADIOS2 on ${GITHUB_WORKSPACE}/ADIOS"
-            rm -rf ADIOS
-            mkdir ADIOS
-            cd ADIOS
-            wget -cq https://github.com/ornladios/ADIOS2/archive/refs/tags/v${ADIOS_VERSION}.tar.gz
+            rm -rf ADIOS ; mkdir ADIOS ; cd ADIOS
+            curl -LO https://github.com/ornladios/ADIOS2/archive/refs/tags/v${ADIOS_VERSION}.tar.gz
             tar -zxf v${ADIOS_VERSION}.tar.gz
             mkdir adios2_build
             cd adios2_build
@@ -148,15 +165,19 @@ jobs:
                   ../ADIOS2-${ADIOS_VERSION}
             make -j 8 install > qout 2>&1
             make clean >> qout 2>&1
-        - name: Install log VOL
+        - name: Dump ADIOS log file
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/ADIOS/adios2_build/qout
+        - name: Install Log VOL
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             echo "Install Log VOL connector on ${GITHUB_WORKSPACE}/LOGVOL"
-            rm -rf LOGVOL
-            mkdir LOGVOL
-            cd LOGVOL
-            wget -cq https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.${LOG_VOL_VERSION}.tar.gz
+            rm -rf LOGVOL ; mkdir LOGVOL ; cd LOGVOL
+            curl -LO https://github.com/DataLib-ECP/vol-log-based/archive/refs/tags/logvol.${LOG_VOL_VERSION}.tar.gz
             tar -zxf logvol.${LOG_VOL_VERSION}.tar.gz
             cd vol-log-based-logvol.${LOG_VOL_VERSION}
             autoreconf -i
@@ -165,9 +186,16 @@ jobs:
                         --with-hdf5=${GITHUB_WORKSPACE}/HDF5
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
+        - name: Dump log file
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/LOGVOL/vol-log-based-logvol.${LOG_VOL_VERSION}/qout
+            cat ${GITHUB_WORKSPACE}/LOGVOL/vol-log-based-logvol.${LOG_VOL_VERSION}/config.log
         - name: Build and check E3SM_IO with PnetCDF only
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             rm -rf ./test_output
             autoreconf -i
@@ -180,11 +208,13 @@ jobs:
         - name: Dump log files if E3SM_IO with PnetCDF-only test failed
           if: ${{ failure() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with HDF5 only
           if: ${{ success() }}
           run: |
+            set -x
             make -s distclean
             ./configure --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
                         CC=mpicc CXX=mpicxx \
@@ -195,11 +225,13 @@ jobs:
         - name: Dump log files if E3SM_IO with HDF5-only test failed
           if: ${{ failure() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with HDF5 Log VOL connector only
           if: ${{ success() }}
           run: |
+            set -x
             make -s distclean
             ./configure --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
                         --with-logvol=${GITHUB_WORKSPACE}/LOGVOL \
@@ -211,11 +243,13 @@ jobs:
         - name: Dump log files if E3SM_IO with HDF5 Log VOL connector test failed
           if: ${{ failure() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with NetCDF4 only
           if: ${{ success() }}
           run: |
+            set -x
             make -s distclean
             ./configure --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF \
                         CC=mpicc CXX=mpicxx \
@@ -226,11 +260,13 @@ jobs:
         - name: Dump log files if E3SM_IO with NetCDF4-only test failed
           if: ${{ failure() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with ADIOS only
           if: ${{ success() }}
           run: |
+            set -x
             make -s distclean
             ./configure --with-adios2=${GITHUB_WORKSPACE}/ADIOS \
                         CC=mpicc CXX=mpicxx \
@@ -241,11 +277,13 @@ jobs:
         - name: Dump log files if E3SM_IO with ADIOS-only test failed
           if: ${{ failure() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
         - name: Build and check E3SM_IO with all APIs
           if: ${{ success() }}
           run: |
+            set -x
             make -s distclean
             ./configure --with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF \
                         --with-hdf5=${GITHUB_WORKSPACE}/HDF5       \
@@ -261,6 +299,7 @@ jobs:
         - name: Dump log files if E3SM_IO test failed
           if: ${{ failure() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
             cat config.log
@@ -268,10 +307,12 @@ jobs:
         - name: Test E3SM_IO all APIs -- parallel runs
           if: ${{ success() }}
           run: |
+            set -x
             make ptest
         - name: Test make distcheck
           if: ${{ success() }}
           run: |
+            set -x
             make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF --with-hdf5=${GITHUB_WORKSPACE}/HDF5 --with-netcdf4=${GITHUB_WORKSPACE}/NetCDF --with-logvol=${GITHUB_WORKSPACE}/LOGVOL --with-adios2=${GITHUB_WORKSPACE}/ADIOS CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
             make distclean
 

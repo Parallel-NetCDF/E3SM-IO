@@ -33,6 +33,7 @@ jobs:
         - uses: actions/checkout@v3
         - name: Set up dependencies
           run: |
+            set -x
             sudo apt-get update
             sudo apt-get install automake autoconf libtool libtool-bin m4
             # zlib
@@ -45,11 +46,12 @@ jobs:
         - name: Install HDF5
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             rm -rf HDF5 ; mkdir HDF5 ; cd HDF5
             VER_MAJOR=${HDF5_VERSION%.*}
             VER_NOPATCH=${HDF5_VERSION%-*} # remove patch version
-            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
+            curl -LO https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
             tar -zxf hdf5-${HDF5_VERSION}.tar.gz
             cd hdf5-${HDF5_VERSION}
             ./configure --prefix=${GITHUB_WORKSPACE}/HDF5 \
@@ -70,14 +72,15 @@ jobs:
         - name: Dump HDF5 config.log file
           if: ${{ failure() }}
           run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/HDF5/hdf5-${HDF5_VERSION}/qout
             cat ${GITHUB_WORKSPACE}/HDF5/hdf5-${HDF5_VERSION}/config.log
         - name: Install Log VOL connector from its master branch
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
-            rm -rf LOG_VOL
-            mkdir LOG_VOL
-            cd LOG_VOL
+            rm -rf LOG_VOL ; mkdir LOG_VOL ; cd LOG_VOL
             rm -rf vol-log-based
             git clone -q https://github.com/DataLib-ECP/vol-log-based.git
             cd vol-log-based
@@ -87,9 +90,16 @@ jobs:
                         --with-hdf5=${GITHUB_WORKSPACE}/HDF5
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
+        - name: Dump Log VOL config.log file
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/LOG_VOL/vol-log-based/qout
+            cat ${GITHUB_WORKSPACE}/LOG_VOL/vol-log-based/config.log
         - name: Build and check E3SM_IO with HDF5 Log VOL connector only
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             rm -rf ./test_output
             autoreconf -i
@@ -104,17 +114,20 @@ jobs:
         - name: Dump log files if E3SM_IO with HDF5 Log VOL connector test failed
           if: ${{ failure() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
             cat config.log
         - name: Test E3SM_IO -- parallel runs
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             make ptest
         - name: Test make distcheck
           if: ${{ success() }}
           run: |
+            set -x
             cd ${GITHUB_WORKSPACE}
             make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-hdf5=${GITHUB_WORKSPACE}/HDF5 --with-logvol=${GITHUB_WORKSPACE}/LOGVOL CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
             make distclean
