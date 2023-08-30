@@ -179,7 +179,8 @@
        [-h] Print this help message
        [-v] Verbose mode
        [-k] Keep the output files when program exits (default: deleted)
-       [-j] Set the external data type to NC_FLOAT (default: NC_DOUBLE)
+       [-j] Set the external data type to NC_FLOAT. This option only affects
+            the F and I cases. (default: NC_DOUBLE)
        [-m] Run test using noncontiguous write buffer (default: contiguous)
        [-q] Do not sort write requests based on their file offsets into an
             increasing order (default: yes)

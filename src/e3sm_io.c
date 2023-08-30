@@ -97,7 +97,8 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         /* if all write buffers are in a contiguous space, then disable PnetCDF
          * internal buffering */
-        if (cfg->xtype == NC_DOUBLE && cfg->non_contig_buf == 0) {
+        if (cfg->xtype == NC_DOUBLE && cfg->non_contig_buf == 0 &&
+            cfg->isReqSorted) {
             err = MPI_Info_set (cfg->info, "nc_ibuf_size", "0");
             CHECK_MPIERR
         }
@@ -153,7 +154,8 @@ static void usage (char *argv0) {
        [-h] Print this help message\n\
        [-v] Verbose mode\n\
        [-k] Keep the output files when program exits (default: deleted)\n\
-       [-j] Set the external data type to NC_FLOAT (default: NC_DOUBLE)\n\
+       [-j] Set the external data type to NC_FLOAT. This option only affects\n\
+            the F and I cases. (default: NC_DOUBLE)\n\
        [-m] Run test using noncontiguous write buffer (default: contiguous)\n\
        [-q] Do not sort write requests based on their file offsets into an\n\
             increasing order (default: yes)\n\
@@ -253,6 +255,7 @@ int main (int argc, char **argv) {
     cfg.env_log_info   = NULL;
     cfg.xtype          = NC_DOUBLE;
     cfg.sort_reqs      = 1;
+    cfg.isReqSorted    = 0;
 
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
         cfg.G_case.nvars_D[i]    = 0;
@@ -560,8 +563,11 @@ int main (int argc, char **argv) {
     /* determine run case */
     if (decom.num_decomp == 3)
         cfg.run_case = F;
-    else if (decom.num_decomp == 6)
+    else if (decom.num_decomp == 6) {
         cfg.run_case = G;
+        /* In the G case, the external data type is NC_DOUBLE */
+        cfg.xtype = NC_DOUBLE;
+    }
     else if (decom.num_decomp == 5)
         cfg.run_case = I;
     else

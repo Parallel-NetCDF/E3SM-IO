@@ -313,6 +313,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         err = driver->get_vara (ncid, varid, MPI_INT, &start, &count, decom->blocklens[id], coll);
         CHECK_ERR
 
+        cfg->isReqSorted = 1;
         decom->contig_nreqs[id] = nreqs;
 
         if (cfg->api == adios) {
@@ -462,6 +463,16 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             }
             /* update number of true noncontiguous requests */
             if (nreqs > 0) decom->contig_nreqs[id] = j + 1;
+
+            cfg->isReqSorted = 1;
+        }
+        else { /* check if already sorted */
+            for (i=1; i<nreqs; i++) {
+                if (decom->disps[id][i] < decom->disps[id][i-1]) {
+                    cfg->isReqSorted = 0;
+                    break;
+                }
+            }
         }
 
         if (cfg->verbose) {

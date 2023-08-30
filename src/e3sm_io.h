@@ -144,6 +144,7 @@ typedef struct e3sm_io_config {
     int keep_outfile; /* whether to keep the output files when exits */
     int fill_mode;    /* fill missing elements in decomposition maps */
 
+    int isReqSorted;
     int sort_reqs;
     int two_buf;
     int non_contig_buf;
