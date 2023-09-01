@@ -99,7 +99,9 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
          * internal buffering */
         if (cfg->xtype == NC_DOUBLE && cfg->non_contig_buf == 0 &&
             cfg->isReqSorted) {
-            err = MPI_Info_set (cfg->info, "nc_ibuf_size", "0");
+            err = MPI_Info_set(cfg->info, "nc_ibuf_size", "0");
+            CHECK_MPIERR
+            err = MPI_Info_set(cfg->info, "nc_in_place_swap", "enable");
             CHECK_MPIERR
         }
 
@@ -354,6 +356,13 @@ int main (int argc, char **argv) {
                 break;
             case 'f':
                 cfg.hx = atoi (optarg);
+                if (cfg.hx < -1 || cfg.hx > 1) {
+                    if (cfg.rank == 0) {
+                        printf("Error: invalid value for option -f\n");
+                        printf("       valid values are: -1, 0, 1\n");
+                    }
+                    goto err_out;
+                }
                 break;
             case 'g':
                 cfg.num_subfiles = atoi (optarg);
