@@ -151,6 +151,7 @@ jobs:
                         --disable-nczarr \
                         --disable-nczarr-filters \
                         --disable-filter-testing \
+                        --disable-byterange \
                         --disable-shared \
                         CC=${GITHUB_WORKSPACE}/MPICH/bin/mpicc \
                         CPPFLAGS="-I${GITHUB_WORKSPACE}/HDF5/include" \
