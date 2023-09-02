@@ -78,7 +78,6 @@ void check_connector_env(e3sm_io_config *cfg) {
 
 static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     int err;
-    MPI_Offset estimated_nc_ibuf_size;
 
     /* set MPI-IO hints */
 
@@ -97,10 +96,21 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         /* if all write buffers are in a contiguous space, then disable PnetCDF
          * internal buffering */
-        if (cfg->xtype == NC_DOUBLE && cfg->non_contig_buf == 0 &&
-            cfg->isReqSorted) {
+        if (cfg->xtype == NC_DOUBLE  && /* no type conversion is necessary */
+            cfg->non_contig_buf == 0 && /* all writes are in a single buffer */
+            cfg->isReqSorted) {         /* write request offsets are sorted */
+
+            /* actually setting nc_ibuf_size to 0 is not necessary, as copying
+             * write requests to an internal buffer in PnetCDF is triggered
+             * only when the user buffer is non-contiguous.
+             */
             err = MPI_Info_set(cfg->info, "nc_ibuf_size", "0");
             CHECK_MPIERR
+
+            /* Actually setting nc_in_place_swap to enable is not necessary,
+             * because nc_in_place_swap is automatically enabled when the write
+             * request is larger than 4KB, which is the case in this E3SM-IO.
+             */
             err = MPI_Info_set(cfg->info, "nc_in_place_swap", "enable");
             CHECK_MPIERR
         }
@@ -111,17 +121,6 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         /* in-place byte swap */
         err = MPI_Info_set (cfg->info, "nc_in_place_swap", "enable");
         CHECK_MPIERR
-
-        /* use total write amount to estimate nc_ibuf_size */
-        estimated_nc_ibuf_size = decom->dims[2][0] * decom->dims[2][1]
-                               * sizeof (double) / cfg->num_iotasks;
-        estimated_nc_ibuf_size *= cfg->nvars;
-        if (estimated_nc_ibuf_size > 16777216) {
-            char nc_ibuf_size_str[32];
-            sprintf (nc_ibuf_size_str, "%lld", estimated_nc_ibuf_size);
-            err = MPI_Info_set (cfg->info, "nc_ibuf_size", nc_ibuf_size_str);
-            CHECK_MPIERR
-        }
     }
 
 err_out:
