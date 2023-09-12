@@ -21,7 +21,7 @@ on:
 env:
    MPICH_VERSION: 4.1.1
    ARGOBOTS_VERSION: 1.1
-   ASYNC_VOL_VERSION: 1.4
+   ASYNC_VOL_VERSION: 1.8
    HDF5_VERSION: 1.14.2
    LOG_VOL_VERSION: 1.4.0
 
@@ -147,11 +147,11 @@ jobs:
             set -x
             cd ${GITHUB_WORKSPACE}
             rm -rf ${ASYNC_DIR} ; mkdir ${ASYNC_DIR} ; cd ${ASYNC_DIR}
-            # curl -LO https://github.com/hpc-io/vol-async/archive/refs/tags/v${ASYNC_VOL_VERSION}.tar.gz
-            # tar -xf v${ASYNC_VOL_VERSION}.tar.gz
-            # cd vol-async-${ASYNC_VOL_VERSION}
-            git clone https://github.com/hpc-io/vol-async.git
-            cd vol-async
+            curl -LO https://github.com/hpc-io/vol-async/archive/refs/tags/v${ASYNC_VOL_VERSION}.tar.gz
+            tar -xf v${ASYNC_VOL_VERSION}.tar.gz
+            cd vol-async-${ASYNC_VOL_VERSION}
+            # git clone https://github.com/hpc-io/vol-async.git
+            # cd vol-async
             mkdir build ; cd build
             CC=${MPICH_DIR}/bin/mpicc CXX=${MPICH_DIR}/bin/mpicxx \
               cmake .. -DCMAKE_INSTALL_PREFIX=${ASYNC_DIR}
