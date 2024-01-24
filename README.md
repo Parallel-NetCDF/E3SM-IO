@@ -105,6 +105,12 @@ for users to convert a file in the log layout to the canonical layout.
   <img align="center" src="./docs/summit_09_2022.jpg" alt="Performance of log-layout based I/O methods on Summit" width="600">
   </p>
 
+### Publications
+* Qiao Kang, Sunwoo Lee, Kai-Yuan Hou, Robert Ross, Ankit Agrawal, Alok Choudhary, and Wei-keng Liao. [Improving MPI Collective I/O for High Volume Non-Contiguous Requests With Intra-Node Aggregation](https://ieeexplore.ieee.org/document/9109678). In the IEEE Transactions on Parallel and Distributed Systems (TPDS), 31(11):2682–2695, November 2020.
+* Qiao Kang, Rob Ross, Rob Latham, Sunwoo Lee, Ankit Agrawal, Alok Choudhary, and Wei-keng Liao. [Improving All-to-Many Personalized Communication in Two-Phase I/O](https://ieeexplore.ieee.org/document/9355310). In the International Conference for High Performance Computing, Networking, Storage and Analysis, November 2020.
+* Qiao Kang, Scot Breitenfeld, Kai-Yuan Hou, Wei-keng Liao, Robert Ross, and Suren Byna. [Optimizing Performance of Parallel I/O Accesses to Non-contiguous Blocks in Multiple Array Variables](https://ieeexplore.ieee.org/document/9671638). In the International Conference on Big Data, December 2021.
+* Kai-Yuan Hou, Qiao Kang, Sunwoo Lee, Ankit Agrawal, Alok Choudhary, and Wei-keng Liao. [Supporting Data Compression in PnetCDF](https://ieeexplore.ieee.org/document/9671998). In the International Conference on Big Data, December 2021.
+
 ### Developers
 * Wei-keng Liao <<wkliao@northwestern.edu>>
 * Kai-yuan Hou <<kai-yuanhou2020@u.northwestern.edu>>
