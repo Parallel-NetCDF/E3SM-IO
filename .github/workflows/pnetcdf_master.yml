@@ -1,0 +1,128 @@
+name: PnetCDF master branch only
+
+on:
+  push:
+    branches:
+      - master
+      - github_action
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.jpg'
+      - '**/*.png'
+      - 'tests/*'
+      - 'datasets/*'
+  pull_request:
+    branches: master
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.jpg'
+      - '**/*.png'
+      - 'tests/*'
+      - 'datasets/*'
+
+env:
+   MPICH_VERSION: 4.2.0
+   PNETCDF_VERSION: repo
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      timeout-minutes: 60
+      steps:
+        - uses: actions/checkout@v3
+        - name: Set up dependencies
+          run: |
+            set -x
+            sudo apt-get update
+            sudo apt-get install automake autoconf libtool libtool-bin m4
+            # mpich
+            # sudo apt-get install mpich
+            # zlib
+            sudo apt-get install zlib1g-dev
+        - name: Build MPICH
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            echo "Install MPICH on ${GITHUB_WORKSPACE}/MPICH"
+            rm -rf MPICH ; mkdir MPICH ; cd MPICH
+            # git clone -q https://github.com/pmodels/mpich.git
+            # cd mpich
+            # git submodule update --init
+            # ./autogen.sh
+            curl -LO https://www.mpich.org/static/downloads/${MPICH_VERSION}/mpich-${MPICH_VERSION}.tar.gz
+            gzip -dc mpich-${MPICH_VERSION}.tar.gz | tar -xf -
+            cd mpich-${MPICH_VERSION}
+            ./configure --prefix=${GITHUB_WORKSPACE}/MPICH \
+                        --silent \
+                        --enable-romio \
+                        --with-file-system=ufs \
+                        --with-device=ch3:sock \
+                        --disable-fortran \
+                        CC=gcc
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
+        - name: Dump MPICH log file
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/MPICH/mpich-${MPICH_VERSION}/qout
+            cat ${GITHUB_WORKSPACE}/MPICH/mpich-${MPICH_VERSION}/config.log
+        - name: Install PnetCDF
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            echo "Install PnetCDF on ${GITHUB_WORKSPACE}/PnetCDF"
+            rm -rf PnetCDF ; mkdir PnetCDF ; cd PnetCDF
+            # curl -LO https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz
+            # tar -zxf pnetcdf-${PNETCDF_VERSION}.tar.gz
+            # cd pnetcdf-${PNETCDF_VERSION}
+            git clone -q https://github.com/Parallel-NetCDF/PnetCDF.git
+            cd PnetCDF
+            autoreconf -i
+            ./configure --prefix=${GITHUB_WORKSPACE}/PnetCDF \
+                        --silent \
+                        --disable-fortran \
+                        --disable-cxx \
+                        --disable-shared \
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s distclean >> qout 2>&1
+        - name: Dump PnetCDF log file
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/PnetCDF/pnetcdf-${PNETCDF_VERSION}/qout
+            cat ${GITHUB_WORKSPACE}/PnetCDF/pnetcdf-${PNETCDF_VERSION}/config.log
+        - name: Build and check E3SM_IO with PnetCDF only
+          if: ${{ success() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ./test_output
+            autoreconf -i
+            ./configure --with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF \
+                        --with-mpi=${GITHUB_WORKSPACE}/MPICH \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 8
+            make check
+        - name: Dump log files if E3SM_IO with PnetCDF-only test failed
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            cat test.sh.log utils/*.log
+        - name: Test E3SM_IO all APIs -- parallel runs
+          if: ${{ success() }}
+          run: |
+            set -x
+            make ptest
+        - name: Test make distcheck
+          if: ${{ success() }}
+          run: |
+            set -x
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-pnetcdf=${GITHUB_WORKSPACE}/PnetCDF --with-mpi=${GITHUB_WORKSPACE}/MPICH CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distclean
+
