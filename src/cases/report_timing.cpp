@@ -136,30 +136,54 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("Variable write order: same as variables are defined\n");
 
         if (cfg->strategy == canonical) {
-            if (cfg->api == pnetcdf)
+            if (cfg->api == pnetcdf) {
                 printf("==== PnetCDF canonical I/O using varn API ============\n");
-            else if (cfg->api == hdf5)
+                printf("PnetCDF library version            = %s\n",cfg->pnetcdf_ver);
+            }
+            else if (cfg->api == hdf5) {
                 printf("==== HDF5 canonical I/O ==============================\n");
-            else if (cfg->api == hdf5_md)
+                printf("HDF5 library version               = %s\n",cfg->hdf5_ver);
+            }
+            else if (cfg->api == hdf5_md) {
                 printf("==== HDF5 canonical I/O using multi-dataset API ======\n");
-            else if (cfg->api == netcdf4)
+                printf("HDF5 library version               = %s\n",cfg->hdf5_ver);
+            }
+            else if (cfg->api == netcdf4) {
                 printf("==== NetCDF-4 canonical I/O ==========================\n");
+                printf("NetCDF4 library version            = %s\n",cfg->netcdf4_ver);
+            }
         }
         else if (cfg->strategy == log) {
-            if (cfg->api == hdf5)
+            if (cfg->api == hdf5) {
                 printf("==== HDF5 using log-based VOL through native APIs=====\n");
-            else if (cfg->api == hdf5_log)
+                printf("HDF5 library version               = %s\n",cfg->hdf5_ver);
+                printf("HDF5 Log VOL connector version     = %s\n",cfg->hdf5_log_ver);
+            }
+            else if (cfg->api == hdf5_log) {
                 printf("==== HDF5 using log-based VOL APIs ===================\n");
-            else if (cfg->api == netcdf4)
+                printf("HDF5 library version               = %s\n",cfg->hdf5_ver);
+                printf("HDF5 Log VOL connector version     = %s\n",cfg->hdf5_log_ver);
+            }
+            else if (cfg->api == netcdf4) {
                 printf("==== NetCDF-4 using HDF5 log-based VOL ===============\n");
+                printf("NetCDF4 library version            = %s\n",cfg->netcdf4_ver);
+                printf("HDF5 library version               = %s\n",cfg->hdf5_ver);
+                printf("HDF5 Log VOL connector version     = %s\n",cfg->hdf5_log_ver);
+            }
         }
         else if (cfg->strategy == blob) {
-            if (cfg->api == pnetcdf)
+            if (cfg->api == pnetcdf) {
                 printf("==== PnetCDF blob I/O ================================\n");
-            else if (cfg->api == hdf5)
+                printf("PnetCDF library version            = %s\n",cfg->pnetcdf_ver);
+            }
+            else if (cfg->api == hdf5) {
                 printf("==== HDF5 blob I/O ===================================\n");
-            else if (cfg->api == adios)
+                printf("HDF5 library version               = %s\n",cfg->hdf5_ver);
+            }
+            else if (cfg->api == adios) {
                 printf("==== ADIOS blob I/O ==================================\n");
+                printf("ADIOS library version              = %s\n",cfg->adios_ver);
+            }
         }
 
         if (cfg->strategy == canonical && (cfg->api == netcdf4 || cfg->api == hdf5))

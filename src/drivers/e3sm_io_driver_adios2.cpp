@@ -138,7 +138,9 @@ err_out:;
 }
 
 
-e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {}
+e3sm_io_driver_adios2::e3sm_io_driver_adios2 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
+    strcpy(cfg->netcdf4_ver, ADIOS2_VERSION_STR);
+}
 
 e3sm_io_driver_adios2::~e3sm_io_driver_adios2 () {}
 

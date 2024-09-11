@@ -52,6 +52,8 @@ inline nc_type mpitype2nctype (MPI_Datatype type) {
 }
 
 e3sm_io_driver_pnc::e3sm_io_driver_pnc (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
+    strcpy(cfg->pnetcdf_ver, PNETCDF_VERSION);
+
     if ((cfg->chunksize != 0) && (cfg->filter != none)) {
         throw "Fitler requries chunking in PnetCDF";
     }

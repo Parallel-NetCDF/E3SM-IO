@@ -64,9 +64,13 @@ e3sm_io_driver_hdf5::e3sm_io_driver_hdf5 (e3sm_io_config *cfg) : e3sm_io_driver 
 
     E3SM_IO_TIMER_START (E3SM_IO_TIMER_HDF5)
 
+    strcpy(cfg->hdf5_ver, H5_VERS_INFO);
+
     // Register LOG VOL plugin
     this->log_vlid = -1;
 #ifdef ENABLE_LOGVOL
+    strcpy(cfg->hdf5_log_ver, H5VL_LOG_VERSION);
+
     if (cfg->strategy == log && cfg->env_log == 0) {
         /* Set to use Log VOL connector only if the env HDF5_VOL_CONNECTOR has
          * not been set to use Log VOL yet.

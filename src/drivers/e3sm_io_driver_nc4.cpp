@@ -59,6 +59,8 @@ bool e3sm_io_driver_nc4::compatible (std::string path) {
 }
 
 e3sm_io_driver_nc4::e3sm_io_driver_nc4 (e3sm_io_config *cfg) : e3sm_io_driver (cfg) {
+    strcpy(cfg->netcdf4_ver, NC_VERSION);
+
     if ((cfg->chunksize != 0) || (cfg->filter != none)) {
         throw "Fitler and chunking is not supported by the NetCDF 4 driver";
     }

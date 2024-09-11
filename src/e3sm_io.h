@@ -19,6 +19,7 @@
 
 #ifdef ENABLE_NETCDF4
 #include <netcdf.h>
+#include <netcdf_meta.h>
 #include <netcdf_par.h>
 #endif
 #ifdef ENABLE_PNC
@@ -172,6 +173,12 @@ typedef struct e3sm_io_config {
     char *env_log_info;
     int   env_cache;
     int   env_async;
+
+    char pnetcdf_ver[64];
+    char netcdf4_ver[64];
+    char hdf5_ver[64];
+    char hdf5_log_ver[64];
+    char adios_ver[64];
 } e3sm_io_config;
 
 
