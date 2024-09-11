@@ -112,7 +112,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     char name[128];
     int err, rank, nprocs, ncid, varid, proc_start, proc_count;
     int i, j, k, nreqs, *all_nreqs, *all_raw_nreqs, dimids[3], id;
-    int *fill_nreqs = NULL, has_raw_decom, decomp_nprocs;
+    int *fill_nreqs = NULL, has_fill_starts, has_raw_decom, decomp_nprocs;
     MPI_Offset mpi_num, mpi_decomp_nprocs, start, count;
     MPI_Info info = MPI_INFO_NULL;
     e3sm_io_config decom_cfg;
@@ -230,6 +230,18 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         for (i=0; i<decom->ndims[id]; i++)
             decom->dims[id][i] = (MPI_Offset)dims_int[i];
 
+        /* Obtain varid of request variable Dx.fill_starts, the starting index
+         * in offsets[] and lengths[] for elements to be filled with fill
+         * value. Note use Dx.fill_starts as the number of write requests, so
+         * writes stop at this index, without filling the missing elements.
+         *
+         * First, check if variable D*.fill_starts is available. The older
+         * versions, prior to PR #174, do not include this variable.
+         */
+        sprintf (name, "D%d.fill_starts", id + 1);
+        err = driver->inq_varid (ncid, name, &varid);
+        has_fill_starts = (err < 0) ?  0 : 1;
+
         if (cfg->fill_mode && cfg->strategy == canonical) {
             /* Read variable Dx.fill_starts, which stores the index of Dx.nreqs
              * pointing to the first request that needs to be filled with fill
@@ -237,13 +249,11 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
              * Dx.fill_starts[i] and (Dx.nreqs[i] - Dx.fill_starts[i]) is the
              * number of requests that need to be filled.
              */
-            sprintf (name, "D%d.fill_starts", id + 1);
-            err = driver->inq_varid (ncid, name, &varid);
-            CHECK_ERR
-
-            fill_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
-            err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, fill_nreqs, coll);
-            CHECK_ERR
+            if (has_fill_starts) {
+                fill_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
+                err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, fill_nreqs, coll);
+                CHECK_ERR
+            }
 
             /* Obtain varid of request variable Dx.nreqs. Note Dx.nreqs
              * includes the missing elements to be filled if there is any
@@ -253,24 +263,13 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
             err = driver->inq_varid (ncid, name, &varid);
             CHECK_ERR
         }
-        else {
-            /* Obtain varid of request variable Dx.fill_starts, the starting
-             * index in offsets[] and lengths[] for elements to be filled with
-             * fill value. Note use Dx.fill_starts as the number of write
-             * requests, so writes stop at this index, without filling the
-             * missing elements.
-             */
-            sprintf (name, "D%d.fill_starts", id + 1);
-            err = driver->inq_varid (ncid, name, &varid);
-            CHECK_ERR
-        }
 
         /* read all process's numbers of requests */
         all_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
         err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, all_nreqs, coll);
         CHECK_ERR
 
-        if (cfg->fill_mode && cfg->strategy == canonical) {
+        if (cfg->fill_mode && cfg->strategy == canonical && has_fill_starts) {
             for (i=0; i<decomp_nprocs; i++) {
                 if (all_nreqs[i] != fill_nreqs[i])
                     break;
