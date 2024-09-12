@@ -112,7 +112,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     char name[128];
     int err, rank, nprocs, ncid, varid, proc_start, proc_count;
     int i, j, k, nreqs, *all_nreqs, *all_raw_nreqs, dimids[3], id;
-    int *fill_nreqs = NULL, has_fill_starts, has_raw_decom, decomp_nprocs;
+    int has_fill_starts, has_raw_decom, decomp_nprocs;
     MPI_Offset mpi_num, mpi_decomp_nprocs, start, count;
     MPI_Info info = MPI_INFO_NULL;
     e3sm_io_config decom_cfg;
@@ -230,6 +230,19 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         for (i=0; i<decom->ndims[id]; i++)
             decom->dims[id][i] = (MPI_Offset)dims_int[i];
 
+        /* Obtain varid of request variable Dx.nreqs. Note Dx.nreqs includes
+         * the missing elements to be filled if there is any missing elements
+         * and fill mode is enabled.
+         */
+        sprintf (name, "D%d.nreqs", id + 1);
+        err = driver->inq_varid (ncid, name, &varid);
+        CHECK_ERR
+
+        /* read all process's numbers of requests */
+        all_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
+        err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, all_nreqs, coll);
+        CHECK_ERR
+
         /* Obtain varid of request variable Dx.fill_starts, the starting index
          * in offsets[] and lengths[] for elements to be filled with fill
          * value. Note use Dx.fill_starts as the number of write requests, so
@@ -242,44 +255,41 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         err = driver->inq_varid (ncid, name, &varid);
         has_fill_starts = (err < 0) ?  0 : 1;
 
-        if (cfg->fill_mode && cfg->strategy == canonical) {
+        if (has_fill_starts) {
             /* Read variable Dx.fill_starts, which stores the index of Dx.nreqs
              * pointing to the first request that needs to be filled with fill
              * values. In other words, Dx.nreqs[i] is always bigger than
              * Dx.fill_starts[i] and (Dx.nreqs[i] - Dx.fill_starts[i]) is the
              * number of requests that need to be filled.
              */
-            if (has_fill_starts) {
-                fill_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
-                err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, fill_nreqs, coll);
-                CHECK_ERR
-            }
+            int *fill_nreqs;
 
-            /* Obtain varid of request variable Dx.nreqs. Note Dx.nreqs
-             * includes the missing elements to be filled if there is any
-             * missing elements and fill mode is enabled.
-             */
-            sprintf (name, "D%d.nreqs", id + 1);
-            err = driver->inq_varid (ncid, name, &varid);
+            fill_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
+            err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, fill_nreqs, coll);
             CHECK_ERR
-        }
 
-        /* read all process's numbers of requests */
-        all_nreqs = (int *)malloc (decomp_nprocs * sizeof (int));
-        err = driver->get_vara (ncid, varid, MPI_INT, NULL, NULL, all_nreqs, coll);
-        CHECK_ERR
-
-        if (cfg->fill_mode && cfg->strategy == canonical && has_fill_starts) {
-            for (i=0; i<decomp_nprocs; i++) {
-                if (all_nreqs[i] != fill_nreqs[i])
-                    break;
+            if (!cfg->fill_mode) {
+                /* When fill mode is not enable, then use Dx.fill_starts
+                 * instead of Dx.nreqs as the number of requests.
+                 */
+                if (all_nreqs != NULL)
+                    free(all_nreqs);
+                all_nreqs = fill_nreqs;
             }
-            if (i < decomp_nprocs && decomp_nprocs != nprocs && rank == 0)
-                printf("Warning: fill mode is not supported when nprocs(%d) != decomp_nprocs(%d)\n",
-                       nprocs, decomp_nprocs);
-            else if (i < decomp_nprocs && rank == 0)
-                printf("Warning: fill mode is not yet supported\n");
-            free(fill_nreqs);
+            else if (cfg->strategy == canonical) {
+                /* check if there is any missing value */
+                for (i=0; i<decomp_nprocs; i++) {
+                    if (all_nreqs[i] != fill_nreqs[i])
+                        break;
+                }
+                if (i < decomp_nprocs && decomp_nprocs != nprocs && rank == 0)
+                    printf("Warning: fill mode is not supported when nprocs(%d) != decomp_nprocs(%d)\n",
+                           nprocs, decomp_nprocs);
+                else if (i < decomp_nprocs && rank == 0)
+                    printf("Warning: fill mode is not yet supported\n");
+            }
+            if (fill_nreqs != all_nreqs)
+                free(fill_nreqs);
         }
 
         /* calculate start index in Dx.offsets for this process */
