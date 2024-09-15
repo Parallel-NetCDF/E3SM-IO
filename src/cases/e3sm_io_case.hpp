@@ -340,15 +340,15 @@ int scorpio_write_var(e3sm_io_driver &driver,
 #define PUT_ATTR_FILL(val) {                                                  \
     if (varp->xType == NC_FLOAT) {                                            \
         float buf = (float)val;                                               \
-        err = driver.put_att(ncid,varp->vid,_FillValue,varp->xType, 1, &buf); \
+        err = driver.put_att(ncid,varp->vid,"_FillValue",varp->xType,1,&buf); \
     }                                                                         \
     else if (varp->xType == NC_INT) {                                         \
         int buf = (int)val;                                                   \
-        err = driver.put_att(ncid,varp->vid,_FillValue,varp->xType, 1, &buf); \
+        err = driver.put_att(ncid,varp->vid,"_FillValue",varp->xType,1,&buf); \
     }                                                                         \
     else if (varp->xType == NC_DOUBLE) {                                      \
         double buf = (double)val;                                             \
-        err = driver.put_att(ncid,varp->vid,_FillValue,varp->xType, 1, &buf); \
+        err = driver.put_att(ncid,varp->vid,"_FillValue",varp->xType,1,&buf); \
     }                                                                         \
     CHECK_VAR_ERR(varp->_name)                                                \
     cmeta->num_attrs++;                                                       \
@@ -487,16 +487,16 @@ int scorpio_write_var(e3sm_io_driver &driver,
 }
 #define GET_ATTR_FILL(val) {                                                  \
     if (varp->xType == NC_FLOAT) {                                            \
-        err = driver.get_att(ncid,varp->vid,_FillValue,&val);                 \
+        err = driver.get_att(ncid,varp->vid,"_FillValue",&val);               \
     }                                                                         \
     else if (varp->xType == NC_INT) {                                         \
         int buf;                                                              \
-        err = driver.get_att(ncid,varp->vid,_FillValue,&buf);                 \
+        err = driver.get_att(ncid,varp->vid,"_FillValue",&buf);               \
         val = (float)buf;                                                     \
     }                                                                         \
     else if (varp->xType == NC_DOUBLE) {                                      \
         double buf;                                                           \
-        err = driver.get_att(ncid,varp->vid,_FillValue,&buf);                 \
+        err = driver.get_att(ncid,varp->vid,"_FillValue",&buf);               \
         val = (float)buf;                                                     \
     }                                                                         \
     CHECK_VAR_ERR(varp->_name)                                                \

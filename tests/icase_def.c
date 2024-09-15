@@ -60,15 +60,15 @@ int main(int argc, char *argv[])
     ERR                                                                   \
     if (xtype == NC_FLOAT) {                                              \
         float buf = (float)val;                                           \
-        err = nc_put_att_float(ncid, varid, _FillValue, xtype, 1, &buf);  \
+        err = nc_put_att_float(ncid, varid, "_FillValue", xtype, 1, &buf);\
     }                                                                     \
     else if (xtype == NC_INT) {                                           \
         int buf = (int)val;                                               \
-        err = nc_put_att_int(ncid, varid, _FillValue, xtype, 1, &buf);    \
+        err = nc_put_att_int(ncid, varid, "_FillValue", xtype, 1, &buf);  \
     }                                                                     \
     else if (xtype == NC_DOUBLE) {                                        \
         double buf = (double)val;                                         \
-        err = nc_put_att_double(ncid, varid, _FillValue, xtype, 1, &buf); \
+        err = nc_put_att_double(ncid, varid,"_FillValue", xtype, 1, &buf);\
     }                                                                     \
     ERR                                                                   \
 }

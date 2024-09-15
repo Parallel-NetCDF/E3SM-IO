@@ -60,7 +60,6 @@
 #define NC_NOERR        0   /**< No Error */
 #define NC_GLOBAL 	-1
 #define NC_UNLIMITED 0L
-#define _FillValue      "_FillValue"
 
 typedef int nc_type;
 #endif
