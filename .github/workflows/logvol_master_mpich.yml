@@ -1,4 +1,4 @@
-name: LogVOL master branch only
+name: LogVOL master + MPICH
 
 on:
   push:
@@ -22,38 +22,60 @@ on:
       - 'datasets/*'
 
 env:
-   HDF5_VERSION: 1.14.2
-   
+   MPICH_VERSION: 4.1.1
+   HDF5_VERSION: 1.14.1-2
+
 jobs:
     build:
       runs-on: ubuntu-latest
       timeout-minutes: 60
       steps:
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v3
         - name: Set up dependencies
           run: |
-            set -x
             sudo apt-get update
-            sudo apt-get install automake autoconf libtool libtool-bin m4
+            sudo apt-get -y install automake autoconf libtool libtool-bin m4 cmake
+            # The MPICH installed on github actions is too slow
+            # sudo apt-get install mpich
+            # mpicc -v
             # zlib
-            sudo apt-get install zlib1g-dev
-            # OpenMPI
-            sudo apt-get install openmpi-bin openmpi-common libopenmpi-dev libgtk2.0-dev
-            echo "---- location of OpenMPI C compiler ----"
-            which mpicc
-            ompi_info
+            sudo apt-get -y install zlib1g-dev
+        - name: Add global env variables into GITHUB_ENV
+          run: |
+            set -x
+            echo "MPICH_DIR=${GITHUB_WORKSPACE}/MPICH" >> $GITHUB_ENV
+            echo "HDF5_ROOT=${GITHUB_WORKSPACE}/HDF5" >> $GITHUB_ENV
+            echo "LOGVOL_DIR=${GITHUB_WORKSPACE}/LOGVOL" >> $GITHUB_ENV
+            echo "HDF5_PLUGIN_PATH=${GITHUB_WORKSPACE}/LOGVOL/lib" >> $GITHUB_ENV
+            echo "HDF5_USE_FILE_LOCKING=FALSE" >> $GITHUB_ENV
+        - name: Build MPICH ${{ env.MPICH_VERSION }}
+          if: ${{ success() }}
+          run: |
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ${MPICH_DIR} ; mkdir ${MPICH_DIR} ; cd ${MPICH_DIR}
+            wget -q https://www.mpich.org/static/downloads/${MPICH_VERSION}/mpich-${MPICH_VERSION}.tar.gz
+            gzip -dc mpich-${MPICH_VERSION}.tar.gz | tar -xf -
+            cd mpich-${MPICH_VERSION}
+            ./configure --prefix=${MPICH_DIR} \
+                        --silent \
+                        --enable-romio \
+                        --with-file-system=ufs \
+                        --with-device=ch3:sock \
+                        --disable-fortran \
+                        CC=gcc
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s -j 8 distclean >> qout 2>&1
         - name: Install HDF5
           if: ${{ success() }}
           run: |
-            set -x
             cd ${GITHUB_WORKSPACE}
-            rm -rf HDF5 ; mkdir HDF5 ; cd HDF5
+            rm -rf ${HDF5_ROOT} ; mkdir ${HDF5_ROOT} ; cd ${HDF5_ROOT}
             VER_MAJOR=${HDF5_VERSION%.*}
             VER_NOPATCH=${HDF5_VERSION%-*} # remove patch version
-            curl -LO https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
+            wget -cq https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
             tar -zxf hdf5-${HDF5_VERSION}.tar.gz
             cd hdf5-${HDF5_VERSION}
-            ./configure --prefix=${GITHUB_WORKSPACE}/HDF5 \
+            ./configure --prefix=${HDF5_ROOT} \
                         --silent \
                         --enable-hl \
                         --enable-parallel \
@@ -61,73 +83,58 @@ jobs:
                         --disable-doxygen-doc \
                         --disable-doxygen-man \
                         --disable-doxygen-html \
+                        --disable-hltools \
                         --disable-tools \
                         --disable-tests \
-                        --disable-fortran \
-                        --disable-cxx \
-                        CC=mpicc
+                        CC=${MPICH_DIR}/bin/mpicc
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
         - name: Dump HDF5 config.log file
           if: ${{ failure() }}
           run: |
-            set -x
-            cat ${GITHUB_WORKSPACE}/HDF5/hdf5-${HDF5_VERSION}/qout
-            cat ${GITHUB_WORKSPACE}/HDF5/hdf5-${HDF5_VERSION}/config.log
+            cat ${HDF5_ROOT}/hdf5-${HDF5_VERSION}/config.log
         - name: Install Log VOL connector from its master branch
           if: ${{ success() }}
           run: |
-            set -x
             cd ${GITHUB_WORKSPACE}
-            rm -rf LOG_VOL ; mkdir LOG_VOL ; cd LOG_VOL
             rm -rf vol-log-based
             git clone -q https://github.com/DataLib-ECP/vol-log-based.git
             cd vol-log-based
             autoreconf -i
-            ./configure --prefix=${GITHUB_WORKSPACE}/LOGVOL \
+            ./configure --prefix=${LOGVOL_DIR} \
                         --silent \
-                        --with-hdf5=${GITHUB_WORKSPACE}/HDF5
+                        --with-hdf5=${HDF5_ROOT} \
+                        --with-mpi=${MPICH_DIR}
             make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
             make -s distclean >> qout 2>&1
-        - name: Dump Log VOL config.log file
-          if: ${{ failure() }}
-          run: |
-            set -x
-            cat ${GITHUB_WORKSPACE}/LOG_VOL/vol-log-based/qout
-            cat ${GITHUB_WORKSPACE}/LOG_VOL/vol-log-based/config.log
         - name: Build and check E3SM_IO with HDF5 Log VOL connector only
           if: ${{ success() }}
           run: |
-            set -x
             cd ${GITHUB_WORKSPACE}
             rm -rf ./test_output
             autoreconf -i
-            ./configure --with-hdf5=${GITHUB_WORKSPACE}/HDF5 \
-                        --with-logvol=${GITHUB_WORKSPACE}/LOGVOL \
-                        CC=mpicc CXX=mpicxx \
+            ./configure --with-hdf5=${HDF5_ROOT} \
+                        --with-logvol=${LOGVOL_DIR} \
+                        --with-mpi=${MPICH_DIR} \
                         CFLAGS=-fno-var-tracking-assignments \
-                        CXXFLAGS=-fno-var-tracking-assignments \
-                        TESTMPIRUN="mpiexec --oversubscribe"
+                        CXXFLAGS=-fno-var-tracking-assignments
             make -j 8
             make check
         - name: Dump log files if E3SM_IO with HDF5 Log VOL connector test failed
           if: ${{ failure() }}
           run: |
-            set -x
             cd ${GITHUB_WORKSPACE}
             cat test.sh.log utils/*.log
             cat config.log
         - name: Test E3SM_IO -- parallel runs
           if: ${{ success() }}
           run: |
-            set -x
             cd ${GITHUB_WORKSPACE}
             make ptest
         - name: Test make distcheck
           if: ${{ success() }}
           run: |
-            set -x
             cd ${GITHUB_WORKSPACE}
-            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-hdf5=${GITHUB_WORKSPACE}/HDF5 --with-logvol=${GITHUB_WORKSPACE}/LOGVOL CC=mpicc CXX=mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
+            make distcheck DISTCHECK_CONFIGURE_FLAGS="--with-hdf5=${HDF5_ROOT} --with-logvol=${LOGVOL_DIR} CC=${MPICH_DIR}/bin/mpicc CXX=${MPICH_DIR}/bin/mpicxx CFLAGS=-fno-var-tracking-assignments CXXFLAGS=-fno-var-tracking-assignments"
             make distclean
 
