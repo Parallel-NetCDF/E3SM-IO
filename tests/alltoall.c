@@ -141,8 +141,8 @@ int main(int argc, char **argv) {
 
             /* post send requests */
             for (j=0; j<num_aggrs; j++) {
-                err = MPI_Issend(ptr, len, MPI_INT, aggr_ranks[j], 0,
-                                 MPI_COMM_WORLD, &reqs[nreqs++]);
+                err = MPI_Isend(ptr, len, MPI_INT, aggr_ranks[j], 0,
+                                MPI_COMM_WORLD, &reqs[nreqs++]);
                 ERR
                 ptr += len;
             }
