@@ -192,7 +192,8 @@ err_out:
     timing = MPI_Wtime() - timing;
     MPI_Reduce(&timing, &maxt, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (rank == 0) {
-        double wb = (double)len * sizeof(int) * nprocs * ntimes / 1048576.0;
+        double wb = (double)len * sizeof(int) * nprocs * ntimes * num_aggrs;
+        wb /= 1048576.0; /* in MB */
         printf("Total message amount: %.2f MiB\n", wb);
         printf("Max time:             %.2f sec\n", maxt);
         printf("Comm bandwidth:       %.2f MiB/sec\n", wb / maxt);
