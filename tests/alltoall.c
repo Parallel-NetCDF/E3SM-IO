@@ -14,7 +14,9 @@
  * To mimic the two-phase I/O in E3SM-IO, run with command-line options:
  *    -n 132 -l 12 -r 128
  *
- * Command-line option -a to replace MPI_Issend/Irecv with MPI_Alltoallv
+ * Command-line option -a to use MPI_Alltoallv
+ * Command-line option -s to use MPI_Issend
+ * Default is to use MPI_Isend
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -41,6 +43,7 @@ static void usage (char *argv0) {
        [-h] Print this help message\n\
        [-v] Verbose mode (default: no)\n\
        [-a] use MPI_alltoallv (default: MPI_Isend/Irecv)\n\
+       [-s] use MPI_Issend (default: MPI_Isend/Irecv)\n\
        [-n num] number of iterations (default: 1)\n\
        [-l len] individual message size (default: 12 int)\n\
        [-r ratio] number of processes to aggregators ratio (default: 1)\n";
@@ -52,7 +55,7 @@ int main(int argc, char **argv) {
     extern int optind;
     extern char *optarg;
     int i, j, rank, nprocs, err, nerrs=0, verbose, len, ntimes, ratio;
-    int use_alltoall, is_aggr, num_aggrs, *aggr_ranks, *buf;
+    int use_alltoall, use_issend, is_aggr, num_aggrs, *aggr_ranks, *buf;
     double timing, maxt;
 
     MPI_Init(&argc, &argv);
@@ -61,15 +64,19 @@ int main(int argc, char **argv) {
 
     verbose = 0;
     use_alltoall = 0;
+    use_issend = 0;
     len = 12;
     ntimes = 1;
     ratio = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "hval:n:r:")) != EOF)
+    while ((i = getopt (argc, argv, "hvasl:n:r:")) != EOF)
         switch (i) {
             case 'v':
                 verbose = 1;
+                break;
+            case 's':
+                use_issend = 1;
                 break;
             case 'a':
                 use_alltoall = 1;
@@ -89,14 +96,22 @@ int main(int argc, char **argv) {
                 goto err_out;
         }
 
+    if (use_alltoall == 1 && use_issend == 1) {
+        if (rank == 0)
+            printf("Error: command-line options '-a' and '-s' cannot be both set\n");
+        goto err_out;
+    }
+
     is_aggr = 0;
     num_aggrs = nprocs / ratio;
 
-    if (verbose && rank == 0) {
+    if (rank == 0) {
         if (use_alltoall)
             printf("---- Using MPI_Alltoallv\n");
-        else
+        else if (use_issend)
             printf("---- Using MPI_Issend/Irecv\n");
+        else
+            printf("---- Using MPI_Isend/Irecv\n");
         printf("nprocs    = %d\n", nprocs);
         printf("len       = %d (number of ints)\n", len);
         printf("ntimes    = %d\n", ntimes);
@@ -141,8 +156,12 @@ int main(int argc, char **argv) {
 
             /* post send requests */
             for (j=0; j<num_aggrs; j++) {
-                err = MPI_Isend(ptr, len, MPI_INT, aggr_ranks[j], 0,
-                                MPI_COMM_WORLD, &reqs[nreqs++]);
+                if (use_issend)
+                    err = MPI_Issend(ptr, len, MPI_INT, aggr_ranks[j], 0,
+                                     MPI_COMM_WORLD, &reqs[nreqs++]);
+                else
+                    err = MPI_Isend(ptr, len, MPI_INT, aggr_ranks[j], 0,
+                                    MPI_COMM_WORLD, &reqs[nreqs++]);
                 ERR
                 ptr += len;
             }
@@ -188,7 +207,6 @@ int main(int argc, char **argv) {
     free(buf);
     free(aggr_ranks);
 
-err_out:
     timing = MPI_Wtime() - timing;
     MPI_Reduce(&timing, &maxt, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (rank == 0) {
@@ -199,6 +217,7 @@ err_out:
         printf("Comm bandwidth:       %.2f MiB/sec\n", wb / maxt);
     }
 
+err_out:
     MPI_Finalize();
     return 0;
 }
