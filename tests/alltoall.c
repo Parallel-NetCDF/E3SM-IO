@@ -36,6 +36,8 @@
         nerrs++; \
         goto err_out; \
     }
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 /*----< usage() >------------------------------------------------------------*/
 static void usage (char *argv0) {
@@ -112,6 +114,13 @@ int main(int argc, char **argv) {
             printf("---- Using MPI_Issend/Irecv\n");
         else
             printf("---- Using MPI_Isend/Irecv\n");
+#ifdef MPICH_VERSION
+        printf("---- This MPI is based on MPICH version %s\n",MPICH_VERSION);
+#endif
+#ifdef CRAY_MPICH_VERSION
+        printf("---- This MPI is based on Cray MPICH version %s\n",
+               TOSTRING(CRAY_MPICH_VERSION));
+#endif
         printf("nprocs    = %d\n", nprocs);
         printf("len       = %d (number of ints)\n", len);
         printf("ntimes    = %d\n", ntimes);
