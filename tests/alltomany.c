@@ -11,8 +11,9 @@
  * 5. Two-phase I/O takes 28GB/(128*1MB)=132 rounds
  * 6. In each round, each process sends 1MB/21600=48.5B to each aggregator
  *
- * To mimic the two-phase I/O in E3SM-IO, run with command-line options:
- *    -n 132 -l 12 -r 128
+ * To mimic the communication pattern of two-phase I/O for MPI I/O operations
+ * performed in E3SM-IO, run with command-line options:
+ *    -n 132 -l 12 -r 128 -m 128
  *
  * Command-line option -a to use MPI_Alltoallv
  * Command-line option -s to use MPI_Issend
@@ -47,8 +48,9 @@ static void usage (char *argv0) {
        [-a] use MPI_alltoallv (default: MPI_Isend/Irecv)\n\
        [-s] use MPI_Issend (default: MPI_Isend/Irecv)\n\
        [-n num] number of iterations (default: 1)\n\
-       [-l len] individual message size (default: 12 int)\n\
-       [-r ratio] number of processes to aggregators ratio (default: 1)\n";
+       [-m num] number of receivers (default: total number of processes / ratio)\n\
+       [-r ratio] ratio of number of receivers to all processes (default: 1)\n\
+       [-l len] individual message size (default: 12 int)\n";
     fprintf (stderr, help, argv0);
 }
 
@@ -57,7 +59,8 @@ int main(int argc, char **argv) {
     extern int optind;
     extern char *optarg;
     int i, j, rank, nprocs, err, nerrs=0, verbose, len, ntimes, ratio;
-    int use_alltoall, use_issend, is_aggr, num_aggrs, *aggr_ranks, *buf;
+    int use_alltoall, use_issend, is_recver, num_recvers, *recver_rank, *buf;
+    int max_num_recvers;
     double timing, maxt;
 
     MPI_Init(&argc, &argv);
@@ -72,7 +75,7 @@ int main(int argc, char **argv) {
     ratio = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "hvasl:n:r:")) != EOF)
+    while ((i = getopt (argc, argv, "hvasl:n:r:m:")) != EOF)
         switch (i) {
             case 'v':
                 verbose = 1;
@@ -92,6 +95,9 @@ int main(int argc, char **argv) {
             case 'r':
                 ratio = atoi(optarg);
                 break;
+            case 'm':
+                max_num_recvers = atoi(optarg);
+                break;
             case 'h':
             default:
                 if (rank == 0) usage(argv[0]);
@@ -104,8 +110,9 @@ int main(int argc, char **argv) {
         goto err_out;
     }
 
-    is_aggr = 0;
-    num_aggrs = nprocs / ratio;
+    is_recver = 0;
+    num_recvers = nprocs / ratio;
+    if (num_recvers > max_num_recvers) num_recvers = max_num_recvers;
 
     if (rank == 0) {
         if (use_alltoall)
@@ -121,40 +128,40 @@ int main(int argc, char **argv) {
         printf("---- This MPI is based on Cray MPICH version %s\n",
                TOSTRING(CRAY_MPICH_VERSION));
 #endif
-        printf("nprocs    = %d\n", nprocs);
-        printf("len       = %d (number of ints)\n", len);
-        printf("ntimes    = %d\n", ntimes);
-        printf("ratio     = %d\n", ratio);
-        printf("num_aggrs = %d\n", num_aggrs);
+        printf("nprocs      = %d\n", nprocs);
+        printf("len         = %d (number of ints)\n", len);
+        printf("ntimes      = %d\n", ntimes);
+        printf("ratio       = %d\n", ratio);
+        printf("num_recvers = %d\n", num_recvers);
     }
 
-    aggr_ranks = (int*) malloc(sizeof(int) * num_aggrs);
-    if (verbose && rank == 0) printf("aggr_ranks: ");
-    for (i=0; i<num_aggrs; i++) {
-        aggr_ranks[i] = i * ratio;
-        if (rank == aggr_ranks[i]) is_aggr = 1;
-        if (verbose && rank == 0) printf(" %d", aggr_ranks[i]);
+    recver_rank = (int*) malloc(sizeof(int) * num_recvers);
+    if (verbose && rank == 0) printf("recver_rank: ");
+    for (i=0; i<num_recvers; i++) {
+        recver_rank[i] = i * ratio;
+        if (rank == recver_rank[i]) is_recver = 1;
+        if (verbose && rank == 0) printf(" %d", recver_rank[i]);
     }
     if (verbose && rank == 0) printf("\n");
     if (verbose) fflush(stdout);
     MPI_Barrier(MPI_COMM_WORLD);
     timing = MPI_Wtime();
 
-    buf = (int*) malloc(sizeof(int) * (nprocs + num_aggrs) * len);
+    buf = (int*) malloc(sizeof(int) * (nprocs + num_recvers) * len);
 
     if (use_alltoall == 0) {
         MPI_Request *reqs;
         MPI_Status *st;
 
-        reqs = (MPI_Request*) calloc(nprocs + num_aggrs, sizeof(MPI_Request));
-        st = (MPI_Status*)malloc(sizeof(MPI_Status) * (nprocs + num_aggrs));
+        reqs = (MPI_Request*) calloc(nprocs + num_recvers, sizeof(MPI_Request));
+        st = (MPI_Status*)malloc(sizeof(MPI_Status) * (nprocs + num_recvers));
 
         for (i=0; i<ntimes; i++) {
             int nreqs=0;
             int *ptr = buf;
 
             /* post recv requests */
-            if (is_aggr) {
+            if (is_recver) {
                 for (j=0; j<nprocs; j++) {
                     err = MPI_Irecv(ptr, len, MPI_INT, j, 0, MPI_COMM_WORLD,
                                     &reqs[nreqs++]);
@@ -164,12 +171,12 @@ int main(int argc, char **argv) {
             }
 
             /* post send requests */
-            for (j=0; j<num_aggrs; j++) {
+            for (j=0; j<num_recvers; j++) {
                 if (use_issend)
-                    err = MPI_Issend(ptr, len, MPI_INT, aggr_ranks[j], 0,
+                    err = MPI_Issend(ptr, len, MPI_INT, recver_rank[j], 0,
                                      MPI_COMM_WORLD, &reqs[nreqs++]);
                 else
-                    err = MPI_Isend(ptr, len, MPI_INT, aggr_ranks[j], 0,
+                    err = MPI_Isend(ptr, len, MPI_INT, recver_rank[j], 0,
                                     MPI_COMM_WORLD, &reqs[nreqs++]);
                 ERR
                 ptr += len;
@@ -190,7 +197,7 @@ int main(int argc, char **argv) {
         sdispls = (int*) calloc(nprocs * 2, sizeof(int));
         rdispls = sdispls + nprocs;
 
-        if (is_aggr) {
+        if (is_recver) {
             for (i=0; i<nprocs; i++) {
                 recvCounts[i] = len;
                 rdispls[i] = len * i;
@@ -198,9 +205,9 @@ int main(int argc, char **argv) {
         }
         r_buf = buf;
 
-        for (i=0; i<num_aggrs; i++) {
-            sendCounts[aggr_ranks[i]] = len;
-            sdispls[aggr_ranks[i]] = len * i;
+        for (i=0; i<num_recvers; i++) {
+            sendCounts[recver_rank[i]] = len;
+            sdispls[recver_rank[i]] = len * i;
         }
         s_buf = r_buf + nprocs * len;
 
@@ -214,12 +221,12 @@ int main(int argc, char **argv) {
         free(sdispls);
     }
     free(buf);
-    free(aggr_ranks);
+    free(recver_rank);
 
     timing = MPI_Wtime() - timing;
     MPI_Reduce(&timing, &maxt, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     if (rank == 0) {
-        double wb = (double)len * sizeof(int) * nprocs * ntimes * num_aggrs;
+        double wb = (double)len * sizeof(int) * nprocs * ntimes * num_recvers;
         wb /= 1048576.0; /* in MB */
         printf("Total message amount: %.2f MiB\n", wb);
         printf("Max time:             %.2f sec\n", maxt);
