@@ -44,6 +44,7 @@ int main(int argc, char **argv) {
     MPI_File fh;
     MPI_Status status;
     MPI_Info info=MPI_INFO_NULL;
+    double timing, max_timing;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -97,12 +98,30 @@ int main(int argc, char **argv) {
     err = MPI_File_set_view(fh, 0, MPI_BYTE, fileType, "native", info); ERR
     err = MPI_Type_free(&fileType); ERR
 
+    MPI_Barrier(MPI_COMM_WORLD);
+    timing = MPI_Wtime();
+
     /* write to the file */
     err = MPI_File_write_all(fh, buf, len, MPI_FLOAT, &status); ERR
+
+    timing = MPI_Wtime() - timing;
 
     MPI_File_close(&fh);
 
     free(buf);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    fflush(stdout);
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    MPI_Reduce(&timing, &max_timing, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    if (rank == 0) {
+        float wb = (float)len * sizeof(float) * nprocs;
+        wb /= 1048576.0;
+        printf("----------------------------------------\n");
+        printf("Write time (max) = %.2f sec\n", max_timing);
+        printf("Write bandwidth  = %.2f MB/s\n", wb/max_timing);
+    }
 
 err_out:
     MPI_Finalize();
