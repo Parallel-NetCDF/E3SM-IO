@@ -76,6 +76,7 @@ int main(int argc, char **argv) {
     }
 
     buf = (float*) malloc(sizeof(float) * len);
+    for (i=0; i<len; i++) buf[i] = (float)i + rank;
 
     /* construct filetype */
     sizes[0]    = len;
@@ -119,6 +120,7 @@ int main(int argc, char **argv) {
         float wb = (float)len * sizeof(float) * nprocs;
         wb /= 1048576.0;
         printf("----------------------------------------\n");
+        printf("Write amount     = %.2f MB\n", wb);
         printf("Write time (max) = %.2f sec\n", max_timing);
         printf("Write bandwidth  = %.2f MB/s\n", wb/max_timing);
     }
