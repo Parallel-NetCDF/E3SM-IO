@@ -92,7 +92,7 @@ int e3sm_io_driver_pnc::open (std::string path, MPI_Comm comm, MPI_Info info, in
     MPI_Offset size;
     MPI_Offset put_buffer_size_limit;
 
-    err = ncmpi_open (comm, path.c_str (), NC_64BIT_DATA, info, fid);
+    err = ncmpi_open (comm, path.c_str (), NC_NOWRITE, info, fid);
     CHECK_NCERR
 
     put_buffer_size_limit = 10485760;
