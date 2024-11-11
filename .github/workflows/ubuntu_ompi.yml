@@ -23,7 +23,7 @@ on:
       - 'datasets/*'
 
 env:
-   PNETCDF_VERSION: 1.12.3
+   PNETCDF_VERSION: 1.14.0
    HDF5_VERSION: 1.14.2
    NETCDF4_VERSION: 4.9.2
    ADIOS_VERSION: 2.8.3

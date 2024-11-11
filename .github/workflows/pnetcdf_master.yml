@@ -23,7 +23,7 @@ on:
       - 'datasets/*'
 
 env:
-   MPICH_VERSION: 4.2.0
+   MPICH_VERSION: 4.2.3
    PNETCDF_VERSION: repo
 
 jobs:

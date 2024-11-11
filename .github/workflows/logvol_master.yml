@@ -24,7 +24,7 @@ on:
 
 env:
    HDF5_VERSION: 1.14.2
-   
+
 jobs:
     build:
       runs-on: ubuntu-latest
