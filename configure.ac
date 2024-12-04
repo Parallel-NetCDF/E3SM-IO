@@ -213,7 +213,7 @@ dnl AC_PROG_RANLIB
 LT_INIT
 
 AC_HEADER_STAT
-AC_HEADER_STDC
+# AC_HEADER_STDC
 AC_CHECK_HEADERS([fts.h])
 if test "x$ac_cv_header_fts_h" != xyes ; then
    # Force to use MPICXX to check C++ header
