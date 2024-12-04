@@ -19,8 +19,6 @@
 #include <e3sm_io_driver.hpp>
 
 class e3sm_io_driver_pnc : public e3sm_io_driver {
-    MPI_Comm comm;
-    MPI_Info info;
     std::vector<MPI_Offset> var_nelems;
     std::vector<int> var_ndims;
     std::vector<MPI_Offset> dim_lens;
