@@ -64,6 +64,8 @@ int e3sm_io_case::wr_test(e3sm_io_config &cfg,
 
     /* Only F anc I cases write to h0 and h1 files */
     if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
+        assert(cfg.run_case == F || cfg.run_case == I);
+        cmeta = NULL;
         if (cfg.run_case == F) {
             cmeta        = &cfg.F_case_h0;
             cmeta->nrecs =  cfg.F_case_h0.nrecs;
@@ -188,6 +190,8 @@ int e3sm_io_case::rd_test(e3sm_io_config &cfg,
 
     /* Only F anc I cases write to h0 and h1 files */
     if (cfg.hx == 0 || cfg.hx == -1) {  /* h0 file */
+        assert(cfg.run_case == F || cfg.run_case == I);
+        cmeta = NULL;
         if (cfg.run_case == F) {
             cmeta        = &cfg.F_case_h0;
             cmeta->nrecs =  cfg.F_case_h0.nrecs;
