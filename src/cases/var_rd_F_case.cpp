@@ -63,6 +63,7 @@ static inline void FIX_1D_VAR_STARTS_COUNTS (
     }
 }
 
+#if 0
 static inline void FIX_2D_VAR_STARTS_COUNTS (MPI_Offset **&starts,
                                              MPI_Offset **&counts,
                                              int &nreq,
@@ -103,6 +104,7 @@ static inline void FIX_2D_VAR_STARTS_COUNTS (MPI_Offset **&starts,
     }
     nreq = k + 1;
 }
+#endif
 
 static inline void REC_2D_VAR_STARTS_COUNTS (MPI_Offset rec,
                                              MPI_Offset **&starts,
@@ -363,7 +365,7 @@ int e3sm_io_case::run_varn_F_case_rd (e3sm_io_config &cfg,
 {
     char *txt_buf_ptr;
     int i, j, k, err, rank, ncid, *varids;
-    int nrecs, rec_no, gap = 0, my_nreqs, *int_buf_ptr;
+    int nrecs=0, rec_no, gap = 0, my_nreqs, *int_buf_ptr;
     size_t dbl_buflen, rec_buflen, nelems[3];
     vtype *rec_buf, *rec_buf_ptr;
     double *dbl_buf, *dbl_buf_ptr;
