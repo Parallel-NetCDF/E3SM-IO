@@ -47,10 +47,6 @@ E3SM_IO_RELEASE_DATE_FULL="`date '+%Y-%m-%d'`"
 AC_SUBST(E3SM_IO_RELEASE_DATE_FULL)
 AC_SUBST(PACKAGE_VERSION)
 
-AH_TOP([#ifndef _CONFIG_H
-#define _CONFIG_H])
-AH_BOTTOM([#endif])
-
 AC_PROG_SED
 dnl check sed command option -i and set SED_I (this requires RM defined)
 UD_PROG_SED_I
