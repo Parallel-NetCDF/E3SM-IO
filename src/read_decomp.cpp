@@ -179,7 +179,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     CHECK_ERR
     err = driver->inq_dimlen (ncid, dimids[0], &mpi_decomp_nprocs);
     CHECK_ERR
-    decomp_nprocs = (size_t)mpi_decomp_nprocs;
+    decomp_nprocs = (int)mpi_decomp_nprocs;
 
     /* decomp_nprocs is the number of processes used to generate the E3SM data
      * decomposition. nprocs is the number of processes running this benchmark.
@@ -299,7 +299,7 @@ int read_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         /* calculate number of requests for this process */
         count = 0;
         for (; i < proc_start + proc_count; i++) count += all_nreqs[i];
-        nreqs = count;
+        nreqs = (int)count;
         free (all_nreqs);
 
         if (cfg->verbose)
