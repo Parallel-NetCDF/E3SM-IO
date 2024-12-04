@@ -180,9 +180,9 @@ int e3sm_io_case::run_varn_G_case_rd (e3sm_io_config &cfg,
                         double **D6_rec_dbl_bufp, /* D6 rec double buffer */
                         double **D1_fix_dbl_bufp) /* D1 fix double buffer */
 {
-    int i, j, k, err, rank, ncid, *varids;
-    int nrecs, rec_no, my_nreqs;
-    size_t ii, rec_buflen, nelems[6];
+    int ii, i, j, k, err, rank, ncid, *varids;
+    int nrecs=0, rec_no, my_nreqs;
+    size_t rec_buflen, nelems[6];
     double *D1_rec_dbl_buf, *D3_rec_dbl_buf, *D4_rec_dbl_buf, *D5_rec_dbl_buf, *D6_rec_dbl_buf,
         *rec_buf_ptr;
     int *D1_fix_int_buf, *D2_fix_int_buf, *D3_fix_int_buf, *D4_fix_int_buf, *D5_fix_int_buf;
