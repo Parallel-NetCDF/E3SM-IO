@@ -9,10 +9,12 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-//
+
 #include <sys/stat.h>
 #include <string.h> /* strdup() */
-//
+#include <limits.h>  /* INT_MAX */
+#include <assert.h>
+
 #include <e3sm_io.h>
 #include <e3sm_io_err.h>
 
@@ -205,7 +207,8 @@ int e3sm_io_driver_pnc::def_var (
             e3sm_io_xlen_nc_type(xtype, &csize);
             for (i = 0; i < ndim; i++) {
                 if ((size_t)csize < cfg->chunksize) {
-                    cdim[i] = this->dim_lens[dimids[i]];
+                    assert(this->dim_lens[dimids[i]] < INT_MAX);
+                    cdim[i] = (int)this->dim_lens[dimids[i]];
                     csize *= cdim[i];
                 } else {
                     cdim[i] = 1;
