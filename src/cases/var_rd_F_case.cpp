@@ -41,7 +41,6 @@
 #define WAIT_ALL_REQS { \
     err = driver.wait(ncid); \
     CHECK_ERR \
-    nflushes++; \
 }
 
 static inline void FIX_1D_VAR_STARTS_COUNTS (
@@ -363,7 +362,7 @@ int e3sm_io_case::run_varn_F_case_rd (e3sm_io_config &cfg,
                                       int *int_buf)        /* buffer for int var */
 {
     char *txt_buf_ptr;
-    int i, j, k, err, rank, ncid, *varids, nflushes=0;
+    int i, j, k, err, rank, ncid, *varids;
     int nrecs, rec_no, gap = 0, my_nreqs, *int_buf_ptr;
     size_t dbl_buflen, rec_buflen, nelems[3];
     vtype *rec_buf, *rec_buf_ptr;
