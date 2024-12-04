@@ -211,7 +211,7 @@ int set_starts_counts(e3sm_io_decom *dp)
                 dp->w_countx[i][j][1] = dp->w_counts[i][j][2];
             }
             else if (dp->ndims[i] == 3) { /* decomposition is 3D */
-                int xy = dp->dims[i][2] * dp->dims[i][1];
+                int xy = (int) (dp->dims[i][2] * dp->dims[i][1]);
 
                 dp->w_starts[i][j][1] = dp->disps[i][j] / xy;
                 dp->w_starts[i][j][2] = dp->disps[i][j] % xy / dp->dims[i][2];
