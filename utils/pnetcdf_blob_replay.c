@@ -199,7 +199,7 @@ int set_decomp(int        ncid,
         /* number of dimensions, dimension IDs, and dimension sizes */
         err = ncmpi_inq_attlen(ncid, varid, "global_dimids", &tmp);
         CHECK_VAR_ERR(ncid, varid)
-        dp->ndims = tmp;
+        dp->ndims = (int)tmp;
         int dimids[3]; /* number of fix-sized dimensions is <= 3 */
         err = ncmpi_get_att(ncid, varid, "global_dimids", dimids);
         CHECK_VAR_ERR(ncid, varid)
@@ -349,7 +349,7 @@ int copy_dims(int          in_ncid,
         err = ncmpi_inq_dim(in_ncid, i, name, dims+i);
         CHECK_NC_ERR
 
-        int name_len = strlen(name);
+        size_t name_len = strlen(name);
         if (strcmp(name, "nblobs") == 0 ||
             (name[0] == 'D' && strcmp(name+name_len-7,  ".nelems")    == 0) ||
             (name[0] == 'D' && strcmp(name+name_len-10, ".max_nreqs") == 0))
@@ -453,7 +453,7 @@ int set_vars(int        in_ncid,
 
 #ifndef NUM_DECOMP_AUX_VARS
         /* skip copying decomposition variables */
-        int name_len = strlen(name);
+        size_t name_len = strlen(name);
         if ((name[0] == 'D' && name_len > 6 && strcmp(name+name_len-6, ".nreqs"     ) == 0) ||
             (name[0] == 'D' && name_len > 11 && strcmp(name+name_len-11,".blob_start") == 0) ||
             (name[0] == 'D' && name_len > 11 && strcmp(name+name_len-11,".blob_count") == 0) ||
@@ -491,7 +491,7 @@ int set_vars(int        in_ncid,
         }
         else if (err == NC_NOERR) {
             /* define variable using the global dimensions */
-            var[i].ndims = tmp;
+            var[i].ndims = (int)tmp;
             err = ncmpi_get_att_int(in_ncid, i, "global_dimids", dimids);
             CHECK_VAR_ERR(in_ncid, i)
             err = ncmpi_def_var(out_ncid, name, xtype, var[i].ndims, dimids,

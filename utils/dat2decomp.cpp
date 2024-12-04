@@ -150,7 +150,7 @@ int add_decomp(int             ncid,
         else if (ndims == 3)
             printf("label D%d: dims = %lld x %lld x %lld (in C order)\n", label, dims[2], dims[1], dims[0]);
     }
-    dimX = dims[0]; /* the least significant dimension */
+    dimX = (int)dims[0]; /* the least significant dimension */
 
     /* gsize is total number of elements in the global array */
     gsize = dims[0];
