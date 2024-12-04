@@ -7,8 +7,8 @@
  *
  *********************************************************************/
 
-#ifndef _H_E3SM_IO_
-#define _H_E3SM_IO_
+#ifndef H_E3SM_IO
+#define H_E3SM_IO
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
