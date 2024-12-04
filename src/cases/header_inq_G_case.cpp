@@ -816,7 +816,7 @@ int e3sm_io_case::inq_G_case(e3sm_io_config   &cfg,
     int g_dimids[MAX_NUM_DECOMP][MAX_NDIMS];
     std::map<int, std::string> dnames;
     var_meta *varp;
-    case_meta *cmeta;
+    case_meta *cmeta=NULL;
 
     if (cfg.run_case == F) {
         if (cfg.hist == h0) cmeta = &cfg.F_case_h0;

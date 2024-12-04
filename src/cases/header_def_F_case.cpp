@@ -230,7 +230,7 @@ int e3sm_io_case::def_F_case(e3sm_io_config &cfg,
     float fillv = 1.e+20f, missv = 1.e+20f;
     std::map<int, std::string> dnames;
     var_meta *varp;
-    case_meta *cmeta;
+    case_meta *cmeta=NULL;
 
     if (cfg.run_case == F) {
         if (cfg.hist == h0) cmeta = &cfg.F_case_h0;
