@@ -74,7 +74,7 @@ int print_timing_WR(e3sm_io_config *cfg,
     MPI_Offset vlen, sum_decomp_varlen;
     MPI_Comm comm=cfg->io_comm;
     double ioTime;
-    perf_metrics metrics, *all_metrics;
+    perf_metrics metrics, *all_metrics=NULL;
 
     ndecomp = decom->num_decomp;
 
@@ -342,7 +342,7 @@ int print_timing_RD(e3sm_io_config *cfg,
     MPI_Offset vlen, sum_decomp_varlen;
     MPI_Comm comm=cfg->io_comm;
     double ioTime;
-    perf_metrics metrics, *all_metrics;
+    perf_metrics metrics, *all_metrics=NULL;
 
     ndecomp = decom->num_decomp;
 
