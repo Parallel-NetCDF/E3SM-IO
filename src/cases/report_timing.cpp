@@ -88,7 +88,8 @@ int print_timing_WR(e3sm_io_config *cfg,
              + decom->max_nreqs[i] * sizeof(int); /* D*.lengths */
         sum_decomp_varlen += vlen;
     }
-    sum_decomp_varlen *= cfg->sub_nprocs;
+    if (cfg->sub_comm != MPI_COMM_NULL)
+        sum_decomp_varlen *= cfg->sub_nprocs;
     if (cfg->strategy == blob && cfg->api != adios && cfg->sub_rank > 0)
         sum_decomp_varlen = 0;
     /* sum_decomp_varlen is the size of all decomposition variables defined in

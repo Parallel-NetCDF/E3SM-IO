@@ -275,6 +275,7 @@ int main (int argc, char **argv) {
         decom.disps[i]       = NULL;
         decom.raw_offsets[i] = NULL;
         decom.w_starts[i]    = NULL;
+        decom.max_nreqs[i]   = 0;
     }
     ffreq = 1;
 
