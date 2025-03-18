@@ -19,10 +19,10 @@ on:
       - 'tests/*'
 
 env:
-   MPICH_VERSION: 4.1.1
+   MPICH_VERSION: 4.3.0
    ARGOBOTS_VERSION: 1.1
    ASYNC_VOL_VERSION: 1.8.1
-   HDF5_VERSION: 1.14.2
+   HDF5_VERSION: 1.14.6
    LOG_VOL_VERSION: 1.4.0
 
 jobs:
@@ -92,8 +92,11 @@ jobs:
             cd ${GITHUB_WORKSPACE}
             rm -rf ${HDF5_ROOT} ; mkdir ${HDF5_ROOT} ; cd ${HDF5_ROOT}
             VER_MAJOR=${HDF5_VERSION%.*}
+            VER_MAJOR=${VER_MAJOR/./_} # replace . with _
             VER_NOPATCH=${HDF5_VERSION%-*} # remove patch version
-            curl -LO https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
+            VER_NOPATCH=${VER_NOPATCH//./_}
+            # curl -LO https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
+            curl -LO https://support.hdfgroup.org/releases/hdf5/v${VER_MAJOR}/v${VER_NOPATCH}/downloads/hdf5-${HDF5_VERSION}.tar.gz
             tar -zxf hdf5-${HDF5_VERSION}.tar.gz
             cd hdf5-${HDF5_VERSION}
             ./configure --prefix=${HDF5_ROOT} \
