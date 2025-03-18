@@ -80,22 +80,12 @@ jobs:
             # curl -LO https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
             curl -LO https://support.hdfgroup.org/releases/hdf5/v${VER_MAJOR}/v${VER_NOPATCH}/downloads/hdf5-${HDF5_VERSION}.tar.gz
             tar -zxf hdf5-${HDF5_VERSION}.tar.gz
-            cd hdf5-${HDF5_VERSION}
-            ./configure --prefix=${HDF5_ROOT} \
-                        --silent \
-                        --enable-parallel \
-                        --enable-build-mode=production \
-                        --enable-unsupported \
-                        --enable-threadsafe \
-                        --disable-doxygen-doc \
-                        --disable-doxygen-man \
-                        --disable-doxygen-html \
-                        --disable-tests \
-                        --disable-fortran \
-                        --disable-cxx \
-                        CC=${MPICH_DIR}/bin/mpicc
-            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
-            make -s -j 8 distclean >> qout 2>&1
+            mkdir build
+            cd build
+            CC=${MPICH_DIR}/bin/mpicc cmake ../hdf5-${HDF5_VERSION} \
+                                            -D"CMAKE_INSTALL_PREFIX=${HDF5_ROOT}" \
+                                            -D"HDF5_ENABLE_PARALLEL=ON"
+            make -j 8 install > qout 2>&1
         - name: Dump config.log file if build HDF5 failed
           if: ${{ failure() }}
           run: |
