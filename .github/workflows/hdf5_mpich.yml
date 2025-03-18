@@ -1,0 +1,155 @@
+name: HDF5 and MPICH
+
+on:
+  push:
+    branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.jpg'
+      - '**/*.png'
+      - 'tests/*'
+  pull_request:
+    branches: [ master ]
+    paths-ignore:
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.jpg'
+      - '**/*.png'
+      - 'tests/*'
+
+env:
+   MPICH_VERSION: 4.3.0
+   HDF5_VERSION: 1.14.6
+
+jobs:
+    build:
+      runs-on: ubuntu-latest
+      timeout-minutes: 60
+      steps:
+        - uses: actions/checkout@v4
+        - name: Set up dependencies
+          run: |
+            set -x
+            sudo apt-get update
+            sudo apt-get -y install automake autoconf libtool libtool-bin m4 cmake
+            # The MPICH installed on github actions is too slow
+            # sudo apt-get install mpich
+            # mpicc -v
+            # zlib
+            sudo apt-get -y install zlib1g-dev
+        - name: Add global env variables into GITHUB_ENV
+          run: |
+            set -x
+            echo "MPICH_DIR=${GITHUB_WORKSPACE}/MPICH" >> $GITHUB_ENV
+            echo "HDF5_ROOT=${GITHUB_WORKSPACE}/HDF5" >> $GITHUB_ENV
+        - name: Build MPICH ${{ env.MPICH_VERSION }}
+          if: ${{ success() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ${MPICH_DIR} ; mkdir ${MPICH_DIR} ; cd ${MPICH_DIR}
+            curl -LO https://www.mpich.org/static/downloads/${MPICH_VERSION}/mpich-${MPICH_VERSION}.tar.gz
+            gzip -dc mpich-${MPICH_VERSION}.tar.gz | tar -xf -
+            cd mpich-${MPICH_VERSION}
+            ./configure --prefix=${MPICH_DIR} \
+                        --silent \
+                        --enable-romio \
+                        --with-file-system=ufs \
+                        --with-device=ch3:sock \
+                        --disable-fortran \
+                        CC=gcc
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s -j 8 distclean >> qout 2>&1
+        - name: Dump MPICH log file
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${MPICH_DIR}/mpich-${MPICH_VERSION}/qout
+            cat ${MPICH_DIR}/mpich-${MPICH_VERSION}/config.log
+        - name: Install HDF5 ${{ env.HDF5_VERSION }}
+          if: ${{ success() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ${HDF5_ROOT} ; mkdir ${HDF5_ROOT} ; cd ${HDF5_ROOT}
+            VER_MAJOR=${HDF5_VERSION%.*}
+            VER_MAJOR=${VER_MAJOR/./_} # replace . with _
+            VER_NOPATCH=${HDF5_VERSION%-*} # remove patch version
+            VER_NOPATCH=${VER_NOPATCH//./_}
+            # curl -LO https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-${VER_MAJOR}/hdf5-${VER_NOPATCH}/src/hdf5-${HDF5_VERSION}.tar.gz
+            curl -LO https://support.hdfgroup.org/releases/hdf5/v${VER_MAJOR}/v${VER_NOPATCH}/downloads/hdf5-${HDF5_VERSION}.tar.gz
+            tar -zxf hdf5-${HDF5_VERSION}.tar.gz
+            cd hdf5-${HDF5_VERSION}
+            ./configure --prefix=${HDF5_ROOT} \
+                        --silent \
+                        --enable-parallel \
+                        --enable-build-mode=production \
+                        --enable-unsupported \
+                        --enable-threadsafe \
+                        --disable-doxygen-doc \
+                        --disable-doxygen-man \
+                        --disable-doxygen-html \
+                        --disable-tests \
+                        --disable-fortran \
+                        --disable-cxx \
+                        CC=${MPICH_DIR}/bin/mpicc
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            make -s -j 8 distclean >> qout 2>&1
+        - name: Dump config.log file if build HDF5 failed
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            cat ${HDF5_ROOT}/hdf5-${HDF5_VERSION}/qout
+            cat ${HDF5_ROOT}/hdf5-${HDF5_VERSION}/config.log
+        - name: Build E3SM_IO with HDF5
+          if: ${{ success() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            rm -rf ./test_output
+            autoreconf -i
+            ./configure --with-mpi=${MPICH_DIR} \
+                        --with-hdf5=${HDF5_ROOT} \
+                        CFLAGS=-fno-var-tracking-assignments \
+                        CXXFLAGS=-fno-var-tracking-assignments
+            make -j 8
+        - name: Print config.log if error
+          if: ${{ failure() }}
+          run: |
+            set -x
+            cat ${GITHUB_WORKSPACE}/config.log
+        - name: Test - make check
+          if: ${{ success() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            make -s check
+        - name: Print log files
+          if: ${{ always() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            cat test.sh.log
+            cat utils/*.log
+        - name: Test - make ptest
+          if: ${{ success() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            make -s ptest
+        - name: Print log files
+          if: ${{ always() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            cat test.sh.log
+            cat utils/*.log
+        - name: make distclean
+          if: ${{ always() }}
+          run: |
+            set -x
+            cd ${GITHUB_WORKSPACE}
+            make -s distclean
+
