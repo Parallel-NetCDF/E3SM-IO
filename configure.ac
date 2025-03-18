@@ -807,6 +807,27 @@ if test "x$have_hdf5" = xyes ; then
       extra_libs="`grep 'Extra libraries' $hdf5_lib/libhdf5.settings |cut -f2 -d:`"
       AC_MSG_RESULT([$extra_libs])
    fi
+
+   # Building HDF5 1.14.6 using cmake produces an incorrect results in the field of
+   # "Extra libraries". Test it first before including it to LIBS.
+   if test "x$extra_libs" != x ; then
+      saved_LIBS=$LIBS
+      if test "x$LIBS" = x ; then
+         LIBS="-lhdf5 $extra_libs"
+      else
+         LIBS="-lhdf5 $extra_libs $LIBS"
+      fi
+      AC_MSG_CHECKING([extra libraries shown in libhdf5.settings if valid])
+      AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <hdf5.h>]],
+                     [[H5Fopen("dummy", H5F_ACC_RDWR, H5P_DEFAULT);]])],
+                     [valid_extra_libs=yes], [valid_extra_libs=no])
+      AC_MSG_RESULT([$valid_extra_libs])
+      if test "x$valid_extra_libs" = xno ; then
+         extra_libs=
+      fi
+      LIBS=$saved_LIBS
+   fi
+
    if test "x$LIBS" = x ; then
       LIBS="-lhdf5 $extra_libs"
    else
