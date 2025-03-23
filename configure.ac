@@ -812,30 +812,46 @@ if test "x$have_hdf5" = xyes ; then
    # "Extra libraries". Test it first before including it to LIBS.
    if test "x$extra_libs" != x ; then
       saved_LIBS=$LIBS
-      if test "x$LIBS" = x ; then
-         LIBS="-lhdf5 $extra_libs"
-      else
-         LIBS="-lhdf5 $extra_libs $LIBS"
-      fi
+      LIBS="-lhdf5 $extra_libs $LIBS"
       AC_MSG_CHECKING([extra libraries shown in libhdf5.settings if valid])
       AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <hdf5.h>]],
                      [[H5Fopen("dummy", H5F_ACC_RDWR, H5P_DEFAULT);]])],
                      [valid_extra_libs=yes], [valid_extra_libs=no])
       AC_MSG_RESULT([$valid_extra_libs])
-      if test "x$valid_extra_libs" = xno ; then
-         extra_libs=
+      if test "x$valid_extra_libs" = xno && test -d "$hdf5_lib/pkgconfig" ; then
+         # extra_libs is not valid, check pkg-config
+         saved_PKG_CONFIG_PATH=$PKG_CONFIG_PATH
+         export PKG_CONFIG_PATH="$hdf5_lib/pkgconfig:$PKG_CONFIG_PATH"
+         extra_ldflags=`pkg-config --libs-only-L hdf5 2> conftest.err`
+         rm -f conftest.err
+         extra_libs=`pkg-config --libs-only-l hdf5 2> conftest.err`
+         rm -f conftest.err
+         export PKG_CONFIG_PATH=$saved_PKG_CONFIG_PATH
+         if test "x$extra_ldflags" != x || test "x$extra_libs" != x ; then
+            saved_LDFLAGS=$LDFLAGS
+            LDFLAGS="$extra_libs $LDFLAGS"
+            LIBS="-lhdf5 $extra_libs $saved_LIBS"
+            AC_MSG_CHECKING([extra libraries shown in libhdf5.settings if valid])
+            AC_LINK_IFELSE([AC_LANG_PROGRAM([[#include <hdf5.h>]],
+                           [[H5Fopen("dummy", H5F_ACC_RDWR, H5P_DEFAULT);]])],
+                           [valid_extra_libs=yes], [valid_extra_libs=no])
+            AC_MSG_RESULT([$valid_extra_libs])
+            if test "x$valid_extra_libs" = xno ; then
+               extra_ldflags=
+               extra_libs=
+            fi
+            LDFLAGS=$saved_LDFLAGS
+         fi
       fi
       LIBS=$saved_LIBS
    fi
 
-   if test "x$LIBS" = x ; then
-      LIBS="-lhdf5 $extra_libs"
-   else
-      LIBS="-lhdf5 $extra_libs $LIBS"
+   LIBS="$extra_libs $LIBS"
+   if ! echo $LIBS | grep -q "\-lhdf5" ; then
+      LIBS="-lhdf5 $LIBS"
    fi
-   if test "x$LDFLAGS" = x ; then
-      LDFLAGS=$extra_ldflags
-   else
+   LDFLAGS="$extra_ldflags $LDFLAGS"
+   if ! echo $LDFLAGS | grep -q "\-L$hdf5_lib" ; then
       LDFLAGS="$extra_ldflags $LDFLAGS"
    fi
    AC_DEFINE([ENABLE_HDF5], [1], [Enable HDF5 I/O method])
