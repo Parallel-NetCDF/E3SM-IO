@@ -308,21 +308,30 @@ int e3sm_io_case::inq_F_case(e3sm_io_config &cfg,
      */
     varp = vars + nvars_decomp - 1;
 
-    /* below 10 are fixed-size climate variables ---------------------------*/
+    /* below 5 are fixed-size climate variables ----------------------------*/
 
-    /* double lat(ncol) */
-    INQ_VAR("lat", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 1)
+    /* int ndbase */
+    INQ_VAR("ndbase", NC_INT, 0, NULL, MPI_INT, -1)
+    GET_ATTR_TXT("long_name", txtBuf)
+
+    /* int nsbase */
+    INQ_VAR("nsbase", NC_INT, 0, NULL, MPI_INT, -1)
+    GET_ATTR_TXT("long_name", txtBuf)
+
+    /* int nbdate */
+    INQ_VAR("nbdate", NC_INT, 0, NULL, MPI_INT, -1)
+    GET_ATTR_TXT("long_name", txtBuf)
+
+    /* int nbsec */
+    INQ_VAR("nbsec", NC_INT, 0, NULL, MPI_INT, -1)
+    GET_ATTR_TXT("long_name", txtBuf)
+
+    /* int mdt */
+    INQ_VAR("mdt", NC_INT, 0, NULL, MPI_INT, -1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
 
-    /* double lon(ncol) */
-    INQ_VAR("lon", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 1)
-    GET_ATTR_TXT("long_name", txtBuf)
-    GET_ATTR_TXT("units", txtBuf)
-
-    /* double area(ncol) */
-    INQ_VAR("area", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 0)
-    GET_ATTR_TXT("long_name", txtBuf)
+    /* below 7 are fixed-size not-partitioned variables of type double -----*/
 
     /* double lev(lev) */
     INQ_VAR("lev", NC_DOUBLE, 1, &dim_lev, MPI_DOUBLE, -1)
@@ -361,28 +370,23 @@ int e3sm_io_case::inq_F_case(e3sm_io_config &cfg,
     INQ_VAR("hybi", NC_DOUBLE, 1, &dim_ilev, MPI_DOUBLE, -1)
     GET_ATTR_TXT("long_name", txtBuf)
 
-    /* below 6 are record climate variables --------------------------------*/
+    /* below 3 are fixed-size partitioned variables of type double ------------*/
 
-    /* double time(time) */
-    INQ_VAR("time", NC_DOUBLE, 1, &dim_time, MPI_DOUBLE, -1)
+    /* double lat(ncol) */
+    INQ_VAR("lat", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 1)
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
-    GET_ATTR_TXT("calendar", txtBuf)
-    GET_ATTR_TXT("bounds", txtBuf)
 
-    /* int date(time) */
-    INQ_VAR("date", NC_INT, 1, &dim_time, MPI_INT, -1)
+    /* double lon(ncol) */
+    INQ_VAR("lon", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 1)
+    GET_ATTR_TXT("long_name", txtBuf)
+    GET_ATTR_TXT("units", txtBuf)
+
+    /* double area(ncol) */
+    INQ_VAR("area", NC_DOUBLE, 1, &dim_ncol, MPI_DOUBLE, 0)
     GET_ATTR_TXT("long_name", txtBuf)
 
-    /* int datesec(time) */
-    INQ_VAR("datesec", NC_INT, 1, &dim_time, MPI_INT, -1)
-    GET_ATTR_TXT("long_name", txtBuf)
-
-    /* double time_bnds(time, nbnd) */
-    dimids[0] = dim_time;
-    dimids[1] = dim_nbnd;
-    INQ_VAR("time_bnds", NC_DOUBLE, 2, dimids, MPI_DOUBLE, -1)
-    GET_ATTR_TXT("long_name", txtBuf)
+    /* below 2 are record climate variables of type char -------------------*/
 
     /* char date_written(time, chars) */
     dimids[0] = dim_time;
@@ -394,30 +398,15 @@ int e3sm_io_case::inq_F_case(e3sm_io_config &cfg,
     dimids[1] = dim_chars;
     INQ_VAR("time_written", NC_CHAR, 2, dimids, MPI_CHAR, -1)
 
-    /* below 5 are fixed-size climate variables ----------------------------*/
+    /* below 5 are record climate variables of type int -------------------*/
 
-    /* int ndbase */
-    INQ_VAR("ndbase", NC_INT, 0, NULL, MPI_INT, -1)
+    /* int date(time) */
+    INQ_VAR("date", NC_INT, 1, &dim_time, MPI_INT, -1)
     GET_ATTR_TXT("long_name", txtBuf)
 
-    /* int nsbase */
-    INQ_VAR("nsbase", NC_INT, 0, NULL, MPI_INT, -1)
+    /* int datesec(time) */
+    INQ_VAR("datesec", NC_INT, 1, &dim_time, MPI_INT, -1)
     GET_ATTR_TXT("long_name", txtBuf)
-
-    /* int nbdate */
-    INQ_VAR("nbdate", NC_INT, 0, NULL, MPI_INT, -1)
-    GET_ATTR_TXT("long_name", txtBuf)
-
-    /* int nbsec */
-    INQ_VAR("nbsec", NC_INT, 0, NULL, MPI_INT, -1)
-    GET_ATTR_TXT("long_name", txtBuf)
-
-    /* int mdt */
-    INQ_VAR("mdt", NC_INT, 0, NULL, MPI_INT, -1)
-    GET_ATTR_TXT("long_name", txtBuf)
-    GET_ATTR_TXT("units", txtBuf)
-
-    /* below 393 are record climate variables ------------------------------*/
 
     /* int ndcur(time) */
     INQ_VAR("ndcur", NC_INT, 1, &dim_time, MPI_INT, -1)
@@ -425,6 +414,25 @@ int e3sm_io_case::inq_F_case(e3sm_io_config &cfg,
 
     /* int nscur(time) */
     INQ_VAR("nscur", NC_INT, 1, &dim_time, MPI_INT, -1)
+    GET_ATTR_TXT("long_name", txtBuf)
+
+    /* int nsteph(time) */
+    INQ_VAR("nsteph", NC_INT, 1, &dim_time, MPI_INT, -1)
+    GET_ATTR_TXT("long_name", txtBuf)
+
+    /* below 8 are record climate variables of type double ---------------*/
+
+    /* double time(time) */
+    INQ_VAR("time", NC_DOUBLE, 1, &dim_time, MPI_DOUBLE, -1)
+    GET_ATTR_TXT("long_name", txtBuf)
+    GET_ATTR_TXT("units", txtBuf)
+    GET_ATTR_TXT("calendar", txtBuf)
+    GET_ATTR_TXT("bounds", txtBuf)
+
+    /* double time_bnds(time, nbnd) */
+    dimids[0] = dim_time;
+    dimids[1] = dim_nbnd;
+    INQ_VAR("time_bnds", NC_DOUBLE, 2, dimids, MPI_DOUBLE, -1)
     GET_ATTR_TXT("long_name", txtBuf)
 
     /* double co2vmr(time) */
@@ -452,9 +460,7 @@ int e3sm_io_case::inq_F_case(e3sm_io_config &cfg,
     GET_ATTR_TXT("long_name", txtBuf)
     GET_ATTR_TXT("units", txtBuf)
 
-    /* int nsteph(time) */
-    INQ_VAR("nsteph", NC_INT, 1, &dim_time, MPI_INT, -1)
-    GET_ATTR_TXT("long_name", txtBuf)
+    /* below 384 are record climate variables of type float ----------------*/
 
 if (cfg.hist == h0) {
     /* float AEROD_v(time, ncol) */
