@@ -76,10 +76,113 @@ void check_connector_env(e3sm_io_config *cfg) {
     free(env_str);
 }
 
-static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
+static
+void parse_hint_file(e3sm_io_config  *cfg,
+                     const char      *filename,
+                     int             *num_hint_lines,
+                     char           **hint_lines)
+{
+    /* read I/O hints from file e3sm_io_hints.txt, run e3sm_io_core() one per
+     * line in the hint file. Each line contains hints as if it is set in the
+     * environment variable PNETCDF_HINTS.
+     */
+    MPI_Offset fsize = 0;
+    char *hint_buf=NULL;
+
+    *num_hint_lines=0;
+
+    if (cfg->rank == 0) {
+        FILE *fptr = fopen(filename, "r");
+        if (fptr != NULL) {
+            fseek(fptr, 0, SEEK_END);
+            fsize = ftell(fptr) + 1;
+            fseek(fptr, 0, SEEK_SET);
+            hint_buf = (char*) malloc(fsize);
+            fread(hint_buf, 1, fsize, fptr);
+            hint_buf[fsize-1] = '\0';
+            fclose(fptr);
+        }
+    }
+
+    MPI_Bcast(&fsize, 1, MPI_OFFSET, 0, cfg->io_comm);
+    if (fsize > 0) {
+        if (cfg->rank > 0) hint_buf = (char*) malloc(fsize);
+        MPI_Bcast(hint_buf, fsize, MPI_BYTE, 0, cfg->io_comm);
+
+        char *hint_str = strtok(hint_buf, "\n");
+        if (hint_str != NULL && strlen(hint_str) > 0)
+            hint_lines[(*num_hint_lines)++] = strdup(hint_str);
+
+        while ((hint_str = strtok(NULL, "\n")) != NULL)
+            hint_lines[(*num_hint_lines)++] = strdup(hint_str);
+
+        free(hint_buf);
+    }
+}
+
+static
+int parse_hint_line(e3sm_io_config *cfg,
+                    const char     *hint_str)
+{
+    char *warn_str="Warning: skip ill-formed hint set in PNETCDF_HINTS";
+    char *hint_saved, *ptr, *key, *val, *deli;
+    int err=MPI_SUCCESS;
+
+    if (hint_str == NULL) return 1;
+
+    /* skip blank lines */
+    hint_saved = strdup(hint_str);
+    if (strlen(hint_saved) == 0 || strtok(hint_saved, " \t") == NULL) {
+        free(hint_saved);
+        return 1;
+    }
+    ptr = hint_saved;
+
+    do {
+        if (*ptr == '\0') break; /* done with this line */
+
+        key = ptr;
+        deli = strchr(ptr, ';');
+        if (deli != NULL) {
+            *deli = '\0'; /* add terminate char */
+            ptr = deli + 1;
+        }
+        else
+            ptr += strlen(ptr); /* last hint */
+
+        /* hint key */
+        deli = strchr(key, '=');
+        if (deli == NULL) {
+            /* expect one token before = */
+            printf("xxxx %s: '%s'\n", warn_str, key);
+            break;
+        }
+        *deli = '\0'; /* add terminate char */
+
+        /* hint value */
+        val = deli + 1;
+
+        /* override previouse set hint or add a new one */
+        err = MPI_Info_set(cfg->info, key, val);
+        CHECK_MPIERR
+
+    } while (*ptr != '\0');
+
+err_out:
+    free(hint_saved);
+    return err;
+}
+
+static
+int set_info(e3sm_io_config *cfg,
+             const char     *hint_str)
+{
     int err;
 
     /* set MPI-IO hints */
+
+    err = MPI_Info_create (&(cfg->info));
+    CHECK_MPIERR
 
     /* collective write */
     err = MPI_Info_set (cfg->info, "romio_cb_write", "enable");
@@ -88,9 +191,9 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     /* HDF5 may do independent I/O internally */
 
     if (cfg->api == pnetcdf) {
-        /* no independent MPI-IO */
-        err = MPI_Info_set (cfg->info, "romio_no_indep_rw", "true");
-        CHECK_MPIERR
+        /* set MPI-IO hints here */
+        // err = MPI_Info_set (cfg->info, "romio_no_indep_rw", "true");
+        // CHECK_MPIERR
 
         /* set PnetCDF I/O hints */
 
@@ -121,6 +224,9 @@ static inline int set_info (e3sm_io_config *cfg, e3sm_io_decom *decom) {
         /* in-place byte swap */
         err = MPI_Info_set (cfg->info, "nc_in_place_swap", "enable");
         CHECK_MPIERR
+
+        err = parse_hint_line(cfg, hint_str);
+        if (err == 0) goto err_out;
     }
 
 err_out:
@@ -204,7 +310,7 @@ static void usage (char *argv0) {
 
 /*----< main() >-------------------------------------------------------------*/
 int main (int argc, char **argv) {
-    int i, err, nrecs=1, ffreq;
+    int i, j, err, nrecs=1, ffreq;
     double timing[5], max_t[5];
     e3sm_io_config cfg;
     e3sm_io_decom decom;
@@ -224,7 +330,7 @@ int main (int argc, char **argv) {
     CHECK_ERR;
 #endif
 
-    timing[0] = MPI_Wtime();
+    timing[1] = MPI_Wtime();
 
     MPI_Comm_rank (MPI_COMM_WORLD, &(cfg.rank));
     MPI_Comm_size (MPI_COMM_WORLD, &(cfg.np));
@@ -562,7 +668,11 @@ int main (int argc, char **argv) {
     PRINT_MSG (1, "Input  data file/folder name = %s\n", cfg.in_path);
     PRINT_MSG (1, "Output data file/folder name = %s\n", cfg.out_path);
 
-    timing[1] = MPI_Wtime() - timing[0];
+    char *hint_lines[64];
+    int num_hint_lines;
+    parse_hint_file(&cfg, "e3sm_io_hints.txt", &num_hint_lines, hint_lines);
+
+    timing[1] = MPI_Wtime() - timing[1];
     MPI_Barrier(MPI_COMM_WORLD);
     timing[2] = MPI_Wtime();
 
@@ -584,41 +694,65 @@ int main (int argc, char **argv) {
         cfg.run_case = unknown;
 
     timing[2] = MPI_Wtime() - timing[2];
-    MPI_Barrier(MPI_COMM_WORLD);
-    timing[3] = MPI_Wtime();
 
-    /* set MPI-IO and PnetCDF hints */
-    err = MPI_Info_create (&(cfg.info));
-    CHECK_MPIERR
-    err = set_info (&cfg, &decom);
-    if (err < 0) goto err_out;
+    j = 0;
+    do {
 
-    /* the core of this benchmark */
-    err = e3sm_io_core (&cfg, &decom);
-    CHECK_ERR
+        char *hint_str = (num_hint_lines == 0) ? NULL : hint_lines[j];
 
-    timing[3] = MPI_Wtime() - timing[3];
-    MPI_Barrier(MPI_COMM_WORLD);
-    timing[4] = MPI_Wtime();
+if (cfg.rank == 0) printf("\nHINTS: %s\n\n", (hint_str) ? hint_str : "");
 
-    /* report timing breakdowns */
-    if (cfg.rd) {
-        report_timing_RD(&cfg, &decom);
-    }
-    else{
-        report_timing_WR(&cfg, &decom);
-    }
+        /* set MPI-IO and PnetCDF hints */
+        err = set_info(&cfg, hint_str);
+        if (err < 0) goto err_out;
+
+        /* the core of this benchmark */
+        MPI_Barrier(MPI_COMM_WORLD);
+        timing[3] = MPI_Wtime();
+
+        err = e3sm_io_core(&cfg, &decom);
+        CHECK_ERR
+
+        timing[3] = MPI_Wtime() - timing[3];
+
+        /* report timing breakdowns */
+        if (cfg.rd)
+            report_timing_RD(&cfg, &decom);
+        else
+            report_timing_WR(&cfg, &decom);
 
 #ifdef E3SM_IO_PROFILING
-    if (cfg.profiling) e3sm_io_print_profile(&cfg);
+        if (cfg.profiling) e3sm_io_print_profile(&cfg);
 #else
-    if (cfg.profiling && cfg.rank == 0)
-        printf("\nWarning: E3SM-IO internal time profiling was disabled at configure time\n\n");
+        if (cfg.profiling && cfg.rank == 0)
+            printf("\nWarning: E3SM-IO internal time profiling was disabled at configure time\n\n");
 #endif
 
+        for (i = 0; i < MAX_NUM_DECOMP; i++) {
+            if (decom.w_starts[i] != NULL) {
+                free(decom.w_starts[i][0]);
+                free(decom.w_starts[i]);
+            }
+        }
+
+        if (cfg.info != MPI_INFO_NULL) MPI_Info_free (&(cfg.info));
+
+        timing[0] = timing[1] + timing[2] + timing[3];
+        MPI_Reduce(timing, max_t, 4, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+        if (cfg.rank == 0) {
+            printf("init=%.2f read_decomp=%.2f e3sm_io_core=%.2f end-to-end=%.2f\n",
+                   max_t[1],max_t[2],max_t[3],max_t[0]);
+            printf("-----------------------------------------------------------\n");
+            printf("\n\n");
+        }
+
+        j++;
+    } while (j < num_hint_lines);
+
+    for (j=0; j<num_hint_lines; j++)
+        free(hint_lines[j]);
+
 err_out:
-    if (cfg.info != MPI_INFO_NULL)
-        MPI_Info_free (&(cfg.info));
     if (cfg.io_comm != MPI_COMM_WORLD && cfg.io_comm != MPI_COMM_NULL)
         MPI_Comm_free (&(cfg.io_comm));
     if (cfg.env_log_info != NULL)
@@ -629,20 +763,6 @@ err_out:
         if (decom.blocklens[i]) free (decom.blocklens[i]);
         if (decom.disps[i]) free (decom.disps[i]);
         if (decom.raw_offsets[i]) free (decom.raw_offsets[i]);
-        if (decom.w_starts[i] != NULL) {
-            free(decom.w_starts[i][0]);
-            free(decom.w_starts[i]);
-        }
-    }
-
-    timing[4] = MPI_Wtime() - timing[4];
-    timing[0] = MPI_Wtime() - timing[0];
-    MPI_Reduce(timing, max_t, 5, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-    if (cfg.rank == 0) {
-        printf("init=%.2f read_decomp=%.2f e3sm_io_core=%.2f final=%.2f end-to-end=%.2f\n",
-               max_t[1],max_t[2],max_t[3],max_t[4],max_t[0]);
-        printf("-----------------------------------------------------------\n");
-        printf("\n\n");
     }
 
     MPI_Finalize ();

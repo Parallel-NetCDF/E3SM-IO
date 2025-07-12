@@ -1,0 +1,2 @@
+start_iodevice=10;striping_unit=1048576;striping_factor=8;lustre_overstriping_ratio=1;cb_nodes=8
+start_iodevice=10;striping_unit=1048576;striping_factor=8;lustre_overstriping_ratio=1;cb_nodes=8;nc_num_aggrs_per_node=32
