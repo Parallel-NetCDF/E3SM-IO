@@ -55,6 +55,7 @@ pnetcdf_check_mem_usage(MPI_Comm comm)
         if (rank == 0 && sum_size > 0)
             printf("heap memory allocated by PnetCDF internally has %lld bytes yet to be freed\n\n",
                    sum_size);
+        if (malloc_size > 0) ncmpi_inq_malloc_list();
     }
     else if (err != NC_ENOTENABLED)
         /* not a fatal error */
