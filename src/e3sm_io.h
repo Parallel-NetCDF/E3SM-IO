@@ -123,6 +123,7 @@ typedef struct e3sm_io_config {
     MPI_Info info;
     int num_iotasks;
     int num_subfiles;
+    int factor;         /* artificially increase problem size */
 
     char in_path[E3SM_IO_MAX_PATH];
     char out_path[E3SM_IO_MAX_PATH];

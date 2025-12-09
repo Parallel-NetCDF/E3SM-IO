@@ -258,7 +258,7 @@ void print_info (MPI_Info *info_used) {
 }
 
 /*----< usage() >------------------------------------------------------------*/
-static void usage (char *argv0) {
+static void usage(char *argv0) {
     char *help = "Usage: %s [OPTION] FILE\n\
        [-h] Print this help message\n\
        [-v] Verbose mode\n\
@@ -281,6 +281,8 @@ static void usage (char *argv0) {
        [-g num] Number of subfiles, used by Log-based VOL and ADIOS I/O only,\n\
                 -1 for one subfile per compute node, 0 to disable subfiling,\n\
                 (default: 0).\n\
+       [-e num] Artificially increase the problem size num times, by\n\
+                 multiplying the last dimesnion size by num. (default: 1)\n\
        [-t time] Add sleep time to emulate the computation in order to \n\
                  overlapping I/O when Async VOL is used.\n\
        [-i path] Input file path (folder name when subfiling is used, file\n\
@@ -365,6 +367,7 @@ int main (int argc, char **argv) {
     cfg.xtype          = NC_DOUBLE;
     cfg.sort_reqs      = 1;
     cfg.isReqSorted    = 0;
+    cfg.factor         = 1;
 
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
         cfg.G_case.nvars_D[i]    = 0;
@@ -388,7 +391,7 @@ int main (int argc, char **argv) {
     ffreq = 1;
 
     /* command-line arguments */
-    while ((i = getopt (argc, argv, "vkur:s:o:i:jmqf:ha:x:g:y:pt:")) != EOF)
+    while ((i = getopt (argc, argv, "vkur:s:o:i:jmqf:ha:x:g:y:pt:e:")) != EOF)
         switch (i) {
             case 'v':
                 cfg.verbose = 1;
@@ -409,48 +412,48 @@ int main (int argc, char **argv) {
                 cfg.io_stride = atoi (optarg);
                 break;
             case 'a':
-                if (strcmp (optarg, "pnetcdf") == 0)
+                if (strcmp(optarg, "pnetcdf") == 0)
                     cfg.api = pnetcdf;
-                else if (strcmp (optarg, "hdf5") == 0)
+                else if (strcmp(optarg, "hdf5") == 0)
                     cfg.api = hdf5;
-                else if (strcmp (optarg, "hdf5_md") == 0)
+                else if (strcmp(optarg, "hdf5_md") == 0)
                     cfg.api = hdf5_md;
-                else if (strcmp (optarg, "hdf5_log") == 0)
+                else if (strcmp(optarg, "hdf5_log") == 0)
                     cfg.api = hdf5_log;
-                else if (strcmp (optarg, "netcdf4") == 0)
+                else if (strcmp(optarg, "netcdf4") == 0)
                     cfg.api = netcdf4;
-                else if (strcmp (optarg, "adios") == 0)
+                else if (strcmp(optarg, "adios") == 0)
                     cfg.api = adios;
                 else
                     ERR_OUT("Unknown API")
                 break;
                 /*
             case 'l':
-                if (strcmp (optarg, "contig") == 0)
+                if (strcmp(optarg, "contig") == 0)
                     cfg.layout = contig;
-                else if (strcmp (optarg, "chunk") == 0)
+                else if (strcmp(optarg, "chunk") == 0)
                     cfg.layout = chunk;
                 else
                     ERR_OUT("Unknown layout")
                 break;
                 */
             case 'x':
-                if (strcmp (optarg, "canonical") == 0)
+                if (strcmp(optarg, "canonical") == 0)
                     cfg.strategy = canonical;
-                else if (strcmp (optarg, "log") == 0)
+                else if (strcmp(optarg, "log") == 0)
                     cfg.strategy = log;
-                else if (strcmp (optarg, "blob") == 0)
+                else if (strcmp(optarg, "blob") == 0)
                     cfg.strategy = blob;
                 else
                     ERR_OUT("Unknown I/O strategy")
                 break;
 
             case 'o':
-                strncpy (cfg.out_path, optarg, E3SM_IO_MAX_PATH);
+                strncpy(cfg.out_path, optarg, E3SM_IO_MAX_PATH);
                 cfg.wr = 1;
                 break;
             case 'i':
-                strncpy (cfg.in_path, optarg, E3SM_IO_MAX_PATH);
+                strncpy(cfg.in_path, optarg, E3SM_IO_MAX_PATH);
                 cfg.rd = 1;
                 break;
             case 'm':
@@ -485,24 +488,27 @@ int main (int argc, char **argv) {
                 cfg.profiling = 1;
                 break;
             case 'z':
-                if (strcmp (optarg, "deflate") == 0)
+                if (strcmp(optarg, "deflate") == 0)
                     cfg.filter = deflate;
-                else if (strcmp (optarg, "zlib") == 0)
+                else if (strcmp(optarg, "zlib") == 0)
                     cfg.filter = deflate;
                 else
                     ERR_OUT("Unknown filter")
                 break;
+            case 'e':
+                cfg.factor = atoi(optarg);
+                break;
             case 'h':
             default:
-                if (cfg.rank == 0) usage (argv[0]);
+                if (cfg.rank == 0) usage(argv[0]);
                 goto err_out;
         }
 
     if (optind >= argc || argv[optind] == NULL) { /* input file is mandatory */
-        if (!cfg.rank) usage (argv[0]);
+        if (!cfg.rank) usage(argv[0]);
         ERR_OUT("Decomposition file not provided")
     }
-    strncpy (cfg.decomp_path, argv[optind], E3SM_IO_MAX_PATH);
+    strncpy(cfg.decomp_path, argv[optind], E3SM_IO_MAX_PATH);
 
     cfg.F_case_h0.nrecs = 1;  /* force only one record for F h0 case */
     cfg.F_case_h1.nrecs = nrecs;

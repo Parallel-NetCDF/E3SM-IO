@@ -208,7 +208,7 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
      */
 
     /* id: D1, D2, ... D6, indicates different decompositions */
-    for (id = 0; id < decom->num_decomp; id++) {
+    for (id=0; id<decom->num_decomp; id++) {
         decom->contig_nreqs[id] = 0;
         decom->disps[id]        = NULL;
         decom->blocklens[id]    = NULL;
@@ -501,6 +501,22 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
                     cfg->isReqSorted = 0;
                     break;
                 }
+            }
+        }
+
+        /* Artificially increase the problem size */
+        if (cfg->factor > 1) {
+            if (decom->num_decomp != 6 || decom->ndims[id] > 1)  {
+                /* If G case, increasing size of last dimensions nVertLevels
+                 * and nVertLevelsP1 only.
+                 */
+                decom->dims[id][decom->ndims[id] - 1] *= cfg->factor;
+                for (i=0; i<decom->contig_nreqs[id]; i++) {
+                    decom->disps[id][i] *= cfg->factor;
+                    decom->blocklens[id][i] *= cfg->factor;
+                }
+                for (i=0; i<decom->raw_nreqs[id]; i++)
+                    decom->raw_offsets[id][i] *= cfg->factor;
             }
         }
 
