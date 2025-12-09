@@ -96,7 +96,19 @@ inline int adios2_type_convert (
         } else {
             ERR_OUT ("Output type not supproted")
         }
+    } else if (in_type == adios2_type_int32_t) {
+        if (out_type == adios2_type_int64_t) {
+            int *inptr = (int *)inbuf;
+            long long *outptr = (long long *)outbuf;
+
+            for (; inptr < ((int *)inbuf) + len; inptr++, outptr++) {
+                *outptr = (long long)(*inptr);
+            }
+        } else {
+            ERR_OUT ("Output type not supproted")
+        }
     } else {
+printf("in_type=%d out_type=%d\n",in_type,out_type);
         ERR_OUT ("Input type not supproted")
     }
 

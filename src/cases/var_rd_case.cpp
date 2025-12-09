@@ -277,7 +277,7 @@ int e3sm_io_case::var_rd_case(e3sm_io_config &cfg,
             i++;
 
             /* write to D*.offsets, 2D array */
-            IGET_VARA_NOADV(vars[i], MPI_INT, decom.disps[j])
+            IGET_VARA_NOADV(vars[i], MPI_LONG_LONG, decom.disps[j])
             i++;
 
             /* write to D*.lengths, 2D array */

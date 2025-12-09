@@ -20,15 +20,15 @@
 #include <e3sm_io_driver.hpp>
 
 struct off_len {
-    int off;
-    int len;
+    MPI_Offset off;
+    int        len;
 };
 
 /*----< compare() >---------------------------------------------------------*/
 /* This subroutine is used in qsort() */
 static int compare(const void *p1, const void *p2) {
-    int i = ((struct off_len *)p1)->off;
-    int j = ((struct off_len *)p2)->off;
+    MPI_Offset i = ((struct off_len *)p1)->off;
+    MPI_Offset j = ((struct off_len *)p2)->off;
     if (i > j) return (1);
     if (i < j) return (-1);
     return 0;
@@ -167,7 +167,11 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
     MPI_Info_free(&info);
 
-    /* number of decompositions stored in file */
+    /* number of decompositions stored in file.
+     * F case, there are 3 decomposition maps.
+     * G case, there are 6 decomposition maps.
+     * I case, there are 5 decomposition maps.
+     */
     err = driver->inq_dim(ncid, "num_decomp", &dimids[0]);
     CHECK_ERR
     err = driver->inq_dimlen(ncid, dimids[0], &mpi_num);
@@ -216,8 +220,10 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
         CHECK_ERR
 
         /* ndims: number of decomposition dimensions, not variable dimensions
-         * In E3SM, decomposition is along the lowest dimensions of 2D, 3D,
-         * or 4D variables.
+         * In F case,
+         *   1D variable: not decomposed.
+         *   2D variable: decomposed is along the lowest dimension
+         *   3D variable: decomposed is along the lowest 2 dimensions
          */
         sprintf(name, "D%d.dims", id + 1);
         /* obtain the number of dimensions of this decomposition */
@@ -240,7 +246,8 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
         /* read all process's numbers of requests */
         all_nreqs = (int *)malloc(decomp_nprocs * sizeof(int));
-        err = driver->get_vara(ncid, varid, MPI_INT, NULL, NULL, all_nreqs, coll);
+        err = driver->get_vara(ncid, varid, MPI_INT, NULL, NULL,
+                               all_nreqs, coll);
         CHECK_ERR
 
         /* Obtain varid of request variable Dx.fill_starts, the starting index
@@ -256,16 +263,25 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
         has_fill_starts = (err < 0) ?  0 : 1;
 
         if (has_fill_starts) {
-            /* Read variable Dx.fill_starts, which stores the index of Dx.nreqs
-             * pointing to the first request that needs to be filled with fill
-             * values. In other words, Dx.nreqs[i] is always bigger than
-             * Dx.fill_starts[i] and (Dx.nreqs[i] - Dx.fill_starts[i]) is the
-             * number of requests that need to be filled.
+            /* Note Dx.offsets[] and Dx.lengths[] store the write requests made
+             * by all processes. However when a variable is not fully written.
+             * Those "missing" regions are also represented as offset-length
+             * pairs, which are stored at the end of Dx.offsets[] and
+             * Dx.lengths[], respectively. Dx.fill_starts[i] is an index
+             * pointing to Dx.offsets[] and Dx.lengths[] as the starting
+             * offset-length pairs to be filled by process rank i with the
+             * "fill value".
+             *
+             * Note Dx.nreqs[i] (number of offset-length pairs to be written by
+             * rank i) is always bigger than Dx.fill_starts[i]. The number of
+             * offset-length pairs to be filled by rank i is
+             *    (Dx.nreqs[i] - Dx.fill_starts[i]).
              */
             int *fill_nreqs;
 
             fill_nreqs = (int *)malloc(decomp_nprocs * sizeof(int));
-            err = driver->get_vara(ncid, varid, MPI_INT, NULL, NULL, fill_nreqs, coll);
+            err = driver->get_vara(ncid, varid, MPI_INT, NULL, NULL,
+                                   fill_nreqs, coll);
             CHECK_ERR
 
             if (!cfg->fill_mode) {
@@ -307,11 +323,12 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
                     id + 1, rank, proc_start, proc_count, start, count);
 
         /* read starting offsets of requests into disps[] */
-        decom->disps[id] = (int *)malloc(nreqs * sizeof(int));
+        decom->disps[id] = (MPI_Offset *)malloc(sizeof(MPI_Offset) * nreqs);
         sprintf(name, "D%d.offsets", id + 1);
         err = driver->inq_varid(ncid, name, &varid);
         CHECK_ERR
-        err = driver->get_vara(ncid, varid, MPI_INT, &start, &count, decom->disps[id], coll);
+        err = driver->get_vara(ncid, varid, MPI_LONG_LONG, &start, &count,
+                               decom->disps[id], coll);
         CHECK_ERR
 
         /* read lengths of requests into blocklens[] */
@@ -319,7 +336,8 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
         sprintf(name, "D%d.lengths", id + 1);
         err = driver->inq_varid(ncid, name, &varid);
         CHECK_ERR
-        err = driver->get_vara(ncid, varid, MPI_INT, &start, &count, decom->blocklens[id], coll);
+        err = driver->get_vara(ncid, varid, MPI_INT, &start, &count,
+                               decom->blocklens[id], coll);
         CHECK_ERR
 
         cfg->isReqSorted = 1;
@@ -347,12 +365,13 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
             if (has_raw_decom) {
                 /* read all numbers of requests */
                 all_raw_nreqs = (int *)malloc(decomp_nprocs * sizeof(int));
-                err = driver->get_vara(ncid, varid, MPI_INT, NULL, NULL, all_raw_nreqs, coll);
+                err = driver->get_vara(ncid, varid, MPI_INT, NULL, NULL,
+                                       all_raw_nreqs, coll);
                 CHECK_ERR
 
                 /* calculate start index in Dx.offsets for this process */
                 start = 0;
-                for (i = 0; i < proc_start; i++) start += all_raw_nreqs[i];
+                for (i=0; i<proc_start; i++) start += all_raw_nreqs[i];
 
                 /* calculate number of requests for this process */
                 count = 0;
@@ -371,9 +390,10 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
                 sprintf(name, "D%d.raw_offsets", id + 1);
                 err = driver->inq_varid(ncid, name, &varid);
                 CHECK_ERR
-                err = driver->get_vara(ncid, varid, MPI_INT, &start, &count, raw_offsets_int, coll);
+                err = driver->get_vara(ncid, varid, MPI_INT, &start, &count,
+                                       raw_offsets_int, coll);
                 CHECK_ERR
-                for (i = 0; i < decom->raw_nreqs[id]; i++)
+                for (i=0; i<decom->raw_nreqs[id]; i++)
                     decom->raw_offsets[id][i] = (MPI_Offset)raw_offsets_int[i];
 
                 free(raw_offsets_int);
@@ -393,12 +413,12 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
                  */
                 struct off_len *myreqs;
                 myreqs = (struct off_len *)malloc(nreqs * sizeof(struct off_len));
-                for (i = 0; i < nreqs; i++) {
+                for (i=0; i<nreqs; i++) {
                     myreqs[i].off = decom->disps[id][i];
                     myreqs[i].len = decom->blocklens[id][i];
                 }
                 qsort((void *)myreqs, nreqs, sizeof(struct off_len), compare);
-                for (i = 0; i < nreqs; i++) {
+                for (i=0; i<nreqs; i++) {
                     decom->disps[id][i]     = myreqs[i].off;
                     decom->blocklens[id][i] = myreqs[i].len;
                 }
@@ -423,7 +443,7 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
 
                 /* Count number of offsets before merge */
                 decom->raw_nreqs[id] = 0;
-                for (i = 0; i < decom->contig_nreqs[id]; i++)
+                for (i=0; i<decom->contig_nreqs[id]; i++)
                     decom->raw_nreqs[id] += decom->blocklens[id][i];
 
                 decom->raw_offsets[id] =
@@ -445,12 +465,12 @@ int read_decomp(e3sm_io_config *cfg, e3sm_io_decom *decom) {
              */
             struct off_len *myreqs;
             myreqs = (struct off_len *)malloc(nreqs * sizeof(struct off_len));
-            for (i = 0; i < nreqs; i++) {
+            for (i=0; i<nreqs; i++) {
                 myreqs[i].off = decom->disps[id][i];
                 myreqs[i].len = decom->blocklens[id][i];
             }
             qsort((void *)myreqs, nreqs, sizeof(struct off_len), compare);
-            for (i = 0; i < nreqs; i++) {
+            for (i=0; i<nreqs; i++) {
                 decom->disps[id][i]     = myreqs[i].off;
                 decom->blocklens[id][i] = myreqs[i].len;
             }

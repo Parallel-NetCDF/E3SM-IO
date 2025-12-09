@@ -208,7 +208,7 @@ typedef struct e3sm_io_decom {
     int  contig_nreqs[MAX_NUM_DECOMP]; /* number of noncontiguous requests in
                                           each decomposition */
     int  max_nreqs[MAX_NUM_DECOMP];    /* max contig_nreqs[] among processes */
-    int *disps[MAX_NUM_DECOMP];        /* starting array index offset of
+    MPI_Offset *disps[MAX_NUM_DECOMP]; /* starting array index offset of
                                           requests to be read/written by this
                                           process */
     int *blocklens[MAX_NUM_DECOMP];    /* length (number of array elements) of

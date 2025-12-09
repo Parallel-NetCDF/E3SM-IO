@@ -522,6 +522,14 @@ int e3sm_io_driver_h5blob::put_vara(int              fid,
                 flt_buf[i] = (float) dbl_buf[i];
             buf = flt_buf;
         }
+        else if (itype == MPI_LONG_LONG && xtype == NC_INT) {
+            long long *ll_buf = (long long*)buf;
+            int *int_buf = (int*) malloc(nelems * sizeof(int));
+            /* type casting from long long to int is required */
+            for (i=0; i<nelems; i++)
+                int_buf[i] = (int) ll_buf[i];
+            buf = int_buf;
+        }
         else { /* E3SM has no other mismatch types */
             printf("var %s itype xtype mismatched\n",varp->name);
             return -1;

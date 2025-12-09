@@ -43,8 +43,13 @@
     CHECK_ERR \
 }
 
-static inline void FIX_1D_VAR_STARTS_COUNTS (
-    MPI_Offset **&starts, MPI_Offset **&counts, int nreq, int *disps, int *blocklens) {
+static inline
+void FIX_1D_VAR_STARTS_COUNTS(MPI_Offset **&starts,
+                              MPI_Offset **&counts,
+                              int nreq,
+                              MPI_Offset *disps,
+                              int *blocklens)
+{
     int j;
 
     starts    = (MPI_Offset **)malloc (2 * nreq * sizeof (MPI_Offset *));
@@ -110,7 +115,7 @@ static inline void REC_2D_VAR_STARTS_COUNTS (MPI_Offset rec,
                                              MPI_Offset **&starts,
                                              MPI_Offset **&counts,
                                              int nreq,
-                                             int *disps,
+                                             MPI_Offset *disps,
                                              int *blocklens) {
     int j;
 
@@ -137,7 +142,7 @@ static inline void REC_3D_VAR_STARTS_COUNTS (MPI_Offset rec,
                                              MPI_Offset **&starts,
                                              MPI_Offset **&counts,
                                              int &nreq,
-                                             int *disps,
+                                             MPI_Offset *disps,
                                              int *blocklens,
                                              MPI_Offset last_dimlen) {
     int j, k;
