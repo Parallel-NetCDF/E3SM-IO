@@ -110,11 +110,13 @@ void parse_hint_file(e3sm_io_config  *cfg,
         MPI_Bcast(hint_buf, fsize, MPI_BYTE, 0, cfg->io_comm);
 
         char *hint_str = strtok(hint_buf, "\n");
-        if (hint_str != NULL && strlen(hint_str) > 0)
+        if (hint_str != NULL && strlen(hint_str) > 0 && *hint_str != '#')
             hint_lines[(*num_hint_lines)++] = strdup(hint_str);
 
-        while ((hint_str = strtok(NULL, "\n")) != NULL)
+        while ((hint_str = strtok(NULL, "\n")) != NULL) {
+            if (*hint_str == '#') continue;
             hint_lines[(*num_hint_lines)++] = strdup(hint_str);
+        }
 
         free(hint_buf);
     }
