@@ -483,7 +483,7 @@ int set_vars(int        in_ncid,
                 if (j == 0 && dimids[0] == rec_dim) continue;
                 var[i].vlen *= var[i].dims[j];
             }
-            if (dimids[0] == rec_dim) var[i].dims[0] = 1;
+            if (var[i].ndims > 0 && dimids[0] == rec_dim) var[i].dims[0] = 1;
 
             if (verbose && world_rank == 0)
                 printf("without decomp varid %d rec %d dec %d var %s\n",
