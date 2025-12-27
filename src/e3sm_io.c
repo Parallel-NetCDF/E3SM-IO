@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> /* strcpy(), strncpy(), strstr() */
-#include <unistd.h> /* getopt() */
+#include <unistd.h> /* getopt(), unlink() */
 
 #include <mpi.h>
 
@@ -235,6 +235,79 @@ err_out:
     return err;
 }
 
+/*----< delete_output_files() >----------------------------------------------*/
+static
+void delete_output_files(e3sm_io_config *cfg)
+{
+    char *filename, *base, *ext, *out_path_h0, *out_path_h1;
+
+    if (cfg->rank > 0) goto fnc_exit;
+
+    /* remove file system type prefix, if there is any */
+    filename = strchr(cfg->out_path, ':');
+    if (filename == NULL)
+        filename = cfg->out_path;
+    else
+        filename++;
+
+    out_path_h0 = (char*) malloc(strlen(filename) + 8);
+    out_path_h1 = (char*) malloc(strlen(filename) + 8);
+
+    base = strdup(filename);
+    ext = strrchr(base, '.');
+    if (ext != NULL) {
+        *ext = '\0';
+        ext++;
+    }
+
+    if (ext == NULL || (strcmp(ext, "nc") && strcmp(ext, "h5") && strcmp(ext, "nc4") && strcmp(ext, "bp"))) {
+        sprintf(out_path_h0, "%s_h0", filename);
+        sprintf(out_path_h1, "%s_h1", filename);
+    } else {
+        sprintf(out_path_h0, "%s_h0.%s", base, ext);
+        sprintf(out_path_h1, "%s_h1.%s", base, ext);
+    }
+    free(base);
+
+    /* delete the output file and ignore the error */
+    if (cfg->run_case == G) {
+        unlink(filename);
+        if (cfg->strategy == blob && cfg->api != adios) {
+            char *out_path_subfile = (char*) malloc(strlen(filename) + 8);
+            sprintf(out_path_subfile, "%s.%04d", filename, cfg->subfile_ID);
+            unlink(out_path_subfile);
+            free(out_path_subfile);
+        }
+    } else { /* F and I cases */
+        if (cfg->hx == 0 || cfg->hx == -1) {  /* h0 file */
+            unlink(out_path_h0);
+            if (cfg->strategy == blob && cfg->api != adios) {
+                char *out_path_subfile_h0 = (char*) malloc(strlen(out_path_h0) + 8);
+                /* append subfile ID */
+                sprintf(out_path_subfile_h0, "%s.%04d", out_path_h0, cfg->subfile_ID);
+                unlink(out_path_subfile_h0);
+                free(out_path_subfile_h0);
+            }
+        }
+        if (cfg->hx == 1 || cfg->hx == -1) {  /* h1 file */
+            unlink(out_path_h1);
+            if (cfg->strategy == blob && cfg->api != adios) {
+                char *out_path_subfile_h1 = (char*) malloc(strlen(out_path_h1) + 8);
+                /* append subfile ID */
+                sprintf(out_path_subfile_h1, "%s.%04d", out_path_h1, cfg->subfile_ID);
+                unlink(out_path_subfile_h1);
+                free(out_path_subfile_h1);
+            }
+        }
+    }
+
+    free(out_path_h0);
+    free(out_path_h1);
+
+fnc_exit:
+    MPI_Barrier(cfg->io_comm);
+}
+
 /*----< print_info() >------------------------------------------------------*/
 void print_info (MPI_Info *info_used) {
     int i, nkeys;
@@ -368,26 +441,16 @@ int main (int argc, char **argv) {
     cfg.sort_reqs      = 1;
     cfg.isReqSorted    = 0;
     cfg.factor         = 1;
+    cfg.subfile_ID     = 0;
 
     for (i = 0; i < MAX_NUM_DECOMP; i++) {
-        cfg.G_case.nvars_D[i]    = 0;
-        cfg.F_case_h0.nvars_D[i] = 0;
-        cfg.F_case_h1.nvars_D[i] = 0;
-        cfg.I_case_h0.nvars_D[i] = 0;
-        cfg.I_case_h1.nvars_D[i] = 0;
-
-        cfg.G_case.num_attrs     = 0;
-        cfg.F_case_h0.num_attrs  = 0;
-        cfg.F_case_h1.num_attrs  = 0;
-        cfg.I_case_h0.num_attrs  = 0;
-        cfg.I_case_h1.num_attrs  = 0;
-
         decom.blocklens[i]   = NULL;
         decom.disps[i]       = NULL;
         decom.raw_offsets[i] = NULL;
         decom.w_starts[i]    = NULL;
         decom.max_nreqs[i]   = 0;
     }
+
     ffreq = 1;
 
     /* command-line arguments */
@@ -449,11 +512,11 @@ int main (int argc, char **argv) {
                 break;
 
             case 'o':
-                strncpy(cfg.out_path, optarg, E3SM_IO_MAX_PATH);
+                strncpy(cfg.out_path, optarg, E3SM_IO_MAX_PATH-1);
                 cfg.wr = 1;
                 break;
             case 'i':
-                strncpy(cfg.in_path, optarg, E3SM_IO_MAX_PATH);
+                strncpy(cfg.in_path, optarg, E3SM_IO_MAX_PATH-1);
                 cfg.rd = 1;
                 break;
             case 'm':
@@ -508,7 +571,7 @@ int main (int argc, char **argv) {
         if (!cfg.rank) usage(argv[0]);
         ERR_OUT("Decomposition file not provided")
     }
-    strncpy(cfg.decomp_path, argv[optind], E3SM_IO_MAX_PATH);
+    strncpy(cfg.decomp_path, argv[optind], E3SM_IO_MAX_PATH-1);
 
     cfg.F_case_h0.nrecs = 1;  /* force only one record for F h0 case */
     cfg.F_case_h1.nrecs = nrecs;
@@ -678,7 +741,8 @@ int main (int argc, char **argv) {
 
     char *hint_lines[64];
     int num_hint_lines;
-    parse_hint_file(&cfg, "e3sm_io_hints.txt", &num_hint_lines, hint_lines);
+    // parse_hint_file(&cfg, "e3sm_io_hints.txt", &num_hint_lines, hint_lines);
+    parse_hint_file(&cfg, "/pscratch/sd/w/wkliao/e3sm_io_hints.txt", &num_hint_lines, hint_lines);
 
     timing[1] = MPI_Wtime() - timing[1];
     MPI_Barrier(MPI_COMM_WORLD);
@@ -708,7 +772,27 @@ int main (int argc, char **argv) {
 
         char *hint_str = (num_hint_lines == 0) ? NULL : hint_lines[j];
 
-if (cfg.rank == 0) printf("\nHINTS: %s\n\n", (hint_str) ? hint_str : "");
+        if (cfg.rank == 0) {
+            printf("\nHINTS: %s\n\n", (hint_str) ? hint_str : "");
+            fflush(stdout);
+        }
+
+        /* reset counters */
+        for (i = 0; i < MAX_NUM_DECOMP; i++) {
+            cfg.G_case.nvars_D[i]    = 0;
+            cfg.F_case_h0.nvars_D[i] = 0;
+            cfg.F_case_h1.nvars_D[i] = 0;
+            cfg.I_case_h0.nvars_D[i] = 0;
+            cfg.I_case_h1.nvars_D[i] = 0;
+        }
+        cfg.G_case.num_attrs     = 0;
+        cfg.F_case_h0.num_attrs  = 0;
+        cfg.F_case_h1.num_attrs  = 0;
+        cfg.I_case_h0.num_attrs  = 0;
+        cfg.I_case_h1.num_attrs  = 0;
+
+        /* delete output files */
+        delete_output_files(&cfg);
 
         /* set MPI-IO and PnetCDF hints */
         err = set_info(&cfg, hint_str);
@@ -743,7 +827,7 @@ if (cfg.rank == 0) printf("\nHINTS: %s\n\n", (hint_str) ? hint_str : "");
             }
         }
 
-        if (cfg.info != MPI_INFO_NULL) MPI_Info_free (&(cfg.info));
+        if (cfg.info != MPI_INFO_NULL) MPI_Info_free(&cfg.info);
 
         timing[0] = timing[1] + timing[2] + timing[3];
         MPI_Reduce(timing, max_t, 4, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
