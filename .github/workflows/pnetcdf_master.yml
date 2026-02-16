@@ -1,6 +1,12 @@
 name: PnetCDF master branch only
 
 on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Enable manual run because PnetCDF is updated more frequently'
+        required: false
+        default: 'Manual trigger'
   push:
     branches:
       - master
@@ -23,12 +29,11 @@ on:
       - 'datasets/*'
 
 env:
-   MPICH_VERSION: 4.3.0
+   MPICH_VERSION: 4.3.2
    AUTOCONF_VERSION: 2.71
    AUTOMAKE_VERSION: 1.17
    M4_VERSION: 1.4.19
    LIBTOOL_VERSION: 2.5.4
-   PNETCDF_VERSION: repo
 
 jobs:
     build:
@@ -36,50 +41,20 @@ jobs:
       timeout-minutes: 60
       steps:
         - uses: actions/checkout@v4
-        - name: Set up dependencies
+        - name: Install autotools
           run: |
             set -x
             sudo apt-get update
-            # mpich
-            # sudo apt-get install mpich
-            # zlib
-            sudo apt-get install zlib1g-dev
-        - name: Build GNU autotools
-          run: |
-            export PATH="${GITHUB_WORKSPACE}/AUTOTOOLS/bin:${PATH}"
-            export LD_LIBRARY_PATH="${GITHUB_WORKSPACE}/AUTOTOOLS/lib:${LD_LIBRARY_PATH}"
-            cd ${GITHUB_WORKSPACE}
-            wget -q https://ftp.gnu.org/gnu/m4/m4-${M4_VERSION}.tar.gz
-            gzip -dc m4-${M4_VERSION}.tar.gz | tar -xf -
-            cd m4-${M4_VERSION}
-            ./configure --prefix=${GITHUB_WORKSPACE}/AUTOTOOLS \
-                        --silent
-            make -s -j 8 install > qout 2>&1
-            make -s -j 8 distclean >> qout 2>&1
-            cd ${GITHUB_WORKSPACE}
-            wget -q https://ftp.gnu.org/gnu/autoconf/autoconf-${AUTOCONF_VERSION}.tar.gz
-            gzip -dc autoconf-${AUTOCONF_VERSION}.tar.gz | tar -xf -
-            cd autoconf-${AUTOCONF_VERSION}
-            ./configure --prefix=${GITHUB_WORKSPACE}/AUTOTOOLS \
-                        --silent
-            make -s -j 8 install > qout 2>&1
-            make -s -j 8 distclean >> qout 2>&1
-            cd ${GITHUB_WORKSPACE}
-            wget -q https://ftp.gnu.org/gnu/automake/automake-${AUTOMAKE_VERSION}.tar.gz
-            gzip -dc automake-${AUTOMAKE_VERSION}.tar.gz | tar -xf -
-            cd automake-${AUTOMAKE_VERSION}
-            ./configure --prefix=${GITHUB_WORKSPACE}/AUTOTOOLS \
-                        --silent
-            make -s -j 8 install > qout 2>&1
-            make -s -j 8 distclean >> qout 2>&1
-            cd ${GITHUB_WORKSPACE}
+            sudo apt-get install autoconf
+            sudo apt-get install automake
+            sudo apt-get install m4
+            # sudo apt-get install libtool libtool-bin
             wget -q https://ftp.gnu.org/gnu/libtool/libtool-${LIBTOOL_VERSION}.tar.gz
             gzip -dc libtool-${LIBTOOL_VERSION}.tar.gz | tar -xf -
             cd libtool-${LIBTOOL_VERSION}
-            ./configure --prefix=${GITHUB_WORKSPACE}/AUTOTOOLS \
-                        --silent
-            make -s -j 8 install > qout 2>&1
-            make -s -j 8 distclean >> qout 2>&1
+            ./configure --prefix=/usr --silent
+            sudo make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
+            sudo make -s LIBTOOLFLAGS=--silent V=1 -j 8 distclean >> qout 2>&1
         - name: Build MPICH
           run: |
             set -x
@@ -112,17 +87,12 @@ jobs:
           run: |
             set -x
             cd ${GITHUB_WORKSPACE}
-            export PATH="${GITHUB_WORKSPACE}/AUTOTOOLS/bin:${PATH}"
-            export LD_LIBRARY_PATH="${GITHUB_WORKSPACE}/AUTOTOOLS/lib:${LD_LIBRARY_PATH}"
             m4 --version
             autoconf --version
             automake --version
             libtool --version
             echo "Install PnetCDF on ${GITHUB_WORKSPACE}/PnetCDF"
             rm -rf PnetCDF ; mkdir PnetCDF ; cd PnetCDF
-            # curl -LO https://parallel-netcdf.github.io/Release/pnetcdf-${PNETCDF_VERSION}.tar.gz
-            # tar -zxf pnetcdf-${PNETCDF_VERSION}.tar.gz
-            # cd pnetcdf-${PNETCDF_VERSION}
             git clone -q https://github.com/Parallel-NetCDF/PnetCDF.git
             cd PnetCDF
             autoreconf -i
@@ -132,14 +102,12 @@ jobs:
                         --disable-cxx \
                         --disable-shared \
                         --with-mpi=${GITHUB_WORKSPACE}/MPICH
-            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install > qout 2>&1
-            make -s distclean >> qout 2>&1
+            make -s LIBTOOLFLAGS=--silent V=1 -j 8 install
+            make -s distclean
         - name: Dump PnetCDF log file
           if: ${{ failure() }}
           run: |
-            set -x
-            cat ${GITHUB_WORKSPACE}/PnetCDF/pnetcdf-${PNETCDF_VERSION}/qout
-            cat ${GITHUB_WORKSPACE}/PnetCDF/pnetcdf-${PNETCDF_VERSION}/config.log
+            cat ${GITHUB_WORKSPACE}/PnetCDF/PnetCDF/config.log
         - name: Build and check E3SM_IO with PnetCDF only
           if: ${{ success() }}
           run: |
