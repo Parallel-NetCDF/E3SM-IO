@@ -156,6 +156,7 @@ int replay_decomp (e3sm_io_config *cfg, e3sm_io_decom *decom) {
     // Set up dummy config for the driver
     cfg_in.io_comm        = MPI_COMM_WORLD;
     cfg_in.info           = MPI_INFO_NULL;
+    MPI_Comm_size (MPI_COMM_WORLD, &(cfg_in.np));
     cfg_in.num_iotasks    = cfg_in.np;
     cfg_in.num_subfiles   = 0;
     cfg_in.out_path[0]    = '\0';
@@ -546,10 +547,10 @@ int main (int argc, char **argv) {
                 cfg.verbose = 1;
                 break;
             case 'o':
-                strncpy (cfg.out_path, optarg, sizeof (cfg.out_path));
+                strncpy (cfg.out_path, optarg, E3SM_IO_MAX_PATH-1);
                 break;
             case 'i':
-                strncpy (cfg.in_path, optarg, sizeof (cfg.in_path));
+                strncpy (cfg.in_path, optarg, E3SM_IO_MAX_PATH-1);
                 break;
             case 'h':
             default:
