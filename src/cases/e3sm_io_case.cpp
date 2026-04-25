@@ -71,7 +71,8 @@ int e3sm_io_case::wr_test(e3sm_io_config &cfg,
             cmeta->nrecs =  cfg.F_case_h0.nrecs;
             cmeta->nvars = NVARS_F_CASE_H0;
         }
-        else if (cfg.run_case == I) {
+        else {
+            assert(cfg.run_case == I);
             cmeta        = &cfg.I_case_h0;
             cmeta->nrecs =  cfg.I_case_h0.nrecs;
             cmeta->nvars = NVARS_I_CASE_H0;
@@ -108,7 +109,8 @@ int e3sm_io_case::wr_test(e3sm_io_config &cfg,
             cmeta->nrecs =  cfg.F_case_h1.nrecs;
             cmeta->nvars = NVARS_F_CASE_H1;
         }
-        else if (cfg.run_case == I) {
+        else {
+            assert(cfg.run_case == I);
             cmeta        = &cfg.I_case_h1;
             cmeta->nrecs =  cfg.I_case_h1.nrecs;
             cmeta->nvars = NVARS_I_CASE_H1;
@@ -197,7 +199,8 @@ int e3sm_io_case::rd_test(e3sm_io_config &cfg,
             cmeta->nrecs =  cfg.F_case_h0.nrecs;
             cmeta->nvars = NVARS_F_CASE_H0;
         }
-        else if (cfg.run_case == I) {
+        else {
+            assert(cfg.run_case == I);
             cmeta        = &cfg.I_case_h0;
             cmeta->nrecs =  cfg.I_case_h0.nrecs;
             cmeta->nvars = NVARS_I_CASE_H0;
@@ -228,7 +231,8 @@ int e3sm_io_case::rd_test(e3sm_io_config &cfg,
             cmeta->nrecs =  cfg.F_case_h1.nrecs;
             cmeta->nvars = NVARS_F_CASE_H1;
         }
-        else if (cfg.run_case == I) {
+        else {
+            assert(cfg.run_case == I);
             cmeta        = &cfg.I_case_h1;
             cmeta->nrecs =  cfg.I_case_h1.nrecs;
             cmeta->nvars = NVARS_I_CASE_H1;
