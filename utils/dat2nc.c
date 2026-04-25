@@ -84,7 +84,7 @@ int add_decomp(int ncid, const char *infname, int label) {
     int varid[6], *nreqs, **off, **len, *fill_starts, dim_nprocs;
     int *map, total_nreqs, max_nreqs, min_nreqs, maxlen, minlen;
     MPI_Offset k, gsize, *dims, *dims_C, start, count;
-    int *raw_nreqs, **raw_off, total_raw_nreqs;
+    int *raw_nreqs=NULL, **raw_off=NULL, total_raw_nreqs=0;
     MPI_Offset raw_start;
 
     fd = fopen(infname, "r");
