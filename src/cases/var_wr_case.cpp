@@ -147,10 +147,10 @@ int e3sm_io_case::var_wr_case(e3sm_io_config &cfg,
 {
     int i, j, err=0, sub_rank, global_rank, ncid=-1, nflushes=0;
     int rec_no, gap=0, my_nreqs, nvars, num_decomp_vars, *nvars_D;
-    char   *fix_txt_buf_ptr, *rec_txt_buf_ptr;
-    int    *fix_int_buf_ptr, *rec_int_buf_ptr;
-    float  *fix_flt_buf_ptr, *rec_flt_buf_ptr;
-    double *fix_dbl_buf_ptr, *rec_dbl_buf_ptr, timing;
+    char   *fix_txt_buf_ptr=NULL, *rec_txt_buf_ptr=NULL;
+    int    *fix_int_buf_ptr=NULL, *rec_int_buf_ptr=NULL;
+    float  *fix_flt_buf_ptr=NULL, *rec_flt_buf_ptr=NULL;
+    double *fix_dbl_buf_ptr=NULL, *rec_dbl_buf_ptr=NULL, timing;
     MPI_Offset previous_size, metadata_size, total_size;
     MPI_Comm comm;
 
