@@ -295,8 +295,12 @@ int print_timing_WR(e3sm_io_config *cfg,
         printf("Emulate computation time (sleep)   min/max = %8.4f / %8.4f\n", (double)(cfg->comp_time), (double)(cfg->comp_time));
         printf("I/O bandwidth in MiB/sec (write-only)      = %.4f\n",
                (double)sum_amount / 1048576.0 / ioTime);
+        printf("I/O bandwidth in GiB/sec (write-only)      = %.4f\n",
+               (double)sum_amount / 1073741824.0 / ioTime);
         printf("I/O bandwidth in MiB/sec (open-to-close)   = %.4f\n",
                (double)sum_amount / 1048576.0 / max_t[6]);
+        printf("I/O bandwidth in GiB/sec (open-to-close)   = %.4f\n",
+               (double)sum_amount / 1073741824.0 / max_t[6]);
         printf("-----------------------------------------------------------\n");
 
         /* print MPI-IO hints actually used */
@@ -561,8 +565,12 @@ int print_timing_RD(e3sm_io_config *cfg,
         printf("Emulate computation time (sleep)   min/max = %8.4f / %8.4f\n", (double)(cfg->comp_time), (double)(cfg->comp_time));
         printf("I/O bandwidth in MiB/sec (read-only)       = %.4f\n",
                (double)sum_amount / 1048576.0 / ioTime);
+        printf("I/O bandwidth in GiB/sec (read-only)       = %.4f\n",
+               (double)sum_amount / 1073741824.0 / ioTime);
         printf("I/O bandwidth in MiB/sec (open-to-close)   = %.4f\n",
                (double)sum_amount / 1048576.0 / max_t[6]);
+        printf("I/O bandwidth in GiB/sec (open-to-close)   = %.4f\n",
+               (double)sum_amount / 1073741824.0 / max_t[6]);
         printf("-----------------------------------------------------------\n");
 
         /* print MPI-IO hints actually used */
