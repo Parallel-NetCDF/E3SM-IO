@@ -29,7 +29,7 @@ on:
       - 'datasets/*'
 
 env:
-   MPICH_VERSION: 4.3.2
+   MPICH_VERSION: 5.0.1
    AUTOCONF_VERSION: 2.71
    AUTOMAKE_VERSION: 1.17
    M4_VERSION: 1.4.19

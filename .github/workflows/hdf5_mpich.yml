@@ -19,7 +19,7 @@ on:
       - 'tests/*'
 
 env:
-   MPICH_VERSION: 4.3.0
+   MPICH_VERSION: 5.0.1
    HDF5_VERSION: 1.14.6
 
 jobs:
