@@ -54,6 +54,7 @@ EXTRA_DIST =   test.sh \
                README.md \
                COPYRIGHT \
                AUTHORS \
+               ChangeLog \
                docs
 
 ptest: src/e3sm_io

@@ -1,0 +1,13 @@
+=====================================
+E3SM-IO Release Notes
+=====================================
+
+--------------------------
+Version 1.3.0 (August 28, 2026)
+--------------------------
+
+* This is the first public release.
+* The source code repository is on github.com at
+  https://github.com/Parallel-NetCDF/E3SM-IO
+* Please refer to file README.md for information about this case study.
+
